@@ -1,0 +1,73 @@
+{% extends 'base.html'%}
+{% load static %}
+
+{% block title %}
+    User Role
+{% endblock %}
+
+{% if error_message %}
+    <p class="alert alert-danger">
+        <strong>{{ error_message }}</strong>
+    </p>
+{% endif %}
+{% block content %}
+<!-- begin #content -->
+<div id="content" class="content">
+    <!-- begin page-header -->
+    <h1 class="page-header">User Role</h1>
+    <!-- end page-header -->
+    <!-- begin row -->
+    <div class="row">
+        <!-- begin col-3 -->
+        <div class="row">
+
+        </div>
+        <div class="col-lg-5 col-md-6 ml-5">
+            <form action="{% url 'adduserrole' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" name="name" id="name" class="form-control" required> 
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" name="email" id="email" class="form-control" required> 
+                </div>
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" name="username" id="username" class="form-control" required> 
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" name="password" id="password" class="form-control" required> 
+                </div>
+                <div class="form-group">
+                    <label>User Role</label>
+                    <select id="user_role" name="userrole" class="form-control" required>
+                        <option  value="Select">--Select--</option>
+                        <option  value="OSAS Head">OSAS Head</option>
+                        <option  value="OSAS Staff">OSAS Staff</option>
+                        <option  value="Student">Student</option>
+                    </select>  
+                </div>
+                <div class="form-group">
+                    <label>User Image</label>
+                    <input type="file" name="image" id="image"> 
+                </div>
+                <div class="login-buttons">
+                    <button type="submit" class="btn btn-success btn-sm btn-lg ">Submit</button>  
+                    <button type="cancel" class="btn btn-warning btn-sm btn-lg ">Cancel</button>
+                </div>
+            </form>   
+            <!-- <input type="submit" id="submit" name="submit" value="Submit" class="btn btn-sm btn-success height-30" /> -->
+        </div>  
+    </div>
+    <!-- end row -->
+</div>
+<!-- end #content -->s
+</div>
+<!-- end page container -->
+
+
+{% endblock %}
+

@@ -7,11 +7,11 @@
 
 <head>
 	<meta charset="utf-8" />
-	<title>OSAS | Dashboard</title>
 	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" />
 	<meta content="" name="description" />
 	<meta content="" name="author" />
 	
+	<title> OSAS | {% block title %} {% endblock %}</title>
 	<!-- ================== BEGIN BASE CSS STYLE ================== -->
 	<link href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
 	<link href="{% static 'OsasSystem/assets/plugins/jquery-ui/jquery-ui.min.css'%}" rel="stylesheet" />
@@ -40,6 +40,10 @@
 	<!-- end #page-loader -->
 	
 	<!-- begin #page-container -->
+
+	
+	{% include 'sidebar.html'%}
+
 	<div id="page-container" class="fade page-sidebar-fixed page-header-fixed">
 		<!-- begin #header -->
 		<div id="header" class="header navbar-default">
@@ -169,13 +173,13 @@
 	<!-- ================== END BASE JS ================== -->
 	
 	<!-- ================== BEGIN PAGE LEVEL JS ================== -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.2/d3.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.2/d3.min.js"></script>
     <script src="{% static 'OsasSystem/assets/plugins/nvd3/build/nv.d3.js'%}"></script>
     <script src="/assets/plugins/jquery-jvectormap/jquery-jvectormap.min.js"></script>
     <script src="/assets/plugins/jquery-jvectormap/jquery-jvectormap-world-merc-en.js"></script>
     <script src="{% static 'OsasSystem/assets/plugins/bootstrap-calendar/js/bootstrap_calendar.min.js'%}"></script>
 	<script src="{% static 'OsasSystem/assets/plugins/gritter/js/jquery.gritter.js'%}"></script>
-	<script src="{% static 'OsasSystem/assets/js/demo/dashboard-v2.min.js'%}"></script>
+	<script src="{% static 'OsasSystem/assets/js/demo/dashboard-v2.min.js'%}"></script> -->
 	<!-- ================== END PAGE LEVEL JS ================== -->
 	
 	<script>

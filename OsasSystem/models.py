@@ -13,7 +13,7 @@ def image_path(instance, filename):
     randomstr =''.join((random.choice(chars)) for x in range(5))
     _now = datetime.now()
 
-    return 'profile_pic/{year}-{month}-{imageid}-{basename}-{randomstring}{ext}'.format(imageid = instance, basename = basefilename, randomstring=randomstr, ext=file_extension, year=_now.strftime('%Y'), month=_now.strftime('%m'), day=_now.strftime('%d')) 
+    return 'profile_pic/{year}-{month}-{day}-{imageid}-{basename}-{randomstring}{ext}'.format(imageid = instance, basename = basefilename, randomstring=randomstr, ext=file_extension, year=_now.strftime('%Y'), month=_now.strftime('%m'), day=_now.strftime('%d')) 
 
 Status = ((0, 'Disable'),(1, 'Active'),)
 id_status = ((1, 'Approved'),(0, 'Pending'),)
@@ -108,17 +108,21 @@ class osas_t_admission(models.Model):
         return self.request_name, self.request_detail
 
 class osas_r_userrole(models.Model):
-    user_role = ((1,'Student'),(2,'Head'),(3,'Staff'))
+    # user_role = ((1,'Student'),(2,'Head'),(3,'Staff'))
 
     user_id = models.IntegerField(primary_key=True)
     user_name = models.CharField(max_length=50, verbose_name='Full Name')
     user_username = models.CharField(max_length=50, verbose_name='User Name')
     user_password = models.CharField(max_length=16, verbose_name='User Password')
     user_email = models.EmailField(max_length=50, verbose_name='User Email')
-    user_type = models.IntegerField(max_length=50, choices=user_role, verbose_name='User Type')
+    user_type = models.CharField(max_length=50, verbose_name='User Type')
+    s_image = models.ImageField(upload_to=image_path, default='profile_pic.png')
 
+    def image_tag(self):
+        return mark_safe('<img src="/media/%s" width="50" height="50" />'%(self.s_image))
+        
     def __str__(self):
-        return self.user_username
+        return self.user_email
 
 class osas_r_stud_registration(models.Model):
 
@@ -128,10 +132,7 @@ class osas_r_stud_registration(models.Model):
     s_no = models.CharField(max_length=13)
     s_password = models.CharField(max_length=16)
     date_created = models.DateField(timezone.now)
-    s_image = models.ImageField(upload_to=image_path, default='profile_pic/image.jpg')
-
-    def image_tag(self):
-        return mark_safe('<img src="/OsasSystem/media/%s" width="50" height="50" />'%(self.s_image))
+    
 
     def __str__(self):
         return self.s_fname, self.s_no
