@@ -11,6 +11,9 @@ from django.contrib import messages
 def home(request):
     return render(request, 'home.html', {})
 
+def r_employ(request):
+    return render(request, 'alumni/r_employ.html')
+
 def login(request):
     return render(request, 'login.html', {})
 
@@ -79,10 +82,6 @@ def adduserrole(request):
     username = request.POST.get('username')
     password = request.POST.get('password')
     usertype = request.POST.get('userrole')
-    # if request.FILES.get('image'):
-    #     user_pic = request.FILES.get('image')
-    # else:
-    #     user_pic = 'profile_pic/image.jpg'
     try:
         n = osas_r_userrole.objects.get(user_email = email)
         return render(request, 'userrole.html', {

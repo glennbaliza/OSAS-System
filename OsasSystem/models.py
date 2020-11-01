@@ -21,6 +21,7 @@ class osas_r_course(models.Model):
     course_short = models.CharField(max_length=50, verbose_name='Short Course')
     course_full = models.CharField(max_length=250, verbose_name='Full Course')
     status = models.BooleanField(default=1)
+    sample = models.CharField(max_length=50)
         
     def __str__(self):
         return self.course_id
