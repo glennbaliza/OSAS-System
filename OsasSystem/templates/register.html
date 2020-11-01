@@ -2,24 +2,18 @@
 {% load static %}
 
 {% block content %}
-<body class="pace-top bg-white">
 	<!-- begin #page-loader -->
 	<div id="page-loader" class="fade show"><span class="spinner"></span></div>
 	<!-- end #page-loader -->
 	
 	<!-- begin #page-container -->
 	<div id="page-container" class="fade">
+       
 	    <!-- begin register -->
         <div class="register register-with-news-feed">
             <!-- begin news-feed -->
             <div class="news-feed">
-                <div class="news-image" style="background-image: url(../assets/img/login-bg/login-bg-9.jpg)"></div>
-                <div class="news-caption">
-                    <h4 class="caption-title"><b>Color</b> Admin App</h4>
-                    <p>
-                        As a Color Admin app administrator, you use the Color Admin console to manage your organization’s account, such as add new users, manage security settings, and turn on the services you want your team to access.
-                    </p>
-                </div>
+                <div class="login-cover-image" style="background-image: url({%static 'OsasSystem/assets/img/PUP2.jpg' %})" data-id="login-cover-image"></div>
             </div>
             <!-- end news-feed -->
             <!-- begin right-content -->
@@ -31,26 +25,40 @@
                 <!-- end register-header -->
                 <!-- begin register-content -->
                 <div class="register-content">
-                    <form action="{% url 'login' %}" method="GET" class="margin-bottom-0">
+                    <div class="col-lg-12 col-md-6">
+                        {% if error_message %}
+                            <p class="alert alert-danger">
+                                <strong>{{ error_message }}</strong>
+                            </p>
+                        {% endif %} 
+                    </div>
+                    <form id="validate_form" action="{% url 'newregister' %}" method="POST" class="margin-bottom-0" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {% if messages %}
+                        {% for message in messages %}
+                            {% if message.tags %}  <script>alert("{{ message }}")</script> 
+                            {% endif %}
+                        {% endfor %}
+                        {% endif %}
                         <label class="control-label">Name <span class="text-danger">*</span></label>
                         <div class="row row-space-10">
                             <div class="col-md-6 m-b-15">
-                                <input type="text" class="form-control" placeholder="First name" required />
+                                <input type="text" name="r_fname" id="r_fname" class="form-control" placeholder="First name" required />
                             </div>
                             <div class="col-md-6 m-b-15">
-                                <input type="text" class="form-control" placeholder="Last name" required />
+                                <input type="text" name="r_lname" id="r_lname" class="form-control" placeholder="Last name" required />
                             </div>
                         </div>
                         <label class="control-label">Student Number <span class="text-danger">*</span></label>
                         <div class="row m-b-15">
                             <div class="col-md-12">
-                                <input type="text" class="form-control" placeholder="ex.2000-0000-CM-0" required />
+                                <input type="text" name="r_studno" id="r_studno" class="form-control" placeholder="ex.2000-0000-CM-0" required />
                             </div>
                         </div>
                         <label class="control-label">Password <span class="text-danger">*</span></label>
                         <div class="row m-b-15">
                             <div class="col-md-12">
-                                <input type="password" class="form-control" placeholder="Password" required />
+                                <input type="password" name="r_pass" id="r_pass"class="form-control" placeholder="Password" required />
                             </div>
                         </div>
                         <div class="checkbox checkbox-css m-b-30">
@@ -80,4 +88,10 @@
         <!-- end register -->
 	</div>
 	<!-- end page container -->
+{% endblock %}
+
+{% block page-js %}
+<script>
+    $("#validate_form").parsley();
+</script>
 {% endblock %}
