@@ -16,15 +16,16 @@ def image_path(instance, filename):
     return 'profile_pic/{year}-{month}-{day}-{imageid}-{basename}-{randomstring}{ext}'.format(imageid = instance, basename = basefilename, randomstring=randomstr, ext=file_extension, year=_now.strftime('%Y'), month=_now.strftime('%m'), day=_now.strftime('%d')) 
 
 class osas_r_course(models.Model):
- 
+    
     course_id = models.AutoField(primary_key=True)
-    course_short = models.CharField(max_length=50, verbose_name='Short Course')
-    course_full = models.CharField(max_length=250, verbose_name='Full Course')
-    status = models.BooleanField(default=1)
-    sample = models.CharField(max_length=50)
+    course_code = models.CharField(max_length=50, verbose_name='Course Code')
+    course_name = models.CharField(max_length=250, verbose_name='Course Name')
+    course_add_date = models.DateField(default=now)
+    course_edit_date = models.DateField(default=now)
+    course_status = models.CharField(max_length=10, default='Active')
         
     def __str__(self):
-        return self.course_id
+        return self.course_name
 
 class osas_r_section_and_year(models.Model):
 
@@ -37,31 +38,32 @@ class osas_r_section_and_year(models.Model):
     def __str__(self):
         return self.yas_descriptions
 
-# class osas_r_personal_info(models.Model):
+class osas_r_personal_info(models.Model):
 
-#     stud_id = models.AutoField(primary_key=True)
-#     stud_no = models.CharField(unique=True, max_length=13, verbose_name='Student Number')
-#     stud_lname = models.CharField(max_length=50, verbose_name='Last Name')
-#     stud_fname = models.CharField(max_length=50, verbose_name='First Name')
-#     stud_mname = models.CharField(max_length=50, verbose_name='Middle Name')
-#     stud_birthdate = models.DateField(max_length=8)
-#     stud_gender = models.CharField(max_length=10, verbose_name='Gender')
-#     stud_address = models.CharField(max_length=50, verbose_name='Student Address')
-#     stud_email = models.EmailField(max_length=50, verbose_name='Student Email')
-#     stud_m_number = models.BigIntegerField(blank=True, verbose_name='Mobile Number')
-#     stud_hs = models.CharField(max_length=50, verbose_name='High School')
-#     stud_hs_add = models.CharField(max_length=50, verbose_name='High School Address')
-#     stud_e_name = models.CharField(max_length=50, verbose_name='Emergency Contact Person')
-#     stud_e_address = models.CharField(max_length=50, verbose_name='Emergency Contact Address')
-#     stud_e_m_number = models.BigIntegerField(blank=True, verbose_name='Mobile Number')
-#     date_created = models.DateTimeField(default=now)
-#     date_updated = models.DateTimeField(default=now)
-#     stud_course = models.ForeignKey('osas_r_course', on_delete=models.CASCADE)
-#     stud_id = models.ForeignKey('osas_r_section_and_year', on_delete=models.CASCADE)
+    stud_id = models.AutoField(primary_key=True)
+    stud_no = models.CharField(unique=True, max_length=15, verbose_name='Student Number')
+    stud_course_id = models.ForeignKey('osas_r_course', on_delete=models.CASCADE)
+    stud_yas_id = models.ForeignKey('osas_r_section_and_year', on_delete=models.CASCADE)
+    stud_lname = models.CharField(max_length=50, verbose_name='Last Name')
+    stud_fname = models.CharField(max_length=50, verbose_name='First Name')
+    stud_mname = models.CharField(max_length=50, verbose_name='Middle Name')
+    stud_birthdate = models.DateField(max_length=12)
+    stud_gender = models.CharField(max_length=10, verbose_name='Gender')
+    stud_address = models.CharField(max_length=50, verbose_name='Student Address')
+    stud_email = models.EmailField(max_length=50, verbose_name='Student Email')
+    stud_m_number = models.BigIntegerField(blank=True, verbose_name='Mobile Number')
+    stud_hs = models.CharField(max_length=50, verbose_name='High School')
+    stud_hs_add = models.CharField(max_length=50, verbose_name='High School Address')
+    stud_e_name = models.CharField(max_length=50, verbose_name='Emergency Contact Person')
+    stud_e_address = models.CharField(max_length=50, verbose_name='Emergency Contact Address')
+    stud_e_m_number = models.BigIntegerField(blank=True, verbose_name='Mobile Number')
+    date_created = models.DateTimeField(default=now)
+    date_updated = models.DateTimeField(default=now)
+    
    
 
-#     def __str__(self):
-#         return self.stud_id, self.stud_lname, self.stud_fname
+    def __str__(self):
+        return self.stud_no, self.stud_lname, self.stud_fname
 
 # class osas_t_id(models.Model):
 

@@ -1,0 +1,316 @@
+{% extends 'base.html'%}
+{% load static %}
+
+{% block page-css %}
+    <link href="{% static 'OsasSystem/assets/plugins/DataTables/media/css/dataTables.bootstrap.min.css' %}" rel="stylesheet" />
+	<link href="{% static 'OsasSystem/assets/plugins/DataTables/extensions/Responsive/css/responsive.bootstrap.min.css' %}" rel="stylesheet" />
+{% endblock%}
+
+{% block title %}
+    Student Profile
+{% endblock %}
+
+
+{% block content%}
+<div id="content" class="content">
+
+    <div class="col-lg-12 col-md-6">
+        {% if error_message %}
+            <p class="alert alert-danger">
+                <strong>{{ error_message }}</strong>
+            </p>
+        {% endif %} 
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 col-md-6">
+            <button type="button" href="#modal-dialog" id="btn_rem"  class="update btn btn-success" data-toggle="modal">+ Add User<span class="glyphicon glyphicon-trash"></span></button> 
+        </div>
+    </div>
+    </br>
+
+    <!-- begin row -->
+    <div class="row">
+        <!-- begin col-10 -->
+        <div class="col-lg-12 col-md-6">
+            <!-- begin panel -->
+            <div class="panel panel-inverse">
+                <!-- begin panel-heading -->
+                <div class="panel-heading">
+                    <div class="panel-heading-btn">
+                        <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+                        <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-warning" data-click="panel-collapse"><i class="fa fa-minus"></i></a>
+                    </div>
+                    <h4 class="panel-title">User List</h4>
+                </div>
+                <!-- end panel-heading -->
+                <!-- begin panel-body -->
+                <div class="panel-body">
+                    {% if student_info %}
+                    <div class="table-responsive">
+                        <table id="data-table-buttons" class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th hidden></th>
+                                <th class="text-nowrap">Student Number</th>
+                                <th class="text-nowrap">Name</th>
+                                <th class="text-nowrap">Birthday</th>
+                                <th class="text-nowrap">Email</th>
+                                <th class="text-nowrap">Mobile Number</th>
+                                <th class="text-nowrap">Course</th>
+                                <th class="text-nowrap">Year and Section</th>
+                                <!-- <th class="text-nowrap">Profile Picture</th> -->
+                                <!-- <th class="text-nowrap">Status</th> -->
+                                <th class="text-nowrap">Action</th>  
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for osas_r_personal_info in student_info %}
+                            <tr>
+                                <td hidden >{{ osas_r_personal_info.stud_id }}</td>  
+                                <td class="text-nowrap">{{ osas_r_personal_info.stud_no }}</td>
+                                <td class="text-nowrap">{{ osas_r_personal_info.stud_lname }} {{ osas_r_personal_info.stud_fname }}  {{ osas_r_personal_info.stud_mname }}</td>
+                                <td class="text-nowrap">{{ osas_r_personal_info.stud_birthdate }}</td> 
+                                <td>{{ osas_r_personal_info.stud_email }}</td>        
+                                <td>{{ osas_r_personal_info.stud_m_number }}</td>
+                                <td class="text-nowrap">{{ osas_r_personal_info.stud_course_id }}</td>
+                                <td>{{ osas_r_personal_info.stud_yas_id }}</td>
+
+                                <!-- <td class="text-center"><img src="/media/{{osas_r_userrole.s_image}}" class="rounded-circle" width="50" alt="userimage"/></td> -->
+                                <!-- <td class="text-center"><span {% if  index.2  < index.3 %}class = "dot" style=" height: 25px; width: 25px; background-color: red; border-radius: 50%;display: inline-block;" {% elif  index.2  == index.3 %}class = "dot" style=" height: 25px; width: 25px; background-color: #EEA843; border-radius: 50%;display: inline-block;" {% else %} class="dot" style=" height: 25px; width: 25px; background-color: #4EEC1E; border-radius: 50%; display:inline-block;" {% endif %}></span></td> -->
+                                <td class="with-btn" nowrap >
+                                    <!-- {% if index.2 < index.3 %}
+                                    <a id="btnEditTable"  value="{{index.0}}" class="btn btn-sm btn-primary width-70 m-r-2" style="color: white;">Order</a>
+                                    {% endif %} -->
+                                    <!-- <button type="button" id="view" class="update btn btn-primary btn-lg"><span class="glyphicon glyphicon-eye-open"></span></button> -->
+                                    <button type="button" href="#modal-dialog2"  id="edit"  class="update btn btn-warning btn-lg" data-toggle="modal"><span class="glyphicon glyphicon-pencil"></span></button>
+                                    <!-- <a id="btnEditTable"  value="{{index.0}}" class="btn btn-sm btn-primary width-70 m-r-2" style="color: white;">Edit</a> -->
+                                    <!-- {% if request.session.session_assign == 9 %} -->
+                                    <button type="button" href="#modal-dialog" id="btn_rem"  class="update btn btn-danger btn-lg" data-toggle="modal"><span class="glyphicon glyphicon-trash"></span></button> 
+                                    <!-- <a  class="btn btn-sm btn-success" data-toggle="modal">Demo</a> -->
+                                    <!-- {% endif %} -->
+                                    <button type="button" id="button_del" method="post" class="update btn btn-danger btn-lg"><span class="glyphicon glyphicon-trash"></span></button> 
+                                    <!-- <a id="btnRemarks"  class="btn btn-sm btn-white width-70"><center>Remarks</center></a>
+                                     -->
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+                </div>
+                <!-- end panel-body -->
+            </div>
+            <!-- end panel -->
+        </div>
+        <!-- end col-10 -->
+    </div>
+    <!-- end row -->
+</div>
+ <!-- #modal-dialog -->
+<div class="modal fade" id="modal-dialog">
+    <div class="modal-dialog">
+        <div class="modal-content ">
+            <div class="modal-body ">
+                <form id="validate_form"  action="{% url 'student_process_add' %}" method="post" enctype="multipart/form-data">
+                    <div class="col-lg-12 col-md-6">
+                        {% if success_message %}
+                            <p class="alert alert-danger">
+                                <strong>{{ success_message }}</strong>
+                            </p>
+                        {% endif %} 
+                    </div>
+                
+                    <div class="col-lg-12 col-md-6">
+                        {% if error_message %}
+                            <p class="alert alert-danger">
+                                <strong>{{ error_message }}</strong>
+                            </p>
+                        {% endif %} 
+                    </div>
+                    {% csrf_token %}
+                    <fieldset >
+                        <tr>
+                            <td>
+                                <strong><h1 class="page-header">Add new student</h1></strong>
+                                <div class="row">
+                                    <hr style="width:100%;text-align:left;margin-left:0">
+                                    <div class="col-lg-4 col-md-6 ">
+                                        <div class="stats-content">
+                                            <label>Last name</label>
+                                            <input  style="margin-bottom: 8px;" type="text" id="txt_l_name" name="txt_l_name" class="form-control" placeholder="Last name" required data-parsley-trigger="keyup">
+                                        </div>
+                                    </div>		
+                                    <div class="col-lg-4 col-md-6 ">
+                                        <div class="stats-content">
+                                            <label>First name</label>
+                                            <input  type="text" id="txt_f_name" class="form-control" name="txt_f_name" placeholder="First name" required data-parsley-trigger="keyup">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-6 ">
+                                        <div class="stats-content">
+                                            <label>Middle name</label>
+                                            <input  type="text" id="txt_m_name" class="form-control" name="txt_m_name" placeholder="Middle name" required data-parsley-trigger="keyup">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-6 ">
+                                        <div class="stats-content">
+                                            <label>Student number</label>
+                                            <input style="margin-bottom: 8px;" type="text" id="txt_studno" name="txt_studno" placeholder="ex. 2000-0000-cm-0" class="form-control" required data-parsley-trigger="keyup">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-6 ">
+                                        <div class="stats-content">
+                                            <label>Date of birth</label>
+                                            <input type="date" class="form-control" name="date_of_birth" id="date_of_birth" placeholder="">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-6 ">
+                                        <div class="stats-content">
+                                            <label>Gender</label>
+                                            <select id="txt_Gender" name="txt_Gender" class="form-control">
+                                                    <option  value="Male">Male</option>
+                                                    <option  value="Female">Female</option>
+                                                    <option  value="Others">Other</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-6 ">
+                                        <div class="stats-content">
+                                            <label>Address</label> 
+                                            <input style="margin-bottom: 8px;" type="text" id="txt_address" name="txt_address" class="form-control" placeholder="Adress" required data-parsley-trigger="keyup">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 ">
+                                        <div class="stats-content">
+                                            <label>Email Address</label>
+                                            <input style="margin-bottom: 8px;" type="email" id="txt_email" name="txt_email" placeholder="Email" class="form-control" required data-parsley-trigger="keyup">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 ">
+                                        <div class="stats-content">
+                                            <label>Mobile number</label>
+                                            <input  type="text" id="txt_mobile_number" class="form-control" name="txt_mobile_number" placeholder="ex. 09123456789" required data-parsley-trigger="keyup">
+                                        </div>
+                                    </div>
+            
+                                    <div class="col-lg-7 col-md-6 ">
+                                        <div class="stats-content">
+                                            <label >Course</label>
+                                            {% if student_course %}
+                                            <select id="dd_course" name="txt_course" class="form-control">
+                                                <option selected disabled="true">--Select Course--</option>
+                                                {% for osas_r_course in student_course%}
+                                                <option value="{{ osas_r_course.course_name }}" name="txt_course" name="txt_course" >{{ osas_r_course.course_name }}</option>
+                                                {% endfor %}
+                                                <!-- {% for osas_r_course in course_list %}  
+                                                <option value="{{ osas_r_course.course_id }}">{{ osas_r_course.course_name }}</option>
+                                                {% endfor %} -->
+                                            </select>
+                                            {% endif %}
+                                        </div>
+                          
+                                    </div>
+                                    <div class="col-lg-5 col-md-6 ">
+                                        <div class="stats-content">
+                                            <label>Year & Section</label>
+                                            {% if student_yr_sec %}
+                                            <select id="dd_yr" name="txt_yr_sec" class="form-control" >
+                                                    <option selected disabled="true">--Select Year and Section--</option>
+                                                    {% for osas_r_section_and_year in student_yr_sec%}
+                                                    <option  value="{{ osas_r_section_and_year.yas_descriptions }}" name="txt_yr_sec">{{ osas_r_section_and_year.yas_descriptions }}</option>
+                                                    {% endfor %}
+                                            </select>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <hr style="width:100%;text-align:left;margin-left:0">
+                                    <div class="col-lg-6 col-md-6 ">
+                                        <div class="stats-content">
+                                            <label>High school name</label>
+                                            <input style="margin-bottom: 8px;" type="text" id="txt_h_name" name="txt_h_name" class="form-control" placeholder="School name" required data-parsley-trigger="keyup">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-6 ">
+                                        <div class="stats-content">
+                                            <label>High school address</label>
+                                            <input style="margin-bottom: 8px;" type="text" id="txt_h_address" name="txt_h_address" class="form-control" placeholder="School address" required data-parsley-trigger="keyup">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 ">
+                                        <div class="stats-content">
+                                            <label>Emergency contact person</label>
+                                            <input  type="text" id="txt_e_name" name="txt_e_name" class="form-control" placeholder="Full name" required data-parsley-trigger="keyup">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 ">
+                                        <div class="stats-content">
+                                            <label>Emergency contact person number</label>
+                                            <input style="margin-bottom: 8px;" type="text" id="txt_e_number" name="txt_e_number" placeholder="ex. 09123456789" class="form-control" required data-parsley-trigger="keyup">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-6 ">
+                                        <div class="stats-content">
+                                            <label>Emergency contact person address</label>
+                                            <input  type="text" id="txt_e_address" name="txt_e_address" class="form-control" placeholder="Address" required data-parsley-trigger="keyup">
+                                        </div>
+                                    </div>
+                                    <hr style="width:100%;text-align:left;margin-left:0">
+                                </div>
+                            </td>
+                        </tr>
+                    </fieldset>
+                    </br>
+                    <div style=" margin-bottom: 20px;" class="btn pull-right">
+                        <button id="submit" type="submit" class="btn btn-success btn-sm btn-sm">Add</button>  
+                    </div>
+                </form>  
+            </div>  
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block page-level %}
+	<script src="{%static 'OsasSystem/assets/plugins/bootstrap-sweetalert/sweetalert.min.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/js/demo/ui-modal-notification.demo.min.js' %}"></script>
+{% endblock %}
+
+{% block page-js %}
+<script>
+
+    $('#validate_form').on('submit', function(event){
+    var selectedValue = $(this).text();
+    dd_course = $("#dd_course").children("option:selected").val();
+    dd_yr = $("#dd_yr").children("option:selected").val();
+    alert(dd_course, dd_yr)
+    $.ajax({
+    url : "{% url 'student_process_add' %}",
+    type : "GET",
+    data : {
+        course: dd_course,
+        yr_sec: dd_yr,
+        csrfmiddlewaretoken: "{{ csrf_token }}",
+    },
+    success : function(){
+        swal("SUCCESS! "+categ+" HAS BEEN INSERTED", {
+			              icon: "success",
+			            }).then((willreload) => {
+			            	if(willreload){
+			            		window.location.reload()
+			            	}
+			            });
+				
+				console.log(data["response"]);
+    },
+    error: function(error){
+				console.log(error);
+    }
+
+  });
+});
+
+</script>
+{% endblock %}

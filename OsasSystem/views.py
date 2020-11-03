@@ -1,11 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404, reverse
 from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse
-from .models import osas_r_userrole
 from django.db import connection
 from django.core.exceptions import ObjectDoesNotExist
-from .models import osas_r_userrole, osas_r_stud_registration, osas_r_course, osas_r_section_and_year
+# from .forms import osas_r_personal_infoForm
+from .models import osas_r_userrole, osas_r_stud_registration, osas_r_course, osas_r_section_and_year, osas_r_personal_info
 from django.contrib import messages
+from django.views.decorators.cache import cache_control
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 # from .forms import osas_r_userroleForm, osas_r_section_and_yearForm
+
 
 
 def home(request):
@@ -25,7 +28,6 @@ def yr_sec(request):
     context = {'user_list': user_list}
     return render(request, 'year_section/yr_sec.html', context)
 
-
 #need edit without form
 def add_yr_sec(request):
     yas_description = request.POST.get('yr_sec_desc')
@@ -42,11 +44,83 @@ def add_yr_sec(request):
         return HttpResponseRedirect('/add_yr_sec',  {'success_message': yas_description + "is added successfully"} )
     # return render(request, 'year_section/add_yr_sec.html')
 
+def course(request):
+    course_list = osas_r_course.objects.order_by('course_name')
+    context = {'course_list': course_list}
+    return render(request, 'course/course.html', context)
+
+def add_course(request):
+    c_code = request.POST.get('course_code')
+    c_name = request.POST.get('course_name')
+    c_status = request.POST.get('course_status')
+    try:
+        n = osas_r_course.objects.get(course_code = c_code)
+        return render(request, 'course/course.html', {
+            'error_message': "Duplicated Course Information : " + c_code
+        })
+    except ObjectDoesNotExist:
+        course = osas_r_course(course_code=c_code, course_name=c_name, course_status=c_status)
+        course.save()
+        return HttpResponseRedirect('/course', {'success_message': c_code + "is added successfully"})
+
+
 def student_profile(request):
-    return render(request, 'student_profile.html', {})
+    template_name = 'student/student_profile.html'
+    student_info = osas_r_personal_info.objects.order_by('stud_no') #django will automatically reference/display the value of the child table even u select the foreingkey <3
+    context3 = {'student_info': student_info}
+    student_course = osas_r_course.objects.order_by('course_name')
+    context = {'student_course': student_course}
+    student_yr_sec = osas_r_section_and_year.objects.order_by('yas_descriptions')
+    context1 = {'student_yr_sec': student_yr_sec}
+    return render(request, template_name, {'student_info': student_info, 'student_course': student_course, 'student_yr_sec': student_yr_sec})
+    # return render(request, 'student/student_profile.html' )
+
+# Populating 2 dropdown fields in 1 template from the data in 2 different table https://stackoverflow.com/questions/49353000/how-to-have-dropdown-selection-populate-datatables-table-in-template-from-django
 
 def add_student(request):
-    return render(request, 'add_student.html', {})
+    template_name = 'student/add_student.html'
+    student_course = osas_r_course.objects.order_by('course_name')
+    context = {'student_course': student_course}
+    student_yr_sec = osas_r_section_and_year.objects.order_by('yas_descriptions')
+    context1 = {'student_yr_sec': student_yr_sec}
+    return render(request, template_name, {'student_course': student_course, 'student_yr_sec': student_yr_sec})
+
+def student_process_add(request, *args):
+    # connection.connection = None
+    l_name = request.POST.get('txt_l_name')
+    f_name = request.POST.get('txt_f_name')
+    m_name = request.POST.get('txt_m_name')
+    studno = request.POST.get('txt_studno')
+    d_of_birth = request.POST.get('date_of_birth')
+    gender = request.POST.get('txt_Gender')
+    address = request.POST.get('txt_address')
+    email = request.POST.get('txt_email')
+    mobile_number = request.POST.get('txt_mobile_number')
+    course = request.POST.get('txt_course')
+    yr_sec = request.POST.get('txt_yr_sec')
+    h_name = request.POST.get('txt_h_name')
+    h_address = request.POST.get('txt_h_address')
+    e_name = request.POST.get('txt_e_name')
+    e_number = request.POST.get('txt_e_number')
+    e_address = request.POST.get('txt_e_address')
+    # stud_yas_id  = osas_r_section_and_year.objects.get(yas_descriptions = yr_sec)
+    # stud_course_id = osas_r_course.objects.create(course_name = course)
+    n = osas_r_personal_info.objects.filter(stud_no = studno)
+    if n:
+        # n = osas_r_personal_info.objects.filter(stud_no = studno)
+        return render(request,'student/student_profile.html', {
+            'error_message': "Duplicated student number : "
+        })
+    else: 
+# error handling check if the stud number exceed to the max char length or fail to meet the min char length ------------
+            
+            stud = osas_r_personal_info(stud_no = studno, stud_lname = l_name, stud_fname = f_name, stud_mname = m_name, stud_birthdate = d_of_birth,stud_gender = gender, stud_address = address, stud_email = email, stud_m_number = mobile_number, stud_hs = h_name, stud_hs_add = h_address, stud_e_name = e_name,stud_e_address = e_address, stud_e_m_number = e_number, stud_course_id = osas_r_course.objects.get(course_name = course), stud_yas_id  = osas_r_section_and_year.objects.get(yas_descriptions = yr_sec))
+            stud.save()
+            return HttpResponseRedirect('/student_profile' , {'error_message': "Congratulations," + " " + studno + "is successfully register."})
+
+      
+        #   stud = osas_r_personal_info(stud_no = "2017-00101-cm-7", stud_lname = "baliza", stud_fname = "jenny", stud_mname = "rull", stud_birthdate = "2020-10-11",stud_gender = "female", stud_address = "katuparan", stud_email = "jenny@gmail.com", stud_m_number = "0123456789", stud_hs = "commonwealth", stud_hs_add = "ecols", stud_e_name = "glenn",stud_e_address = "katuparan", stud_e_m_number = "0123456789", (stud_course_id = osas_r_course.objects.get(course_name = "Diploma in Office Management Technology")), (stud_yas_id  = osas_r_section_and_year.objects.get(yas_descriptions = "4 - 2")))
+       
     
 def newregister(request):
     r_fname = request.POST.get('r_fname')
@@ -90,7 +164,7 @@ def adduserrole(request):
     except ObjectDoesNotExist:
         user_role = osas_r_userrole(user_name=name, user_username=username, user_password=password, user_email=email, user_type=usertype)
         user_role.save()
-        return HttpResponseRedirect('/userrole')
+        return HttpResponseRedirect('/userrole', {'success_message': "Congratulations," + " " + name + "is successfully register."})
 
 #cant update the database
 
@@ -101,7 +175,7 @@ def edituser(request):
     username = request.POST.get('edit_username')
     password = request.POST.get('edit_password')
     usertype = request.POST.get('edit_userrole')
-    t = osas_r_userrole.objects.get(user_id=id)
+    t = osas_r_userrole.objects.filter(user_id=id)
     t.user_name = name
     t.user_username = username
     t.user_password = password 
