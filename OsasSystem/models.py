@@ -3,9 +3,11 @@ from datetime import datetime
 import os, random
 from django.utils import timezone
 from django.utils.html import mark_safe
+from django.urls import reverse
 
 
 now = timezone.now()
+
 
 def image_path(instance, filename):
     basefilename, file_extension = os.path.splitext(filename)
@@ -20,7 +22,7 @@ class osas_r_course(models.Model):
     course_id = models.AutoField(primary_key=True)
     course_code = models.CharField(max_length=50, verbose_name='Course Code')
     course_name = models.CharField(max_length=250, verbose_name='Course Name')
-    course_add_date = models.DateField(default=now)
+    course_add_date = models.DateTimeField(max_length=50, blank=True)
     course_edit_date = models.DateField(default=now)
     course_status = models.CharField(max_length=10, default='Active')
         
@@ -47,7 +49,7 @@ class osas_r_personal_info(models.Model):
     stud_lname = models.CharField(max_length=50, verbose_name='Last Name')
     stud_fname = models.CharField(max_length=50, verbose_name='First Name')
     stud_mname = models.CharField(max_length=50, verbose_name='Middle Name')
-    stud_birthdate = models.DateField(max_length=12)
+    stud_birthdate = models.DateField(max_length=12, default=now)
     stud_gender = models.CharField(max_length=10, verbose_name='Gender')
     stud_address = models.CharField(max_length=50, verbose_name='Student Address')
     stud_email = models.EmailField(max_length=50, verbose_name='Student Email')
@@ -57,13 +59,17 @@ class osas_r_personal_info(models.Model):
     stud_e_name = models.CharField(max_length=50, verbose_name='Emergency Contact Person')
     stud_e_address = models.CharField(max_length=50, verbose_name='Emergency Contact Address')
     stud_e_m_number = models.BigIntegerField(blank=True, verbose_name='Mobile Number')
-    date_created = models.DateTimeField(default=now)
+    date_created = models.DateTimeField(max_length=50, blank=True)
     date_updated = models.DateTimeField(default=now)
+    stud_status = models.BooleanField(default=1)
     
    
 
     def __str__(self):
         return self.stud_no, self.stud_lname, self.stud_fname
+
+    # def get_absulute_url(self):
+    #     return reverse('student_profile')
 
 # class osas_t_id(models.Model):
 
@@ -96,7 +102,9 @@ class osas_r_userrole(models.Model):
     user_password = models.CharField(max_length=16, verbose_name='User Password')
     user_email = models.EmailField(max_length=50, verbose_name='User Email')
     user_type = models.CharField(max_length=50, verbose_name='User Type')
-    date_created = models.DateTimeField(default=now)
+    date_created = models.DateTimeField(max_length=50, blank=True)
+    date_updated = models.DateTimeField(default=now)
+    user_status = models.BooleanField(default=1)
 
     # s_image = models.ImageField(upload_to=image_path, default='profile_pic/image.jpg')
 

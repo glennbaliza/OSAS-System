@@ -2,14 +2,16 @@ from django.shortcuts import render, redirect, get_object_or_404, reverse
 from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse
 from django.db import connection
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import IntegrityError
 # from .forms import osas_r_personal_infoForm
 from .models import osas_r_userrole, osas_r_stud_registration, osas_r_course, osas_r_section_and_year, osas_r_personal_info
 from django.contrib import messages
 from django.views.decorators.cache import cache_control
+from datetime import datetime
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 # from .forms import osas_r_userroleForm, osas_r_section_and_yearForm
 
-
+    
 
 def home(request):
     return render(request, 'home.html', {})
@@ -30,19 +32,24 @@ def yr_sec(request):
 
 #need edit without form
 def add_yr_sec(request):
+
     yas_description = request.POST.get('yr_sec_desc')
     st = request.POST.get('yr_sec_status')
-    yr_sec_desc = osas_r_section_and_year.objects.filter(yas_descriptions = yas_description ).count()
-    if yr_sec_desc:
-        # yr_sec_desc = osas_r_section_and_year.objects.filter(yas_descriptions = yas_description )
+
+    today = datetime.today()
+    d1 = today.strftime("%d/%m/%Y")
+    # yr_sec_desc = osas_r_section_and_year.objects.filter(yas_descriptions = yas_description )
+    try:
+        n = osas_r_section_and_year.objects.get(yas_descriptions = yas_description)
         return render(request, 'year_section/yr_sec.html', {
-            # 'error_message': 'Duplicated Year and Section Descriptions '
+            'error_message': "Duplicated Course Information : " 
         })
-    else:
-        add_yr_sec = osas_r_section_and_year(yas_descriptions= yas_description, status=st)
-        add_yr_sec.save()
-        return HttpResponseRedirect('/add_yr_sec',  {'success_message': yas_description + "is added successfully"} )
-    # return render(request, 'year_section/add_yr_sec.html')
+    except ObjectDoesNotExist:
+        if yas_description:
+            add_yr_sec = osas_r_section_and_year(yas_descriptions= yas_description,status=st)
+            add_yr_sec.save()
+            return HttpResponseRedirect('/yr_sec',  {'success_message': yas_description + "is added successfully"} )
+   
 
 def course(request):
     course_list = osas_r_course.objects.order_by('course_name')
@@ -59,7 +66,9 @@ def add_course(request):
             'error_message': "Duplicated Course Information : " + c_code
         })
     except ObjectDoesNotExist:
-        course = osas_r_course(course_code=c_code, course_name=c_name, course_status=c_status)
+        today = datetime.today()
+        d1 = today.strftime("%d/%m/%Y")
+        course = osas_r_course(course_code=c_code, course_name=c_name, course_add_date=today ,course_status=c_status)
         course.save()
         return HttpResponseRedirect('/course', {'success_message': c_code + "is added successfully"})
 
@@ -73,7 +82,7 @@ def student_profile(request):
     student_yr_sec = osas_r_section_and_year.objects.order_by('yas_descriptions')
     context1 = {'student_yr_sec': student_yr_sec}
     return render(request, template_name, {'student_info': student_info, 'student_course': student_course, 'student_yr_sec': student_yr_sec})
-    # return render(request, 'student/student_profile.html' )
+  
 
 # Populating 2 dropdown fields in 1 template from the data in 2 different table https://stackoverflow.com/questions/49353000/how-to-have-dropdown-selection-populate-datatables-table-in-template-from-django
 
@@ -103,25 +112,94 @@ def student_process_add(request, *args):
     e_name = request.POST.get('txt_e_name')
     e_number = request.POST.get('txt_e_number')
     e_address = request.POST.get('txt_e_address')
-    # stud_yas_id  = osas_r_section_and_year.objects.get(yas_descriptions = yr_sec)
-    # stud_course_id = osas_r_course.objects.create(course_name = course)
-    n = osas_r_personal_info.objects.filter(stud_no = studno)
-    if n:
-        # n = osas_r_personal_info.objects.filter(stud_no = studno)
-        return render(request,'student/student_profile.html', {
-            'error_message': "Duplicated student number : "
-        })
-    else: 
-# error handling check if the stud number exceed to the max char length or fail to meet the min char length ------------
-            
-            stud = osas_r_personal_info(stud_no = studno, stud_lname = l_name, stud_fname = f_name, stud_mname = m_name, stud_birthdate = d_of_birth,stud_gender = gender, stud_address = address, stud_email = email, stud_m_number = mobile_number, stud_hs = h_name, stud_hs_add = h_address, stud_e_name = e_name,stud_e_address = e_address, stud_e_m_number = e_number, stud_course_id = osas_r_course.objects.get(course_name = course), stud_yas_id  = osas_r_section_and_year.objects.get(yas_descriptions = yr_sec))
-            stud.save()
-            return HttpResponseRedirect('/student_profile' , {'error_message': "Congratulations," + " " + studno + "is successfully register."})
-
-      
-        #   stud = osas_r_personal_info(stud_no = "2017-00101-cm-7", stud_lname = "baliza", stud_fname = "jenny", stud_mname = "rull", stud_birthdate = "2020-10-11",stud_gender = "female", stud_address = "katuparan", stud_email = "jenny@gmail.com", stud_m_number = "0123456789", stud_hs = "commonwealth", stud_hs_add = "ecols", stud_e_name = "glenn",stud_e_address = "katuparan", stud_e_m_number = "0123456789", (stud_course_id = osas_r_course.objects.get(course_name = "Diploma in Office Management Technology")), (stud_yas_id  = osas_r_section_and_year.objects.get(yas_descriptions = "4 - 2")))
+    # n = osas_r_personal_info.objects.filter(stud_no = studno)
+    try:
+        n = osas_r_personal_info.objects.get(stud_no = studno)
+        return HttpResponseRedirect('/student_profile' , {'error_message': "Duplicated Course Information : " + studno})
+        # return render(request,'student/student_profile.html', {
+        #     'error_message': "Duplicated student number : "
+        # })
+    except ObjectDoesNotExist:
+        today = datetime.today()
+        # d1 = today.strftime("%d/%m/%Y")
+        stud = osas_r_personal_info(stud_no = studno, stud_lname = l_name, stud_fname = f_name, stud_mname = m_name, stud_birthdate = d_of_birth,stud_gender = gender, stud_address = address, stud_email = email, stud_m_number = mobile_number, stud_hs = h_name, stud_hs_add = h_address, stud_e_name = e_name,stud_e_address = e_address, stud_e_m_number = e_number, date_created = today, stud_course_id = osas_r_course.objects.get(course_name = course), stud_yas_id  = osas_r_section_and_year.objects.get(yas_descriptions = yr_sec))
+        stud.save()   
+        return HttpResponseRedirect('/student_profile' , {'success_message': "Congratulations," + " " + studno + "is successfully register."})
+        # error handling check if the stud number exceed to the max char length or fail to meet the min char length ------------  
        
-    
+       
+def edit_student(request, stud_id): 
+    template_name = 'student/edit_student.html'
+    stud_course = osas_r_personal_info.objects.order_by('stud_course_id')
+    context2 = {'stud_course': stud_course}
+    student_course = osas_r_course.objects.order_by('course_name')
+    context = {'student_course': student_course}
+    student_yr_sec = osas_r_section_and_year.objects.order_by('yas_descriptions')
+    context1 = {'student_yr_sec': student_yr_sec}
+    try:
+        stud = osas_r_personal_info.objects.get(stud_id=stud_id)
+    except osas_r_personal_info.DoesNotExist:
+            raise Http404("Student profile does not exist")
+    return render(request, template_name,{'stud':stud,'student_course': student_course, 'stud_course':stud_course , 'student_yr_sec': student_yr_sec})
+
+def student_edit(request, stud_id):
+    stud = get_object_or_404(osas_r_personal_info, pk=stud_id)
+    course = request.POST.get('txt_course')
+    yr_sec = request.POST.get('txt_yr_sec')
+    try:
+        l_name = request.POST.get('txt_l_name')
+        f_name = request.POST.get('txt_f_name')
+        m_name = request.POST.get('txt_m_name')
+        studno = request.POST.get('txt_studno')
+        d_of_birth = request.POST.get('date_of_birth')
+        gender = request.POST.get('txt_Gender')
+        address = request.POST.get('txt_address')
+        email = request.POST.get('txt_email')
+        mobile_number = request.POST.get('txt_mobile_number')
+        course = request.POST.get('txt_course')
+        yr_sec = request.POST.get('txt_yr_sec')
+        h_name = request.POST.get('txt_h_name')
+        h_address = request.POST.get('txt_h_address')
+        e_name = request.POST.get('txt_e_name')
+        e_number = request.POST.get('txt_e_number')
+        e_address = request.POST.get('txt_e_address')
+    except (KeyError, osas_r_personal_info.DoesNotExist ):
+        return render(request, 'student/student_profile.html', {
+            'user': user,
+            'error_message': "Problem updating record",
+        })
+    else:
+        student_profile = osas_r_personal_info.objects.get(stud_id=stud_id)
+        
+        student_profile.stud_no = studno
+        if d_of_birth:
+            student_profile.stud_birthdate = d_of_birth
+
+        if yr_sec:
+            year_sec = osas_r_section_and_year.objects.get(yas_descriptions=yr_sec)
+            student_profile.stud_yas_id = year_sec
+        
+        if course:
+            crs = osas_r_course.objects.get(course_name=course)
+            student_profile.stud_course_id = crs
+        
+        student_profile.stud_lname = l_name
+        student_profile.stud_fname = f_name
+        student_profile.stud_mname = m_name
+        student_profile.stud_gender = gender
+        student_profile.stud_address = address
+        student_profile.stud_email = email
+        student_profile.stud_m_number = mobile_number
+        student_profile.stud_hs = h_name
+        student_profile.stud_hs_add = h_address
+        student_profile.stud_e_name = e_name
+        student_profile.stud_e_address = e_address
+        student_profile.stud_e_m_number = e_number
+        student_profile.save()
+        return HttpResponseRedirect(reverse('edit_student', args=(stud_id,)))
+      
+            
+
 def newregister(request):
     r_fname = request.POST.get('r_fname')
     r_lname = request.POST.get('r_lname')
@@ -162,10 +240,14 @@ def adduserrole(request):
             'error_message': "Duplicated email : " + email
         })
     except ObjectDoesNotExist:
-        user_role = osas_r_userrole(user_name=name, user_username=username, user_password=password, user_email=email, user_type=usertype)
-        user_role.save()
-        return HttpResponseRedirect('/userrole', {'success_message': "Congratulations," + " " + name + "is successfully register."})
-
+        today = datetime.today()
+        if email:
+            user_role = osas_r_userrole(user_name=name, user_username=username, user_password=password, user_email=email, user_type=usertype, date_created=today)
+            user_role.save()
+            return HttpResponseRedirect('/userrole', {'success_message': "Congratulations," + " " + name + "is successfully register."})
+        return render(request, 'userrole.html', {
+            'error_message': "Duplicated email : " + email
+        })
 #cant update the database
 
 def edituser(request):

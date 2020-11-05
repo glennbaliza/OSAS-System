@@ -1,0 +1,191 @@
+{% extends 'base.html'%}
+{% load static %}
+
+{% block page-css %}
+    <link href="{% static 'OsasSystem/assets/plugins/DataTables/media/css/dataTables.bootstrap.min.css' %}" rel="stylesheet" />
+	<link href="{% static 'OsasSystem/assets/plugins/DataTables/extensions/Responsive/css/responsive.bootstrap.min.css' %}" rel="stylesheet" />
+{% endblock%}
+
+{% block title %}
+    {{stud.stud_lname}} {{stud.stud_fname}}
+{% endblock %}
+
+
+{% block content%}
+<div id="content" class="content">
+    <div class="col-lg-12 col-md-6">
+        {% if success_message %}
+            <p class="alert alert-danger">
+                <strong>{{ success_message }}</strong>
+            </p>
+        {% endif %} 
+    </div>
+
+    <div class="col-lg-12 col-md-6">
+        {% if error_message %}
+            <p class="alert alert-danger">
+                <strong>{{ error_message }}</strong>
+            </p>
+        {% endif %} 
+    </div>
+    <form id="validate_form" action="{% url 'OsasSystem:student_edit' stud.stud_id  %}" method="POST" enctype="multipart/form-data">       
+        {% csrf_token %}
+        <fieldset >
+            <tr>
+                <td>
+                    <strong><h1 class="page-header" style="font-size: 30px"><b>{{stud.stud_no}}</b></h1></strong>
+                    <div class="row">
+                        <hr style="width:100%;text-align:left;margin-left:0">
+                        <div class="col-lg-4 col-md-6 ">
+                            <div class="stats-content">
+                                <label>Last name</label>
+                                <input  style="margin-bottom: 8px;" type="text" id="txt_l_name" name="txt_l_name" value="{{stud.stud_lname}}" class="form-control" placeholder="Last name" required data-parsley-trigger="keyup">
+                            </div>
+                        </div>		
+                        <div class="col-lg-4 col-md-6 ">
+                            <div class="stats-content">
+                                <!-- <label id="temp_id" value="{{stud.stud_id}}">{{stud.stud_id}}</label> -->
+                                <label>First name</label>
+                                <input  type="text" id="txt_f_name" value="{{stud.stud_fname}}" class="form-control" name="txt_f_name" placeholder="First name" required data-parsley-trigger="keyup">
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 ">
+                            <div class="stats-content">
+                                <label>Middle name</label>
+                                <input  type="text" id="txt_m_name" value="{{stud.stud_mname}}" class="form-control" name="txt_m_name" placeholder="Middle name" required data-parsley-trigger="keyup">
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 ">
+                            <div class="stats-content">
+                                <label>Student number</label>
+                                <input hidden style="margin-bottom: 8px;" type="text" id="txt_studno"  value="{{stud.stud_no}}" name="txt_studno" placeholder="ex. 2000-0000-cm-0" class="form-control" required data-parsley-trigger="keyup">
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 ">
+                            <div class="stats-content">
+                                <label>Date of birth</label>
+                                <input type="text" class="form-control" name="date_of_birth" value="{{stud.stud_birthdate}}" id="datepickers" data-date-format="yy-mm-dd" onload="datePickerChange" placeholder="{% now 'Y-m-d' %}" >
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 ">
+                            <div class="stats-content">
+                                <label>Gender</label>
+                                <select id="txt_Gender" value="{{stud.stud_gender}}" name="txt_Gender" class="form-control">
+                                        <option  value="Male">Male</option>
+                                        <option  value="Female">Female</option>
+                                        <option  value="Others">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-6 ">
+                            <div class="stats-content">
+                                <label>Address</label> 
+                                <input style="margin-bottom: 8px;" value="{{stud.stud_address}}" type="text" id="txt_address" name="txt_address" class="form-control" placeholder="Adress" required data-parsley-trigger="keyup">
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 ">
+                            <div class="stats-content">
+                                <label>Email Address</label>
+                                <input style="margin-bottom: 8px;" type="email" id="txt_email" value="{{stud.stud_email}}" name="txt_email" placeholder="Email" class="form-control" required data-parsley-trigger="keyup">
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 ">
+                            <div class="stats-content">
+                                <label>Mobile number</label>
+                                <input  type="text" value="{{stud.stud_m_number}}" id="txt_mobile_number" class="form-control" name="txt_mobile_number" placeholder="ex. 09123456789" required data-parsley-trigger="keyup">
+                            </div>
+                        </div>
+
+                        <div class="col-lg-7 col-md-6 ">
+                            <div class="stats-content">
+                                <label >Course</label>      
+                                <select id="dd_course" name="txt_course"  class="form-control">
+                                    <option selected disabled hidden id="txt_course" name="txt_course" value="{{ stud.stud_course_id }}">{{ stud.stud_course_id }}</option>
+                                    {% if student_course %}
+                                    {% for osas_r_course in student_course%}
+                                    <option id="txt_course" name="txt_course" >{{ osas_r_course.course_name }}</option>
+                                    {% endfor %}
+                                    {% endif %}
+                                    <!-- {% for osas_r_course in course_list %}  
+                                    <option value="{{ osas_r_course.course_id }}">{{ osas_r_course.course_name }}</option>
+                                    {% endfor %} -->
+                                </select>
+                               
+                            </div>
+              
+                        </div>
+                        <div class="col-lg-5 col-md-6 ">
+                            <div class="stats-content">
+                                <label>Year & Section</label>
+                                {% if student_yr_sec %}
+                                <select id="dd_yr" name="txt_yr_sec" class="form-control" >
+                                        <option disabled hidden selected name="txt_yr_sec" value="{{ stud.stud_yas_id }}">{{ stud.stud_yas_id }}</option>
+                                        {% for osas_r_section_and_year in student_yr_sec%}
+                                        <option  name="txt_yr_sec">{{ osas_r_section_and_year.yas_descriptions }}</option>
+                                        {% endfor %}
+                                </select>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <hr style="width:100%;text-align:left;margin-left:0">
+                        <div class="col-lg-6 col-md-6 ">
+                            <div class="stats-content">
+                                <label>High school name</label>
+                                <input style="margin-bottom: 8px;" value="{{stud.stud_hs}}" type="text" id="txt_h_name" name="txt_h_name" class="form-control" placeholder="School name" required data-parsley-trigger="keyup">
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-6 ">
+                            <div class="stats-content">
+                                <label>High school address</label>
+                                <input style="margin-bottom: 8px;" value="{{stud.stud_hs_add}}" type="text" id="txt_h_address" name="txt_h_address" class="form-control" placeholder="School address" required data-parsley-trigger="keyup">
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 ">
+                            <div class="stats-content">
+                                <label>Emergency contact person</label>
+                                <input  type="text" id="txt_e_name" name="txt_e_name" value="{{stud.stud_e_name}}" class="form-control" placeholder="Full name" required data-parsley-trigger="keyup">
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 ">
+                            <div class="stats-content">
+                                <label>Emergency contact person number</label>
+                                <input style="margin-bottom: 8px;" type="text" id="txt_e_number" value="{{stud.stud_e_m_number}}" name="txt_e_number" placeholder="ex. 09123456789" class="form-control" required data-parsley-trigger="keyup">
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-6 ">
+                            <div class="stats-content">
+                                <label>Emergency contact person address</label>
+                                <input  type="text" id="txt_e_address" value="{{stud.stud_e_address}}" name="txt_e_address" class="form-control" placeholder="Address" required data-parsley-trigger="keyup">
+                            </div>
+                        </div>
+                        <hr style="width:100%;text-align:left;margin-left:0">
+                    </div>
+                </td>
+            </tr>
+        </fieldset>
+        </br>
+        <div style=" margin-bottom: 20px;" class="btn pull-right">
+            <button id="btn_edit" type="submit" class="btn btn-success btn-sm btn-sm">EDIT</button>  
+        </div>
+    </form>  
+</div>
+
+{% endblock %}
+
+{% block page-level %}
+	<script src="{%static 'OsasSystem/assets/plugins/bootstrap-sweetalert/sweetalert.min.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/js/demo/ui-modal-notification.demo.min.js' %}"></script>
+{% endblock %}
+
+{% block page-js %}
+<script>
+
+    
+	function datePickerChange() {
+			$('#datepickers').datepicker({ dateFormat: 'yy-mm-dd' });
+		};
+
+    
+        
+</script>
+{% endblock %}
