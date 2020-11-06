@@ -74,7 +74,7 @@
                                     <a id="btnEditTable"  value="{{index.0}}" class="btn btn-sm btn-primary width-70 m-r-2" style="color: white;">Order</a>
                                     {% endif %} -->
                                     <!-- <button type="button" id="view" class="update btn btn-primary btn-lg"><span class="glyphicon glyphicon-eye-open"></span></button> -->
-                                    <button type="button" href="#modal-dialog2"  id="edit"  class="update btn btn-warning btn-lg" data-toggle="modal"><span class="glyphicon glyphicon-pencil"></span></button>
+                                    <a href="{% url 'course_edit' osas_r_course.course_id %}"><button type="button"  id="edit"  class="update btn btn-warning btn-lg"><span class="glyphicon glyphicon-pencil"></span></button></a>
                                     <!-- <a id="btnEditTable"  value="{{index.0}}" class="btn btn-sm btn-primary width-70 m-r-2" style="color: white;">Edit</a> -->
                                     <!-- {% if request.session.session_assign == 9 %} -->
                                     <button type="button" href="#modal-dialog" id="btn_rem"  class="update btn btn-danger btn-lg" data-toggle="modal"><span class="glyphicon glyphicon-trash"></span></button> 

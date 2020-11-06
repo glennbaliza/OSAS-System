@@ -73,68 +73,6 @@
     </div>
 </div>
 <!-- #modal-without-animation -->
-<div class="modal fade" id="modal-dialog2">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">User Role</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-            </div>
-            <div class="modal-body"> 
-                <!-- change the action url -->
-                <form id="validate_form" data-parsley-validate="" action="{% url 'edituser' %}" method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <div class="col-lg-12 col-md-6 ">
-                        <div class="stats-content">
-                            <label>Name</label>
-                            <input type="text" name="name" id="role_name" class="form-control" required  data-parsley-trigger="keyup"> 
-                        </div>
-                    </div>
-                    <div class="col-lg-12 col-md-6 ">
-                        <div class="stats-content">
-                            <label>Email</label>
-                            <input type="email" name="email" id="role_email" class="form-control" required data-parsley-trigger="keyup"> 
-                        </div>
-                    </div>
-                    <div class="col-lg-12 col-md-6 ">
-                        <div class="stats-content">
-                            <label>Username</label>
-                            <input type="text" name="username" id="role_username" disabled="disabled" class="form-control" required data-parsley-trigger="keyup"> 
-                        </div>
-                    </div>
-                    <div class="col-lg-12 col-md-6 ">
-                        <div class="stats-content">
-                            <label>Password</label>
-                            <input type="password" name="password" id="role_password" class="form-control" required data-parsley-trigger="keyup"> 
-                        </div>
-                    </div>
-                    <div class="col-lg-12 col-md-6 ">
-                        <div class="stats-content">
-                            <label>User Role</label>
-                            <select id="user_role" name="userrole" class="form-control" required>
-                                <option  value="OSAS Head">OSAS Head</option>
-                                <option  value="OSAS Staff">OSAS Staff</option>
-                                <option  value="Student">Student</option>
-                            </select>  
-                        </div>
-                    </div>
-                    </br>
-                    <div class="col-lg-12 col-md-6 ">
-                        <div class="stats-content">
-                            <label>User Image</label>
-                            <input type="file" name="image" id="image"> 
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="edit" class="btn btn-success btn-sm btn-sm">Edit</button>  
-                        <button type="cancel" class="btn btn-warning btn-sm btn-sm" data-dismiss="modal">Cancel</button>
-                    </div>
-                </form>
-            </div>  
-        </div>
-    </div>
-</div>
-
 <div id="content" class="content">
 
     <div class="row">
@@ -201,7 +139,7 @@
                                     <a id="btnEditTable"  value="{{index.0}}" class="btn btn-sm btn-primary width-70 m-r-2" style="color: white;">Order</a>
                                     {% endif %} -->
                                     <!-- <button type="button" id="view" class="update btn btn-primary btn-lg"><span class="glyphicon glyphicon-eye-open"></span></button> -->
-                                    <button type="button" href="#modal-dialog2"  id="edit"  class="update btn btn-warning btn-lg" data-toggle="modal"><span class="glyphicon glyphicon-pencil"></span></button>
+                                    <a href="{% url 'edit_user' osas_r_userrole.user_id %}"><button type="button"  id="edit"  class="update btn btn-warning btn-lg"><span class="glyphicon glyphicon-pencil"></span></button></a>
                                     <!-- <a id="btnEditTable"  value="{{index.0}}" class="btn btn-sm btn-primary width-70 m-r-2" style="color: white;">Edit</a> -->
                                     <!-- {% if request.session.session_assign == 9 %} -->
                                     <button type="button" href="#modal-dialog" id="btn_rem"  class="update btn btn-danger btn-lg" data-toggle="modal"><span class="glyphicon glyphicon-trash"></span></button> 
@@ -263,48 +201,6 @@ var table = $('#data-table-buttons').DataTable();
 
     id = $(this).closest("tbody tr").find("td:eq(0)").html()
 
-
-
-	$("#data-table-buttons").on('click','#edit',function(){
-		id = $(this).closest("tbody tr").find("td:eq(0)").html()
-        role_name = $(this).closest("tbody tr").find("td:eq(1)").html()
-        role_username = $(this).closest("tbody tr").find("td:eq(2)").html()
-        role_pass = $(this).closest("tbody tr").find("td:eq(3)").html()
-        role_email = $(this).closest("tbody tr").find("td:eq(4)").html()
-        role_user = $(this).closest("tbody tr").find("td:eq(5)").html()
-        alert(id)
-
-        document.getElementById('role_name').value = role_name;
-        document.getElementById('role_username').value = role_username;
-        document.getElementById('role_password').value = role_pass;
-        document.getElementById('role_email').value = role_email;
-        document.getElementById('userrole').value = role_user;
-        getElementById("role_username").disabled = true;
-		
-		$.ajax({
-			type: "POST",
-			url: "{% url 'edituser' %}",
-			data:{
-				edit_user_id: id,
-                edit_name: role_name,
-                edit_username: role_username,
-                edit_password: role_pass,
-                edit_email: role_email,
-                edit_userrole: role_user,
-				csrfmiddlewaretoken: "{{ csrf_token }}",
-			},
-			success: function(data){
-				// $("#role_name").val(data.users[0][0])
-				// $("#role_email").val(data.users[0][1])
-				// $("#role_password").val(data.users[0][2])
-				console.log(data)
-			},
-			error: function(error){
-				console.log(error);
-			}
-		
-		});
-	});
 
     $("#data-table-buttons").on('click','#button_del',function(){
         id = $(this).closest("tbody tr").find("td:eq(0)").html()
