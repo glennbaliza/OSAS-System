@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404, reverse
 from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
-from .models import osas_r_userrole, osas_r_stud_registration, osas_r_course, osas_r_section_and_year, osas_r_personal_info
+from .models import osas_r_userrole, osas_r_stud_registration, osas_r_course, osas_r_section_and_year, osas_r_personal_info, osas_r_referral
 from django.contrib import messages
 from django.views.decorators.cache import cache_control
 from datetime import datetime
@@ -296,6 +296,31 @@ def deleteuser(request):
     id = request.POST.get('del_user_id')
     osas_r_userrole.objects.get(pk=id).delete()
     return HttpResponseRedirect('/userrole')
+
+#----------------------------------ALUMNI--------------------------------------------------------------------------------------------
+def r_referral(request):
+    return render(request, 'alumni/r_referral.html')
+
+def add_ref(request):
+    referral_name = request.POST.get('ref_name')
+    referral_email = request.POST.get('ref_email')
+    referral_contact = request.POST.get('ref_contact')
+    referral_share = request.POST.get('ref_share')
+    status = request.POST.get('r_status')
+    try:
+        ref = osas_r_referral.objects.get(ref_name = referral_name)
+        return render(request, 'r_referral.html')
+    except ObjectDoesNotExist:
+        today = datetime.today()
+        if status == 'Active':
+            status = True
+        else:
+            status = False
+        referral = osas_r_referral(ref_name=referral_name, ref_email=referral_email, ref_contact=referral_contact, ref_share=referral_share, status=status, ref_date_created=today)
+        referral.save()
+        return render(request, 'alumni/r_referral.html')
+
+
 
 
 

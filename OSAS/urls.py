@@ -31,6 +31,9 @@ urlpatterns = [
     path('course/', views.course, name="course"),  
     path('add_course/', views.add_course, name="add_course"), 
     path('<int:course_id>/course/course_edit', views.course_edit, name="course_edit"),
-#-------------------------------------------------------------------------------------------------------------------------------------------------
+#--------------------------------------------ALUMNI--------------------------------------------------------------------------------------------------
+    path('alumni/r_referral/', views.r_referral, name="r_referral"),
+    path('add_ref/', views.add_ref, name="add_ref"),
+    
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

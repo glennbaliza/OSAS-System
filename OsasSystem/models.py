@@ -17,6 +17,7 @@ def image_path(instance, filename):
 
     return 'profile_pic/{year}-{month}-{day}-{imageid}-{basename}-{randomstring}{ext}'.format(imageid = instance, basename = basefilename, randomstring=randomstr, ext=file_extension, year=_now.strftime('%Y'), month=_now.strftime('%m'), day=_now.strftime('%d')) 
 
+
 class osas_r_course(models.Model):
     
     course_id = models.AutoField(primary_key=True)
@@ -39,6 +40,18 @@ class osas_r_section_and_year(models.Model):
 
     def __str__(self):
         return self.yas_descriptions
+
+
+class osas_r_referral(models.Model):
+
+    ref_id = models.AutoField(primary_key=True)
+    ref_name = models.CharField(max_length=250, null=True)
+    ref_email = models.EmailField(max_length=50, blank=True)
+    ref_contact = models.BigIntegerField(max_length=11, null=True)
+    ref_share = models.CharField(max_length=250, null=True)
+    ref_date_created = models.DateTimeField(max_length=50)
+    ref_date_updated = models.DateTimeField(default=now)
+    status = models.BooleanField(default=1)
 
 class osas_r_personal_info(models.Model):
 

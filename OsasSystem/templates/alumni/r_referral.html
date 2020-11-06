@@ -1,0 +1,57 @@
+{% extends 'base.html'%}
+{% load static %}
+
+{% block content %}
+
+
+<div id="content" class="content">
+
+    <!-- begin row -->
+    <div class="row">
+        <!-- begin col-10 -->
+        <form id="validate_form" data-parsley-validate="" action="{% url 'add_ref' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="col-lg-12 col-md-6 ">
+                <div class="stats-content">
+                    <label>Referral Name</label>
+                    <input type="text" name="ref_name" id="ref_name"  class="form-control" required  data-parsley-trigger="keyup"> 
+                </div>
+            </div>
+            <div class="col-lg-12 col-md-6 ">
+                <div class="stats-content">
+                    <label>Email</label>
+                    <input type="email" name="ref_email" id="ref_email" class="form-control" required data-parsley-trigger="keyup"> 
+                </div>
+            </div>
+            <div class="col-lg-12 col-md-6 ">
+                <div class="stats-content">
+                    <label>Contact Number</label>
+                    <input type="text" name="ref_contact" id="ref_contact" class="form-control" required data-parsley-trigger="keyup"> 
+                </div>
+            </div>
+            <div class="col-lg-12 col-md-6 ">
+                <div class="stats-content">
+                    <label>Share</label>
+                    <input type="text" name="ref_share" id="ref_share" class="form-control" required data-parsley-trigger="keyup"> 
+                </div>
+            </div>
+            <div class="col-lg-12 col-md-6 ">
+                <div class="stats-content">
+                    <label>Status</label>
+                    <select id="r_status" name="r_status" class="form-control" required>
+                        <option  value="Active">Active</option>
+                        <option  value="Inactive">Inactive</option>
+                    </select>  
+                </div>
+            </div>
+            </br>
+            <button type="submit" class="btn btn-success btn-sm btn-sm">Add</button>  
+            <button type="cancel" class="btn btn-warning btn-sm btn-sm" data-dismiss="modal">Cancel</button>
+        </form>
+        <!-- end col-10 -->
+    </div>
+    <!-- end row -->
+</div>
+
+
+{% endblock %}
