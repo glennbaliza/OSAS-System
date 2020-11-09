@@ -41,7 +41,7 @@
                         {% endfor %}
                         {% endif %}
                         <label class="control-label">Name <span class="text-danger">*</span></label>
-                        <div class="row row-space-10">
+                        <div class="row row-space-10" style="margin-top: -5px;">
                             <div class="col-md-6 m-b-15">
                                 <input type="text" name="r_fname" id="r_fname" class="form-control" placeholder="First name" required />
                             </div>
@@ -49,26 +49,31 @@
                                 <input type="text" name="r_lname" id="r_lname" class="form-control" placeholder="Last name" required />
                             </div>
                         </div>
-                        <label class="control-label">Student Number <span class="text-danger">*</span></label>
-                        <div class="row m-b-15">
+                        <label class="control-label" >Student Number <span class="text-danger">*</span></label>
+                        <div class="row m-b-15" style="margin-top: -5px;">
                             <div class="col-md-12">
                                 <input type="text" name="r_studno" id="r_studno" class="form-control" placeholder="ex.2000-0000-CM-0" required />
                             </div>
                         </div>
-                        <label class="control-label">Password <span class="text-danger">*</span></label>
-                        <div class="row m-b-15">
+                        <label class="control-label">Username<span class="text-danger">*</span></label>
+                        <div class="row m-b-15" style="margin-top: -5px;">
                             <div class="col-md-12">
-                                <input type="password" name="r_pass" id="r_pass"class="form-control" placeholder="Password" required />
+                                <input type="text" name="r_username" id="r_username" class="form-control" placeholder="Username" required />
                             </div>
                         </div>
-                        <div class="checkbox checkbox-css m-b-30">
-                        	<div class="checkbox checkbox-css m-b-30">
-								<input type="checkbox" id="agreement_checkbox" value="">
-								<label for="agreement_checkbox">
-									By clicking Sign Up, you agree to our <a href="javascript:;">Terms</a> and that you have read our <a href="javascript:;">Data Policy</a>, including our <a href="javascript:;">Cookie Use</a>.
-								</label>
-							</div>
+                        <label class="control-label">Password <span class="text-danger">*</span></label>
+                        <div class="row m-b-15" style="margin-top: -5px;">
+                            <div class="col-md-12">
+                                <input type="password" name="r_pass1" id="r_pass1"class="form-control" placeholder="Password" required />
+                            </div>
                         </div>
+                        <label class="control-label" style="margin-top: -5px;">Confirm Password <span class="text-danger">*</span></label>
+                        <div class="row m-b-15" style="margin-top: -5px;">
+                            <div class="col-md-12">
+                                <input type="password" name="r_pass2" id="r_pass2"class="form-control" placeholder="Password" required />
+                            </div>
+                        </div>
+                        <br/>
                         <div class="register-buttons">
                             <button type="submit" class="btn btn-primary btn-block btn-lg">Sign Up</button>
                         </div>

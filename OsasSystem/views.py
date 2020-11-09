@@ -1,3 +1,4 @@
+import random
 from django.shortcuts import render, redirect, get_object_or_404, reverse
 from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
@@ -8,36 +9,51 @@ from django.views.decorators.cache import cache_control
 from datetime import datetime
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 
-
+#--------------------------------------LOGIN------------------------------------------------------------------------------------------
+def login(request):
+    return render(request, 'login.html', {})
+    
 def home(request):
     return render(request, 'home.html', {})
 
 def r_employ(request):
     return render(request, 'alumni/r_employ.html')
 
-#--------------------------------------LOGIN------------------------------------------------------------------------------------------
-def login(request):
-    return render(request, 'login.html', {})
+
 
 #--------------------------------------REGISTRATION-----------------------------------------------------------------------------------
 def register(request):
     return render(request, 'register.html', {} )
 
 def newregister(request):
+    chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'
+    randomstr =''.join((random.choice(chars)) for x in range(5))
     r_fname = request.POST.get('r_fname')
     r_lname = request.POST.get('r_lname')
     r_studno = request.POST.get('r_studno')
-    r_pass = request.POST.get('r_pass')
-    n = osas_r_stud_registration.objects.filter(s_no = r_studno).count()
-    if n:
-         return render(request, 'register.html', {
-            'error_message': r_studno + " already registered. " 
-        })
+    r_username = request.POST.get('r_username')
+    r_pass = request.POST.get('r_pass1')
+    r_pass2 = request.POST.get('r_pass2')
+    if r_pass == r_pass2:
+        stud_id = osas_r_personal_info.objects.filter(stud_no = r_studno)
+        if stud_id:
+            s = osas_r_stud_registration.objects.filter(stud_id=osas_r_personal_info.objects.get(stud_no=r_studno))
+            if s:
+                messages.error(request, r_studno + ' '+ 'is already registered!')
+            else:
+                r = osas_r_stud_registration.objects.filter(s_username=r_username)
+                if r:
+                    messages.error(request, r_username + ' ' + 'is already taken!')
+                else:
+                    n = osas_r_stud_registration(s_fname=r_fname, s_lname=r_lname, s_username=r_username, s_password=r_pass, stud_id=osas_r_personal_info.objects.get(stud_no=r_studno))
+                    n.save()
+                    messages.error(request, r_studno + 'Successfully registered!')
+        else:
+            messages.error(request, r_studno + 'Record could not found!')
     else:
-        newregister = osas_r_stud_registration(s_fname=r_fname, s_lname=r_lname, s_no=r_studno, s_password=r_pass)
-        newregister.save()
-        return HttpResponseRedirect('/login/', {'success_message': "Congratulations," + " " + r_studno + "is successfully register."}) 
-
+        messages.error(request, 'Password do not match!' + str(r_pass) + ' ' + str(r_pass2))
+    return render(request, 'register.html')     
+    
 #------------------------------------YEAR AND SECTION------------------------------------------------------------------------------------
 def yr_sec(request):
     user_list = osas_r_section_and_year.objects.order_by('-yas_descriptions')
@@ -245,12 +261,7 @@ def edit_user(request, user_id):
 def edituser(request, user_id):
     user = get_object_or_404(osas_r_userrole, pk=user_id)
     try:
-        name = request.POST.get('name1')
-        email = request.POST.get('email1')
-        username = request.POST.get('username1')
-        password = request.POST.get('password1')
-        usertype = request.POST.get('userrole1')
-        user_stat = request.POST.get('user_status')
+        usertype = request.POST.get('userrole')
     except (KeyError, osas_r_userrole.DoesNotExist ):
         return render(request, 'userrole.html', {
             'user': user,
@@ -259,38 +270,30 @@ def edituser(request, user_id):
     else:
         today = datetime.today()
         user_profile = osas_r_userrole.objects.get(pk=user_id)
-        user_profile.user_name = name
         if username:
-            user_profile.user_username = username
-        user_profile.user_password = password
-        user_profile.user_email = email
-        user_profile.user_type = usertype
-        if user_stat:
-            user_profile.user_status = user_stat
+            user_profile.user_type = usertype
         user_profile.date_updated = today
         user_profile.save()
         return HttpResponseRedirect('/userrole' , {'success_message': "Congratulations," })
 
 def adduserrole(request):
-    name = request.POST.get('name')
-    email = request.POST.get('email')
-    username = request.POST.get('username')
-    password = request.POST.get('password')
     usertype = request.POST.get('userrole')
     try:
-        n = osas_r_userrole.objects.get(user_email = email)
-        return render(request, 'userrole.html', {
-            'error_message': "Duplicated email : " + email
-        })
+        n = osas_r_userrole.objects.get(user_type = usertype)
+        messages.error(request, usertype +  ' ' + 'is already exist.')
+        return redirect('/userrole')
     except ObjectDoesNotExist:
         today = datetime.today()
-        if email:
-            user_role = osas_r_userrole(user_name=name, user_username=username, user_password=password, user_email=email, user_type=usertype, date_created=today)
+        if usertype:
+            user_role = osas_r_userrole(user_type=usertype, date_created=today)
             user_role.save()
-            return HttpResponseRedirect('/userrole', {'success_message': "Congratulations," + " " + name + "is successfully register."})
-        return render(request, 'userrole.html', {
+            messages.success(request, usertype + ' ' +  'Successfully Added!')
+            return redirect('/userrole')
+        else:
+            messages.error(request, usertype + ' ' + 'is already exist.')
+            return render(request, 'userrole.html', {
             'error_message': "Duplicated email : " + email
-        })
+            })
 
 def deleteuser(request):
     id = request.POST.get('del_user_id')

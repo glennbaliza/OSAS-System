@@ -6,7 +6,7 @@ from django.conf import settings
 
 urlpatterns = [
     path('', include('OsasSystem.urls')),
-    path('home/', views.home, name="home"),
+    path('home/]', views.home, name="home"),
 #---------------------------------------------LOGIN------------------------------------------------------------------------------------------------
     path('login/', views.login, name="login"),
 #-----------------------------------------REGISTRATION---------------------------------------------------------------------------------------------

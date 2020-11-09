@@ -110,14 +110,9 @@ class osas_r_userrole(models.Model):
     # user_role = ((1,'Student'),(2,'Head'),(3,'Staff'))
 
     user_id = models.AutoField(primary_key=True)
-    user_name = models.CharField(max_length=50, verbose_name='Full Name')
-    user_username = models.CharField(max_length=50, verbose_name='User Name')
-    user_password = models.CharField(max_length=16, verbose_name='User Password')
-    user_email = models.EmailField(max_length=50, verbose_name='User Email')
     user_type = models.CharField(max_length=50, verbose_name='User Type')
     date_created = models.DateTimeField(max_length=50, blank=True)
     date_updated = models.DateTimeField(default=now)
-    user_status = models.BooleanField(default=1)
 
     # s_image = models.ImageField(upload_to=image_path, default='profile_pic/image.jpg')
 
@@ -130,10 +125,11 @@ class osas_r_userrole(models.Model):
 
 class osas_r_stud_registration(models.Model):
 
-    student_id = models.AutoField(primary_key=True)
+    reg_id = models.AutoField(primary_key=True)
+    stud_id = models.OneToOneField('osas_r_personal_info', on_delete=models.CASCADE, null = True)
     s_fname = models.CharField(max_length=20)
     s_lname = models.CharField(max_length=20)
-    s_no = models.CharField(max_length=15)
+    s_username = models.CharField(max_length=50)
     s_password = models.CharField(max_length=16)
     s_type = models.CharField(max_length=10, default='Student')
     date_created = models.DateTimeField(default=now)
