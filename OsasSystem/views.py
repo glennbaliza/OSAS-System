@@ -38,10 +38,10 @@ def activate_account(request):
                 request.session['session_user_fname'] = stud.stud_fname
                 request.session['session_user_pass'] = stud.s_password
                 request.session['session_user_role'] = s.user_type
-                return render(request, 'home.html', {'stud': stud})
+                return HttpResponseRedirect('/home', {'stud': stud}) #passing the values of student to the next template
         else:
             messages.error(request, 'Either student number or password are incorrect.')
-            return render(request, 'login.html', {})
+            return HttpResponseRedirect('/login')
     except ObjectDoesNotExist:
         u = osas_r_auth_user.objects.filter(auth_username=s_no).count()
         if u:
@@ -70,10 +70,9 @@ def activate_account(request):
                 return HttpResponseRedirect('/login')
         else:
             messages.error(request, 'Incorrect username or password, please try again.')
-            return render(request, 'login.html')
+            return HttpResponseRedirect('/login')
 
 def account_process(request):
-    #get the value of s_no in template
     s_no = request.POST.get('r_studno')
     old_pass = request.POST.get('r_pass')
     new_pass = request.POST.get('r_pass1')
@@ -89,27 +88,27 @@ def account_process(request):
                             stud.stud_status = 'Active'
                             stud.save()
                             messages.success(request, str(s_no) + ' is successfully activated!')
-                            return HttpResponseRedirect(request, 'login')
-                            # return HttpResponseRedirect(request, 'login.html', )
+                            return HttpResponseRedirect('/login')
+    
                         else:
-                            messages.error(request, 'Password does not match, please try again.') 
+                            messages.error(request, 'Password does not match, please try again.')
+                            # return HttpResponseRedirect('/activate_account', {'stud': stud}) 
                             return render(request, 'activate_account.html', {'stud': stud})  
                     else:  
                         messages.error(request, 'Please enter your new and confirm password.')
-                        return render(request, 'activate_account.html', {'stud': stud})    
+                        return HttpResponseRedirect('/activate_account', {'stud': stud}) 
                 else:
                     messages.error(request, 'Please enter your correct old password.')
-                    return render(request, 'activate_account.html', {'stud': stud}) 
+                    return HttpResponseRedirect('/activate_account', {'stud': stud}) 
             else: 
                 messages.error(request, '1111111r' )
-                return render(request, 'activate_account.html', {'stud': stud})  
+                return HttpResponseRedirect('/activate_account', {'stud': stud}) 
         else:
             messages.error(request, 'Invalid student number' )
-            return render(request, 'activate_account.html', {'stud': stud})  
-
+            return HttpResponseRedirect('/activate_account', {'stud': stud}) 
     except ObjectDoesNotExist:
         messages.error(request, 'Invalid account!')
-        return render(request, 'activate_account.html', {'stud': stud})  
+        return HttpResponseRedirect('/activate_account', {'stud': stud}) 
     
 
 def r_employ(request):

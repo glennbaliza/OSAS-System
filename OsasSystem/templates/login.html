@@ -13,6 +13,15 @@
         <!-- begin #page-container -->
         <div id="page-container" class="fade">
             <!-- begin login -->
+            <div >
+                {% if messages %}
+                    <p class="alert alert-danger">
+                        {% for message in messages %}
+                            <i><strong>{{ message }}</strong></i>
+                        {% endfor %}
+                    </p>
+                {% endif %} 
+            </div>
 
             <div class="login login-v2" data-pageload-addclass="animated fadeIn">
                 <!-- begin brand -->
@@ -26,12 +35,13 @@
                 <!-- begin login-content -->
                 <div class="login-content">
                     <form action="{% url 'activate_account'  %}" method="POST" class="margin-bottom-0">
-                        {% if messages %}
+                        
+                        <!-- {% if messages %}
                             {% for message in messages %}
                                     {% if message.tags %}  <script>alert("{{ message }}")</script> 
                                     {% endif %}
                             {% endfor %}
-                        {% endif %}
+                        {% endif %} -->
                          
                         {% csrf_token %}
                         <div class="form-group m-b-20">

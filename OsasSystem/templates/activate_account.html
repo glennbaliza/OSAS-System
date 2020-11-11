@@ -44,10 +44,9 @@
                         {% csrf_token %}
                    
                         <label class="control-label" >Student Number <span class="text-danger">*</span></label>
-                        {% if stud %}
                         <div class="row m-b-15" style="margin-top: -5px;">
                             <div class="col-md-12">
-                                <p hidden value="{{stud.stud_id}}" id="s_id" name="s_id">{{stud.stud_id}}</p>
+                                <p value="{{stud.stud_id}}" id="s_id" name="s_id">{{osas_r_personal_info.stud_id}}</p>
                                 <input type="text" name="r_studno" id="r_studno" class="form-control" required />
                             </div>
                         </div>
@@ -74,7 +73,6 @@
                         <div class="register-buttons">
                             <button type="submit" id="btn_submit" class="btn btn-primary btn-block btn-lg">Activate</button>
                         </div>
-                        {% endif%}
                         <div class="m-t-20 m-b-40 p-b-40 text-inverse">
                             Already a member? Click <a href="{% url 'login' %}">here</a> to login.
                         </div>
