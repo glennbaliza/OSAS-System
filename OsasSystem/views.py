@@ -1,58 +1,120 @@
 import random
 from django.shortcuts import render, redirect, get_object_or_404, reverse
-from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
-from .models import osas_r_userrole, osas_r_stud_registration, osas_r_course, osas_r_section_and_year, osas_r_personal_info, osas_r_referral
+from .models import osas_r_userrole, osas_r_course, osas_r_section_and_year, osas_r_personal_info, osas_r_referral, osas_r_auth_user
 from django.contrib import messages
 from django.views.decorators.cache import cache_control
 from datetime import datetime
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 
-#--------------------------------------LOGIN------------------------------------------------------------------------------------------
-def login(request):
-    return render(request, 'login.html', {})
-    
 def home(request):
     return render(request, 'home.html', {})
+#--------------------------------------LOGIN------------------------------------------------------------------------------------------
+def login(request):
+    try:
+        del request.session['session_user_role']
+        return render(request, 'login.html', {})
+    except KeyError:
+        return render(request, 'login.html', {})
+
+def activate_account(request):
+    s_no = request.POST.get('stud_no')
+    password = request.POST.get('pass')
+    try:
+        stud = osas_r_personal_info.objects.get(stud_no=s_no)
+        c = osas_r_personal_info.objects.filter(stud_no=s_no, s_password= password )
+        # s = osas_r_userrole.objects.get(user_id= stud.stud_role)
+        if c:
+            if stud.stud_status == 'Pending':
+                return render(request, 'activate_account.html', {'stud': stud})  
+            else:
+                s = osas_r_userrole.objects.get(user_type=stud.stud_role)
+                messages.success(request, s_no + ' Log in as ' + str(stud.stud_role))
+                request.session['session_user_id'] = stud.stud_id
+                request.session['session_user_no'] = stud.stud_no
+                request.session['session_user_lname'] = stud.stud_lname
+                request.session['session_user_fname'] = stud.stud_fname
+                request.session['session_user_pass'] = stud.s_password
+                request.session['session_user_role'] = s.user_type
+                return render(request, 'home.html', {'stud': stud})
+        else:
+            messages.error(request, 'Either student number or password are incorrect.')
+            return render(request, 'login.html', {})
+    except ObjectDoesNotExist:
+        u = osas_r_auth_user.objects.filter(auth_username=s_no).count()
+        if u:
+            r = osas_r_auth_user.objects.get(auth_username=s_no)
+            f = osas_r_userrole.objects.get(user_id=r.auth_id)
+            if r.auth_username == s_no and r.auth_password == password:
+                if r.auth_role_id == 2:
+                    messages.success(request, str(s_no) + ' Log in as ' + str(r.auth_role_id))
+                    request.session['session_user_id'] = r.auth_id
+                    request.session['session_user_lname'] = r.auth_lname
+                    request.session['session_user_fname'] = r.auth_fname
+                    request.session['session_user_username'] = r.auth_username
+                    request.session['session_user_pass'] = r.auth_password
+                    request.session['session_user_role'] = f.user_type
+                    return HttpResponseRedirect('/home')
+                else: 
+                    messages.success(request, 'Log in as ' + s_no) # osas staff 
+                    request.session['session_user_id'] = r.auth_id
+                    request.session['session_user_lname'] = r.auth_lname
+                    request.session['session_user_fname'] = r.auth_fname
+                    request.session['session_user_username'] = r.auth_username
+                    request.session['session_user_pass'] = r.auth_password
+                    request.session['session_user_role'] = f.user_type
+                    return HttpResponseRedirect('/login')
+            else: 
+                return HttpResponseRedirect('/login')
+        else:
+            messages.error(request, 'Incorrect username or password, please try again.')
+            return render(request, 'login.html')
+
+def account_process(request):
+    #get the value of s_no in template
+    s_no = request.POST.get('r_studno')
+    old_pass = request.POST.get('r_pass')
+    new_pass = request.POST.get('r_pass1')
+    conf_pass = request.POST.get('r_pass2')
+    try:
+        if s_no:
+            stud = osas_r_personal_info.objects.get(stud_no=s_no)
+            if stud.stud_no == s_no:
+                if stud.s_password == old_pass:
+                    if new_pass and conf_pass:
+                        if new_pass == conf_pass:
+                            stud.s_password = conf_pass
+                            stud.stud_status = 'Active'
+                            stud.save()
+                            messages.success(request, str(s_no) + ' is successfully activated!')
+                            return HttpResponseRedirect(request, 'login')
+                            # return HttpResponseRedirect(request, 'login.html', )
+                        else:
+                            messages.error(request, 'Password does not match, please try again.') 
+                            return render(request, 'activate_account.html', {'stud': stud})  
+                    else:  
+                        messages.error(request, 'Please enter your new and confirm password.')
+                        return render(request, 'activate_account.html', {'stud': stud})    
+                else:
+                    messages.error(request, 'Please enter your correct old password.')
+                    return render(request, 'activate_account.html', {'stud': stud}) 
+            else: 
+                messages.error(request, '1111111r' )
+                return render(request, 'activate_account.html', {'stud': stud})  
+        else:
+            messages.error(request, 'Invalid student number' )
+            return render(request, 'activate_account.html', {'stud': stud})  
+
+    except ObjectDoesNotExist:
+        messages.error(request, 'Invalid account!')
+        return render(request, 'activate_account.html', {'stud': stud})  
+    
 
 def r_employ(request):
     return render(request, 'alumni/r_employ.html')
-
-
-
-#--------------------------------------REGISTRATION-----------------------------------------------------------------------------------
-def register(request):
-    return render(request, 'register.html', {} )
-
-def newregister(request):
-    chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'
-    randomstr =''.join((random.choice(chars)) for x in range(5))
-    r_fname = request.POST.get('r_fname')
-    r_lname = request.POST.get('r_lname')
-    r_studno = request.POST.get('r_studno')
-    r_username = request.POST.get('r_username')
-    r_pass = request.POST.get('r_pass1')
-    r_pass2 = request.POST.get('r_pass2')
-    if r_pass == r_pass2:
-        stud_id = osas_r_personal_info.objects.filter(stud_no = r_studno)
-        if stud_id:
-            s = osas_r_stud_registration.objects.filter(stud_id=osas_r_personal_info.objects.get(stud_no=r_studno))
-            if s:
-                messages.error(request, r_studno + ' '+ 'is already registered!')
-            else:
-                r = osas_r_stud_registration.objects.filter(s_username=r_username)
-                if r:
-                    messages.error(request, r_username + ' ' + 'is already taken!')
-                else:
-                    n = osas_r_stud_registration(s_fname=r_fname, s_lname=r_lname, s_username=r_username, s_password=r_pass, stud_id=osas_r_personal_info.objects.get(stud_no=r_studno))
-                    n.save()
-                    messages.error(request, r_studno + 'Successfully registered!')
-        else:
-            messages.error(request, r_studno + 'Record could not found!')
-    else:
-        messages.error(request, 'Password do not match!' + str(r_pass) + ' ' + str(r_pass2))
-    return render(request, 'register.html')     
+   
     
 #------------------------------------YEAR AND SECTION------------------------------------------------------------------------------------
 def yr_sec(request):
@@ -150,6 +212,8 @@ def add_student(request):
     return render(request, template_name, {'student_course': student_course, 'student_yr_sec': student_yr_sec})
 
 def student_process_add(request, *args):
+    chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'
+    randomstr =''.join((random.choice(chars)) for x in range(5))
     l_name = request.POST.get('txt_l_name')
     f_name = request.POST.get('txt_f_name')
     m_name = request.POST.get('txt_m_name')
@@ -166,12 +230,13 @@ def student_process_add(request, *args):
     e_name = request.POST.get('txt_e_name')
     e_number = request.POST.get('txt_e_number')
     e_address = request.POST.get('txt_e_address')
+    stud_pass = randomstr
     try:
         n = osas_r_personal_info.objects.get(stud_no = studno)
         return HttpResponseRedirect('/student_profile' , {'error_message': "Duplicated Course Information : " + studno})
     except ObjectDoesNotExist:
         today = datetime.today()
-        stud = osas_r_personal_info(stud_no = studno, stud_lname = l_name, stud_fname = f_name, stud_mname = m_name, stud_birthdate = d_of_birth,stud_gender = gender, stud_address = address, stud_email = email, stud_m_number = mobile_number, stud_hs = h_name, stud_hs_add = h_address, stud_e_name = e_name,stud_e_address = e_address, stud_e_m_number = e_number, date_created = today, stud_course_id = osas_r_course.objects.get(course_name = course), stud_yas_id  = osas_r_section_and_year.objects.get(yas_descriptions = yr_sec))
+        stud = osas_r_personal_info(stud_no = studno, stud_lname = l_name, stud_fname = f_name, stud_mname = m_name, stud_birthdate = d_of_birth,stud_gender = gender, stud_address = address, stud_email = email, stud_m_number = mobile_number, stud_hs = h_name, stud_hs_add = h_address, stud_e_name = e_name,stud_e_address = e_address, stud_e_m_number = e_number, s_password = stud_pass , date_created = today, stud_role = osas_r_userrole.objects.get(user_type='STUDENT'), stud_course_id = osas_r_course.objects.get(course_name = course), stud_yas_id  = osas_r_section_and_year.objects.get(yas_descriptions = yr_sec))
         stud.save()   
         return HttpResponseRedirect('/student_profile' , {'success_message': "Congratulations," + " " + studno + "is successfully register."})
        
@@ -299,6 +364,105 @@ def deleteuser(request):
     id = request.POST.get('del_user_id')
     osas_r_userrole.objects.get(pk=id).delete()
     return HttpResponseRedirect('/userrole')
+
+def auth_user(request):
+    template_name = 'auth_user.html'
+    auth_user = osas_r_auth_user.objects.order_by('auth_username')
+    userrole = osas_r_userrole.objects.order_by('user_type')
+    return render(request, template_name, {'auth_user': auth_user, 'userrole':userrole })
+
+def auth_process_edit(request, auth_id):
+    template_name = 'auth_process_edit.html'
+    # auth = osas_r_auth_user.objects.order_by('auth_username')
+    role = osas_r_userrole.objects.order_by('user_type')
+    try:
+        auth_user = osas_r_auth_user.objects.get(auth_id=auth_id)
+    except osas_r_auth_user.DoesNotExist:
+            raise Http404("User profile does not exist")
+    return render(request, template_name,{'auth_user':auth_user, 'role': role})
+
+def auth_user_edit(request, auth_id):
+    auth_user = get_object_or_404(osas_r_auth_user, pk=auth_id)
+    try:
+        _id = request.POST.get('auth_lname1')
+        _lname = request.POST.get('auth_lname1')
+        _fname = request.POST.get('auth_fname1')
+        _username = request.POST.get('auth_username1')
+        _pass = request.POST.get('auth_pass1')
+        _pass1 = request.POST.get('auth_pass2')
+        _pass2 = request.POST.get('auth_pass3')
+        _user = request.POST.get('auth_user1')
+        n = osas_r_auth_user.objects.get(auth_id=auth_id)
+        if n:
+            if _pass:
+                if n.auth_password == _pass:
+                    if _pass2 or _pass1:
+                        if _pass1 == _pass2:
+                            if _fname:
+                                n.auth_fname = _fname
+                            if _lname:
+                                n.auth_lname = _lname
+                            if _pass2: 
+                                n.auth_password = _pass2
+                            if _user:
+                                crs = osas_r_userrole.objects.get(user_type=_user)        
+                                n.auth_role = crs
+                                n.save()
+                                messages.success(request, _username + ' ' +  'Successfully Updated!')
+                                return redirect('auth_user')
+                        else:
+                            messages.error(request, 'Password does not match!')
+                            return HttpResponseRedirect(reverse('auth_process_edit', args=(auth_id,))) 
+                    else:
+                        messages.error(request, 'Please enter new password.')
+                        return HttpResponseRedirect(reverse('auth_process_edit', args=(auth_id,))) 
+                else:
+                    messages.error(request, 'Incorrect old password.')
+                    return HttpResponseRedirect(reverse('auth_process_edit', args=(auth_id,))) 
+            else:
+                if _fname:
+                    n.auth_fname = _fname
+                if _lname:
+                    n.auth_lname = _lname
+                if _user:
+                    crs = osas_r_userrole.objects.get(user_type=_user)        
+                    n.auth_role = crs
+            n.save()
+            messages.success(request, _username + ' ' +  'Successfully Updated!')
+            return HttpResponseRedirect(reverse('auth_process_edit', args=(auth_id,)))             
+        else:
+            messages.error(request, 'Problem updating record')
+            return render(request, 'auth_user.html')
+    except (KeyError, osas_r_auth_user.DoesNotExist ):
+        messages.error(request, 'Problem updating record')
+        return render(request, 'auth_user.html')
+        
+def auth_user_add(request):
+    _lname = request.POST.get('auth_lname')
+    _fname = request.POST.get('auth_fname')
+    _username = request.POST.get('auth_username')
+    _pass = request.POST.get('auth_pass')
+    _pass1 = request.POST.get('aut_pass1')
+    _user = request.POST.get('auth_user')
+    try:
+        n = osas_r_auth_user.objects.get(auth_username=_username)
+        messages.error(request, _username +  ' ' + 'is already exist.')
+        return redirect('/auth_user')
+    except ObjectDoesNotExist:
+        today = datetime.today()
+        if _user:
+            if _pass == _pass1:
+                user = osas_r_auth_user.objects.create(auth_lname=_lname,auth_fname=_fname, auth_username=_username, auth_password=_pass, auth_role=osas_r_userrole.objects.get(user_type=_user),date_created=today)
+                # user.save()
+                messages.success(request, _username + ' ' +  'Successfully Added!')
+                return redirect('/auth_user')
+            else:
+                messages.success(request, 'Password does not match!')
+                return redirect('/auth_user')
+        else:
+            messages.error(request, _username + ' ' + 'is already taken.')
+            return render(request, 'auth_user.html')
+
 
 #----------------------------------ALUMNI--------------------------------------------------------------------------------------------
 def r_referral(request):

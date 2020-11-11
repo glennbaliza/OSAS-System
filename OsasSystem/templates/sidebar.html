@@ -14,8 +14,8 @@
                     </div>
                     <div class="info">
                         <b class="caret pull-right"></b>
-                        Sean Ngu
-                        <small>Front end developer</small>
+                       
+                        <small id="session_id" name="session_id">{{request.session.session_user_role}}</small>
                     </div>
                 </a>
             </li>
@@ -38,6 +38,8 @@
                     <span>Dashboard</span>
                 </a>
             </li>
+            
+            {% if request.session.session_user_role == 'HEAD OSAS' or request.session.session_user_role == 'OSAS STAFF'%}
             <li class="has-sub">
                 <a href="javascript:;">
                     <b class="caret"></b>
@@ -126,11 +128,13 @@
                     <span>System Setup</span>
                 </a>
                 <ul class="sub-menu">
+                    <li><a href="{% url 'auth_user' %}">Users</a></li>
                     <li><a href="{% url 'userrole' %}">User role</a></li>
                     <li><a href="{% url 'yr_sec' %}">Year and Section</a></li>
                     <li><a href="{% url 'course' %}">Courses</a></li>
                 </ul>
             </li>
+            {% endif%}
         </ul>
         <!-- end sidebar nav -->
     </div>

@@ -59,6 +59,7 @@ class osas_r_personal_info(models.Model):
     stud_no = models.CharField(unique=True, max_length=15, verbose_name='Student Number')
     stud_course_id = models.ForeignKey('osas_r_course', on_delete=models.CASCADE)
     stud_yas_id = models.ForeignKey('osas_r_section_and_year', on_delete=models.CASCADE)
+    stud_role = models.ForeignKey('osas_r_userrole', on_delete=models.CASCADE, null = True)
     stud_lname = models.CharField(max_length=50, verbose_name='Last Name')
     stud_fname = models.CharField(max_length=50, verbose_name='First Name')
     stud_mname = models.CharField(max_length=50, verbose_name='Middle Name')
@@ -72,9 +73,10 @@ class osas_r_personal_info(models.Model):
     stud_e_name = models.CharField(max_length=50, verbose_name='Emergency Contact Person')
     stud_e_address = models.CharField(max_length=50, verbose_name='Emergency Contact Address')
     stud_e_m_number = models.BigIntegerField(blank=True, verbose_name='Mobile Number')
+    s_password = models.CharField(max_length=16)
     date_created = models.DateTimeField(max_length=50, blank=True)
     date_updated = models.DateTimeField(default=now)
-    stud_status = models.BooleanField(default=1)
+    stud_status = models.CharField(max_length=10, default='Pending')
     
    
 
@@ -121,23 +123,18 @@ class osas_r_userrole(models.Model):
     #     return mark_safe('<img src="/userrole/media/%s" width="25" height="25" />'%(self.s_image))
         
     def __str__(self):
-        return self.user_email
+        return self.user_type
 
-class osas_r_stud_registration(models.Model):
-
-    reg_id = models.AutoField(primary_key=True)
-    stud_id = models.OneToOneField('osas_r_personal_info', on_delete=models.CASCADE, null = True)
-    s_fname = models.CharField(max_length=20)
-    s_lname = models.CharField(max_length=20)
-    s_username = models.CharField(max_length=50)
-    s_password = models.CharField(max_length=16)
-    s_type = models.CharField(max_length=10, default='Student')
-    date_created = models.DateTimeField(default=now)
-    
-
-    def __str__(self):
-        return self.s_fname, self.s_no
-    
+class osas_r_auth_user(models.Model):
+    auth_id = models.AutoField(primary_key=True)
+    auth_lname = models.CharField(max_length=50)
+    auth_fname = models.CharField(max_length=50)
+    auth_username = models.CharField(max_length=50)
+    auth_password = models.CharField(max_length=16)
+    auth_role = models.ForeignKey('osas_r_userrole', on_delete=models.CASCADE)
+    date_created = models.DateTimeField(max_length=50, blank=True)
+    date_updated = models.DateTimeField(default=now)
+    auth_status = models.CharField(max_length=10, default='Active')
 
 
 

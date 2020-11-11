@@ -20,8 +20,9 @@
             <div class="right-content">
                 <!-- begin register-header -->
                 <h1 class="register-header">
-                    Sign Up
+                   Activate account
                 </h1>
+                <p style="margin-top: -20px;" class="register-content">Activate your account by simply creating new password</p>
                 <!-- end register-header -->
                 <!-- begin register-content -->
                 <div class="register-content">
@@ -32,57 +33,53 @@
                             </p>
                         {% endif %} 
                     </div>
-                    <form id="validate_form" action="{% url 'newregister' %}" method="POST" class="margin-bottom-0" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        {% if messages %}
-                        {% for message in messages %}
-                            {% if message.tags %}  <script>alert("{{ message }}")</script> 
-                            {% endif %}
-                        {% endfor %}
+                    <form style="margin-top: -50px;" id="validate_form" action="{% url 'account_process' %}" method="post" class="margin-bottom-0" enctype="multipart/form-data">
+                     
+                            {% if messages %}
+                                {% for message in messages %}
+                                    {% if message.tags %}  <script>alert("{{ message }}")</script> 
+                                    {% endif %}
+                                {% endfor %}
                         {% endif %}
-                        <label class="control-label">Name <span class="text-danger">*</span></label>
-                        <div class="row row-space-10" style="margin-top: -5px;">
-                            <div class="col-md-6 m-b-15">
-                                <input type="text" name="r_fname" id="r_fname" class="form-control" placeholder="First name" required />
-                            </div>
-                            <div class="col-md-6 m-b-15">
-                                <input type="text" name="r_lname" id="r_lname" class="form-control" placeholder="Last name" required />
-                            </div>
-                        </div>
+                        {% csrf_token %}
+                   
                         <label class="control-label" >Student Number <span class="text-danger">*</span></label>
+                        {% if stud %}
                         <div class="row m-b-15" style="margin-top: -5px;">
                             <div class="col-md-12">
-                                <input type="text" name="r_studno" id="r_studno" class="form-control" placeholder="ex.2000-0000-CM-0" required />
+                                <p hidden value="{{stud.stud_id}}" id="s_id" name="s_id">{{stud.stud_id}}</p>
+                                <input type="text" name="r_studno" id="r_studno" class="form-control" required />
                             </div>
                         </div>
-                        <label class="control-label">Username<span class="text-danger">*</span></label>
+                        
+                        <label class="control-label">Old Password<span class="text-danger">*</span></label>
                         <div class="row m-b-15" style="margin-top: -5px;">
                             <div class="col-md-12">
-                                <input type="text" name="r_username" id="r_username" class="form-control" placeholder="Username" required />
+                                <input type="password" name="r_pass" id="r_pass" class="form-control" placeholder="Old Password" required />
                             </div>
                         </div>
                         <label class="control-label">Password <span class="text-danger">*</span></label>
                         <div class="row m-b-15" style="margin-top: -5px;">
                             <div class="col-md-12">
-                                <input type="password" name="r_pass1" id="r_pass1"class="form-control" placeholder="Password" required />
+                                <input type="password" name="r_pass1" id="r_pass1"class="form-control" placeholder="New Password" required />
                             </div>
                         </div>
                         <label class="control-label" style="margin-top: -5px;">Confirm Password <span class="text-danger">*</span></label>
                         <div class="row m-b-15" style="margin-top: -5px;">
                             <div class="col-md-12">
-                                <input type="password" name="r_pass2" id="r_pass2"class="form-control" placeholder="Password" required />
+                                <input type="password" name="r_pass2" id="r_pass2"class="form-control" placeholder="Confirm Password" required />
                             </div>
                         </div>
                         <br/>
                         <div class="register-buttons">
-                            <button type="submit" class="btn btn-primary btn-block btn-lg">Sign Up</button>
+                            <button type="submit" id="btn_submit" class="btn btn-primary btn-block btn-lg">Activate</button>
                         </div>
+                        {% endif%}
                         <div class="m-t-20 m-b-40 p-b-40 text-inverse">
                             Already a member? Click <a href="{% url 'login' %}">here</a> to login.
                         </div>
-                        <hr />
                         <p class="text-center">
-                            &copy; Color Admin All Right Reserved 2018
+                            &copy; OSAS Enterprise All Right Reserved 2018
                         </p>
                     </form>
                 </div>
@@ -98,5 +95,38 @@
 {% block page-js %}
 <script>
     $("#validate_form").parsley();
+    // $("#validate_form").on('click','#btn_submit',function(){
+    //     stud_id = document.getElementById("s_id").value
+    //     stud_no = document.getElementById("r_studno").value
+    //     r_pass = document.getElementById("r_pass").value
+    //     r_pass2 = document.getElementById("r_pass2").value
+    //     r_pass1 = document.getElementById("r_pass1").value
+    //     alert(stud_id)
+	// 	$.ajax({
+	// 		type: "POST",
+	// 		url: "{% url 'account_process' %}",
+	// 		data:{
+	// 			stud_id: stud_id,
+    //             stud_no:stud_no,
+	// 			r_pass:r_pass,
+    //             r_pass1:r_pass1,
+    //             r_pass2:r_pass2,
+	// 			csrfmiddlewaretoken: "{{ csrf_token }}",
+	// 		},
+	// 		success: function(data){
+	// 			swal("Success! User has been deleted", {
+	// 	              icon: "success",
+	// 	            }).then((willreload) => {
+	// 	            	if(willreload){
+	// 	            		window.location.reload()
+	// 	            	}
+		            	
+	// 	            });
+	// 		},
+	// 		error: function(error){
+	// 			console.log(error);
+	// 		}
+	// 	});
+	// });
 </script>
 {% endblock %}

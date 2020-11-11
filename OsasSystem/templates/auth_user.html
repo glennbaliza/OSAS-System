@@ -1,0 +1,350 @@
+{% extends 'base.html'%}
+{% load static %}
+
+{% block page-css %}
+    <link href="{% static 'OsasSystem/assets/plugins/DataTables/media/css/dataTables.bootstrap.min.css' %}" rel="stylesheet" />
+	<link href="{% static 'OsasSystem/assets/plugins/DataTables/extensions/Responsive/css/responsive.bootstrap.min.css' %}" rel="stylesheet" />
+{% endblock%}
+
+{% block title %}
+    Users
+{% endblock %}
+
+{% block content %}
+
+<div class="modal fade" id="modal-dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Add new user</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="validate_form" data-parsley-validate="" action="{% url 'auth_user_add' %}" method="post" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-6">
+                        {% csrf_token %}
+                            {% if messages %}
+                                {% for message in messages %}
+                                    {% if message.tags %}  <script>alert("{{ message }}")</script> 
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                        </div>
+                    </div>
+                    {% csrf_token %}
+                    <div class="col-lg-12 col-md-6 ">
+                        <div class="stats-content">
+                            <label>Last name</label>
+                            <input type="text" name="auth_lname" id="auth_lname"  class="form-control" required  data-parsley-trigger="keyup"> 
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-6 ">
+                        <div class="stats-content">
+                            <label>First name</label>
+                            <input type="text" name="auth_fname" id="auth_fname"  class="form-control" required  data-parsley-trigger="keyup"> 
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-6 ">
+                        <div class="stats-content">
+                            <label>Username</label>
+                            <input type="text" name="auth_username" id="auth_username"  class="form-control" required  data-parsley-trigger="keyup"> 
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-6 ">
+                        <div class="stats-content">
+                            <label>Password</label>
+                            <input type="password" name="auth_pass" id="auth_pass"  class="form-control" required  data-parsley-trigger="keyup"> 
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-6 ">
+                        <div class="stats-content">
+                            <label>Confirm Password</label>
+                            <input type="password" name="aut_pass1" id="aut_pass1"  class="form-control" required  data-parsley-trigger="keyup"> 
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-6 ">
+                        <div class="stats-content">
+                            <label>Status</label>
+                            {% if userrole %}
+                            <select id="auth_user" name="auth_user" class="form-control" required>  
+                                <option disabled selected hidden value="">--select--</option>
+                                {% for osas_r_userrole in userrole%}
+                                <option value="{{osas_r_userrole.user_type}}">{{osas_r_userrole.user_type}}</option>
+                                {% endfor %}
+                            </select> 
+                            {% endif %} 
+                        </div>
+                    </div>
+                    </br>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success btn-sm btn-sm">Add</button>  
+                        <button type="cancel" class="btn btn-warning btn-sm btn-sm" data-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>  
+        </div>
+    </div>
+</div>
+<!-- #modal-without-animation -->
+<div id="content" class="content">
+    <div class="row">
+        <div class="col-lg-12 col-md-6">
+            <button type="button" href="#modal-dialog" id="btn_rem"  class="update btn btn-danger" data-toggle="modal">+ Add new user<span class="glyphicon glyphicon-trash"></span></button> 
+        </div>
+    </div>
+</br>
+    <!-- begin row -->
+    <div class="row">
+        <!-- begin col-10 -->
+        <div class="col-lg-12 col-md-6">
+            <!-- begin panel -->
+            <div class="panel panel-inverse">
+                <!-- begin panel-heading -->
+                <div class="panel-heading">
+                    <div class="panel-heading-btn">
+                        <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
+                        <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-warning" data-click="panel-collapse"><i class="fa fa-minus"></i></a>
+                    </div>
+                    <h4 class="panel-title">User List</h4>
+                </div>
+                <!-- end panel-heading -->
+                <!-- begin panel-body -->
+                <div class="panel-body">
+                    {% if auth_user %}
+                    <div class="table-responsive">
+                        <table id="data-table-buttons" class="table table-bordered " >
+                        <thead>
+                            <tr>
+                                <th hidden></th>
+                                <th class="text-nowrap">Last name</th>
+                                <th class="text-nowrap">First name</th>
+                                <th class="text-nowrap">Username</th>
+                                <th class="text-nowrap">User role</th>
+                                <th hidden class="text-nowrap">Password</th>
+                                <th class="text-nowrap">Date created</th>
+                                <th class="text-nowrap">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for osas_r_auth_user in auth_user %}
+                            <tr>
+                                <td hidden >{{ osas_r_auth_user.auth_id }}</td>  
+                                <td>{{ osas_r_auth_user.auth_lname }}</td>
+                                <td>{{ osas_r_auth_user.auth_fname }}</td>
+                                <td>{{ osas_r_auth_user.auth_username }}</td>
+                                <td>{{ osas_r_auth_user.auth_role }}</td>
+                                <td hidden >{{ osas_r_auth_user.auth_password }}</td>
+                                <td>{{ osas_r_auth_user.date_created }}</td>
+                                <!-- <td class="text-center"><img src="/media/{{osas_r_userrole.s_image}}" class="rounded-circle" width="50" alt="userimage"/></td> -->
+                                <!-- <td class="text-center"><span {% if  index.2  < index.3 %}class = "dot" style=" height: 25px; width: 25px; background-color: red; border-radius: 50%;display: inline-block;" {% elif  index.2  == index.3 %}class = "dot" style=" height: 25px; width: 25px; background-color: #EEA843; border-radius: 50%;display: inline-block;" {% else %} class="dot" style=" height: 25px; width: 25px; background-color: #4EEC1E; border-radius: 50%; display:inline-block;" {% endif %}></span></td> -->
+                                <td class="with-btn text-right" nowrap >
+                                    <!-- {% if index.2 < index.3 %}
+                                    <a id="btnEditTable"  value="{{index.0}}" class="btn btn-sm btn-primary width-70 m-r-2" style="color: white;">Order</a>
+                                    {% endif %} -->
+                                    <!-- <button type="button" id="view" class="update btn btn-primary btn-lg"><span class="glyphicon glyphicon-eye-open"></span></button> -->
+                                    <a href="{% url 'auth_process_edit' osas_r_auth_user.auth_id %}"><button type="button"  id="edit"  class="update btn btn-warning btn-lg"><span class="glyphicon glyphicon-pencil"></span></button></a>
+                                    <!-- <a id="btnEditTable"  value="{{index.0}}" class="btn btn-sm btn-primary width-70 m-r-2" style="color: white;">Edit</a> -->
+                                    <!-- {% if request.session.session_assign == 9 %} -->
+                                    <button type="button" href="#modal-dialog" id="btn_rem"  class="update btn btn-danger btn-lg" data-toggle="modal"><span class="glyphicon glyphicon-trash"></span></button> 
+                                    <!-- <a  class="btn btn-sm btn-success" data-toggle="modal">Demo</a> -->
+                                    <!-- {% endif %} -->
+                                    <button type="button" id="button_del" method="post" class="update btn btn-danger btn-lg"><span class="glyphicon glyphicon-trash"></span></button> 
+                                    <!-- <a id="btnRemarks"  class="btn btn-sm btn-white width-70"><center>Remarks</center></a>
+                                     -->
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+                </div>
+                <!-- end panel-body -->
+            </div>
+            <!-- end panel -->
+        </div>
+        <!-- end col-10 -->
+    </div>
+    <!-- end row -->
+</div>
+ <!-- #modal-dialog -->
+ <div class="modal fade" id="modal-dialog2">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Edit user</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="validate_form1" data-parsley-validate=""  method="post" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-6">
+                        {% csrf_token %}
+                            {% if messages %}
+                                {% for message in messages %}
+                                    {% if message.tags %}  <script>alert("{{ message }}")</script> 
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                        </div>
+                    </div>
+                    {% csrf_token %}
+                    <div class="col-lg-12 col-md-6 ">
+                        <div class="stats-content">
+                            <label id="auth_id"></label>
+                            <label>Last name</label>
+                            <input type="text" name="auth_lname1" id="auth_lname1"  class="form-control" required value="" data-parsley-trigger="keyup"> 
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-6 ">
+                        <div class="stats-content">
+                            <label>First name</label>
+                            <input type="text" name="auth_fname1" id="auth_fname1"  class="form-control" required  data-parsley-trigger="keyup"> 
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-6 ">
+                        <div class="stats-content">
+                            <label>Username</label>
+                            <input disabled type="text" name="auth_username1" id="auth_username1"  class="form-control" data-parsley-trigger="keyup"> 
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-6 ">
+                        <div class="stats-content">
+                            <label>Old Password</label>
+                            <input type="password" name="auth_pass1" id="auth_pass1"  class="form-control" placeholder="please type your old password..." data-parsley-trigger="keyup"> 
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-6 ">
+                        <div class="stats-content">
+                            <label>New Password</label>
+                            <small><i style="color: red;">Note: Password must be different from the old password.</i></small>
+                            <input type="password" name="aut_pass2" id="aut_pass2" placeholder="please type your new password..." class="form-control" data-parsley-trigger="keyup"> 
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-6 ">
+                        <div class="stats-content">
+                            <label>Confirm Password</label>
+                            <input type="password" name="aut_pass3" id="aut_pass3" placeholder="please confirm your new password..." class="form-control"  data-parsley-trigger="keyup"> 
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-6 ">
+                        <div class="stats-content">
+                            <label>Status</label>
+                            {% if userrole %}
+                            <select id="auth_user1" name="auth_user1" class="form-control" required>
+                                {% for osas_r_userrole in userrole%}
+                                <option disabled selected value="">--select--</option>
+                                <option value="{{osas_r_userrole.user_type}}">{{osas_r_userrole.user_type}}</option>
+                                {% endfor %}
+                            </select> 
+                            {% endif %} 
+                        </div>
+                    </div>
+                    </br>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success btn-sm btn-sm">Add</button>  
+                        <button type="cancel" class="btn btn-warning btn-sm btn-sm" data-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>  
+        </div>
+    </div>
+</div>
+<!-- #modal-without-animation -->
+
+<!-- begin #content -->
+    
+<!-- end #content -->
+<!-- end page container -->
+
+
+{% endblock %}
+
+{% block page-level %}
+	<script src="{%static 'OsasSystem/assets/plugins/bootstrap-sweetalert/sweetalert.min.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/js/demo/ui-modal-notification.demo.min.js' %}"></script>
+{% endblock %}
+
+{% block page-js %}
+<script>
+
+var table = $('#data-table-buttons').DataTable();
+
+
+$("#data-table-buttons").on('click','#auth_edit',function(){
+    id = $(this).closest("tbody tr").find("td:eq(0)").html()
+    lname = $(this).closest("tbody tr").find("td:eq(1)").html()
+    fname = $(this).closest("tbody tr").find("td:eq(2)").html()
+    username = $(this).closest("tbody tr").find("td:eq(3)").html()
+    role = $(this).closest("tbody tr").find("td:eq(4)").html()
+    pass = $(this).closest("tbody tr").find("td:eq(5)").html()
+    alert(role)
+    document.getElementById("auth_lname1").value = lname
+    document.getElementById("auth_fname1").value = fname
+    document.getElementById("auth_username1").value = username
+    document.getElementById("auth_user1").value = role
+    document.getElementById("auth_id").value = id
+});
+
+
+    
+      // $("input:checkbox[name=supplier]:checked").each(function(){
+    //     var val = $(this).val()
+    //     selected.push(val);
+    // });
+        
+//  table.buttons( 0, null ).containers().appendTo( 'body' );
+
+//     // $("#data-table-buttons").DataTable({
+//     //     buttons: [ 'copy', 'csv', 'excel' ]
+//     // })
+//     $("#validate_form").parsley();
+
+//     id = $(this).closest("tbody tr").find("td:eq(0)").html()
+
+
+//     $("#data-table-buttons").on('click','#button_del',function(){
+//         id = $(this).closest("tbody tr").find("td:eq(0)").html()
+//         alert(id)
+// 		swal({
+//             title: "Are you sure?",
+//             text: "You want to delete this user?", 
+//             icon: "warning",
+//             buttons: true,
+//             dangerMode: true,
+//         })
+//         .then((willDelete) => {
+//           if (willDelete) {
+// 			id = $(this).closest("tbody tr").find("td:eq(0)").html()
+// 		sample = $(this).closest("tbody tr").find("td").remove()
+// 		$.ajax({
+// 			type: "POST",
+// 			url: "{% url 'deleteuser' %}",
+// 			data:{
+// 				del_user_id: id,
+				
+// 				csrfmiddlewaretoken: "{{ csrf_token }}",
+// 			},
+// 			success: function(data){
+// 				swal("Success! User has been deleted", {
+// 		              icon: "success",
+// 		            }).then((willreload) => {
+// 		            	if(willreload){
+// 		            		window.location.reload()
+// 		            	}
+		            	
+// 		            });
+// 			},
+// 			error: function(error){
+// 				console.log(error);
+// 			}
+		
+// 		});
+//           } 
+//         });
+// 	});
+	
+</script>
+{% endblock %}
+

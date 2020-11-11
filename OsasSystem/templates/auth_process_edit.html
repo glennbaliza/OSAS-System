@@ -1,0 +1,92 @@
+{% extends 'base.html'%}
+{% load static %}
+
+{% block page-css %}
+    <link href="{% static 'OsasSystem/assets/plugins/DataTables/media/css/dataTables.bootstrap.min.css' %}" rel="stylesheet" />
+	<link href="{% static 'OsasSystem/assets/plugins/DataTables/extensions/Responsive/css/responsive.bootstrap.min.css' %}" rel="stylesheet" />
+{% endblock%}
+
+{% block title %}
+    {{auth_user.auth_username}}
+{% endblock %}
+
+{% block content %}
+<div id="content" class="content">
+    <div class="row">
+        <form id="validate_form" data-parsley-validate="" action="{% url 'OsasSystem:auth_user_edit' auth_user.auth_id %}" method="post" enctype="multipart/form-data">
+            <div class="row">
+                <div class="col-lg-12 col-md-6">
+                {% csrf_token %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            {% if message.tags %}  <script>alert("{{ message }}")</script> 
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                </div>
+            </div>
+            {% csrf_token %}
+            <div class="col-lg-12 col-md-6 ">
+                <div class="stats-content">
+                    <label>Username</label>
+                    <input type="text" disabled name="auth_username1" id="auth_username1" value="{{auth_user.auth_username}}" class="form-control" required  data-parsley-trigger="keyup"> 
+                </div>
+            </div>
+            <div class="col-lg-12 col-md-6 ">
+                <div class="stats-content">
+                    <label>Last name</label>
+                    <input type="text" name="auth_lname1" id="auth_lname1" value="{{auth_user.auth_lname}}" class="form-control" required  data-parsley-trigger="keyup"> 
+                </div>
+            </div>
+            <div class="col-lg-12 col-md-6 ">
+                <div class="stats-content">
+                    <label>First name</label>
+                    <input type="text" name="auth_fname1" id="auth_fname1"  value="{{auth_user.auth_fname}}" class="form-control" required  data-parsley-trigger="keyup"> 
+                </div>
+            </div>
+            <div class="col-lg-12 col-md-6 ">
+                <div class="stats-content">
+                    <label>Old Password</label>
+                    <input type="password" name="auth_pass1" id="auth_pass1"  class="form-control"   data-parsley-trigger="keyup"> 
+                </div>
+            </div>
+            <div class="col-lg-12 col-md-6 ">
+                <div class="stats-content">
+                    <label>New Password</label>
+                    <input type="password" name="auth_pass2" id="auth_pass2"  class="form-control"   data-parsley-trigger="keyup"> 
+                </div>
+            </div>
+            <div class="col-lg-12 col-md-6 ">
+                <div class="stats-content">
+                    <label>Confirm Password</label>
+                    <input type="password" name="auth_pass3" id="auth_pass3"  class="form-control"   data-parsley-trigger="keyup"> 
+                </div>
+            </div>
+            <div class="col-lg-12 col-md-6 ">
+                <div class="stats-content">
+                    <label>Status</label>
+                    {% if role %}
+                    <select id="auth_user" name="auth_user" class="form-control" required>
+                        <option hidden selected value="{{auth_user.auth_role}}">{{auth_user.auth_role}}</option>
+                        {% for osas_r_userrole in role%}
+                        <option value="{{osas_r_userrole.user_type}}">{{osas_r_userrole.user_type}}</option>
+                        {% endfor %}
+                    </select> 
+                    {% endif %} 
+                </div>
+            </div>
+            </br>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-success btn-sm btn-sm">Add</button>  
+                <button type="cancel" class="btn btn-warning btn-sm btn-sm" data-dismiss="modal">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block page-level %}
+	<script src="{%static 'OsasSystem/assets/plugins/bootstrap-sweetalert/sweetalert.min.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/js/demo/ui-modal-notification.demo.min.js' %}"></script>
+{% endblock %}

@@ -6,22 +6,27 @@ from django.conf import settings
 
 urlpatterns = [
     path('', include('OsasSystem.urls')),
-    path('home/]', views.home, name="home"),
+    path('home/', views.home, name="home"),
 #---------------------------------------------LOGIN------------------------------------------------------------------------------------------------
     path('login/', views.login, name="login"),
+    path('activate_account/', views.activate_account, name="activate_account"),
+    path('account_process/', views.account_process, name="account_process"),
 #-----------------------------------------REGISTRATION---------------------------------------------------------------------------------------------
-    path('register/', views.register, name="register"),
-    path('newregister/', views.newregister, name="newregister"),
+ 
 #---------------------------------------STUDENT PROFILE--------------------------------------------------------------------------------------------
     path('student_profile/', views.student_profile, name="student_profile"),
     path('student_process_add/', views.student_process_add, name="student_process_add"),
     path('add_student/', views.add_student, name="add_student"),
-    path('<int:stud_id>/student/edit_student', views.edit_student, name="edit_student"),
+    path('<int:stud_id>/student/edit_student/', views.edit_student, name="edit_student"),
 #-------------------------------------------USER ROLE----------------------------------------------------------------------------------------------
     path('userrole/', views.userrole, name="userrole"),
     path('<int:user_id>/edit_user/', views.edit_user, name="edit_user"),
     path('adduserrole/', views.adduserrole, name="adduserrole"),
     path('deleteuser/', views.deleteuser, name="deleteuser"),
+
+    path('auth_user/', views.auth_user, name="auth_user"),
+    path('auth_user_add/', views.auth_user_add, name="auth_user_add"),
+    path('<int:auth_id>/auth_process_edit/', views.auth_process_edit, name="auth_process_edit"),   
 #-----------------------------------------YEAR AND SECTION-----------------------------------------------------------------------------------------
     path('yr_sec/', views.yr_sec, name="yr_sec"),
     path('add_yr_sec/', views.add_yr_sec, name="add_yr_sec"),

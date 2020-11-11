@@ -4,8 +4,9 @@
 	Dashboard
 {% endblock %}
 
-{% block content %}
 
+{% block content %}
+{% if request.session.session_user_role%}
 		<!-- begin #content -->
 		<div id="content" class="content">
 			<!-- begin page-header -->
@@ -13,7 +14,16 @@
 			<!-- end page-header -->
 			<!-- begin row -->
 			<div class="row">
-			    <!-- begin col-3 -->
+				<!-- begin col-3 -->
+				<div class="col-lg-12 col-md-6">
+					{% if messages %}
+							{% for message in messages %}
+								{% if message.tags %}  
+									<script>alert("{{ message }}")</script> 
+								{% endif %}
+							{% endfor %}
+					{% endif %}
+				</div>
 			    <div class="col-lg-3 col-md-6">
 			        <div class="widget widget-stats bg-gradient-green">
 						<div class="stats-icon stats-icon-lg"><i class="fa fa-globe fa-fw"></i></div>
@@ -72,15 +82,8 @@
 						</div>
 			        </div>
 			    </div>
-			    <!-- end col-3 -->
-			</div>
-			<!-- end row -->
 		</div>
-		<!-- end #content -->s
-	</div>
-	<!-- end page container -->
-	
-
+{% endif %}
 {% endblock %}
-	
+
 
