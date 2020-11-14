@@ -93,22 +93,22 @@ def account_process(request):
                         else:
                             messages.error(request, 'Password does not match, please try again.')
                             # return HttpResponseRedirect('/activate_account', {'stud': stud}) 
-                            return render(request, 'activate_account.html', {'stud': stud})  
+                            return render(request, 'activate_account.html')  
                     else:  
                         messages.error(request, 'Please enter your new and confirm password.')
-                        return HttpResponseRedirect('/activate_account', {'stud': stud}) 
+                        return HttpResponseRedirect('/activate_account') 
                 else:
                     messages.error(request, 'Please enter your correct old password.')
-                    return HttpResponseRedirect('/activate_account', {'stud': stud}) 
+                    return HttpResponseRedirect('/activate_account') 
             else: 
                 messages.error(request, '1111111r' )
-                return HttpResponseRedirect('/activate_account', {'stud': stud}) 
+                return HttpResponseRedirect('/activate_account') 
         else:
             messages.error(request, 'Invalid student number' )
-            return HttpResponseRedirect('/activate_account', {'stud': stud}) 
+            return HttpResponseRedirect('/activate_account') 
     except ObjectDoesNotExist:
         messages.error(request, 'Invalid account!')
-        return HttpResponseRedirect('/activate_account', {'stud': stud}) 
+        return HttpResponseRedirect('/activate_account') 
     
 
 def r_employ(request):
