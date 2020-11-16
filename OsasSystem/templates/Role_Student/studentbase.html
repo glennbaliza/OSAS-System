@@ -1,0 +1,106 @@
+{% load static %}
+<!DOCTYPE html>
+<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
+<!--[if !IE]><!-->
+<html lang="en">
+<!--<![endif]-->
+
+	
+
+<head>
+	<meta charset="utf-8" />
+	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" />
+	<meta content="" name="description" />
+	<meta content="" name="author" />
+	
+	<title> OSAS | {% block title %} {% endblock %}</title>
+	<!-- ================== BEGIN BASE CSS STYLE ================== -->
+	<link href="{%static 'OsasSystem/assets/plugins/jquery-ui/jquery-ui.min.css' %}" rel="stylesheet" />
+    <link href="{%static 'OsasSystem/assets/plugins/bootstrap/4.0.0/css/bootstrap.min.css' %}" rel="stylesheet" />
+    <link href="{%static 'OsasSystem/assets/plugins/font-awesome/5.0/css/fontawesome-all.min.css' %}" rel="stylesheet" />
+    <link href="{%static 'OsasSystem/assets/plugins/animate/animate.min.css' %}" rel="stylesheet" />
+    <link href="{%static 'OsasSystem/assets/css/default/style.min.css' %}" rel="stylesheet" />
+    <link href="{%static 'OsasSystem/assets/css/default/style-responsive.min.css' %}" rel="stylesheet" />
+    <link href="{%static 'OsasSystem/assets/css/default/theme/default.css' %}" rel="stylesheet" id="theme" />
+	<!-- ================== END BASE CSS STYLE ================== -->
+	
+	<!-- ================== BEGIN PAGE LEVEL CSS STYLE ================== -->
+	<script src="{%static 'OsasSystem/assets/plugins/pace/pace.min.js' %}"></script>
+    <link href="{%static 'OsasSystem/assets/plugins/DataTables/media/css/dataTables.bootstrap.min.css' %}" rel="stylesheet" />
+    <link href="{%static 'OsasSystem/assets/plugins/DataTables/extensions/Responsive/css/responsive.bootstrap.min.css' %}" rel="stylesheet" />
+	<!-- ================== END PAGE LEVEL STYLE ================== -->
+	
+	<!-- ================== BEGIN BASE JS ================== -->
+	
+	<!-- ================== END BASE JS ================== -->
+	{% block page-css %} {% endblock %}
+</head>
+<body>
+	<!-- begin #page-loader -->
+	<div id="page-loader" class="fade show"><span class="spinner"></span></div>
+	<!-- end #page-loader -->
+	{% if request.session.session_user_role%}
+	<!-- begin #page-container -->
+	{% include 'Role_Student/studentsidebar.html'%}
+	{% include 'Role_Student/studentheader.html'%}
+	{% endif %}
+
+{% block content %}
+
+
+{% endblock %}
+
+
+	<!-- ================== BEGIN BASE JS ================== -->
+	<script src="{%static 'OsasSystem/assets/plugins/jquery/jquery-3.2.1.min.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/plugins/jquery-ui/jquery-ui.min.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/plugins/bootstrap/4.0.0/js/bootstrap.bundle.min.js' %}"></script>
+	<!--[if lt IE 9]>
+		<script src="../assets/crossbrowserjs/html5shiv.js"></script>
+		<script src="../assets/crossbrowserjs/respond.min.js"></script>
+		<script src="../assets/crossbrowserjs/excanvas.min.js"></script>
+	<![endif]-->
+	<script src="{%static 'OsasSystem/assets/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/plugins/js-cookie/js.cookie.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/js/theme/default.min.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/js/apps.min.js' %}"></script>
+	
+	<!-- ================== END BASE JS ================== -->
+	<script src="{% static 'OsasSystem/assets/plugins/parsley/dist/parsley.js' %}"></script>
+	<!-- ================== BEGIN PAGE LEVEL JS ================== -->
+	
+	<!-- ================== BEGIN PAGE LEVEL JS ================== -->
+	<script src="{%static 'OsasSystem/assets/plugins/DataTables/media/js/jquery.dataTables.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/plugins/DataTables/media/js/dataTables.bootstrap.min.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/plugins/DataTables/extensions/Buttons/js/vfs_fonts.min.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/plugins/DataTables/extensions/Buttons/js/buttons.html5.min.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/plugins/DataTables/extensions/Buttons/js/buttons.print.min.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/plugins/DataTables/extensions/Responsive/js/dataTables.responsive.min.js' %}"></script>
+	<!-- ================== END PAGE LEVEL JS ================== -->
+	
+	<script src="{%static 'OsasSystem/assets/plugins/DataTables/media/js/jquery.dataTables.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/plugins/DataTables/media/js/dataTables.bootstrap.min.js' %}"></script>
+	<script src="{% static 'OsasSystem/assets/plugins/DataTables/extensions/Buttons/js/dataTables.buttons.min.js'%}"></script>
+	<script src="{% static 'OsasSystem/assets/plugins/DataTables/extensions/Buttons/js/buttons.bootstrap.min.js'%}"></script>
+	<script src="{% static 'OsasSystem/assets/plugins/DataTables/extensions/Buttons/js/buttons.flash.min.js'%}"></script>
+	<script src="{% static 'OsasSystem/assets/plugins/DataTables/extensions/Buttons/js/jszip.min.js'%}"></script>
+	<script src="{% static 'OsasSystem/assets/plugins/DataTables/extensions/Buttons/js/pdfmake.min.js'%}"></script>
+	<script src="{% static 'OsasSystem/assets/plugins/DataTables/extensions/Buttons/js/vfs_fonts.min.js'%}"></script>
+	<script src="{%static 'OsasSystem/assets/plugins/DataTables/extensions/Buttons/js/buttons.html5.min.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/plugins/DataTables/extensions/Buttons/js/buttons.print.min.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/plugins/DataTables/extensions/Responsive/js/dataTables.responsive.min.js' %}"></script>
+	<script src="{% static 'OsasSystem/assets/js/demo/table-manage-buttons.demo.min.js'%}"></script>
+
+	{% block page-level %} {% endblock %}
+
+	{% block page-js %} {% endblock %}
+	<script>
+		$(document).ready(function() {
+			App.init();
+			$('#datepickers').datepicker({ dateFormat: 'yy-mm-dd' });
+		});
+    </script>
+</body>
+</html>
+
+    
