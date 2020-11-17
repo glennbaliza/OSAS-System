@@ -32,8 +32,7 @@
         <ul class="nav">
             <li class="nav-header">Navigation</li>
             <li class="has-sub">
-                <a href="javascript:;">
-                    <b class="caret"></b>
+                <a href="{% url 'dashboard' %}">
                     <i class="fa fa-th-large"></i>
                     <span>Dashboard</span>
                 </a>
@@ -48,7 +47,7 @@
                 </a>
                 <ul class="sub-menu">
                     <li class="has-sub">
-                        <a href="{% url 'student_profile' %}">
+                        <a href="{% url 'profile' %}">
                             Student Profile
                         </a>
                     </li>
@@ -68,7 +67,7 @@
                             ID
                         </a>
                                 <ul class="sub-menu">
-                                    <li><a href="javascript:;">Menu 3.1</a></li>
+                                    <li><a href="{% url 'id_request_form' %}">Request Form</a></li>
                                     <li><a href="javascript:;">Menu 3.2</a></li>
                                 </ul>
                             </li>

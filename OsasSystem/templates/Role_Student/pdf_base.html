@@ -23,7 +23,7 @@
     <link href="{%static 'OsasSystem/assets/css/default/style-responsive.min.css' %}" rel="stylesheet" />
     <link href="{%static 'OsasSystem/assets/css/default/theme/default.css' %}" rel="stylesheet" id="theme" />
 	<!-- ================== END BASE CSS STYLE ================== -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+	
 	<!-- ================== BEGIN PAGE LEVEL CSS STYLE ================== -->
 	<script src="{%static 'OsasSystem/assets/plugins/pace/pace.min.js' %}"></script>
     <link href="{%static 'OsasSystem/assets/plugins/DataTables/media/css/dataTables.bootstrap.min.css' %}" rel="stylesheet" />
@@ -33,17 +33,48 @@
 	<!-- ================== BEGIN BASE JS ================== -->
 	
 	<!-- ================== END BASE JS ================== -->
-	{% block page-css %} {% endblock %}
+    {% block page-css %} {% endblock %}
+    <style type="text/css">
+        @page{
+            size: "A4";
+            margin: 2.5cm 1.5cm 3.5cm 1.5cm;       
+        }
+        body{
+                font-weight: 200;
+                font-size: 14px;
+                background:white;
+            }
+            .header {
+                font-size: 20px;
+                font-weight: 100;
+                text-align: center;
+                color: #007cae;
+            }
+            .title {
+                font-size: 22px;
+                font-weight: 100;
+               /* text-align: right;*/
+               padding: 10px 20px 0px 20px;  
+            }
+            .title span {
+                color: #007cae;
+            }
+            .details {
+                padding: 10px 20px 0px 20px;
+                text-align: left !important;
+                /*margin-left: 40%;*/
+            }
+            .hrItem {
+                border: none;
+                height: 1px;
+                /* Set the hr color */
+                color: #333; /* old IE */
+                background-color: #fff; /* Modern Browsers */
+            }  
+    </style>
 </head>
 <body>
-	<!-- begin #page-loader -->
-	<div id="page-loader" class="fade show"><span class="spinner"></span></div>
-	<!-- end #page-loader -->
-	{% if request.session.session_user_role%}
-	<!-- begin #page-container -->
-	{% include 'Role_Student/studentsidebar.html'%}
-	{% include 'Role_Student/studentheader.html'%}
-	{% endif %}
+    
 
 {% block content %}
 

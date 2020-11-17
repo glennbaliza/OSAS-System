@@ -1,0 +1,195 @@
+{% extends 'Role_Student/studentbase.html'%}
+{% load static %}
+
+{% block page-css %}
+    <link href="{% static 'OsasSystem/assets/plugins/DataTables/media/css/dataTables.bootstrap.min.css' %}" rel="stylesheet" />
+	<link href="{% static 'OsasSystem/assets/plugins/DataTables/extensions/Responsive/css/responsive.bootstrap.min.css' %}" rel="stylesheet" />
+{% endblock%}
+
+{% block title %}
+    Profile {{request.session.session_user_no}}
+{% endblock %}
+
+
+{% block content%}
+<!-- Main Content -->
+<div class="content" >
+    <div class="container" >
+            {% if messages %}
+                <p class="alert alert-danger">
+                    {% for message in messages %}
+                    <strong>{{ message }}</strong>
+                    {% endfor %}
+                </p>
+            {% endif %} 
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card" style=" background-color: whitesmoke; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1), 0 1px 1px 0 rgba(0, 0, 0, 0.19); ">
+                    <h5 class="card-header bg-red mb-3 text-white">Profile</h5>
+                    <div class="card-body" style="margin-top: -20px; ">
+                        <div class="card-body"  >
+                            {% if profile %}
+                            <div class="row">
+                                <div class="col-lg-5 col-md-6 ">
+                                    <h6><b>Student Number:</b> <i>{{profile.stud_no}}</i></h6>
+                                </div>
+                                <div class="col-lg-7 col-md-6 ">
+                                    <h6><b>Course:</b> <i>{{profile.stud_course_id}}</i></h6>
+                                </div>
+                            </div>
+                            <div class="card-body" style="background-color: white; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2), 0 3px 15px 0 rgba(0, 0, 0, 0.15); border-top: red;" >
+                                <div style="background-color: white; height: 100%;">
+                                    <div class="card">
+                                        <form action="{% url 'OsasSystem:student_profile_edit' %}" method="POST"> 
+                                            {% csrf_token %}
+                                            <h5 >Personal Information</h5>
+                                            <br/>
+                                            <div class="row">
+                                                <div class="col-lg-4 col-md-6 ">
+                                                    <div class="stats-content">
+                                                        <label>Last Name</label>
+                                                        <input  style="margin-bottom: 8px;" value="{{profile.stud_lname}}" type="text" id="txt_l_name" name="txt_l_name" class="form-control" placeholder="Last name" required data-parsley-trigger="keyup">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4 col-md-6 ">
+                                                    <div class="stats-content">
+                                                        <label>First Name</label>
+                                                        <input  type="text" id="txt_f_name" class="form-control" name="txt_f_name" placeholder="First name" required data-parsley-trigger="keyup" value="{{profile.stud_fname}}">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4 col-md-6 ">
+                                                    <div class="stats-content">
+                                                        <label>Middle Name</label>
+                                                        <input  type="text" id="txt_m_name" class="form-control" name="txt_m_name" placeholder="Middle name" required data-parsley-trigger="keyup" value="{{profile.stud_mname}}">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-lg-4 col-md-6 ">
+                                                    <div class="stats-content">
+                                                        {% if n %}
+                                                        <label id="currdate" value=""></label>   
+                                                        <input type="text" class="form-control" name="date_of_birth" value="{{n}}" id="datepickers" onload="datePickerChange" placeholder="{% now 'Y-m-d' %}">
+                                                        {% endif %}
+                                                    </div>
+                                                    <div id="datepicker"></div> 
+                                                </div>
+                                                <div class="col-lg-4 col-md-6 ">
+                                                    <div class="stats-content">
+                                                        
+                                                        <label>Email Address</label>
+                                                        <input style="margin-bottom: 8px;" type="email" id="txt_email" name="txt_email" placeholder="" class="form-control" required data-parsley-trigger="keyup" value="{{profile.stud_email}}"> 
+                                                        
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4 col-md-6 ">
+                                                    <div class="stats-content">
+                                                        <label>Mobile number</label>
+                                                        <input  type="text" id="txt_mobile_number" class="form-control" name="txt_mobile_number" placeholder="ex. 09123456789" required data-parsley-trigger="keyup" value="{{profile.stud_m_number}}">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-lg-12 col-md-6 ">
+                                                    <div class="stats-content">
+                                                        <label>Address</label> 
+                                                        <input style="margin-bottom: 8px;" type="text" id="txt_address" name="txt_address" class="form-control" placeholder="Adress" required data-parsley-trigger="keyup" value="{{profile.stud_address}}">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr style="width:100%;text-align:left;margin-left:0">
+                                            <h5 >Educational Background</h5>
+                                            <br/>
+                                            <div class="row">
+                                                <div class="col-lg-4 col-md-6 ">
+                                                    <div class="stats-content">
+                                                        <label>High School Name</label>
+                                                        <input style="margin-bottom: 8px;" type="text" id="txt_h_name" name="txt_h_name" class="form-control" placeholder="School name" required data-parsley-trigger="keyup" value="{{profile.stud_hs}}">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-8 col-md-6 ">
+                                                    <div class="stats-content">
+                                                        <label>High School Address</label>
+                                                        <input style="margin-bottom: 8px;" type="text" id="txt_h_address" name="txt_h_address" class="form-control" placeholder="School address" required data-parsley-trigger="keyup" value="{{profile.stud_hs_add}}">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4 col-md-6 ">
+                                                    <div class="stats-content">
+                                                        <label>Senior High School Name</label>
+                                                        <input style="margin-bottom: 8px;" type="text" id="txt_sh_name" name="txt_sh_name" class="form-control" placeholder="School name" required data-parsley-trigger="keyup" value="{{profile.stud_sh}}">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-8 col-md-6 ">
+                                                    <div class="stats-content">
+                                                        <label>Senior High School Address</label>
+                                                        <input style="margin-bottom: 8px;" type="text" id="txt_sh_address" name="txt_sh_address" class="form-control" placeholder="School address" required data-parsley-trigger="keyup" value="{{profile.stud_sh_add}}">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr style="width:100%;text-align:left;margin-left:0">
+                                            <h5 >Incase of Emergency</h5>
+                                            <br/>
+                                            <div class="row">
+                                                <div class="col-lg-6 col-md-6 ">
+                                                    <div class="stats-content">
+                                                        <label>Emergency contact person</label>
+                                                        <input  type="text" id="txt_e_name" name="txt_e_name" class="form-control" placeholder="Full name" required data-parsley-trigger="keyup" value="{{profile.stud_e_name}}">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6 col-md-6 ">
+                                                    <div class="stats-content">
+                                                        <label>Emergency contact person number</label>
+                                                        <input style="margin-bottom: 8px;" type="text" id="txt_e_number" name="txt_e_number" placeholder="ex. 09123456789" class="form-control" required data-parsley-trigger="keyup" value="{{profile.stud_e_m_number}}">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-12 col-md-6 ">
+                                                    <div class="stats-content">
+                                                        <label>Emergency contact person address</label>
+                                                        <input  type="text" id="txt_e_address" name="txt_e_address" class="form-control" placeholder="Address" required data-parsley-trigger="keyup" value="{{profile.stud_e_address}}">
+                                                    </div>
+                                                </div>	
+                                            </div>
+                                            <br/>
+                                            <hr style="width:100%;text-align:left;margin-left:0">
+                                            <div class="btn col-lg-12">
+                                                <button id="submit" type="submit" class="btn btn-success btn-sm btn-lg">EDIT</button>   
+                                                <button id="cancel" type="cancel" class="btn btn-warning btn-sm btn-lg">CANCEL</button>  
+                                            </div>
+                                            <br/>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block page-level %}
+	<script src="{%static 'OsasSystem/assets/plugins/bootstrap-sweetalert/sweetalert.min.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/js/demo/ui-modal-notification.demo.min.js' %}"></script>
+{% endblock %}
+
+{% block page-js %}
+<script>
+      // You have a 'moment' global here
+      var datetemp = document.getElementById("datepickers").value; // get value from input 
+      const today = moment(datetemp, [ 'MMMMDDY']).format(); // format ex. "Jan 01, 2000" to ISO 
+      const dob = moment(today) // setting the new formatted date
+      document.getElementById('datepickers').value = dob.format('YYYY-MM-DD') // passing the value to the input field with a new format
+
+      console.log("Today's date is: " + 
+      dob.format('YYYY-MM-DD')) // checking if true
+      
+	    function datePickerChange() {
+			$('#datepickers').datepicker({ dateFormat: 'yy-mm-dd' });
+		};
+        
+</script>
+{% endblock %}

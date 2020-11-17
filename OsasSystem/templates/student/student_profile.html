@@ -14,13 +14,13 @@
 {% block content%}
 <div id="content" class="content">
 
-    <div class="col-lg-12 col-md-6">
-        {% if error_message %}
-            <p class="alert alert-danger">
-                <strong>{{ error_message }}</strong>
-            </p>
-        {% endif %} 
-    </div>
+    {% if messages %}
+    <p class="alert alert-danger">
+        {% for message in messages %}
+            <i><strong>{{ message }}</strong></i>
+        {% endfor %}
+    </p>
+    {% endif %} 
     <div class="col-lg-12 col-md-6">
         {% if success_message %}
             <p class="alert alert-danger">
@@ -60,7 +60,7 @@
                                 <th hidden></th>
                                 <th class="text-nowrap">Student Number</th>
                                 <th class="text-nowrap">Name</th>
-                                <th data-type="date" data-format-string="Do MMMM YYYY">Birthday</th>
+                                <th>Birthday</th>
                                 <th class="text-nowrap">Email</th>
                                 <th class="text-nowrap">Mobile Number</th>
                                 <th class="text-nowrap">Course</th>
@@ -76,7 +76,7 @@
                                 <td hidden >{{ osas_r_personal_info.stud_id }}</td>  
                                 <td class="text-nowrap">{{ osas_r_personal_info.stud_no }}</td>
                                 <td class="text-nowrap">{{ osas_r_personal_info.stud_lname }} {{ osas_r_personal_info.stud_fname }}  {{ osas_r_personal_info.stud_mname }}</td>
-                                <td class="text-nowrap">{{ osas_r_personal_info.stud_birthdate }}</td> 
+                                <td value="{{ osas_r_personal_info.stud_birthdate }}" class="text-nowrap">{{ osas_r_personal_info.stud_birthdate }}</td> 
                                 <td>{{ osas_r_personal_info.stud_email }}</td>        
                                 <td>{{ osas_r_personal_info.stud_m_number }}</td>
                                 <td class="text-nowrap">{{ osas_r_personal_info.stud_course_id }}</td>
@@ -274,6 +274,22 @@
 
 {% block page-js %}
 <script>
+    //https://stackoverflow.com/questions/3072233/getting-value-from-table-cell-in-javascript-not-jquery
+    var table = document.getElementById('data-table-combines');
+    var rowCount = table.rows.length; 
+    for (var r = 1, n = table.rows.length; r < n; r++) {
+        var table = document.getElementById("data-table-combines").rows[r].cells[3].innerHTML
+        if (moment(table, 'YYYY-MM-DD', true).isValid()) {
+        }
+        else {           
+            const stud_dob_temp = moment(table, ['MMMMDDY']).format();
+            const dob = moment(stud_dob_temp) // setting the new formatted date
+            document.getElementById("data-table-combines").rows[r].cells[3].innerHTML = dob.format('YYYY-MM-DD')
+            console.log("Today's date is: " + 
+            dob.format('YYYY-MM-DD'))   
+        }
+    }
+
     $(document).ready(function() {
         // App.init();
         // $('#datepicker').datepicker({ dateFormat: 'yy-mm-dd' });
@@ -294,14 +310,11 @@
                 'print',
             ],
             "lengthMenu": [ [10, 25, 50, -1], [10, 25, 50, "All"] ],
-                // columnDefs:[{targets:2, render:function(data){
-                //     return moment(data).format('YYYY/MM/DD');
-                // }}]
         });
 	});
 
     $('#validate_form').on('submit', function(event){
-        var datetemp = document. getElementById("datepicker").value;    
+        var datetemp = document.getElementById("datepicker").value;    
         alert(datetemp)     
         var selectedValue = $(this).text();
         dd_course = $("#dd_course").children("option:selected").val();

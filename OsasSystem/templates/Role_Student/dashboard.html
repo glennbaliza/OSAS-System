@@ -1,7 +1,7 @@
 {% extends 'Role_Student/studentbase.html'%}
 {% load static %}
 {% block title %}
-	Dashboard
+	Dashboard {{request.session.session_user_no}}
 {% endblock %}
 
 
@@ -84,6 +84,5 @@
 			    </div>
 		</div>
 {% endif %}
+
 {% endblock %}
-
-

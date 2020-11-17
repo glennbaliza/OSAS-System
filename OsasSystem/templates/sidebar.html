@@ -1,6 +1,7 @@
 {% load static %}
 
 <!-- begin #sidebar -->
+{% if request.session.session_user_role == 'HEAD OSAS' or request.session.session_user_role == 'OSAS STAFF'%}
 <div id="sidebar" class="sidebar">
     <!-- begin sidebar scrollbar -->
     <div data-scrollbar="true" data-height="100%">
@@ -39,7 +40,7 @@
                 </a>
             </li>
             
-            {% if request.session.session_user_role == 'HEAD OSAS' or request.session.session_user_role == 'OSAS STAFF'%}
+            
             <li class="has-sub">
                 <a href="javascript:;">
                     <b class="caret"></b>
@@ -68,8 +69,8 @@
                             ID
                         </a>
                                 <ul class="sub-menu">
-                                    <li><a href="javascript:;">Menu 3.1</a></li>
-                                    <li><a href="javascript:;">Menu 3.2</a></li>
+                                    <li><a href="{% url 'lost_id' %}">Lost</a></li>
+                                    <li><a href="javascript:;">Claimed</a></li>
                                 </ul>
                             </li>
                     </li>
@@ -134,11 +135,12 @@
                     <li><a href="{% url 'course' %}">Courses</a></li>
                 </ul>
             </li>
-            {% endif%}
+          
         </ul>
         <!-- end sidebar nav -->
     </div>
     <!-- end sidebar scrollbar -->
 </div>
+{% endif%}
 <div class="sidebar-bg"></div>
 <!-- end #sidebar -->

@@ -1,20 +1,32 @@
 import random
 from django.shortcuts import render, redirect, get_object_or_404, reverse
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404
 from django.core.exceptions import ObjectDoesNotExist
-from django.db import IntegrityError
-from .models import osas_r_userrole, osas_r_course, osas_r_section_and_year, osas_r_personal_info, osas_r_referral, osas_r_auth_user
+from .models import osas_r_userrole, osas_r_course, osas_r_section_and_year, osas_r_personal_info, osas_r_referral, osas_r_auth_user, osas_t_id
 from django.contrib import messages
 from django.views.decorators.cache import cache_control
-from datetime import datetime
+from datetime import datetime, date
+from dateutil import parser
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 
 def home(request):
     return render(request, 'home.html', {})
+
+def dashboard(request):
+    return render(request, 'Role_Student/dashboard.html', {})
 #--------------------------------------LOGIN------------------------------------------------------------------------------------------
 def login(request):
     try:
         del request.session['session_user_role']
+        request.session['session_user_role'] = 'none'
+        return render(request, 'login.html', {})
+    except KeyError:
+        return render(request, 'login.html', {})
+
+def logout(request):
+    try:
+        del request.session['session_user_role']
+        request.session['session_user_role'] = 'none'
         return render(request, 'login.html', {})
     except KeyError:
         return render(request, 'login.html', {})
@@ -31,14 +43,13 @@ def activate_account(request):
                 return render(request, 'activate_account.html', {'stud': stud})  
             else:
                 s = osas_r_userrole.objects.get(user_type=stud.stud_role)
-                messages.success(request, s_no + ' Log in as ' + str(stud.stud_role))
                 request.session['session_user_id'] = stud.stud_id
                 request.session['session_user_no'] = stud.stud_no
                 request.session['session_user_lname'] = stud.stud_lname
                 request.session['session_user_fname'] = stud.stud_fname
                 request.session['session_user_pass'] = stud.s_password
                 request.session['session_user_role'] = s.user_type
-                return HttpResponseRedirect('/home', {'stud': stud}) #passing the values of student to the next template
+                return HttpResponseRedirect('/dashboard', {'stud': stud}) #passing the values of student to the next template
         else:
             messages.error(request, 'Either student number or password are incorrect.')
             return HttpResponseRedirect('/login')
@@ -49,7 +60,6 @@ def activate_account(request):
             f = osas_r_userrole.objects.get(user_id=r.auth_id)
             if r.auth_username == s_no and r.auth_password == password:
                 if r.auth_role_id == 2:
-                    messages.success(request, str(s_no) + ' Log in as ' + str(r.auth_role_id))
                     request.session['session_user_id'] = r.auth_id
                     request.session['session_user_lname'] = r.auth_lname
                     request.session['session_user_fname'] = r.auth_fname
@@ -65,7 +75,7 @@ def activate_account(request):
                     request.session['session_user_username'] = r.auth_username
                     request.session['session_user_pass'] = r.auth_password
                     request.session['session_user_role'] = f.user_type
-                    return HttpResponseRedirect('/login')
+                    return HttpResponseRedirect('/home')
             else: 
                 return HttpResponseRedirect('/login')
         else:
@@ -101,7 +111,7 @@ def account_process(request):
                     messages.error(request, 'Please enter your correct old password.')
                     return HttpResponseRedirect('/activate_account') 
             else: 
-                messages.error(request, '1111111r' )
+                messages.error(request, 'Invalid student number' )
                 return HttpResponseRedirect('/activate_account') 
         else:
             messages.error(request, 'Invalid student number' )
@@ -334,11 +344,11 @@ def edituser(request, user_id):
     else:
         today = datetime.today()
         user_profile = osas_r_userrole.objects.get(pk=user_id)
-        if username:
+        if usertype:
             user_profile.user_type = usertype
-        user_profile.date_updated = today
-        user_profile.save()
-        return HttpResponseRedirect('/userrole' , {'success_message': "Congratulations," })
+            user_profile.date_updated = today
+            user_profile.save()
+            return HttpResponseRedirect('/userrole' , {'success_message': "Congratulations," })
 
 def adduserrole(request):
     usertype = request.POST.get('userrole')
@@ -355,9 +365,7 @@ def adduserrole(request):
             return redirect('/userrole')
         else:
             messages.error(request, usertype + ' ' + 'is already exist.')
-            return render(request, 'userrole.html', {
-            'error_message': "Duplicated email : " + email
-            })
+            return render(request, 'userrole.html')
 
 def deleteuser(request):
     id = request.POST.get('del_user_id')
@@ -427,7 +435,7 @@ def auth_user_edit(request, auth_id):
                     crs = osas_r_userrole.objects.get(user_type=_user)        
                     n.auth_role = crs
             n.save()
-            messages.success(request, _username + ' ' +  'Successfully Updated!')
+            messages.success(request, str(_username) + ' ' +  'Successfully Updated!')
             return HttpResponseRedirect(reverse('auth_process_edit', args=(auth_id,)))             
         else:
             messages.error(request, 'Problem updating record')
@@ -486,7 +494,137 @@ def add_ref(request):
         referral.save()
         return render(request, 'alumni/r_referral.html')
 
+#-------------------------------------STUDENT SIDE---------------------------------------------------------
 
+def id_request_form(request):
+    return render(request, 'Role_Student/id_request_form.html')
+#-----------------------------ID---------------------------------------------------------------------------
+def lost_id(request):
+    id_list = osas_t_id.objects.order_by('request_id')
+    context = {'id_list': id_list}
+    return render(request, 'id/lost_id.html', {'id_list': str(id_list)})
+    
+def edit_user(request, user_id): 
+    template_name = 'edit_user.html'
+    try:
+        user_role = osas_r_userrole.objects.get(user_id=user_id)
+    except osas_r_userrole.DoesNotExist:
+            raise Http404("User profile does not exist")
+    return render(request, template_name,{'user_role':user_role})
 
+def edituser(request, user_id):
+    user = get_object_or_404(osas_r_userrole, pk=user_id)
+    try:
+        usertype = request.POST.get('userrole')
+    except (KeyError, osas_r_userrole.DoesNotExist ):
+        return render(request, 'userrole.html', {
+            'user': user,
+            'error_message': "Problem updating record",
+        })
+    else:
+        today = datetime.today()
+        user_profile = osas_r_userrole.objects.get(pk=user_id)
+        if usertype:
+            user_profile.user_type = usertype
+        user_profile.date_updated = today
+        user_profile.save()
+        return HttpResponseRedirect('/userrole' , {'success_message': "Congratulations," })
 
+def adduserrole(request):
+    usertype = request.POST.get('userrole')
+    try:
+        n = osas_r_userrole.objects.get(user_type = usertype)
+        messages.error(request, usertype +  ' ' + 'is already exist.')
+        return redirect('/userrole')
+    except ObjectDoesNotExist:
+        today = datetime.today()
+        if usertype:
+            user_role = osas_r_userrole(user_type=usertype, date_created=today)
+            user_role.save()
+            messages.success(request, usertype + ' ' +  'Successfully Added!')
+            return redirect('/userrole')
+        else:
+            messages.error(request, usertype + ' ' + 'is already exist.')
+            return render(request, 'userrole.html')
 
+def deleteuser(request):
+    id = request.POST.get('del_user_id')
+    osas_r_userrole.objects.get(pk=id).delete()
+    return HttpResponseRedirect('/userrole')
+
+#------------------------------------PROFILE------------------------------------------------------------
+def profile(request):
+    template_name = 'Role_Student/profile.html'
+    request.session['session_user_id']
+    request.session['session_user_no']
+    try:
+        profile = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no'])
+        s = profile.stud_birthdate
+        n = datetime.strptime(str(s), "%Y-%m-%d").date()
+        return render(request, template_name, {'profile': profile, 'n': n})
+    except ObjectDoesNotExist:
+        return render(request, 'Role_Student/profile.html')
+    
+def student_profile_edit(request):
+    request.session['session_user_id']
+    request.session['session_user_no']
+    course = request.POST.get('txt_course')
+    yr_sec = request.POST.get('txt_yr_sec')
+    try:
+        student_profile = osas_r_personal_info.objects.get(stud_id=request.session['session_user_id'])
+        l_name = request.POST.get('txt_l_name')
+        f_name = request.POST.get('txt_f_name')
+        m_name = request.POST.get('txt_m_name')
+        studno = request.POST.get('txt_studno')
+        d_of_birth = request.POST.get('date_of_birth')
+        if d_of_birth:
+            s = parser.parse(d_of_birth)
+        gender = request.POST.get('txt_Gender')
+        address = request.POST.get('txt_address')
+        email = request.POST.get('txt_email')
+        mobile_number = request.POST.get('txt_mobile_number')
+        course = request.POST.get('txt_course')
+        yr_sec = request.POST.get('txt_yr_sec')
+        h_name = request.POST.get('txt_h_name')
+        h_address = request.POST.get('txt_h_address')
+        sh_name = request.POST.get('txt_sh_name')
+        sh_address = request.POST.get('txt_sh_address')
+        e_name = request.POST.get('txt_e_name')
+        e_number = request.POST.get('txt_e_number')
+        e_address = request.POST.get('txt_e_address')
+    except ObjectDoesNotExist:
+        messages.error(request, 'Invalid Student Number')
+        return render(request, 'student/student_profile.html')
+    else: # passing the value from template to database
+        today = datetime.today()
+        student_profile = osas_r_personal_info.objects.get(stud_id=request.session['session_user_id'])
+        if studno:
+            student_profile.stud_no = studno
+        if d_of_birth:
+            # datebirth = datetime.strptime(d_of_birth, '%B %d, %Y')
+            student_profile.stud_birthdate = s
+        if yr_sec:
+            year_sec = osas_r_section_and_year.objects.get(yas_descriptions=yr_sec)
+            student_profile.stud_yas_id = year_sec
+        if course:
+            crs = osas_r_course.objects.get(course_name=course)
+            student_profile.stud_course_id = crs
+        student_profile.stud_lname = l_name
+        student_profile.stud_fname = f_name
+        student_profile.stud_mname = m_name
+        if gender:
+            student_profile.stud_gender = gender
+        student_profile.stud_address = address
+        student_profile.stud_email = email
+        student_profile.stud_m_number = mobile_number
+        student_profile.stud_hs = h_name
+        student_profile.stud_hs_add = h_address
+        student_profile.stud_e_name = e_name
+        student_profile.stud_e_address = e_address
+        student_profile.stud_e_m_number = e_number
+        student_profile.stud_sh = sh_name
+        student_profile.stud_sh_add = sh_address
+        student_profile.date_updated = today
+        student_profile.save()
+        messages.success(request, str(s), 'Successfully Updated!')
+        return HttpResponseRedirect('/profile')

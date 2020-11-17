@@ -18,11 +18,11 @@
         <ul class="navbar-nav navbar-right">
             <li class="dropdown navbar-user">
                 <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
-                    <span class="d-none d-md-inline">Adam Schwartz</span> <b class="caret"></b>
+                    <span class="d-none d-md-inline">{{request.session.session_user_lname}} {{request.session.session_user_fname}}</span> <b class="caret"></b>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right">
                     <a href="javascript:;" class="dropdown-item">Edit Profile</a>
-                    <a href="javascript:;" class="dropdown-item">Log Out</a>
+                    <a href="{% url 'logout' %}" class="dropdown-item">Log Out</a>
                 </div>
             </li>
         </ul>
