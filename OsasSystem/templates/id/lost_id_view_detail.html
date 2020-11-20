@@ -1,0 +1,106 @@
+{% extends 'base.html'%}
+{% load static %}
+
+{% block page-css %}
+    <!-- <link href="{% static 'OsasSystem/assets/plugins/DataTables/media/css/dataTables.bootstrap.min.css' %}" rel="stylesheet" />
+	<link href="{% static 'OsasSystem/assets/plugins/DataTables/extensions/Responsive/css/responsive.bootstrap.min.css' %}" rel="stylesheet" /> -->
+{% endblock%}
+
+{% block title %}
+    Student Profile 
+{% endblock %}
+
+
+{% block content%}
+<div id="content" class="content">
+    
+    <div class="row">
+        {% if messages %}
+        <p class="alert alert-danger">
+            {% for message in messages %}
+                <i><strong>{{ message }}</strong></i>
+            {% endfor %}
+        </p>
+        {% endif %}
+    </div>
+    <div class="row">
+        <div class="col-lg-12 col-md-6">
+            <div class="panel panel-inverse">
+                <div class="card" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1), 0 1px 1px 0 rgba(0, 0, 0, 0.19);">
+                    <div class="card-header bg-dark">
+                        <button data-dismiss="alert" data-target="#closeablecard" type="button" class="close bg-white" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <ul class="nav nav-tabs card-header-tabs">
+                        <li class="nav-item" >
+                        <a class="nav-link active" style=" font-family: Roboto;">Request Details</a>
+                        </li>
+                        </ul>
+                    </div>
+                    <div class="panel-body">
+                        <hr>
+                            <table style="font-family: Roboto; font-size: 11.5px;" id="table_view" class="table table-bordered table-striped">
+                            <tbody>
+                                <tr>
+                                    <th style="width: 483px;  height: 50px; padding-top: 16px;" >REQUEST ID:<p style="font-weight: normal;  margin-top: 5px; margin-left: 10px; display: inline;">{{stud.request_id}}</p></th>
+                                    <th style="height: 50px; padding-top: 16px;">STUDENT NO.:<p style="font-weight: normal;  margin-left: 10px; display: inline;">{{stud.lost_stud_id.stud_no}}</p></th> 
+                                </tr>
+                                <tr>
+                                    <th  style="width: 483px;  height: 50px; padding-top: 16px;">DATE REQUESTED:<p style="font-weight: normal; margin-top: 5px; margin-left: 10px; display: inline;" id="DATE_REQUEST">{{stud.date_created}}</p></th>
+                                    <th style="height: 50px; padding-top: 16px;">NO. OF DAYS:<p style="font-weight: normal; margin-top: 5px; margin-left: 10px; display: inline;" id="DAYS"></p></th>
+                                </tr>
+                                <tr>
+                                    <th  style="width: 483px;  height: 50px; padding-top: 16px;">STATUS:<p style="font-weight: normal; margin-top: 5px; margin-left: 10px; display: inline;">{{stud.lost_id_status}}</p></th>
+                                    <th style="height: 50px; padding-top: 16px;">NUMBER OF REQUEST:<p style="font-weight: normal; margin-top: 5px; margin-left: 10px; display: inline;">{{days_count}}</p></th> 
+                                </tr>
+                                <tr>
+                                    <th  style="width: 483px; height: 50px; padding-top: 16px;">NAME:<p style="font-weight: normal; margin-top: 5px; margin-left: 10px; display: inline;">{{stud.lost_stud_id.stud_lname}}, {{stud.lost_stud_id.stud_fname}} {{stud.lost_stud_id.stud_mname}}</p></th>
+                                    <th style="height: 50px; padding-top: 16px;" >COURSE:<p style="font-weight: normal; margin-top: 5px; margin-left: 10px; display: inline;">{{stud.lost_stud_id.stud_course_id}}</p></th> 
+                                </tr>
+                                <tr>
+                                    <th  style="width: 483px;  height: 50px; padding-top: 16px;" >YEAR & SECTION:<p style="font-weight: normal; margin-top: 5px; margin-left: 10px; display: inline;">{{stud.lost_stud_id.stud_yas_id}}</p></th>
+                                    <th style="height: 50px; padding-top: 16px;" >BIRTHDATE:<p id="BIRTHDATE" value="{{stud.lost_stud_id.stud_birthdate}}" style="font-weight: normal; margin-top: 5px; margin-left: 10px; display: inline;">{{stud.lost_stud_id.stud_birthdate}}</p></th>
+                                </tr>
+                                <tr>
+                                    <th  style="width: 483px; height: 50px; padding-top: 16px;">GENDER:<p style="font-weight: normal; margin-top: 5px; margin-left: 10px; display: inline;">{{stud.lost_stud_id.stud_gender}}</p></th>
+                                    <th style="height: 50px; padding-top: 16px;" >ADDRESS:<p style="font-weight: normal; margin-top: 5px; margin-left: 10px; display: inline;">{{stud.lost_stud_id.stud_address}}</p></th> 
+                                </tr>
+                                <tr>
+                                    <th style="width: 483px;  height: 50px; padding-top: 16px;">EMAIL ADDRESS:<p style="font-weight: normal; margin-top: 5px; margin-left: 10px; display: inline;">{{stud.lost_stud_id.stud_email}}</p></th>
+                                    <th style="height: 50px; padding-top: 16px;" >MOBILE NO.:<p style="font-weight: normal; margin-top: 5px; margin-left: 10px; display: inline;">{{stud.lost_stud_id.stud_m_number}}</p></th> 
+                                </tr>
+                            </tbody>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block page-level %}
+	<script src="{%static 'OsasSystem/assets/plugins/bootstrap-sweetalert/sweetalert.min.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/js/demo/ui-modal-notification.demo.min.js' %}"></script>
+{% endblock %}
+
+{% block page-js %}
+<script>
+    request_id = $(this).closest("tbody tr").find("td:eq(0)").html()
+
+    var table = document.getElementById("BIRTHDATE").innerHTML;
+    const today = moment(table, [ 'MMMMDDY']).format();
+    const dob = moment(today)
+    document.getElementById('BIRTHDATE').innerHTML = dob.format('YYYY-MM-DD')       
+
+    var table1 = document.getElementById("DATE_REQUEST").innerHTML;
+    const today1 = moment(table1, [ 'MMMMDDY, hh:mm:ss a']).format();
+    const dob1 = moment(today1)
+    document.getElementById('DATE_REQUEST').innerHTML = dob1.format('YYYY-MM-DD, hh:mm:ss a')       
+    document.getElementById("DAYS").innerHTML = moment(dob1, 'YYYY-MM-DD, hh:mm:ss a').fromNow();
+    s = document.getElementById("DAYS").innerHTML
+
+        
+</script>
+{% endblock %}
+

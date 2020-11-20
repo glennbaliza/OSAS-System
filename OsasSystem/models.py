@@ -66,22 +66,24 @@ class osas_r_personal_info(models.Model):
     stud_status = models.CharField(max_length=10, default='Pending')
     
     def __str__(self):
-        return self.stud_no, self.stud_lname, self.stud_fname
+        return self.stud_no
+    
+    # def __str__(self):
+    #     return '{} {} {}'.format(self.stud_lname, self.stud_fname,self.stud_mname)
 
-    # def get_absulute_url(self):
-    #     return reverse('student_profile')
 
 class osas_t_id(models.Model):
-
-    request_id = models.AutoField(primary_key=True)
+#fix this
+    request_id = models.CharField(max_length=6, primary_key=True)
+    lost_id_status = models.CharField(max_length=13, default='PENDING')
+    lost_stud_id = models.ForeignKey(osas_r_personal_info, on_delete=models.CASCADE)
     date_created = models.DateTimeField(max_length=50)
     date_updated = models.DateTimeField(default=now)
-    lost_id_status = models.CharField(max_length=13, default='Pending')
-    lost_stud_id = models.ForeignKey('osas_r_personal_info', on_delete=models.CASCADE)
-
-    def __repr__(self):
-        return str(self.request_id)
-
+   
+    
+    def __str__(self):
+        return self.request_id
+        
 # class osas_t_admission(models.Model):
 
 #     admission_id = models.IntegerField(primary_key=True)

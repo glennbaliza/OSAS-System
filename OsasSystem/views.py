@@ -77,6 +77,7 @@ def activate_account(request):
                     request.session['session_user_role'] = f.user_type
                     return HttpResponseRedirect('/home')
             else: 
+                messages.error(request, 'Incorrect username or password, please try again.')
                 return HttpResponseRedirect('/login')
         else:
             messages.error(request, 'Incorrect username or password, please try again.')
@@ -273,6 +274,7 @@ def student_edit(request, stud_id):
         m_name = request.POST.get('txt_m_name')
         studno = request.POST.get('txt_studno')
         d_of_birth = request.POST.get('date_of_birth')
+        s = parser.parse(d_of_birth)
         gender = request.POST.get('txt_Gender')
         address = request.POST.get('txt_address')
         email = request.POST.get('txt_email')
@@ -295,7 +297,7 @@ def student_edit(request, stud_id):
         if studno:
             student_profile.stud_no = studno
         if d_of_birth:
-            student_profile.stud_birthdate = d_of_birth
+            student_profile.stud_birthdate = s
         if yr_sec:
             year_sec = osas_r_section_and_year.objects.get(yas_descriptions=yr_sec)
             student_profile.stud_yas_id = year_sec
@@ -500,9 +502,58 @@ def id_request_form(request):
     return render(request, 'Role_Student/id_request_form.html')
 #-----------------------------ID---------------------------------------------------------------------------
 def lost_id(request):
-    id_list = osas_t_id.objects.order_by('request_id')
-    context = {'id_list': id_list}
-    return render(request, 'id/lost_id.html', {'id_list': str(id_list)})
+    stud_list = osas_t_id.objects.all().values_list('lost_stud_id', flat=True) # queryset for all existing student_no
+    stud_list2 = osas_r_personal_info.objects.exclude(stud_id__in= stud_list.values_list('lost_stud_id', flat=True)) # queryset for all the student then exclude the data that existing in the osas_t_id
+    pending_list =  osas_t_id.objects.filter(lost_id_status = 'PENDING').order_by('-date_created')
+    process_list =  osas_t_id.objects.filter(lost_id_status = 'PROCESSING').order_by('-date_created')
+    complete_list =  osas_t_id.objects.filter(lost_id_status = 'COMPLETED').order_by('-date_created')
+    return render(request, 'id/lost_id.html', {'stud_list2': stud_list2, 'complete_list': complete_list, 'pending_list': pending_list, 'process_list': process_list})
+
+def id_request_process(request):
+    r_id = request.POST.get('request_id')
+    try:
+        id_request = osas_t_id.objects.get(lost_stud_id = osas_r_personal_info.objects.get(stud_no = r_id))
+        id_request.lost_id_status = 'PROCESSING'
+        id_request.save()   
+        return HttpResponseRedirect('/lost_id')
+    except ObjectDoesNotExist:
+        return render(request, 'id/lost_id.html')
+
+def id_request_remove(request):
+    r_id = request.POST.get('request_id')
+    try:
+        id_request = osas_t_id.objects.get(lost_stud_id = osas_r_personal_info.objects.get(stud_no = r_id))
+        id_request.lost_id_status = 'CANCELLED'
+        id_request.save()   
+        return HttpResponseRedirect('/lost_id')
+    except ObjectDoesNotExist:
+        return render(request, 'id/lost_id.html')
+
+def lost_id_view_detail(request, request_id): 
+    try:
+        stud = osas_t_id.objects.get(request_id = request_id) # query the detail thru pk
+        days_count = osas_t_id.objects.filter(request_id = request_id).count
+    except osas_t_id.DoesNotExist:
+        raise Http404("Request detail does not exist")
+    return render(request, 'id/lost_id_view_detail.html', {'stud':stud, 'days_count':days_count})
+
+def add_id_request(request):
+    chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
+    randomstr =''.join((random.choice(chars)) for x in range(5))
+    no = request.POST.get('stud')
+    r_id = randomstr
+    try:
+        if not no == '--select--':
+            stud = osas_r_personal_info.objects.get(stud_no = no) # ifs true
+            n = osas_t_id.objects.get(lost_stud_id =  osas_r_personal_info.objects.get(stud_id = stud.stud_id))
+            messages.success(request, str(no) + ' ' + 'is already requested!')
+        return HttpResponseRedirect('/lost_id')
+    except ObjectDoesNotExist:
+        if not no == '--select--':
+            today = datetime.today()
+            lost_id = osas_t_id(request_id = r_id, lost_stud_id = osas_r_personal_info.objects.get(stud_no = no), date_created = today)
+            lost_id.save()
+    return redirect('/lost_id')  
     
 def edit_user(request, user_id): 
     template_name = 'edit_user.html'

@@ -7,245 +7,261 @@
 {% endblock%}
 
 {% block title %}
-    Student Profile
+    Student Profile 
 {% endblock %}
 
 
 {% block content%}
 <div id="content" class="content">
-    <div class="col-lg-12 col-md-6">
-        {% if success_message %}
-            <p class="alert alert-danger">
-                <strong>{{ success_message }}</strong>
-            </p>
-        {% endif %} 
-    </div>
+    
     <div class="row">
+        {% if messages %}
+        <p class="alert alert-danger">
+            {% for message in messages %}
+                <i><strong>{{ message }}</strong></i>
+            {% endfor %}
+        </p>
+        {% endif %}
         <div class="col-lg-12 col-md-6">
             <button type="button" href="#modal-dialog" id="btn_rem"  class="update btn btn-success" data-toggle="modal">+ Add User<span class="glyphicon glyphicon-trash"></span></button> 
         </div>
     </div>
     </br>
-
-    <!-- begin row -->
-    <div class="row">
-        <!-- begin col-10 -->
+    
+    <div class="row" id="pending">
         <div class="col-lg-12 col-md-6">
-            <!-- begin panel -->
             <div class="panel panel-inverse">
-                <!-- begin panel-heading -->
-                <div class="panel-heading">
-                    <div class="panel-heading-btn">
-                        <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
-                        <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-warning" data-click="panel-collapse"><i class="fa fa-minus"></i></a>
+                <div class="card">
+                    <div class="card-header bg-dark">
+                      <ul class="nav nav-tabs card-header-tabs">
+                        <li class="nav-item" >
+                          <a class="nav-link active btn_pending"  href="#" style=" font-family: Roboto;">Pending Request</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link btn_process" href="#" onclick="processing()" style="color: whitesmoke; font-family: Roboto;">On Process Request</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link btn_complete" href="#" onclick="complete()" style="color: whitesmoke; font-family: Roboto;">Completed Request</a>
+                        </li>
+                      </ul>
                     </div>
-                    <h4 class="panel-title">Lost ID</h4>
-                </div>
-                <!-- end panel-heading -->
-                <!-- begin panel-body -->
-                <div class="panel-body">
-                    {% if id_list %}
-                    <div class="table-responsive">
-                        <table id="data-table-combines" class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th class="text-nowrap">No.</th>
-                                <th class="text-nowrap">Student No.</th>
-                                <th class="text-nowrap">Name</th>
-                                <th class="text-nowrap">Course</th>
-                                <th data-type="date" data-format-string="Do MMMM YYYY">Date Request</th>
-                                <th class="text-nowrap">No. of Days</th>
-                                <th class="text-nowrap">Status</th>
-                                <th class="text-nowrap">Action</th>  
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for osas_t_id in id_list %}
-                            <tr>
-                                <td class="text-nowrap">{{ osas_t_id.request_id }}</td>  
-                                <td class="text-nowrap">{{ osas_t_id.lost_stud_id }}</td>
-                                <!-- <td class="text-nowrap">{{ osas_t_id.stud_lname }} {{ osas_t_id.stud_fname }}  {{ osas_t_id.stud_mname }}</td> -->
-                                <!-- <td class="text-nowrap">{{ osas_t_id.osas_t_id }}</td>  -->
-                                <!-- <td class="text-nowrap">{{ osas_t_id.date_created }}</td>  -->
-                                <!-- <td class="text-nowrap">{{ osas_t_id.lost_id_status }}</td> -->
-                                <!-- <td class="text-center"><img src="/media/{{osas_r_userrole.s_image}}" class="rounded-circle" width="50" alt="userimage"/></td> -->
-                                <!-- <td class="text-center"><span {% if  index.2  < index.3 %}class = "dot" style=" height: 25px; width: 25px; background-color: red; border-radius: 50%;display: inline-block;" {% elif  index.2  == index.3 %}class = "dot" style=" height: 25px; width: 25px; background-color: #EEA843; border-radius: 50%;display: inline-block;" {% else %} class="dot" style=" height: 25px; width: 25px; background-color: #4EEC1E; border-radius: 50%; display:inline-block;" {% endif %}></span></td> -->
-                                <td class="with-btn" nowrap >
-                                    <!-- {% if index.2 < index.3 %}
-                                    <a id="btnEditTable"  value="{{index.0}}" class="btn btn-sm btn-primary width-70 m-r-2" style="color: white;">Order</a>
-                                    {% endif %} -->
-                                    <!-- <button type="button" id="view" class="update btn btn-primary btn-lg"><span class="glyphicon glyphicon-eye-open"></span></button> -->
-                                    
-                                    <a href=""><button type="button"  id="edit"  class="update btn btn-warning btn-lg"><span class="glyphicon glyphicon-pencil"></span></button></a>
-                                    <!-- <a id="btnEditTable"  value="{{index.0}}" class="btn btn-sm btn-primary width-70 m-r-2" style="color: white;">Edit</a> -->
-                                    <!-- {% if request.session.session_assign == 9 %} -->
-                                    <button type="button" href="#modal-dialog" id="btn_rem"  class="update btn btn-danger btn-lg" data-toggle="modal"><span class="glyphicon glyphicon-trash"></span></button> 
-                                    <!-- <a  class="btn btn-sm btn-success" data-toggle="modal">Demo</a> -->
-                                    <!-- {% endif %} -->
-                                    <button type="button" id="button_del" method="post" class="update btn btn-danger btn-lg"><span class="glyphicon glyphicon-trash"></span></button> 
-                                    <!-- <a id="btnRemarks"  class="btn btn-sm btn-white width-70"><center>Remarks</center></a>
-                                     -->
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                        </table>
+                    <div class="panel-body">
+                        {% if pending_list %}
+                        <div class="table-responsive table table-striped ">
+                            <table style="font-family: Roboto; font-size: 11.5px;" id="data-table-combines" class="data-tables table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="text-nowrap">Request ID:</th>
+                                    <th class="text-nowrap">Student No.:</th>
+                                    <th class="text-nowrap">Name:</th>
+                                    <th class="text-nowrap">Course:</th>
+                                    <th class="text-nowrap">Date Requested:</th>
+                                    <th class="text-nowrap">No. of Days:</th>
+                                    <th class="text-nowrap">Action:</th>  
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for id in pending_list %}
+                                <tr>
+                                    <td>{{ id.request_id }}</td>  
+                                    <td class="text-nowrap">{{ id.lost_stud_id }}</td>
+                                    <td>{{ id.lost_stud_id.stud_lname }} {{ id.lost_stud_id.stud_fname }}  {{ id.lost_stud_id.stud_mname }}</td>
+                                    <td>{{ id.lost_stud_id.stud_course_id }}</td> 
+                                    <td class="text-nowrap">{{ id.date_created }}</td> 
+                                    <td class="text-nowrap"></td>
+                                    <td class="with-btn" nowrap >
+                                        <a href="{% url 'lost_id_view_detail' id.request_id %}">
+                                            <button type="button" class="btn_view btn btn-info btn-lg"><span class="glyphicon glyphicon-pencil"></span></button>
+                                        </a>
+                                        <button type="button" id="btn_pending"  class="update btn btn-warning btn-lg" data-toggle="modal"><span class="glyphicon glyphicon-trash"></span></button> 
+                                        <button type="button" href="" id="btn_remove_pending"  class="btn btn-danger btn-lg"><span class="glyphicon glyphicon-trash"></span></button> 
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            </table>
+                        </div>
+                        {% endif %}
                     </div>
-                    {% endif %}
                 </div>
-                <!-- end panel-body -->
             </div>
-            <!-- end panel -->
         </div>
-        <!-- end col-10 -->
     </div>
-    <!-- end row -->
-</div>
+
+    <div class="row" id="process">
+        <div class="col-lg-12 col-md-6">
+            <div class="panel panel-inverse">
+                <div class="card">
+                    <div class="card-header bg-dark">
+                      <ul class="nav nav-tabs card-header-tabs">
+                        <li class="nav-item">
+                          <a class="nav-link btn_pending" href="#" style="color: whitesmoke; font-family: Roboto;">Pending Request</a>
+                        </li>
+                        <li class="nav-item" >
+                          <a class="nav-link active btn process"  href="#" style=" font-family: Roboto;">On Process Request</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link btn_complete" onclick="complete()" href="#" style="color: whitesmoke; font-family: Roboto;">Completed Request</a>
+                        </li>
+                      </ul>
+                    </div>
+                    <div class="panel-body">
+                        {% if process_list %}
+                        <div class="table-responsive table table-striped ">
+                            {% if messages %}
+                            <p class="alert alert-danger">
+                                {% for message in messages %}
+                                    <i><strong>{{ message }}</strong></i>
+                                {% endfor %}
+                            </p>
+                            {% endif %}
+                            <table style="font-family: Roboto; font-size: 11.5px;" id="data-table-combiness" class="data-tables table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="text-nowrap">Request ID:</th>
+                                    <th class="text-nowrap">Student No.:</th>
+                                    <th class="text-nowrap">Name:</th>
+                                    <th class="text-nowrap">Course:</th>
+                                    <th class="text-nowrap">Date Requested:</th>
+                                    <th class="text-nowrap">No. of Days:</th>
+                                    <th class="text-nowrap">Action:</th>  
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for osas_t_id in process_list %}
+                                <tr>
+                                    <td>{{ osas_t_id.request_id }}</td>  
+                                    <td class="text-nowrap">{{ osas_t_id.lost_stud_id }}</td>
+                                    <td class="text-nowrap">{{ osas_t_id.lost_stud_id.stud_lname }} {{ osas_t_id.lost_stud_id.stud_fname }}  {{ osas_t_id.lost_stud_id.stud_mname }}</td>
+                                    <td>{{ osas_t_id.lost_stud_id.stud_course_id }}</td> 
+                                    <td class="text-nowrap">{{ osas_t_id.date_created }}</td> 
+                                    <td class="text-nowrap"></td>
+                                    <td class="with-btn" nowrap >
+                                        <a href="{% url 'lost_id_view_detail' osas_t_id.request_id %}">
+                                            <button type="button" class="btn_view btn btn-info btn-lg"><span class="glyphicon glyphicon-pencil"></span></button>
+                                        </a>
+                                        <a href=""><button type="button"  id="edit"  class="update btn btn-warning btn-lg"><span class="glyphicon glyphicon-pencil"></span></button></a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            </table>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" id="complete">
+        <div class="col-lg-12 col-md-6">
+            <div class="panel panel-inverse">
+                <div class="card">
+                    <div class="card-header bg-dark">
+                      <ul class="nav nav-tabs card-header-tabs">
+                        <li class="nav-item">
+                          <a class="nav-link btn_pending"  href="#" style="color: whitesmoke; font-family: Roboto;">Pending Request</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link btn_process"  href="#" onclick="processing()" style="color: whitesmoke; font-family: Roboto;">On Process Request</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link active btn_complete"  href="#" style="font-family: Roboto;">Completed Request</a>
+                        </li>
+                      </ul>
+                    </div>
+                    <div class="panel-body">
+                        {% if complete_list %}
+                        <div class="table-responsive table table-striped ">
+                            {% if messages %}
+                            <p class="alert alert-danger">
+                                {% for message in messages %}
+                                    <i><strong>{{ message }}</strong></i>
+                                {% endfor %}
+                            </p>
+                            {% endif %}
+                            <table style="font-family: Roboto; font-size: 11.5px;" id="data-table-combinesss" class="data-tables table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="text-nowrap">Request ID:</th>
+                                    <th class="text-nowrap">Student No.:</th>
+                                    <th class="text-nowrap">Name:</th>
+                                    <th class="text-nowrap">Course:</th>
+                                    <th class="text-nowrap">Date Requested:</th>
+                                    <th class="text-nowrap">No. of Days:</th>
+                                    <th class="text-nowrap">Action:</th>  
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for osas_t_id in complete_list %}
+                                <tr>
+                                    <td>{{ osas_t_id.request_id }}</td>  
+                                    <td class="text-nowrap">{{ osas_t_id.lost_stud_id }}</td>
+                                    <td class="text-nowrap">{{ osas_t_id.lost_stud_id.stud_lname }} {{ osas_t_id.lost_stud_id.stud_fname }}  {{ osas_t_id.lost_stud_id.stud_mname }}</td>
+                                    <td>{{ osas_t_id.lost_stud_id.stud_course_id }}</td> 
+                                    <td class="text-nowrap">{{ osas_t_id.date_created }}</td> 
+                                    <td class="text-nowrap"></td>
+                                    <td class="with-btn" nowrap >
+                                        <a href="{% url 'lost_id_view_detail' osas_t_id.request_id %}">
+                                            <button type="button" class="btn_view btn btn-info btn-lg"><span class="glyphicon glyphicon-pencil"></span></button>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            </table>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
  <!-- #modal-dialog -->
 <div class="modal fade" id="modal-dialog">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-sm">
         <div class="modal-content ">
             <div class="modal-body ">
-                <form id="validate_form"  action="{% url 'student_process_add' %}" method="post" enctype="multipart/form-data">
+                </button>  
+                <form  id="validate_form"  action="{% url 'add_id_request' %}" method="post" enctype="multipart/form-data"> 
                     {% csrf_token %}
                     <fieldset >
                         <tr>
                             <td>
-                                <strong><h1 class="page-header">Add new student</h1></strong>
+                                <a href="{% url 'lost_id' %}">
+                                    <h5 class="bg-danger" style="float: right; border-radius: 45%; text-align: center; width: 19px; height: 18px; color:white">x</h5>
+                                </a>
+                                <h4>Add New Request</h4>
+                                
+                                <hr style="width:100%; margin-bottom: -2px; margin-top: -5px;">
+                                <label style="margin-top: 40px;">Student Number:</label>
                                 <div class="row">
-                                    <hr style="width:100%;text-align:left;margin-left:0">
-                                    <div class="col-lg-4 col-md-6 ">
-                                        <div class="stats-content">
-                                            <label>Last name</label>
-                                            <input  style="margin-bottom: 8px;" type="text" id="txt_l_name" name="txt_l_name" class="form-control" placeholder="Last name" required data-parsley-trigger="keyup">
-                                        </div>
-                                    </div>		
-                                    <div class="col-lg-4 col-md-6 ">
-                                        <div class="stats-content">
-                                            <label>First name</label>
-                                            <input  type="text" id="txt_f_name" class="form-control" name="txt_f_name" placeholder="First name" required data-parsley-trigger="keyup">
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-4 col-md-6 ">
-                                        <div class="stats-content">
-                                            <label>Middle name</label>
-                                            <input  type="text" id="txt_m_name" class="form-control" name="txt_m_name" placeholder="Middle name" required data-parsley-trigger="keyup">
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-4 col-md-6 ">
-                                        <div class="stats-content">
-                                            <label>Student number</label>
-                                            <input style="margin-bottom: 8px;" type="text" id="txt_studno" name="txt_studno" placeholder="ex. 2000-0000-cm-0" class="form-control" required data-parsley-trigger="keyup">
-                                        </div>
-                                    </div>
-                                        
-                                    <div class="col-lg-4 col-md-6 ">
-                                        <div class="stats-content">
-                                            <label>Date of birth</label>
-                                            <input type="date" class="form-control" name="date_of_birth" id="datepicker" data-date-format="yy-mm-dd" placeholder="{% now 'Y-m-d' %}" >
-                                        </div>
-                                        <div id="datepicker"></div>
-                                    </div>
-                                    <div class="col-lg-4 col-md-6 ">
-                                        <div class="stats-content">
-                                            <label>Gender</label>
-                                            <select id="txt_Gender" name="txt_Gender" class="form-control">
-                                                    <option  value="Male">Male</option>
-                                                    <option  value="Female">Female</option>
-                                                    <option  value="Others">Other</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-12 col-md-6 ">
-                                        <div class="stats-content">
-                                            <label>Address</label> 
-                                            <input style="margin-bottom: 8px;" type="text" id="txt_address" name="txt_address" class="form-control" placeholder="Adress" required data-parsley-trigger="keyup">
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 col-md-6 ">
-                                        <div class="stats-content">
-                                            <label>Email Address</label>
-                                            <input style="margin-bottom: 8px;" type="email" id="txt_email" name="txt_email" placeholder="" class="form-control" required data-parsley-trigger="keyup">
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 col-md-6 ">
-                                        <div class="stats-content">
-                                            <label>Mobile number</label>
-                                            <input  type="text" id="txt_mobile_number" class="form-control" name="txt_mobile_number" placeholder="ex. 09123456789" required data-parsley-trigger="keyup">
-                                        </div>
-                                    </div>
-            
-                                    <div class="col-lg-7 col-md-6 ">
-                                        <div class="stats-content">
-                                            <label >Course</label>
-                                            {% if student_course %}
-                                            <select id="dd_course" name="txt_course" class="form-control">
-                                                <option selected disabled="true">--Select Course--</option>
-                                                {% for osas_r_course in student_course%}
-                                                <option value="{{ osas_r_course.course_name }}" name="txt_course" name="txt_course" >{{ osas_r_course.course_name }}</option>
-                                                {% endfor %}
-                                                <!-- {% for osas_r_course in course_list %}  
-                                                <option value="{{ osas_r_course.course_id }}">{{ osas_r_course.course_name }}</option>
-                                                {% endfor %} -->
-                                            </select>
-                                            {% endif %}
-                                        </div>
-                          
-                                    </div>
-                                    <div class="col-lg-5 col-md-6 ">
-                                        <div class="stats-content">
-                                            <label>Year & Section</label>
-                                            {% if student_yr_sec %}
-                                            <select id="dd_yr" name="txt_yr_sec" class="form-control" >
-                                                    <option selected disabled="true">--Select Year and Section--</option>
-                                                    {% for osas_r_section_and_year in student_yr_sec%}
-                                                    <option  value="{{ osas_r_section_and_year.yas_descriptions }}" name="txt_yr_sec">{{ osas_r_section_and_year.yas_descriptions }}</option>
+                                    <div class="col-lg-9">
+                                        <select style="font-family: Roboto; font-size: 11px; margin-top: -3px;" id="stud" name="stud" class="form-control">
+                                                <option  value="--select--" selected hidden >--select--</option>
+                                                {% if stud_list2 %}
+                                                    {% for osas_r_personal_info in stud_list2 %}
+                                                    <option value="{{osas_r_personal_info.stud_no}}">{{osas_r_personal_info.stud_no}}</option>
                                                     {% endfor %}
-                                            </select>
-                                            {% endif %}
-                                        </div>
+                                                {% endif %}
+                                        </select>
                                     </div>
-                                    <hr style="width:100%;text-align:left;margin-left:0">
-                                    <div class="col-lg-6 col-md-6 ">
-                                        <div class="stats-content">
-                                            <label>High school name</label>
-                                            <input style="margin-bottom: 8px;" type="text" id="txt_h_name" name="txt_h_name" class="form-control" placeholder="School name" required data-parsley-trigger="keyup">
-                                        </div>
+                                    <div class="col-lg-1">
+                                        <a href=""><button type="button"  id="view"  class="view btn btn-info btn-sm">VIEW<span class="glyphicon glyphicon-pencil"></span></button></a>
                                     </div>
-                                    <div class="col-lg-12 col-md-6 ">
-                                        <div class="stats-content">
-                                            <label>High school address</label>
-                                            <input style="margin-bottom: 8px;" type="text" id="txt_h_address" name="txt_h_address" class="form-control" placeholder="School address" required data-parsley-trigger="keyup">
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 col-md-6 ">
-                                        <div class="stats-content">
-                                            <label>Emergency contact person</label>
-                                            <input  type="text" id="txt_e_name" name="txt_e_name" class="form-control" placeholder="Full name" required data-parsley-trigger="keyup">
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 col-md-6 ">
-                                        <div class="stats-content">
-                                            <label>Emergency contact person number</label>
-                                            <input style="margin-bottom: 8px;" type="text" id="txt_e_number" name="txt_e_number" placeholder="ex. 09123456789" class="form-control" required data-parsley-trigger="keyup">
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-12 col-md-6 ">
-                                        <div class="stats-content">
-                                            <label>Emergency contact person address</label>
-                                            <input  type="text" id="txt_e_address" name="txt_e_address" class="form-control" placeholder="Address" required data-parsley-trigger="keyup">
-                                        </div>
-                                    </div>
-                                    <hr style="width:100%;text-align:left;margin-left:0">
                                 </div>
                             </td>
                         </tr>
                     </fieldset>
-                    </br>
-                    <div style=" margin-bottom: 20px;" class="btn pull-right">
-                        <button id="submit" type="submit" class="btn btn-success btn-sm btn-sm">Add</button>  
-                    </div>
-                </form>  
+                    <hr style="width:100%; margin-bottom: 5px;">
+                    <center>
+                        <div class="btn text-center">
+                            <button id="submit" type="submit" class="btn btn-success btn-md" style="width: 90px; height: 40px;">ADD</button>  
+                        </div>
+                    </center>
+                </form>   
             </div>  
         </div>
     </div>
@@ -260,11 +276,104 @@
 
 {% block page-js %}
 <script>
+    request_id = $(this).closest("tbody tr").find("td:eq(0)").html()
+    // alert(request_id)
+
+    var table = document.getElementById('data-table-combines');
+        var rowCount = table.rows.length; 
+        for (var r = 1, n = table.rows.length; r < n; r++) {
+        var table = document.getElementById("data-table-combines").rows[r].cells[4].innerHTML
+        console.log("table " + table)
+        if (moment(table, 'MM/DD/YYYY', true).isValid()) {
+        }
+        else {           
+            const stud_dob_temp = moment(table, ['MMMMDDY, hh:mm:ss a']).format();
+            const dob = moment(stud_dob_temp) // setting the new formatted date
+            console.log("stud_dob_temp " + stud_dob_temp)
+            document.getElementById("data-table-combines").rows[r].cells[4].innerHTML = dob.format('YYYY-MM-DD, hh:mm:ss a')
+            document.getElementById("data-table-combines").rows[r].cells[5].innerHTML = moment(dob, 'YYYY-MM-DD, hh:mm:ss a').fromNow();
+            s = document.getElementById("data-table-combines").rows[r].cells[5].innerHTML
+            console.log("Today's date is: " + 
+            s)   
+    }
+    }
+    
+    flag_process = 0
+    function processing(){
+        if (flag_process == 0){
+            var table1 = document.getElementById('data-table-combiness');
+            var rowCount1 = table1.rows.length; 
+            for (var r = 1, n = table1.rows.length; r < n; r++) {
+            var table1 = document.getElementById("data-table-combiness").rows[r].cells[4].innerHTML
+            console.log("table1 " + table1)
+            if (moment(table1, 'MM/DD/YYYY', true).isValid()) {
+            }
+            else {           
+                const stud_dob_temp = moment(table1, ['MMMMDDY, hh:mm:ss a']).format();
+                const dob = moment(stud_dob_temp) // setting the new formatted date
+                console.log("stud_dob_temp " + stud_dob_temp)
+                document.getElementById("data-table-combiness").rows[r].cells[4].innerHTML = dob.format('YYYY-MM-DD, hh:mm:ss a')
+                document.getElementById("data-table-combiness").rows[r].cells[5].innerHTML = moment(dob, 'YYYY-MM-DD, hh:mm:ss a').fromNow();
+                e = document.getElementById("data-table-combiness").rows[r].cells[5].innerHTML
+                console.log("Today's date is: " + 
+                e)   
+                
+                }
+            }
+            flag_process = 1
+        }
+        
+    }
+    flag_complete = 0
+    function complete() {
+        if (flag_complete == 0){
+            var table2 = document.getElementById('data-table-combinesss');
+            var rowCount2 = table2.rows.length; 
+            for (var r = 1, n = table2.rows.length; r < n; r++) {
+            var table2 = document.getElementById("data-table-combinesss").rows[r].cells[4].innerHTML
+            console.log("table2 " + table2)
+            if (moment(table2, 'MM/DD/YYYY', true).isValid()) {
+            }
+            else {           
+                const stud_dob_temp = moment(table2, ['MMMMDDY, hh:mm:ss a']).format();
+                const dob = moment(stud_dob_temp) // setting the new formatted date
+                console.log("stud_dob_temp " + stud_dob_temp)
+                document.getElementById("data-table-combinesss").rows[r].cells[4].innerHTML = dob.format('YYYY-MM-DD, hh:mm:ss a')
+                document.getElementById("data-table-combinesss").rows[r].cells[5].innerHTML = moment(dob, 'YYYY-MM-DD, hh:mm:ss a').fromNow();
+                f = document.getElementById("data-table-combinesss").rows[r].cells[5].innerHTML
+                console.log("Today's date is: " + 
+                f)   
+                }
+            }
+            flag_complete = 1
+        }
+    }
+    
+
+    $("#process").hide()
+    $("#complete").hide()
+
+	$(".btn_pending").click(function(){
+		$("#process").hide()
+        $("#complete").hide()
+        $("#pending").show()
+    });
+    
+    $(".btn_process").click(function(){
+		$("#pending").hide()
+        $("#complete").hide()
+        $("#process").show()
+    });
+
+    $(".btn_complete").click(function(){
+		$("#pending").hide()
+        $("#process").hide()
+        $("#complete").show()
+    });
+
     $(document).ready(function() {
-        // App.init();
-        // $('#datepicker').datepicker({ dateFormat: 'yy-mm-dd' });
         TableManageButtons.init();
-        $('#data-table-combines').DataTable({
+        $('.data-tables').DataTable({
             'paging'      : true,
             'lengthChange': true,
             'searching'   : true,
@@ -276,48 +385,52 @@
             dom: 'lBfrtip',
                 buttons: [
                 'excel',
-                'pdf',
-                'print',
             ],
             "lengthMenu": [ [10, 25, 50, -1], [10, 25, 50, "All"] ],
-                // columnDefs:[{targets:2, render:function(data){
-                //     return moment(data).format('YYYY/MM/DD');
-                // }}]
         });
 	});
 
-    $('#validate_form').on('submit', function(event){
-        var datetemp = document. getElementById("datepicker").value;    
-        alert(datetemp)     
-        var selectedValue = $(this).text();
-        dd_course = $("#dd_course").children("option:selected").val();
-        dd_yr = $("#dd_yr").children("option:selected").val();
-    
-    $.ajax({
-    url : "{% url 'student_process_add' %}",
-    type : "GET",
-    data : {
-        course: dd_course,
-        yr_sec: dd_yr,
-        csrfmiddlewaretoken: "{{ csrf_token }}",
-    },
-    success : function(){
-        swal("SUCCESS! "+categ+" HAS BEEN INSERTED", {
-			              icon: "success",
-			            }).then((willreload) => {
-			            	if(willreload){
-			            		window.location.reload()
-			            	}
-			            });
-				
-				console.log(data["response"]);
-    },
-    error: function(error){
+    $("#data-table-combines").on('click','#btn_pending',function(){
+        request_id = $(this).closest("tbody tr").find("td:eq(1)").html()
+		alert(request_id)
+		swal({
+            title: "Are you sure?",
+            text: "You want to process this request?", 
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+          if (willDelete) {
+			request_id = $(this).closest("tbody tr").find("td:eq(1)").html()
+		$.ajax({
+			type: "POST",
+			url: "{% url 'id_request_process' %}",
+			data:{
+				request_id: request_id,
+				csrfmiddlewaretoken: "{{ csrf_token }}",
+			},
+			success: function(data){
+				swal("Success! request has been updated", {
+		              icon: "success",
+		            }).then((willreload) => {
+		            	if(willreload){
+                            window.location.reload()
+                            
+		            	}
+		            	
+		            });
+			},
+			error: function(error){
 				console.log(error);
-    }
-
-  });
-});
-
+			}
+		
+		});
+          } 
+        });
+	});
+	
+    
 </script>
 {% endblock %}
+

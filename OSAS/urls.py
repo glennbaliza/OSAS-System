@@ -44,7 +44,12 @@ urlpatterns = [
 
 #------------------------------------------ID-------------------------------------------------------------------------------
     path('lost_id/', views.lost_id, name="lost_id"),
+    path('add_id_request/', views.add_id_request, name="add_id_request"),
     path('id_request_form/', views.id_request_form, name="id_request_form"),
+    path('id_request_process/', views.id_request_process, name="id_request_process"),
+    path('id_request_remove/', views.id_request_remove, name="id_request_remove"),
+    path('<str:request_id>/id/lost_id_view_detail', views.lost_id_view_detail, name="lost_id_view_detail"),
+
 #--------------------------------------------STUDENT ROLE-------------------------------------------------------------------
     path('dashboard/', views.dashboard, name="dashboard"), 
     path('profile/', views.profile, name="profile"),

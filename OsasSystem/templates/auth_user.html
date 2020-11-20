@@ -113,7 +113,7 @@
                 <div class="panel-body">
                     {% if auth_user %}
                     <div class="table-responsive">
-                        <table id="data-table-buttons" class="table table-bordered " >
+                        <table id="data-table-combines" class="table table-bordered " style="font-family: Roboto; font-size: 11px;" >
                         <thead>
                             <tr>
                                 <th hidden></th>
@@ -271,8 +271,22 @@
 
 var table = $('#data-table-buttons').DataTable();
 
+    var table = document.getElementById('data-table-combines');
+        var rowCount = table.rows.length; 
+        for (var r = 1, n = table.rows.length; r < n; r++) {
+            var table = document.getElementById("data-table-combines").rows[r].cells[6].innerHTML
+            if (moment(table, 'YYYY-MM-DD', true).isValid()) {
+            }
+            else {           
+                const stud_dob_temp = moment(table, ['MMMMDDY, hh:mm:ss a']).format();
+                const dob = moment(stud_dob_temp) // setting the new formatted date
+                document.getElementById("data-table-combines").rows[r].cells[6].innerHTML = dob.format('YYYY-MM-DD, hh:mm:ss a')
+                console.log("Today's date is: " + 
+                dob.format('YYYY-MM-DD'))   
+            }
+    }
 
-$("#data-table-buttons").on('click','#auth_edit',function(){
+$("#data-table-combines").on('click','#auth_edit',function(){
     id = $(this).closest("tbody tr").find("td:eq(0)").html()
     lname = $(this).closest("tbody tr").find("td:eq(1)").html()
     fname = $(this).closest("tbody tr").find("td:eq(2)").html()

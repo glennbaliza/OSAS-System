@@ -64,7 +64,7 @@
                         <div class="col-lg-4 col-md-6 ">
                             <div class="stats-content">
                                 <label>Date of birth</label>
-                                <input type="text" class="form-control" name="date_of_birth" value="{{stud.stud_birthdate}}" id="datepickers" onload="datePickerChange" placeholder="{% now 'Y-m-d' %}">
+                                <input type="text" class="form-control" name="date_of_birth" id="datepickers" onload="datePickerChange()" value="{{stud.stud_birthdate}}">
                             </div>
                         </div>
                         <div class="col-lg-4 col-md-6 ">
@@ -181,14 +181,15 @@
 <script>
 
     //https://momentjs.com/guides/#/warnings/js-date/ 
+
     var datetemp = document.getElementById("datepickers").value; // get value from input 
     const today = moment(datetemp, [ 'MMMMDDY']).format(); // format ex. "Jan 01, 2000" to ISO 
     const dob = moment(today) // setting the new formatted date
-    document.getElementById('datepickers').value = dob.format('YYYY-MM-DD') // passing the value to the input field with a new format
-
-	function datePickerChange() {
-			$('#datepickers').datepicker({ dateFormat: 'yy-mm-dd' });
-		};
+    document.getElementById('datepickers').value = dob.format('MM/DD/YYYY') // passing the value to the input field with a new format
+    console.log(today)
+	// function datePickerChange() {
+    //     $('#datepickers').datepicker({ dateFormat: 'yy-mm-dd' });
+	// };
 
     
         
