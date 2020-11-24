@@ -7,7 +7,7 @@
 {% endblock%}
 
 {% block title %}
-    Student Profile 
+    Lost ID
 {% endblock %}
 
 
@@ -23,7 +23,7 @@
         </p>
         {% endif %}
         <div class="col-lg-12 col-md-6">
-            <button type="button" href="#modal-dialog" id="btn_rem"  class="update btn btn-success" data-toggle="modal">+ Add User<span class="glyphicon glyphicon-trash"></span></button> 
+            <button type="button" href="#modal-dialog" id="btn_rem"  class="update btn btn-success" data-toggle="modal">+ Add new request<span class="glyphicon glyphicon-trash"></span></button> 
         </div>
     </div>
     </br>
@@ -35,19 +35,19 @@
                     <div class="card-header bg-dark">
                       <ul class="nav nav-tabs card-header-tabs">
                         <li class="nav-item" >
-                          <a class="nav-link active btn_pending"  href="#" style=" font-family: Roboto;">Pending Request</a>
+                          <a class="nav-link active btn_pending" onload="dateformat()" style=" font-family: Roboto;">Pending Request</a>
                         </li>
                         <li class="nav-item">
-                          <a class="nav-link btn_process" href="#" onclick="processing()" style="color: whitesmoke; font-family: Roboto;">On Process Request</a>
+                          <a class="nav-link btn_process" onclick="processing()" style="color: whitesmoke; font-family: Roboto;">On Process Request</a>
                         </li>
                         <li class="nav-item">
-                          <a class="nav-link btn_complete" href="#" onclick="complete()" style="color: whitesmoke; font-family: Roboto;">Completed Request</a>
+                          <a class="nav-link btn_complete" onclick="complete()" style="color: whitesmoke; font-family: Roboto;">Completed Request</a>
                         </li>
                       </ul>
                     </div>
                     <div class="panel-body">
                         {% if pending_list %}
-                        <div class="table-responsive table table-striped ">
+                        <div class="table-responsive table table-striped " >
                             <table style="font-family: Roboto; font-size: 11.5px;" id="data-table-combines" class="data-tables table table-bordered">
                             <thead>
                                 <tr>
@@ -67,7 +67,7 @@
                                     <td class="text-nowrap">{{ id.lost_stud_id }}</td>
                                     <td>{{ id.lost_stud_id.stud_lname }} {{ id.lost_stud_id.stud_fname }}  {{ id.lost_stud_id.stud_mname }}</td>
                                     <td>{{ id.lost_stud_id.stud_course_id }}</td> 
-                                    <td class="text-nowrap">{{ id.date_created }}</td> 
+                                    <td class="text-nowrap">{{ id.date_updated }}</td> 
                                     <td class="text-nowrap"></td>
                                     <td class="with-btn" nowrap >
                                         <a href="{% url 'lost_id_view_detail' id.request_id %}">
@@ -79,6 +79,22 @@
                                 </tr>
                                 {% endfor %}
                             </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="table-responsive table table-striped ">
+                            <table style="font-family: Roboto; font-size: 11.5px;" id="data-table-combines" class="data-tables table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="text-nowrap">Request ID:</th>
+                                    <th class="text-nowrap">Student No.:</th>
+                                    <th class="text-nowrap">Name:</th>
+                                    <th class="text-nowrap">Course:</th>
+                                    <th class="text-nowrap">Date Requested:</th>
+                                    <th class="text-nowrap">No. of Days:</th>
+                                    <th class="text-nowrap">Action:</th>  
+                                </tr>
+                            </thead>
                             </table>
                         </div>
                         {% endif %}
@@ -95,13 +111,13 @@
                     <div class="card-header bg-dark">
                       <ul class="nav nav-tabs card-header-tabs">
                         <li class="nav-item">
-                          <a class="nav-link btn_pending" href="#" style="color: whitesmoke; font-family: Roboto;">Pending Request</a>
+                          <a class="nav-link btn_pending" style="color: whitesmoke; font-family: Roboto;">Pending Request</a>
                         </li>
                         <li class="nav-item" >
-                          <a class="nav-link active btn process"  href="#" style=" font-family: Roboto;">On Process Request</a>
+                          <a class="nav-link active btn process"  style=" font-family: Roboto;">On Process Request</a>
                         </li>
                         <li class="nav-item">
-                          <a class="nav-link btn_complete" onclick="complete()" href="#" style="color: whitesmoke; font-family: Roboto;">Completed Request</a>
+                          <a class="nav-link btn_complete" onclick="complete()" style="color: whitesmoke; font-family: Roboto;">Completed Request</a>
                         </li>
                       </ul>
                     </div>
@@ -123,6 +139,7 @@
                                     <th class="text-nowrap">Name:</th>
                                     <th class="text-nowrap">Course:</th>
                                     <th class="text-nowrap">Date Requested:</th>
+                                    <th  class="text-nowrap">Date Processed:</th>
                                     <th class="text-nowrap">No. of Days:</th>
                                     <th class="text-nowrap">Action:</th>  
                                 </tr>
@@ -133,18 +150,35 @@
                                     <td>{{ osas_t_id.request_id }}</td>  
                                     <td class="text-nowrap">{{ osas_t_id.lost_stud_id }}</td>
                                     <td class="text-nowrap">{{ osas_t_id.lost_stud_id.stud_lname }} {{ osas_t_id.lost_stud_id.stud_fname }}  {{ osas_t_id.lost_stud_id.stud_mname }}</td>
-                                    <td>{{ osas_t_id.lost_stud_id.stud_course_id }}</td> 
-                                    <td class="text-nowrap">{{ osas_t_id.date_created }}</td> 
+                                    <td>{{ osas_t_id.lost_stud_id.stud_course_id }}</td>
+                                    <td class="text-nowrap">{{ osas_t_id.date_created }}</td>  
+                                    <td  class="text-nowrap">{{ osas_t_id.date_updated }}</td> 
                                     <td class="text-nowrap"></td>
                                     <td class="with-btn" nowrap >
                                         <a href="{% url 'lost_id_view_detail' osas_t_id.request_id %}">
                                             <button type="button" class="btn_view btn btn-info btn-lg"><span class="glyphicon glyphicon-pencil"></span></button>
                                         </a>
-                                        <a href=""><button type="button"  id="edit"  class="update btn btn-warning btn-lg"><span class="glyphicon glyphicon-pencil"></span></button></a>
+                                        <button type="button" id="btn_process"  class="update btn btn-warning btn-lg" data-toggle="modal"><span class="glyphicon glyphicon-trash"></span></button> 
                                     </td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="table-responsive table table-striped ">
+                            <table style="font-family: Roboto; font-size: 11.5px;" id="data-table-combiness" class="data-tables table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="text-nowrap">Request ID:</th>
+                                    <th class="text-nowrap">Student No.:</th>
+                                    <th class="text-nowrap">Name:</th>
+                                    <th class="text-nowrap">Course:</th>
+                                    <th class="text-nowrap">Date Requested:</th>
+                                    <th class="text-nowrap">No. of Days:</th>
+                                    <th class="text-nowrap">Action:</th>  
+                                </tr>
+                            </thead>
                             </table>
                         </div>
                         {% endif %}
@@ -161,19 +195,19 @@
                     <div class="card-header bg-dark">
                       <ul class="nav nav-tabs card-header-tabs">
                         <li class="nav-item">
-                          <a class="nav-link btn_pending"  href="#" style="color: whitesmoke; font-family: Roboto;">Pending Request</a>
+                          <a class="nav-link btn_pending" style="color: whitesmoke; font-family: Roboto;">Pending Request</a>
                         </li>
                         <li class="nav-item">
-                          <a class="nav-link btn_process"  href="#" onclick="processing()" style="color: whitesmoke; font-family: Roboto;">On Process Request</a>
+                          <a class="nav-link btn_process" onclick="processing()" style="color: whitesmoke; font-family: Roboto;">On Process Request</a>
                         </li>
                         <li class="nav-item">
-                          <a class="nav-link active btn_complete"  href="#" style="font-family: Roboto;">Completed Request</a>
+                          <a class="nav-link active btn_complete" style="font-family: Roboto;">Completed Request</a>
                         </li>
                       </ul>
                     </div>
                     <div class="panel-body">
                         {% if complete_list %}
-                        <div class="table-responsive table table-striped ">
+                        <div class="table-responsive table table-striped " >
                             {% if messages %}
                             <p class="alert alert-danger">
                                 {% for message in messages %}
@@ -189,6 +223,7 @@
                                     <th class="text-nowrap">Name:</th>
                                     <th class="text-nowrap">Course:</th>
                                     <th class="text-nowrap">Date Requested:</th>
+                                    <th class="text-nowrap">Date Completed:</th>
                                     <th class="text-nowrap">No. of Days:</th>
                                     <th class="text-nowrap">Action:</th>  
                                 </tr>
@@ -201,6 +236,7 @@
                                     <td class="text-nowrap">{{ osas_t_id.lost_stud_id.stud_lname }} {{ osas_t_id.lost_stud_id.stud_fname }}  {{ osas_t_id.lost_stud_id.stud_mname }}</td>
                                     <td>{{ osas_t_id.lost_stud_id.stud_course_id }}</td> 
                                     <td class="text-nowrap">{{ osas_t_id.date_created }}</td> 
+                                    <td  class="text-nowrap">{{ osas_t_id.date_updated }}</td>
                                     <td class="text-nowrap"></td>
                                     <td class="with-btn" nowrap >
                                         <a href="{% url 'lost_id_view_detail' osas_t_id.request_id %}">
@@ -210,6 +246,22 @@
                                 </tr>
                                 {% endfor %}
                             </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="table-responsive table table-striped ">
+                            <table style="font-family: Roboto; font-size: 11.5px;" id="data-table-combinesss" class="data-tables table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="text-nowrap">Request ID:</th>
+                                    <th class="text-nowrap">Student No.:</th>
+                                    <th class="text-nowrap">Name:</th>
+                                    <th class="text-nowrap">Course:</th>
+                                    <th class="text-nowrap">Date Requested:</th>
+                                    <th class="text-nowrap">No. of Days:</th>
+                                    <th class="text-nowrap">Action:</th>  
+                                </tr>
+                            </thead>
                             </table>
                         </div>
                         {% endif %}
@@ -279,7 +331,8 @@
     request_id = $(this).closest("tbody tr").find("td:eq(0)").html()
     // alert(request_id)
 
-    var table = document.getElementById('data-table-combines');
+
+        var table = document.getElementById('data-table-combines');
         var rowCount = table.rows.length; 
         for (var r = 1, n = table.rows.length; r < n; r++) {
         var table = document.getElementById("data-table-combines").rows[r].cells[4].innerHTML
@@ -295,8 +348,10 @@
             s = document.getElementById("data-table-combines").rows[r].cells[5].innerHTML
             console.log("Today's date is: " + 
             s)   
-    }
-    }
+            }
+        }
+    
+    
     
     flag_process = 0
     function processing(){
@@ -305,16 +360,21 @@
             var rowCount1 = table1.rows.length; 
             for (var r = 1, n = table1.rows.length; r < n; r++) {
             var table1 = document.getElementById("data-table-combiness").rows[r].cells[4].innerHTML
+            var table1a = document.getElementById("data-table-combiness").rows[r].cells[5].innerHTML
             console.log("table1 " + table1)
             if (moment(table1, 'MM/DD/YYYY', true).isValid()) {
             }
             else {           
                 const stud_dob_temp = moment(table1, ['MMMMDDY, hh:mm:ss a']).format();
+                const stud_dob_temp1 = moment(table1a, ['MMMMDDY, hh:mm:ss a']).format();
                 const dob = moment(stud_dob_temp) // setting the new formatted date
+                const dob1 = moment(stud_dob_temp1)
                 console.log("stud_dob_temp " + stud_dob_temp)
+                console.log("stud_dob_temp1 " + stud_dob_temp1)
                 document.getElementById("data-table-combiness").rows[r].cells[4].innerHTML = dob.format('YYYY-MM-DD, hh:mm:ss a')
-                document.getElementById("data-table-combiness").rows[r].cells[5].innerHTML = moment(dob, 'YYYY-MM-DD, hh:mm:ss a').fromNow();
-                e = document.getElementById("data-table-combiness").rows[r].cells[5].innerHTML
+                document.getElementById("data-table-combiness").rows[r].cells[5].innerHTML = dob1.format('YYYY-MM-DD, hh:mm:ss a')
+                document.getElementById("data-table-combiness").rows[r].cells[6].innerHTML = moment(dob1, 'YYYY-MM-DD, hh:mm:ss a').fromNow();
+                e = document.getElementById("data-table-combiness").rows[r].cells[6].innerHTML
                 console.log("Today's date is: " + 
                 e)   
                 
@@ -327,29 +387,34 @@
     flag_complete = 0
     function complete() {
         if (flag_complete == 0){
-            var table2 = document.getElementById('data-table-combinesss');
-            var rowCount2 = table2.rows.length; 
-            for (var r = 1, n = table2.rows.length; r < n; r++) {
-            var table2 = document.getElementById("data-table-combinesss").rows[r].cells[4].innerHTML
-            console.log("table2 " + table2)
-            if (moment(table2, 'MM/DD/YYYY', true).isValid()) {
+            var table1 = document.getElementById('data-table-combinesss');
+            var rowCount1 = table1.rows.length; 
+            for (var r = 1, n = table1.rows.length; r < n; r++) {
+            var table1 = document.getElementById("data-table-combinesss").rows[r].cells[4].innerHTML
+            var table1a = document.getElementById("data-table-combinesss").rows[r].cells[5].innerHTML
+            console.log("table1 " + table1)
+            if (moment(table1, 'MM/DD/YYYY', true).isValid()) {
             }
             else {           
-                const stud_dob_temp = moment(table2, ['MMMMDDY, hh:mm:ss a']).format();
+                const stud_dob_temp = moment(table1, ['MMMMDDY, hh:mm:ss a']).format();
+                const stud_dob_temp1 = moment(table1a, ['MMMMDDY, hh:mm:ss a']).format();
                 const dob = moment(stud_dob_temp) // setting the new formatted date
+                const dob1 = moment(stud_dob_temp1)
                 console.log("stud_dob_temp " + stud_dob_temp)
+                console.log("stud_dob_temp1 " + stud_dob_temp1)
                 document.getElementById("data-table-combinesss").rows[r].cells[4].innerHTML = dob.format('YYYY-MM-DD, hh:mm:ss a')
-                document.getElementById("data-table-combinesss").rows[r].cells[5].innerHTML = moment(dob, 'YYYY-MM-DD, hh:mm:ss a').fromNow();
-                f = document.getElementById("data-table-combinesss").rows[r].cells[5].innerHTML
+                document.getElementById("data-table-combinesss").rows[r].cells[5].innerHTML = dob1.format('YYYY-MM-DD, hh:mm:ss a')
+                document.getElementById("data-table-combinesss").rows[r].cells[6].innerHTML = moment(dob1, 'YYYY-MM-DD, hh:mm:ss a').fromNow();
+                e = document.getElementById("data-table-combinesss").rows[r].cells[6].innerHTML
                 console.log("Today's date is: " + 
-                f)   
+                e)   
+                
                 }
             }
             flag_complete = 1
         }
     }
     
-
     $("#process").hide()
     $("#complete").hide()
 
@@ -386,7 +451,7 @@
                 buttons: [
                 'excel',
             ],
-            "lengthMenu": [ [10, 25, 50, -1], [10, 25, 50, "All"] ],
+            "lengthMenu": [ [5, 25, 50, -1], [10, 25, 50, "All"] ],
         });
 	});
 
@@ -429,7 +494,86 @@
           } 
         });
 	});
+
+    $("#data-table-combiness").on('click','#btn_process',function(){
+        request_id = $(this).closest("tbody tr").find("td:eq(1)").html()
+		alert(request_id)
+		swal({
+            title: "Are you sure?",
+            text: "You want to complete this request?", 
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+          if (willDelete) {
+			request_id = $(this).closest("tbody tr").find("td:eq(1)").html()
+		$.ajax({
+			type: "POST",
+			url: "{% url 'id_request_completed' %}",
+			data:{
+				request_id: request_id,
+				csrfmiddlewaretoken: "{{ csrf_token }}",
+			},
+			success: function(data){
+				swal("Success! request has been completed", {
+		              icon: "success",
+		            }).then((willreload) => {
+		            	if(willreload){
+                            window.location.reload()
+                            
+		            	}
+		            	
+		            });
+			},
+			error: function(error){
+				console.log(error);
+			}
+		
+		});
+          } 
+        });
+	});
 	
+    $("#data-table-combines").on('click','#btn_remove_pending',function(){
+        request_id = $(this).closest("tbody tr").find("td:eq(1)").html()
+		alert(request_id)
+		swal({
+            title: "Are you sure?",
+            text: "You want to remove this request?", 
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+          if (willDelete) {
+			request_id = $(this).closest("tbody tr").find("td:eq(1)").html()
+		$.ajax({
+			type: "POST",
+			url: "{% url 'id_request_remove' %}",
+			data:{
+				request_id: request_id,
+				csrfmiddlewaretoken: "{{ csrf_token }}",
+			},
+			success: function(data){
+				swal("Success! request has been updated", {
+		              icon: "success",
+		            }).then((willreload) => {
+		            	if(willreload){
+                            window.location.reload()
+                            
+		            	}
+		            	
+		            });
+			},
+			error: function(error){
+				console.log(error);
+			}
+		
+		});
+          } 
+        });
+	});
     
 </script>
 {% endblock %}

@@ -1,5 +1,9 @@
 import random
-from django.shortcuts import render, redirect, get_object_or_404, reverse
+from io import BytesIO
+from django.template.loader import get_template
+from django.views import View
+from xhtml2pdf import pisa
+from django.shortcuts import render, redirect, get_object_or_404, reverse, HttpResponse
 from django.http import HttpResponseRedirect, Http404
 from django.core.exceptions import ObjectDoesNotExist
 from .models import osas_r_userrole, osas_r_course, osas_r_section_and_year, osas_r_personal_info, osas_r_referral, osas_r_auth_user, osas_t_id
@@ -8,6 +12,32 @@ from django.views.decorators.cache import cache_control
 from datetime import datetime, date
 from dateutil import parser
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
+
+
+
+
+def render_to_pdf(template_src, context_dict={}):
+	template = get_template(template_src)
+	html  = template.render(context_dict)
+	result = BytesIO()
+	pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+	if not pdf.err:
+		return HttpResponse(result.getvalue(), content_type='application/pdf')
+	return None
+
+
+data = {
+	
+	}
+
+#Opens up page as PDF
+class ViewPDF(View):
+	def get(self, request, *args, **kwargs):
+
+		pdf = render_to_pdf('pdf_templte.html', data)
+		return HttpResponse(pdf, content_type='application/pdf')
+
+
 
 def home(request):
     return render(request, 'home.html', {})
@@ -500,6 +530,10 @@ def add_ref(request):
 
 def id_request_form(request):
     return render(request, 'Role_Student/id_request_form.html')
+
+def student_lost_id(request):
+    stud_info =  osas_t_id.objects.filter(lost_stud_id = request.session['session_user_id'])
+    return render(request, 'Role_Student/student_lost_id.html', {'stud_info': stud_info})
 #-----------------------------ID---------------------------------------------------------------------------
 def lost_id(request):
     stud_list = osas_t_id.objects.all().values_list('lost_stud_id', flat=True) # queryset for all existing student_no
@@ -512,8 +546,22 @@ def lost_id(request):
 def id_request_process(request):
     r_id = request.POST.get('request_id')
     try:
+        today = datetime.today()
         id_request = osas_t_id.objects.get(lost_stud_id = osas_r_personal_info.objects.get(stud_no = r_id))
         id_request.lost_id_status = 'PROCESSING'
+        id_request.date_updated = today
+        id_request.save()   
+        return HttpResponseRedirect('/lost_id')
+    except ObjectDoesNotExist:
+        return render(request, 'id/lost_id.html')
+
+def id_request_completed(request):
+    r_id = request.POST.get('request_id')
+    try:
+        today = datetime.today()
+        id_request = osas_t_id.objects.get(lost_stud_id = osas_r_personal_info.objects.get(stud_no = r_id))
+        id_request.lost_id_status = 'COMPLETED'
+        id_request.date_updated = today
         id_request.save()   
         return HttpResponseRedirect('/lost_id')
     except ObjectDoesNotExist:
@@ -522,8 +570,10 @@ def id_request_process(request):
 def id_request_remove(request):
     r_id = request.POST.get('request_id')
     try:
+        today = datetime.today()
         id_request = osas_t_id.objects.get(lost_stud_id = osas_r_personal_info.objects.get(stud_no = r_id))
         id_request.lost_id_status = 'CANCELLED'
+        id_request.date_updated = today
         id_request.save()   
         return HttpResponseRedirect('/lost_id')
     except ObjectDoesNotExist:
@@ -551,7 +601,7 @@ def add_id_request(request):
     except ObjectDoesNotExist:
         if not no == '--select--':
             today = datetime.today()
-            lost_id = osas_t_id(request_id = r_id, lost_stud_id = osas_r_personal_info.objects.get(stud_no = no), date_created = today)
+            lost_id = osas_t_id(request_id = r_id, lost_stud_id = osas_r_personal_info.objects.get(stud_no = no), date_created = today, date_updated=today)
             lost_id.save()
     return redirect('/lost_id')  
     
@@ -626,6 +676,7 @@ def student_profile_edit(request):
         l_name = request.POST.get('txt_l_name')
         f_name = request.POST.get('txt_f_name')
         m_name = request.POST.get('txt_m_name')
+        s_name = request.POST.get('txt_s_name')
         studno = request.POST.get('txt_studno')
         d_of_birth = request.POST.get('date_of_birth')
         if d_of_birth:
@@ -665,6 +716,7 @@ def student_profile_edit(request):
         student_profile.stud_mname = m_name
         if gender:
             student_profile.stud_gender = gender
+        student_profile.stud_sname = s_name
         student_profile.stud_address = address
         student_profile.stud_email = email
         student_profile.stud_m_number = mobile_number

@@ -28,9 +28,7 @@
             <div class="panel panel-inverse">
                 <div class="card" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1), 0 1px 1px 0 rgba(0, 0, 0, 0.19);">
                     <div class="card-header bg-dark">
-                        <button data-dismiss="alert" data-target="#closeablecard" type="button" class="close bg-white" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+                        <a href="{% url 'lost_id' %}"><button type="button" id="edit" class="update btn bg-dark btn-sm pull-right" style= "height: 20px; width: 10px;"><span aria-hidden="true" style="font-size: 20px; margin: 0px -5px; color: white;">&times;</span></button></a>
                         <ul class="nav nav-tabs card-header-tabs">
                         <li class="nav-item" >
                         <a class="nav-link active" style=" font-family: Roboto;">Request Details</a>
@@ -46,7 +44,7 @@
                                     <th style="height: 50px; padding-top: 16px;">STUDENT NO.:<p style="font-weight: normal;  margin-left: 10px; display: inline;">{{stud.lost_stud_id.stud_no}}</p></th> 
                                 </tr>
                                 <tr>
-                                    <th  style="width: 483px;  height: 50px; padding-top: 16px;">DATE REQUESTED:<p style="font-weight: normal; margin-top: 5px; margin-left: 10px; display: inline;" id="DATE_REQUEST">{{stud.date_created}}</p></th>
+                                    <th  style="width: 483px;  height: 50px; padding-top: 16px;">DATE REQUESTED:<p style="font-weight: normal; margin-top: 5px; margin-left: 10px; display: inline;" id="DATE_REQUEST">{{stud.date_updated}}</p></th>
                                     <th style="height: 50px; padding-top: 16px;">NO. OF DAYS:<p style="font-weight: normal; margin-top: 5px; margin-left: 10px; display: inline;" id="DAYS"></p></th>
                                 </tr>
                                 <tr>

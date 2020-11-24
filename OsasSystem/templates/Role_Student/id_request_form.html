@@ -2,6 +2,13 @@
 {% load static %}
 
 {% block content %}
+<style>
+    @page{
+        size: A4;
+        margin-top: 1cm;
+        margin-bottom: 1cm;
+    }
+</style>
 <div class="container">
     <div class="row">
         <div class="header">
@@ -22,9 +29,10 @@
             </div>
         </div>
     </div>
+    <br/>
+    <br/>
 </div>
-<br/>
-<br/>
+
 <div class="container-fluid" style="background: whitesmoke; height: 70px;" >
     <div class="row">
         <p style="margin-top: 16px; padding-left:  15px; font-family: Roboto; font-size: 24px; color: gray;"><b>ID LOSS REQUEST FORM</b></p>
@@ -80,6 +88,18 @@
     <h5 style="margin-left: 79.5%;">SIGNITURE</h5>
 </div>
 
-
+<!-- <button type="button" id="btn_rem"  class="update btn btn-success pull-right" onclick="printContent(el);" >Print ID lost request form<span class="glyphicon glyphicon-trash"></span></button>  -->
             
+{% endblock %}
+{% block page-js %}
+<script>
+    function printContent(el)
+    {
+        var restorepage = document.body.innerHTML;
+        var printContent = document.getElementById(el).innerHTML;
+        document.body.innerHTML = printContent;
+        window.print();
+        document.body.innerHTML = printContent;
+    }
+</script>
 {% endblock %}

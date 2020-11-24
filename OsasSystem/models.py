@@ -48,6 +48,7 @@ class osas_r_personal_info(models.Model):
     stud_lname = models.CharField(max_length=50, verbose_name='Last Name')
     stud_fname = models.CharField(max_length=50, verbose_name='First Name')
     stud_mname = models.CharField(max_length=50, verbose_name='Middle Name')
+    stud_sname = models.CharField(max_length=50,  null=True,verbose_name='Suffix Name')
     stud_birthdate = models.DateField(max_length=12, default=now)
     stud_gender = models.CharField(max_length=10, verbose_name='Gender')
     stud_address = models.CharField(max_length=50, verbose_name='Student Address')
@@ -78,7 +79,7 @@ class osas_t_id(models.Model):
     lost_id_status = models.CharField(max_length=13, default='PENDING')
     lost_stud_id = models.ForeignKey(osas_r_personal_info, on_delete=models.CASCADE)
     date_created = models.DateTimeField(max_length=50)
-    date_updated = models.DateTimeField(default=now)
+    date_updated = models.DateTimeField(max_length=50)
    
     
     def __str__(self):

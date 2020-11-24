@@ -1,0 +1,131 @@
+{% extends 'Role_Student/studentbase.html'%}
+{% load static %}
+
+{% block page-css %}
+    <link href="{% static 'OsasSystem/assets/plugins/DataTables/media/css/dataTables.bootstrap.min.css' %}" rel="stylesheet" />
+	<link href="{% static 'OsasSystem/assets/plugins/DataTables/extensions/Responsive/css/responsive.bootstrap.min.css' %}" rel="stylesheet" />
+{% endblock%}
+
+{% block title %}
+    LOST ID {{request.session.session_user_no}}
+{% endblock %}
+
+
+{% block content%}
+<!-- Main Content -->
+<div class="content" class="content" >
+    <div class="container" >
+            {% if messages %}
+                <p class="alert alert-danger">
+                    {% for message in messages %}
+                    <strong>{{ message }}</strong>
+                    {% endfor %}
+                </p>
+            {% endif %} 
+    </div>
+
+    <div class="row" >
+        <div class="col-lg-12 col-md-6 ">
+            <a href="{% url 'id_request_form' %}"><button type="button" id="btn_rem"  class="update btn btn-success pull-right" >Print ID lost request form<span class="glyphicon glyphicon-trash"></span></button> </a>
+        </div>
+    </div>
+    <br>
+
+    <div class="row" id="pending">
+        <div class="col-lg-12 col-md-6">
+            <div class="panel panel-inverse">
+                <div class="card">
+                    <div class="card-header bg-dark">
+                      <ul class="nav nav-tabs card-header-tabs">
+                        <li class="nav-item" >
+                          <a class="nav-link active btn_pending" style=" font-family: Roboto;">ID LOST REQUEST</a>
+                        </li>   
+                      </ul>
+                    </div>
+                    <div class="panel-body">
+                        {% if stud_info %}
+                        <div class="table-responsive table table-striped " >
+                            <table style="font-family: Roboto; font-size: 11.5px;" id="data-table-combines" class="data-tables table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="text-nowrap">REQUEST ID:</th>
+                                    <th class="text-nowrap">STUDENT NO.:</th>
+                                    <th class="text-nowrap">NAME:</th>
+                                    <th class="text-nowrap">COURSE:</th>
+                                    <th class="text-nowrap">DATE REQUEST:</th>
+                                    <th class="text-nowrap">NO. OF DAYS:</th>
+                                    <th class="text-nowrap">STATUS:</th>  
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for id in stud_info %}
+                                <tr>
+                                    <td>{{ id.request_id }}</td>  
+                                    <td class="text-nowrap">{{ id.lost_stud_id }}</td>
+                                    <td>{{ id.lost_stud_id.stud_lname }} {{ id.lost_stud_id.stud_fname }}  {{ id.lost_stud_id.stud_mname }}</td>
+                                    <td>{{ id.lost_stud_id.stud_course_id }}</td> 
+                                    <td class="text-nowrap">{{ id.date_created }}</td> 
+                                    <td class="text-nowrap"></td>
+                                    <td class="text-nowrap">{{ id.lost_id_status }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="table-responsive table table-striped ">
+                            <table style="font-family: Roboto; font-size: 11.5px;" id="data-table-combines" class="data-tables table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="text-nowrap">Request ID:</th>
+                                    <th class="text-nowrap">Student No.:</th>
+                                    <th class="text-nowrap">Name:</th>
+                                    <th class="text-nowrap">Course:</th>
+                                    <th class="text-nowrap">Date Requested:</th>
+                                    <th class="text-nowrap">No. of Days:</th>
+                                    <th class="text-nowrap">Action:</th>  
+                                </tr>
+                            </thead>
+                            </table>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block page-level %}
+	<script src="{%static 'OsasSystem/assets/plugins/bootstrap-sweetalert/sweetalert.min.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/js/demo/ui-modal-notification.demo.min.js' %}"></script>
+{% endblock %}
+
+{% block page-js %}
+<script>
+
+        var table = document.getElementById('data-table-combines');
+        var rowCount = table.rows.length; 
+        for (var r = 1, n = table.rows.length; r < n; r++) {
+        var table = document.getElementById("data-table-combines").rows[r].cells[4].innerHTML
+        console.log("table " + table)
+        if (moment(table, 'MM/DD/YYYY', true).isValid()) {
+        }
+        else {           
+            const stud_dob_temp = moment(table, ['MMMMDDY, hh:mm:ss a']).format();
+            const dob = moment(stud_dob_temp) // setting the new formatted date
+            console.log("stud_dob_temp " + stud_dob_temp)
+            document.getElementById("data-table-combines").rows[r].cells[4].innerHTML = dob.format('YYYY-MM-DD, hh:mm:ss a')
+            document.getElementById("data-table-combines").rows[r].cells[5].innerHTML = moment(dob, 'YYYY-MM-DD, hh:mm:ss a').fromNow();
+            s = document.getElementById("data-table-combines").rows[r].cells[5].innerHTML
+            console.log("Today's date is: " + 
+            s)   
+            }
+        }   
+    
+        
+</script>
+{% endblock %}
