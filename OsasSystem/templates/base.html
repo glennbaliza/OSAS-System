@@ -15,6 +15,7 @@
 	
 	<title> OSAS | {% block title %} {% endblock %}</title>
 	<!-- ================== BEGIN BASE CSS STYLE ================== -->
+	<link href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
 	<link href="{%static 'OsasSystem/assets/plugins/jquery-ui/jquery-ui.min.css' %}" rel="stylesheet" />
     <link href="{%static 'OsasSystem/assets/plugins/bootstrap/4.0.0/css/bootstrap.min.css' %}" rel="stylesheet" />
     <link href="{%static 'OsasSystem/assets/plugins/font-awesome/5.0/css/fontawesome-all.min.css' %}" rel="stylesheet" />
@@ -41,24 +42,31 @@
 	<!-- ================== BEGIN BASE JS ================== -->
 	
 	<!-- ================== END BASE JS ================== -->
-	{% block page-css %} {% endblock %}
+	{% block page-css %} 
+	
+	{% endblock %}
 </head>
 <body>
 	
 	<!-- begin #page-loader -->
 	<div id="page-loader" class="fade show"><span class="spinner"></span></div>
-	<!-- end #page-loader -->
-	{% if request.session.session_user_role%}
-	<!-- begin #page-container -->
-	{% include 'sidebar.html'%}
-	{% include 'header.html'%}
-	{% endif %}
+	<div id="page-container" class="fade page-sidebar-fixed page-header-fixed">
+		<!-- begin #header -->
+		{% if request.session.session_user_role%}
+		{% include 'header.html'%}
+		<!-- end #header -->
+		<!-- begin #sidebar -->
+		{% include 'sidebar.html'%}
+		{% endif %}
+		<!-- end #sidebar -->
 
 {% block content %}
 
 
 {% endblock %}
 
+	<a href="javascript:;" class="btn btn-icon btn-circle btn-success btn-scroll-to-top fade" data-click="scroll-top"><i class="fa fa-angle-up"></i></a>
+	</div>
 
 	<!-- ================== BEGIN BASE JS ================== -->
 	<script src="{%static 'OsasSystem/assets/plugins/jquery/jquery-3.2.1.min.js' %}"></script>
