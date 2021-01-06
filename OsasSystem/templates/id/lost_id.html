@@ -22,11 +22,119 @@
             {% endfor %}
         </p>
         {% endif %}
-        <div class="col-lg-12 col-md-6">
-            <button type="button" href="#modal-dialog" id="btn_rem"  class="update btn btn-success" data-toggle="modal">+ Add new request<span class="glyphicon glyphicon-trash"></span></button> 
+    </div>
+
+    <h1 class="page-header mb-1">Page Title</h1>
+			<p class="mb-5">Page Description</p>
+
+    <div class="panel">
+        <div class="panel-heading p-25">
+            <div class="btn-group btn-group-toggle pull-right" data-toggle="buttons">
+                <!-- <button class="btn btn-success" href="#exampleModalLong"  data-toggle="modal" data-target="#exampleModalLongTitle"><i class="fas fa-search mr-2" ></i>Add New</button> -->
+                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal_add"><i class="fas fa-search mr-2" ></i>Add New</button>
+            </div>
+            <h2 class="panel-title" style="font-size:16px;">Lost ID</h2>
+        </div>
+
+        <div class="modal fade" id="modal_add" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="page-header mb-1">Add New Request</h1>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form  id="add_new_form"> 
+                        <div class="modal-body" style=" background-color:whitesmoke;">
+                            {% csrf_token %}
+                            <fieldset >
+                                <tr>
+                                    <td>
+                                        <label >Student Number:</label>
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <select style="font-family: Roboto; font-size: 11px; margin-top: -3px;" id="stud" name="stud" class="form-control">
+                                                        <option  value="--select--" selected hidden >--select--</option>
+                                                        {% if stud_list2 %}
+                                                            {% for osas_r_personal_info in stud_list2 %}
+                                                            <option value="{{osas_r_personal_info.stud_no}}">{{osas_r_personal_info.stud_no}}</option>
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                </select>
+                                            </div> 
+                                        </div>
+                                    </td>
+                                </tr>
+                            </fieldset>
+                        </div>
+                        <div class="modal-footer">
+                            <a class="btn btn-white pull-right" data-dismiss="modal">Back<i class="fas fa-reply m-l-3 zoom"></i></a>
+                            <a class="btn btn-success pull-right" id="IDLost_Submit" style="color: white;">Proceed<i class="fas fa-reply m-l-3 zoom"></i></a>
+                        <!-- <button id="submit" type="submit" class="btn btn-success" >ADD</button>   -->
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel-body">
+            {% if id_request %}
+            <table id="data-table" class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th width="1%"></th>
+                        <th data-orderable="false">Student Information</th>
+                        <th data-orderable="false">Transaction Detail</th>
+                        <th data-orderable="false">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for id in id_request %}
+                    <tr class="odd gradeA">
+                        <td width="1%" class="f-s-600 text-inverse">5</td>
+                        <td><dl class="row mb-0 p-2" style="line-height: .6rem;">
+                            <dd class="col-sm-8 gritter-" id="IDLost_studno" ><strong>{{ id.lost_stud_id }}</strong></dd>
+                            <dd class="col-sm-8" id="IDLost_name">{{ id.lost_stud_id.stud_lname }}, {{ id.lost_stud_id.stud_fname }}  {{ id.lost_stud_id.stud_mname }}</dd>
+                            <dd class="col-sm-8" id="IDLost_course">{{ id.lost_stud_id.stud_course_id }}</dd>
+                        </dl>
+                        </td>
+                        <td><dl class="row mb-0 p-2" style="line-height: .6rem;">
+                            <dd class="col-sm-8 gritter-" id="IDLost_id" ><strong>{{ id.request_id }}</strong></dd>
+                            {% if id.lost_id_status == 'PENDING'%}
+                            <dd class="col-sm-8 gritter-"><strong><span class="label label-info">PENDING</span></strong></dd>
+                            {% elif id.lost_id_status == 'PROCESSING'%}
+                            <dd class="col-sm-8 gritter-"><strong><span class="label label-warning">PROCESS</span></strong></dd>
+                            {% else %}
+                            <dd class="col-sm-8 gritter-"><strong><span class="label label-danger">COMPLETE</span></strong></dd>
+                            {% endif %}
+                            <dd class="col-sm-8" id="IDLost_date">{{ id.date_updated }}</dd>
+                        </dl>
+                        </td>
+                        <td hidden><dl class="row mb-0 p-2" style="line-height: .6rem;">
+                            <dd class="col-sm-8 gritter-" id="IDLost_status" >{{ id.lost_id_status }}</dd>
+                            <dd class="col-sm-8 gritter-" id="IDLost_yrsec">{{ id.lost_stud_id.stud_yas_id }}</dd>
+                            <dd class="col-sm-8 gritter-" id="IDLost_dob">{{ id.lost_stud_id.stud_birthdate }}</dd>
+                            <dd class="col-sm-8 gritter-" id="IDLost_gender">{{ id.lost_stud_id.stud_gender }}</dd>
+                            <dd class="col-sm-8" id="IDLost_address">{{ id.lost_stud_id.stud_address }}</dd>
+                            <dd class="col-sm-8" id="IDLost_email">{{ id.lost_stud_id.stud_email }}</dd>
+                            <dd class="col-sm-8" id="IDLost_contact">{{ id.lost_stud_id.stud_m_number }}</dd>
+                            <dd class="col-sm-8" id="IDLost_contact">{{days_count }}</dd>
+                        </dl>
+                        </td>
+                        <td><div class="text-nowrap"><div class="btn-group ">
+                            <button class="btn btn-white" id="btn_view" href="#modal_info" data-toggle="modal" ><i class="fas fa-search mr-2"></i>View</button>
+                            <button id="edit-btn" class="btn btn-info" ><i class="fas fa-edit mr-2"></i>Edit</button>
+                            <button id="delete-btn" class="btn btn-danger" ><i class="fas fa-trash-alt mr-2"></i>Delete</button>
+                          </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
         </div>
     </div>
-    </br>
     
     <div class="row" id="pending">
         <div class="col-lg-12 col-md-6">
@@ -62,6 +170,15 @@
                             </thead>
                             <tbody>
                                 {% for id in pending_list %}
+                                <tr class="odd gradeX">
+                                    <td width="1%" class="f-s-600 text-inverse">1</td>
+                                    <td><dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                        <dd class="col-sm-8" ><strong>Trident</strong></dd>
+                                        <dd class="col-sm-8">Internet Explorer 4.0</dd>
+                                        <dd class="col-sm-8">Win 95+</dd>
+                                    </dl>
+                                    </td>
+                                </tr>
                                 <tr>
                                     <td>{{ id.request_id }}</td>  
                                     <td class="text-nowrap">{{ id.lost_stud_id }}</td>
@@ -270,86 +387,139 @@
             </div>
         </div>
     </div>
+</div>
 
- <!-- #modal-dialog -->
-<div class="modal fade" id="modal-dialog">
-    <div class="modal-dialog modal-sm">
-        <div class="modal-content ">
-            <div class="modal-body ">
-                </button>  
-                <form  id="validate_form"  action="{% url 'add_id_request' %}" method="post" enctype="multipart/form-data"> 
-                    {% csrf_token %}
-                    <fieldset >
-                        <tr>
-                            <td>
-                                <a href="{% url 'lost_id' %}">
-                                    <h5 class="bg-danger" style="float: right; border-radius: 45%; text-align: center; width: 19px; height: 18px; color:white">x</h5>
-                                </a>
-                                <h4>Add New Request</h4>
-                                
-                                <hr style="width:100%; margin-bottom: -2px; margin-top: -5px;">
-                                <label style="margin-top: 40px;">Student Number:</label>
-                                <div class="row">
-                                    <div class="col-lg-9">
-                                        <select style="font-family: Roboto; font-size: 11px; margin-top: -3px;" id="stud" name="stud" class="form-control">
-                                                <option  value="--select--" selected hidden >--select--</option>
-                                                {% if stud_list2 %}
-                                                    {% for osas_r_personal_info in stud_list2 %}
-                                                    <option value="{{osas_r_personal_info.stud_no}}">{{osas_r_personal_info.stud_no}}</option>
-                                                    {% endfor %}
-                                                {% endif %}
-                                        </select>
-                                    </div>
-                                    <div class="col-lg-1">
-                                        <a href=""><button type="button"  id="view"  class="view btn btn-info btn-sm">VIEW<span class="glyphicon glyphicon-pencil"></span></button></a>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </fieldset>
-                    <hr style="width:100%; margin-bottom: 5px;">
-                    <center>
-                        <div class="btn text-center">
-                            <button id="submit" type="submit" class="btn btn-success btn-md" style="width: 90px; height: 40px;">ADD</button>  
-                        </div>
-                    </center>
-                </form>   
-            </div>  
+
+
+    <div class="modal fade" id="modal_info" role="dialog" data-backdrop="static">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content ">
+                <div class="panel panel-inverse">
+                    <button type="button" class="close"  data-dismiss="modal" aria-hidden="true" style="color: gray; margin: 6px;">×</button>
+                    <div class="panel-body" style=" background-color:whitesmoke;"> 
+                        <div class="col">
+                        <table class="table table-bordered" id="IDLost_Info_table" style=" margin-bottom: -1px;">
+                            <h1 class="page-header mb-1">Page Title</h1>
+                            <p class="mb-5">Page Description</p>
+                            <tbody>
+                            <tr>
+                                <td><small class="col-lg-12">REQUEST ID: <label class="col-lg-12"  id="request_id" style="font-size: 13px; font-family: Roboto;"></label></small></th>
+                                <td><small class="col-lg-12">DATE REQUESTED: <label class="col-lg-12" style="font-size: 13px; font-family: Roboto;" id="request_date"></label></small></td>
+                            </tr>
+                            <tr> 
+                                <td><small class="col-lg-12">STATUS: <label class="col-lg-12"  id="request_status" style="font-size: 13px; font-family: Roboto;"></label></small></th>
+                                <td ><small class="col-lg-12">STUDENT NUMBER: <label class="col-lg-12" style="font-size: 13px; font-family: Roboto;" id="request_studno"></label></small></td>
+                            </tr>
+                            <tr> 
+                                <td><small class="col-lg-12">NAME: <label class="col-lg-12" style="font-size: 13px; font-family: Roboto;" id="request_studname"></label></small></td>
+                                <td ><small class="col-lg-12">COURSE: <label class="col-lg-12" style="font-size: 13px; font-family: Roboto;" id="request_studcourse"></label></small></td>
+                            </tr>
+                            <tr> 
+                                <td><small class="col-lg-12">YEAR & SECTION: <label class="col-lg-12" style="font-size: 13px; font-family: Roboto;" id="request_studys"></label></small></td>
+                                <td ><small class="col-lg-12">DATE OF BIRTH: <label class="col-lg-12" style="font-size: 13px; font-family: Roboto;" id="request_dob"></label></small></td>
+                            </tr>
+                            <tr> 
+                                <td><small class="col-lg-12">GENDER: <label class="col-lg-12" style="font-size: 13px; font-family: Roboto;" id="request_gender"></label></small></td>
+                                <td ><small class="col-lg-12">ADDRESS: <label class="col-lg-12" style="font-size: 13px; font-family: Roboto;" id="request_address"></label></small></td>
+                            </tr>
+                            <tr> 
+                                <td><small class="col-lg-12">EMAIL: <label class="col-lg-12" style="font-size: 13px; font-family: Roboto;" id="request_email"></label></small></td>
+                                <td ><small class="col-lg-12">CONTACT NO.: <label class="col-lg-12" style="font-size: 13px; font-family: Roboto;" id="request_contact"></label></small></td>
+                            </tr>
+                            </tbody>
+                        </table>      
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <a class="btn btn-success pull-right m-l-5" id="next" style="color: white;" ><i class="fas fa-reply m-l-3 zoom"></i></a>
+                    <a class="btn btn-white pull-right"   data-dismiss="modal"  >Back<i class="fas fa-reply m-l-3 zoom"></i></a>
+                </div>
+            </div>
         </div>
     </div>
-</div>
+
+    
 
 {% endblock %}
 
 {% block page-level %}
 	<script src="{%static 'OsasSystem/assets/plugins/bootstrap-sweetalert/sweetalert.min.js' %}"></script>
-	<script src="{%static 'OsasSystem/assets/js/demo/ui-modal-notification.demo.min.js' %}"></script>
+    <script src="{%static 'OsasSystem/assets/js/demo/ui-modal-notification.demo.min.js' %}"></script>
+    <script src="{%static 'OsasSystem/assets/index.js' %}"></script>
 {% endblock %}
 
 {% block page-js %}
 <script>
+
+    // $('#myModal').on('shown.bs.modal', function () {
+    // $('#myInput').trigger('focus')
+    // })
+
     request_id = $(this).closest("tbody tr").find("td:eq(0)").html()
     // alert(request_id)
 
+    $("#data-table").on('click','#btn_view',function(){
 
-        var table = document.getElementById('data-table-combines');
-        var rowCount = table.rows.length; 
-        for (var r = 1, n = table.rows.length; r < n; r++) {
-        var table = document.getElementById("data-table-combines").rows[r].cells[4].innerHTML
-        console.log("table " + table)
-        if (moment(table, 'MM/DD/YYYY', true).isValid()) {
+       
+
+
+        IDLost_id = $(this).closest("tbody tr").find("dd:eq(3)").html()
+        document.getElementById("request_id").innerHTML = IDLost_id
+
+        IDLost_status = $(this).closest("tbody tr").find("dd:eq(6)").html()
+        document.getElementById("request_status").innerHTML = IDLost_status 
+
+        if (IDLost_status == 'PENDING'){
+            document.getElementById("next").innerHTML = 'Proccess'
         }
-        else {           
-            const stud_dob_temp = moment(table, ['MMMMDDY, hh:mm:ss a']).format();
-            const dob = moment(stud_dob_temp) // setting the new formatted date
-            console.log("stud_dob_temp " + stud_dob_temp)
-            document.getElementById("data-table-combines").rows[r].cells[4].innerHTML = dob.format('YYYY-MM-DD, hh:mm:ss a')
-            document.getElementById("data-table-combines").rows[r].cells[5].innerHTML = moment(dob, 'YYYY-MM-DD, hh:mm:ss a').fromNow();
-            s = document.getElementById("data-table-combines").rows[r].cells[5].innerHTML
-            console.log("Today's date is: " + 
-            s)   
-            }
+        else{
+            document.getElementById("next").innerHTML = 'Complete'
         }
+
+        IDLost_date = $(this).closest("tbody tr").find("dd:eq(5)").html()
+        document.getElementById("request_date").innerHTML = IDLost_date 
+
+        IDLost_studno = $(this).closest("tbody tr").find("dd:eq(0)").html()
+        document.getElementById("request_studno").innerHTML = IDLost_studno 
+
+        IDLost_name= $(this).closest("tbody tr").find("dd:eq(1)").html()
+        document.getElementById("request_studname").innerHTML = IDLost_name
+
+        IDLost_course = $(this).closest("tbody tr").find("dd:eq(2)").html()
+        document.getElementById("request_studcourse").innerHTML = IDLost_course
+
+        IDLost_yrsec = $(this).closest("tbody tr").find("dd:eq(7)").html()
+        document.getElementById("request_studys").innerHTML = IDLost_yrsec
+
+        IDLost_dob= $(this).closest("tbody tr").find("dd:eq(8)").html()
+        document.getElementById("request_dob").innerHTML = IDLost_dob
+
+        IDLost_gender  = $(this).closest("tbody tr").find("dd:eq(9)").html()
+        document.getElementById("request_gender").innerHTML = IDLost_gender
+
+        IDLost_address = $(this).closest("tbody tr").find("dd:eq(10)").html()
+        document.getElementById("request_address").innerHTML = IDLost_address
+
+        IDLost_email = $(this).closest("tbody tr").find("dd:eq(11)").html()
+        document.getElementById("request_email").innerHTML = IDLost_email
+
+        IDLost_contact = $(this).closest("tbody tr").find("dd:eq(12)").html()
+        document.getElementById("request_contact").innerHTML = IDLost_contact 
+    });
+    
+        // var table = document.getElementById('data-table');
+        // var rowCount = table.rows.length; 
+        // for (var r = 1, n = table.rows.length; r < n; r++) {
+        //     var table1 = $(this).closest("tbody tr").find("dd:eq(5)").html()
+        //     console.log(table1)
+        // if (moment(table, 'YYYY-MM-DD', true).isValid()) {
+        // }
+        // else {           
+        //     const stud_dob_temp = moment(table1, ['MMMMDDY, hh:mm:ss a']).format();
+        //     const dob = moment(stud_dob_temp) // setting the new formatted date
+        //     document.getElementById("IDLost_date").innerHTML = dob.format('YYYY-MM-DD')
+        //     }
+        // }
     
     
     
@@ -361,7 +531,7 @@
             for (var r = 1, n = table1.rows.length; r < n; r++) {
             var table1 = document.getElementById("data-table-combiness").rows[r].cells[4].innerHTML
             var table1a = document.getElementById("data-table-combiness").rows[r].cells[5].innerHTML
-            console.log("table1 " + table1)
+          
             if (moment(table1, 'MM/DD/YYYY', true).isValid()) {
             }
             else {           
@@ -375,9 +545,6 @@
                 document.getElementById("data-table-combiness").rows[r].cells[5].innerHTML = dob1.format('YYYY-MM-DD, hh:mm:ss a')
                 document.getElementById("data-table-combiness").rows[r].cells[6].innerHTML = moment(dob1, 'YYYY-MM-DD, hh:mm:ss a').fromNow();
                 e = document.getElementById("data-table-combiness").rows[r].cells[6].innerHTML
-                console.log("Today's date is: " + 
-                e)   
-                
                 }
             }
             flag_process = 1
@@ -392,7 +559,7 @@
             for (var r = 1, n = table1.rows.length; r < n; r++) {
             var table1 = document.getElementById("data-table-combinesss").rows[r].cells[4].innerHTML
             var table1a = document.getElementById("data-table-combinesss").rows[r].cells[5].innerHTML
-            console.log("table1 " + table1)
+     
             if (moment(table1, 'MM/DD/YYYY', true).isValid()) {
             }
             else {           
@@ -406,9 +573,7 @@
                 document.getElementById("data-table-combinesss").rows[r].cells[5].innerHTML = dob1.format('YYYY-MM-DD, hh:mm:ss a')
                 document.getElementById("data-table-combinesss").rows[r].cells[6].innerHTML = moment(dob1, 'YYYY-MM-DD, hh:mm:ss a').fromNow();
                 e = document.getElementById("data-table-combinesss").rows[r].cells[6].innerHTML
-                console.log("Today's date is: " + 
-                e)   
-                
+
                 }
             }
             flag_complete = 1
@@ -436,83 +601,23 @@
         $("#complete").show()
     });
 
-    $(document).ready(function() {
-        TableManageButtons.init();
-        $('.data-tables').DataTable({
-            'paging'      : true,
-            'lengthChange': true,
-            'searching'   : true,
-            'ordering'    : false,
-            'info'        : true,
-            'autoWidth'   : false,
-            "aaSorting"   : [[1, "desc" ]],
-            'autoPrint'   : false,
-            dom: 'lBfrtip',
-                buttons: [
-                'excel',
-            ],
-            "lengthMenu": [ [5, 25, 50, -1], [10, 25, 50, "All"] ],
-        });
-	});
-
-    $("#data-table-combines").on('click','#btn_pending',function(){
-        request_id = $(this).closest("tbody tr").find("td:eq(1)").html()
-		alert(request_id)
+    $("#add_new_form").on('click','#IDLost_Submit',function(){
+        stud = document.getElementById("stud").value
+		alert(stud)
 		swal({
             title: "Are you sure?",
-            text: "You want to process this request?", 
+            text: "You want to add this request?", 
             icon: "warning",
             buttons: true,
             dangerMode: true,
         })
         .then((willDelete) => {
           if (willDelete) {
-			request_id = $(this).closest("tbody tr").find("td:eq(1)").html()
 		$.ajax({
 			type: "POST",
-			url: "{% url 'id_request_process' %}",
+			url: "{% url 'add_id_request' %}",
 			data:{
-				request_id: request_id,
-				csrfmiddlewaretoken: "{{ csrf_token }}",
-			},
-			success: function(data){
-				swal("Success! request has been updated", {
-		              icon: "success",
-		            }).then((willreload) => {
-		            	if(willreload){
-                            window.location.reload()
-                            
-		            	}
-		            	
-		            });
-			},
-			error: function(error){
-				console.log(error);
-			}
-		
-		});
-          } 
-        });
-	});
-
-    $("#data-table-combiness").on('click','#btn_process',function(){
-        request_id = $(this).closest("tbody tr").find("td:eq(1)").html()
-		alert(request_id)
-		swal({
-            title: "Are you sure?",
-            text: "You want to complete this request?", 
-            icon: "warning",
-            buttons: true,
-            dangerMode: true,
-        })
-        .then((willDelete) => {
-          if (willDelete) {
-			request_id = $(this).closest("tbody tr").find("td:eq(1)").html()
-		$.ajax({
-			type: "POST",
-			url: "{% url 'id_request_completed' %}",
-			data:{
-				request_id: request_id,
+				stud: stud,
 				csrfmiddlewaretoken: "{{ csrf_token }}",
 			},
 			success: function(data){
@@ -533,7 +638,73 @@
 		});
           } 
         });
+    });
+    
+    $("#modal_info").on('click','#next',function(){
+        request_id =  document.getElementById("request_studno").innerText
+        statuss =  document.getElementById("request_status").innerText
+		alert(statuss)
+		swal({
+            title: "Are you sure?",
+            text: "You want to process this request?", 
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+          if (willDelete) {
+            if (statuss == 'PENDING'){
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'id_request_process' %}",
+                    data:{
+                        request_id: request_id,
+                        csrfmiddlewaretoken: "{{ csrf_token }}",
+                    },
+                    success: function(data){
+                        swal("Success! request has been updated", {
+                            icon: "success",
+                            }).then((willreload) => {
+                                if(willreload){
+                                    window.location.reload()
+                                    
+                                }
+                                
+                            });
+                    },
+                    error: function(error){
+                        console.log(error);
+                    }
+                });
+            };   
+            if (statuss == 'PROCESSING'){
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'id_request_completed' %}",
+                    data:{
+                        request_id: request_id,
+                        csrfmiddlewaretoken: "{{ csrf_token }}",
+                    },
+                    success: function(data){
+                        swal("Success! request has been updated", {
+                            icon: "success",
+                            }).then((willreload) => {
+                                if(willreload){
+                                    window.location.reload()
+                                    
+                                }
+                                
+                            });
+                    },
+                    error: function(error){
+                        console.log(error);
+                    }
+                });
+            };   
+          } 
+        });
 	});
+
 	
     $("#data-table-combines").on('click','#btn_remove_pending',function(){
         request_id = $(this).closest("tbody tr").find("td:eq(1)").html()

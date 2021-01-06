@@ -37,7 +37,7 @@
                     </div>
                     <div class="panel-body">
                         <hr>
-                            <table style="font-family: Roboto; font-size: 11.5px;" id="table_view" class="table table-bordered table-striped">
+                            <table style="font-family: Roboto; font-size: 11.5px;" id="table_IDLost_t" class="table table-bordered table-striped">
                             <tbody>
                                 <tr>
                                     <th style="width: 483px;  height: 50px; padding-top: 16px;" >REQUEST ID:<p style="font-weight: normal;  margin-top: 5px; margin-left: 10px; display: inline;">{{stud.request_id}}</p></th>
@@ -96,8 +96,9 @@
     const dob1 = moment(today1)
     document.getElementById('DATE_REQUEST').innerHTML = dob1.format('YYYY-MM-DD, hh:mm:ss a')       
     document.getElementById("DAYS").innerHTML = moment(dob1, 'YYYY-MM-DD, hh:mm:ss a').fromNow();
-    s = document.getElementById("DAYS").innerHTML
+    // s = document.getElementById("DAYS").innerHTML
 
+   
         
 </script>
 {% endblock %}

@@ -538,10 +538,11 @@ def student_lost_id(request):
 def lost_id(request):
     stud_list = osas_t_id.objects.all().values_list('lost_stud_id', flat=True) # queryset for all existing student_no
     stud_list2 = osas_r_personal_info.objects.exclude(stud_id__in= stud_list.values_list('lost_stud_id', flat=True)) # queryset for all the student then exclude the data that existing in the osas_t_id
+    id_request =  osas_t_id.objects.order_by('-date_created')
     pending_list =  osas_t_id.objects.filter(lost_id_status = 'PENDING').order_by('-date_created')
     process_list =  osas_t_id.objects.filter(lost_id_status = 'PROCESSING').order_by('-date_created')
     complete_list =  osas_t_id.objects.filter(lost_id_status = 'COMPLETED').order_by('-date_created')
-    return render(request, 'id/lost_id.html', {'stud_list2': stud_list2, 'complete_list': complete_list, 'pending_list': pending_list, 'process_list': process_list})
+    return render(request, 'id/lost_id.html', {'stud_list2': stud_list2, 'complete_list': complete_list, 'pending_list': pending_list, 'process_list': process_list, 'id_request': id_request})
 
 def id_request_process(request):
     r_id = request.POST.get('request_id')

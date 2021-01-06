@@ -75,7 +75,8 @@ class osas_r_personal_info(models.Model):
 
 class osas_t_id(models.Model):
 #fix this
-    request_id = models.CharField(max_length=6, primary_key=True)
+    lost_id = models.AutoField(primary_key=True)
+    request_id = models.CharField(unique=True, max_length=10)
     lost_id_status = models.CharField(max_length=13, default='PENDING')
     lost_stud_id = models.ForeignKey(osas_r_personal_info, on_delete=models.CASCADE)
     date_created = models.DateTimeField(max_length=50)
@@ -262,3 +263,6 @@ class osas_t_profile(models.Model):
     prof_createddate = models.DateTimeField(max_length=50)
     prof_updateddate = models.DateTimeField(default=now)
 
+class SAMPLE(models.Model):
+    sample = models.AutoField(primary_key=True)
+  
