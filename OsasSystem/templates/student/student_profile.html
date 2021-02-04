@@ -23,15 +23,17 @@
     {% endif %} 
 
     <h1 class="page-header mb-1">Student Profile</h1>
-	<p class="mb-5">Page Description</p>
+    <p class="mb-5">Page Description</p>
+    <div class="row" hidden><img src="https://www.freelogovectors.net/wp-content/uploads/2017/05/pup-logo-Polytechnic_University_of_the_Philippines.png" style="width: 130px; height: 130px;"/></div>
     <!-- end page-header -->
     <!-- begin panel -->
 			<div class="panel">
 				<div class="panel-heading p-25">
 					<div class="btn-group btn-group-toggle pull-right" data-toggle="buttons">
 						<button class="btn btn-success"  data-toggle="modal" href="#modal-dialog" id="btn_rem"><i class="fas fa-search mr-2"></i>Add New</button>
-					</div>
-					<h2 class="panel-title" style="font-size:16px;">Student Information</h2>
+                        <button class="btn btn-gray" id="donwload">Print  <i class="fas fa-print text-white-lighter f-s-16"></i></button>
+                    </div>
+					<h2 class="panel-title" style="font-size:16px;">Student List</h2>
 				</div>
 				<div class="panel-body">
                     {% if student_info %}
@@ -39,13 +41,13 @@
 						<thead>
 							<tr>
 								<th width="1%"></th>
-								<th data-orderable="false">Student</th>
+								<th data-orderable="false">Student Information</th>
 								<th data-orderable="false">Action</th>
 							</tr>
 						</thead>
 						<tbody>
                             {% for osas_r_personal_info in student_info %}
-							<tr class="odd gradeA">
+							<tr class="odd gradeA tr_">
 								<td width="1%" class="f-s-600 text-inverse">{{ osas_r_personal_info.stud_id }}</td>
 								<td><dl class="row mb-0 p-2" style="line-height: .6rem;">
                                     <dd class="col-sm-8 gritter-" ><strong>{{ osas_r_personal_info.stud_no }}</strong></dd>
@@ -56,7 +58,7 @@
                                     <dd class="col-sm-8">{{ osas_r_personal_info.stud_m_number }}</dd>
                                 </dl>
 								</td>
-								<td><div class="text-nowrap"><div class="btn-group ">
+								<td  class="align-middle"><div class="text-nowrap"><div class="btn-group ">
 									<button id="view-btn" class="btn btn-white" ><i class="fas fa-search mr-2"></i>View</button>
 									<a href="{% url 'edit_student' osas_r_personal_info.stud_id %}"><button id="edit-btn" class="btn btn-info" ><i class="fas fa-edit mr-2"></i>Edit</button></a>
 									<button id="delete-btn" class="btn btn-danger" ><i class="fas fa-trash-alt mr-2"></i>Delete</button>
@@ -230,6 +232,36 @@
 
 {% block page-js %}
 <script>
+
+$('#btn_rem').click(function(){
+    $("#data-table .tr_").each(function() {
+        control_number = $(this).closest("tbody tr").find("td :eq(9)").html() 
+        console.log(control_number)
+    });
+}); 
+
+$('#donwload').click(function(){
+    var wme = window.open("","", "width = 1050px, height = auto");
+    wme.document.write("<div class='row' style='margin-left: 50px; margin-top: 20px;'><img src='https://www.freelogovectors.net/wp-content/uploads/2017/05/pup-logo-Polytechnic_University_of_the_Philippines.png' style='width: 110px; height: 107px;'/><div style='margin-right: 40px; float: right;'><p style='font-family: Arial, Helvetica, sans-serif; font-size: 18px; color: black; margin-top: 15px;'>Republic of the Philippines</p><p style='font-family: Trajan Pro; font-size: 20px; color: black; margin-top: -15px;'><b>Polytechnic University of the Philippines</b></p><p style='font-family: Arial, Helvetica, sans-serif; color: black; margin-top: -15px;'><b>Quezon City Branch</b></p></div></div></div><br/><div class='container-fluid' style='background: whitesmoke; height: 70px; margin-top: -10px'><div class='row'><p style='padding-top: 20px; padding-left:  15px; font-family: Roboto; font-size: 24px; color: gray;'><b>STUDENT INFORMATION</b></p></div></div>"
+    );
+    wme.document.write("<table style='border-collapse: collapse; width: 100%; font-family: Roboto; font-size:13px;' id='data-table' class='table table-striped table-bordered' ><thead ><tr><th  width='5%' style='border: 1px solid lightgrey; text-align: left; padding: 5px; font-size:15px;'></th><th width='70%' style='border: 1px solid lightgrey; text-align: left; padding: 5px;'>Sanction Details</th><th width='25%' style='border: 1px solid lightgrey; text-align: left; padding: 5px;'>Contact</th></tr></thead><tbody>");
+    var i = 0
+    $("#data-table .tr_").each(function() {
+        i ++
+        student_number = $(this).closest("tbody tr").find("td :eq(2)").html() 
+        student_name = $(this).closest("tbody tr").find("td :eq(3)").html() 
+        course = $(this).closest("tbody tr").find("td :eq(4)").html()
+        email = $(this).closest("tbody tr").find("td :eq(6)").html()  
+        m_number = $(this).closest("tbody tr").find("td :eq(7)").html() 
+        wme.document.write("<tr class='odd gradeA tr_' id='{{osas_t_sanction.sanction_control_number}}'><td width='1%' class='f-s-600 text-inverse' style='border: 1px solid lightgrey; text-align: center;'>"+i+"</td><td style='border: 1px solid lightgrey;' width='30%'><dl class='row mb-0 p-2' style='line-height: .6rem; '><dd class='col-sm-8 gritter-' style=' margin: 3px 0px 7px 0px; padding-left: 7px;'><strong class='contol_number' style='padding-bottom: 15px;'>"+student_number+"</strong></dd><dd style=' margin: 3px 0px 7px 0px; padding-left: 7px;' class='col-sm-8 gritter- ' ><strong class='stud_no'>"+student_name+"</strong></dd><dd style=' margin: 3px 0px 7px 0px; padding-left: 7px;' class='col-sm-8 gritter- sanc_date' >"+course+"</dd></dl><td style='border: 1px solid lightgrey;' width='30%'><dl class='row mb-0 p-2' style='line-height: .6rem; '><dd style=' margin: 3px 0px 7px 0px; padding-left: 7px;' class='col-sm-8 gritter- violation'>"+email+"</dd><dd style=' margin: 3px 0px 7px 0px; padding-left: 7px;' class='col-sm-8 gritter- offense'>0"+m_number+"</dd></dl></td></tr>")
+    });
+    wme.document.write("</tbody></table>")
+    wme.document.close();
+    wme.focus();
+    wme.print();
+    wme.close();
+    $(".action_btn").show();
+})
     //https://stackoverflow.com/questions/3072233/getting-value-from-table-cell-in-javascript-not-jquery
     var table = document.getElementById('data-table');
     var rowCount = table.rows.length; 

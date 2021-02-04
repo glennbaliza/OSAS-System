@@ -12,4 +12,8 @@ urlpatterns = [
     path('<int:course_id>course/process_course_edit.html', views.process_course_edit, name="process_course_edit"),
     path('<int:auth_id>/auth_user_edit.html', views.auth_user_edit, name="auth_user_edit"),
     path('/student_profile_edit.html', views.student_profile_edit, name="student_profile_edit"),
+    # path('sanctioning_excuse_add/', views.sanctioning_excuse_add, name="sanctioning_excuse_add"),
+
 ] 
+
+urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)

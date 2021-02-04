@@ -62,15 +62,14 @@
                         </ul>
                     </li>
                     <li class="has-sub">
-                        <a href="{% url 'student_lost_id' %}">
+                        <a href="javascript:;">
                             <b class="caret"></b>
                             ID
                         </a>
-                                <ul class="sub-menu">
-                                    <li><a>Request Form</a></li>
-                                    <li><a href="javascript:;">Menu 3.2</a></li>
-                                </ul>
-                            </li>
+                        <ul class="sub-menu">
+                            <li><a href="{% url 'student_lost_id' %}">Lost ID</a></li>
+                            <li><a href="{% url 'id_request_form' %}">Menu 3.2</a></li>
+                        </ul>
                     </li>
                     <li class="has-sub">
                         <a href="javascript:;">
@@ -84,15 +83,9 @@
                             </li>
                     </li>
                     <li class="has-sub">
-                        <a href="javascript:;">
-                            <b class="caret"></b>
+                        <a href="{% url 'sanctioning_role_student' %}">
                             Sanction
                         </a>
-                                <ul class="sub-menu">
-                                    <li><a href="javascript:;">Menu 3.1</a></li>
-                                    <li><a href="javascript:;">Menu 3.2</a></li>
-                                </ul>
-                            </li>
                     </li>
                 </ul>
             {% endif%}

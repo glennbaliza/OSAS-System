@@ -72,6 +72,12 @@
                             <b class="caret"></b>
                             Sanction
                         </a>
+                        <ul class="sub-menu">
+                            <li><a href="{%url 'sanctioning_student' %}">Sanctioning Students</a></li>
+                            <li><a href="{%url 'sanctioning_student_completed' %}">Finished Students</a></li>
+                            <li><a href="javascript:;">Excused Students</a></li>
+                            <li><a href="{%url 'desciplinary_sanction' %}">Disciplinary Sanctions</a></li>
+                        </ul>
                     </li>
                 </ul>
             </li>
@@ -110,6 +116,8 @@
                     <li><a href="{% url 'userrole' %}">User role</a></li>
                     <li><a href="{% url 'yr_sec' %}">Year and Section</a></li>
                     <li><a href="{% url 'course' %}">Courses</a></li>
+                    <li><a href="{% url 'code_descipline' %}">Code of Descipline</a></li>
+                    <li><a href="{% url 'designation_office' %}">Designation Office</a></li>
                 </ul>
             </li>
             <li><a href="javascript:;" class="sidebar-minify-btn" data-click="sidebar-minify"><i class="fa fa-angle-double-left"></i></a></li>

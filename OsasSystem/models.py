@@ -74,7 +74,6 @@ class osas_r_personal_info(models.Model):
 
 
 class osas_t_id(models.Model):
-#fix this
     lost_id = models.AutoField(primary_key=True)
     request_id = models.CharField(unique=True, max_length=10)
     lost_id_status = models.CharField(max_length=13, default='PENDING')
@@ -84,7 +83,7 @@ class osas_t_id(models.Model):
    
     
     def __str__(self):
-        return self.request_id
+        return self.lost_id
         
 # class osas_t_admission(models.Model):
 
@@ -98,14 +97,13 @@ class osas_t_id(models.Model):
 #         return self.request_name, self.request_detail
 
 class osas_r_userrole(models.Model):
-    # user_role = ((1,'Student'),(2,'Head'),(3,'Staff'))
 
     user_id = models.AutoField(primary_key=True)
     user_type = models.CharField(max_length=50, verbose_name='User Type')
     date_created = models.DateTimeField(max_length=50, blank=True)
     date_updated = models.DateTimeField(default=now)
 
-    # s_image = models.ImageField(upload_to=image_path, default='profile_pic/image.jpg')
+    s_image = models.ImageField(upload_to=image_path, default='profile_pic/image.jpg')
 
  #--- for image -----#
     # def image_tag(self):
@@ -124,145 +122,224 @@ class osas_r_auth_user(models.Model):
     date_created = models.DateTimeField(max_length=50, blank=True)
     date_updated = models.DateTimeField(default=now)
     auth_status = models.CharField(max_length=10, default='Active')
+    def __str__(self):
+        return self.auth_id
+
+# class osas_r_code_conduct(models.Model):
+#     coc_id = models.AutoField(primary_key = True)
+#     coc_violation_offense = models.CharField(max_length = 200)
+#     coc_status = models.CharField(max_length = 50)
+#     coc_sanction_date = models.DateTimeField(default = now)
+#     def __str__(self):
+#         return self.coc_id
+
+# class osas_code_title(models.Model): # ex. lost id, sample_desc
+#     code_id = models.AutoField(primary_key = True)
+#     code_title = models.CharField(max_length = 200)
+#     code_datecreated = models.DateTimeField(default = now)
+#     code_status = models.CharField(max_length = 10, default = "Active")
+#     def __str__(self):
+#         return self.code_id
+
+class osas_r_disciplinary_sanction(models.Model): # ex. 1st offense, sample_desc, 16hrs, 5days
+    ds_id = models.AutoField(primary_key = True)
+    ds_violation_count = models.CharField(max_length = 200)
+    ds_violation_desc = models.CharField(max_length = 200)
+    ds_hrs = models.IntegerField()
+    ds_days = models.IntegerField()
+    ds_code_id = models.ForeignKey('osas_r_code_title', on_delete=models.CASCADE)
+    ds_status = models.CharField(max_length = 50)
+    ds_datecreated = models.DateField(null = True)
+    def __str__(self):
+        return str(self.ds_id)
+
+class osas_r_designation_office(models.Model):
+    designation_id = models.AutoField(primary_key = True)
+    designation_office = models.CharField(max_length = 50)
+    designation_datecreated = models.DateTimeField(default = now)
+    def __str__(self):
+        return self.designation_id
+
+class osas_r_code_title(models.Model):
+    ct_id = models.AutoField(primary_key = True)
+    ct_name = models.CharField(max_length = 50)
+    ct_status = models.CharField(max_length = 10, default = "Active")
+    ct_datecreated = models.DateTimeField(default = now)
+    def __str__(self):
+        return self.ct_id
+
+class osas_t_sanction(models.Model):
+    sanction_id = models.AutoField(primary_key = True)
+    sanction_control_number = models.CharField(max_length = 10)
+    sanction_t_id = models.ForeignKey(osas_t_id, on_delete = models.CASCADE, null = True)
+    sanction_code_id = models.ForeignKey('osas_r_disciplinary_sanction', on_delete = models.CASCADE)
+    sanction_designation_id = models.ForeignKey('osas_r_designation_office', on_delete=models.CASCADE, null = True)
+    sanction_auth_id = models.ForeignKey('osas_r_auth_user', on_delete = models.CASCADE, null=True)
+    sanction_stud_id = models.ForeignKey('osas_r_personal_info', on_delete = models.CASCADE)
+    sanction_t_id = models.ForeignKey('osas_t_id', on_delete = models.CASCADE, null=True)
+    sanction_excuse_id = models.ForeignKey('osas_t_excuse', on_delete = models.CASCADE, null=True)
+    sanction_rendered_hr = models.IntegerField()
+    sanction_status = models.CharField(max_length = 50)
+    sanction_startdate = models.DateField(null = True)
+    sanction_enddate = models.DateField(null = True)
+    sanction_datecreated = models.DateField( null=True)
+    sanction_dateupdated = models.DateField(default = now)
+    def __str__(self):
+        return self.sanction_id
+
+class osas_t_excuse(models.Model):
+    excuse_id = models.AutoField(primary_key = True)
+    excuse_reason = models.CharField(max_length = 200)
+    excuse_proof = models.ImageField(upload_to=image_path, null=True, blank = True)
+    excuse_status = models.CharField(max_length = 10)
+    excuse_sanction_id = models.OneToOneField('osas_t_sanction', on_delete = models.CASCADE, null =True)
+    excuse_stud_id = models.ForeignKey('osas_r_personal_info', on_delete = models.CASCADE)
+    excuse_datecreated = models.DateTimeField(default = now)
+    excuse_dateupdated = models.DateField(default = now)
+    
+    def image_tag(self):
+        return mark_safe('<img src="/media/%s" width = "50" height="50" />'%(self.excuse_proof))
+
+    def __str__(self):
+        return str(self.excuse_id)
+
 #---------------------------------------------ALUMNI-------------------------------------------------
 
-class osas_r_referral(models.Model):
+# class osas_r_referral(models.Model):
 
-    ref_id = models.AutoField(primary_key=True)
-    ref_name = models.CharField(max_length=250, null=True)
-    ref_email = models.EmailField(max_length=50, blank=True)
-    ref_contact = models.BigIntegerField(max_length=11, null=True)
-    ref_share = models.CharField(max_length=250, null=True)
-    ref_date_created = models.DateTimeField(max_length=50)
-    ref_date_updated = models.DateTimeField(default=now)
-    status = models.BooleanField(default=1)
+#     ref_id = models.AutoField(primary_key=True)
+#     ref_name = models.CharField(max_length=250, null=True)
+#     ref_email = models.EmailField(max_length=50, blank=True)
+#     ref_contact = models.BigIntegerField(max_length=11, null=True)
+#     ref_share = models.CharField(max_length=250, null=True)
+#     ref_date_created = models.DateTimeField(max_length=50)
+#     ref_date_updated = models.DateTimeField(default=now)
+#     status = models.BooleanField(default=1)
 
-class osas_r_educ(models.Model):
-    educ_id = models.AutoField(primary_key=True)
-    educ_bach_degree = models.CharField(max_length=500, null=False)
-    educ_graduation_date = models.DateField(max_length=12, default=now)
-    educ_attainment = models.CharField(max_length=250, null=True)
-    educ_prof_exam = models.CharField(max_length=250, null=True)
-    educ_status = models.BooleanField(default=1)
-    educ_createddate = models.DateTimeField(max_length=50)
-    educ_updatedteddate = models.DateTimeField(default=now)
+# class osas_r_educ(models.Model):
+#     educ_id = models.AutoField(primary_key=True)
+#     educ_bach_degree = models.CharField(max_length=500, null=False)
+#     educ_graduation_date = models.DateField(max_length=12, default=now)
+#     educ_attainment = models.CharField(max_length=250, null=True)
+#     educ_prof_exam = models.CharField(max_length=250, null=True)
+#     educ_status = models.BooleanField(default=1)
+#     educ_createddate = models.DateTimeField(max_length=50)
+#     educ_updatedteddate = models.DateTimeField(default=now)
 
-class osas_r_competencies(models.Model):
-    comp_id = models.AutoField(primary_key=True)
-    comp_theoretical = models.CharField(max_length=150, null=True)
-    comp_technical = models.CharField(max_length=150, null=True)
-    comp_english_conv = models.CharField(max_length=150, null=True)
-    comp_foreign_lang = models.CharField(max_length=150, null=True)
-    comp_ability_present_ideas = models.CharField(max_length=150, null=True)
-    comp_correspondence = models.CharField(max_length=150, null=True)
-    comp_research = models.CharField(max_length=150, null=True)
-    comp_interpersonal = models.CharField(max_length=150, null=True)
-    comp_entrep = models.CharField(max_length=150, null=True)
-    comp_basic_comp_skill = models.CharField(max_length=150, null=True)
-    comp_adv_info_tech = models.CharField(max_length=150, null=True)
-    comp_stats_soft = models.CharField(max_length=150, null=True)
-    comp_management = models.CharField(max_length=150, null=True)
-    comp_problem_solving = models.CharField(max_length=150, null=True)
-    comp_critical_thinking = models.CharField(max_length=150, null=True)
-    comp_results_orient = models.CharField(max_length=150, null=True)
-    comp_flexibility = models.CharField(max_length=150, null=True)
-    comp_acc_precision = models.CharField(max_length=150, null=True)
-    comp_ability_work = models.CharField(max_length=150, null=True)
-    comp_respect = models.CharField(max_length=150, null=True)
-    comp_independence = models.CharField(max_length=150, null=True)
-    comp_initiative = models.CharField(max_length=150, null=True)
-    comp_professionalism = models.CharField(max_length=150, null=True)
-    comp_self_confi = models.CharField(max_length=150, null=True)
-    comp_commitment = models.CharField(max_length=150, null=True)
-    comp_honesty = models.CharField(max_length=150, null=True)
-    comp_diligence = models.CharField(max_length=150, null=True)
-    comp_status = models.BooleanField(default=1)
-    comp_createddate = models.DateTimeField(max_length=50)
-    comp_updateddate = models.DateTimeField(default=now)
+# class osas_r_competencies(models.Model):
+#     comp_id = models.AutoField(primary_key=True)
+#     comp_theoretical = models.CharField(max_length=150, null=True)
+#     comp_technical = models.CharField(max_length=150, null=True)
+#     comp_english_conv = models.CharField(max_length=150, null=True)
+#     comp_foreign_lang = models.CharField(max_length=150, null=True)
+#     comp_ability_present_ideas = models.CharField(max_length=150, null=True)
+#     comp_correspondence = models.CharField(max_length=150, null=True)
+#     comp_research = models.CharField(max_length=150, null=True)
+#     comp_interpersonal = models.CharField(max_length=150, null=True)
+#     comp_entrep = models.CharField(max_length=150, null=True)
+#     comp_basic_comp_skill = models.CharField(max_length=150, null=True)
+#     comp_adv_info_tech = models.CharField(max_length=150, null=True)
+#     comp_stats_soft = models.CharField(max_length=150, null=True)
+#     comp_management = models.CharField(max_length=150, null=True)
+#     comp_problem_solving = models.CharField(max_length=150, null=True)
+#     comp_critical_thinking = models.CharField(max_length=150, null=True)
+#     comp_results_orient = models.CharField(max_length=150, null=True)
+#     comp_flexibility = models.CharField(max_length=150, null=True)
+#     comp_acc_precision = models.CharField(max_length=150, null=True)
+#     comp_ability_work = models.CharField(max_length=150, null=True)
+#     comp_respect = models.CharField(max_length=150, null=True)
+#     comp_independence = models.CharField(max_length=150, null=True)
+#     comp_initiative = models.CharField(max_length=150, null=True)
+#     comp_professionalism = models.CharField(max_length=150, null=True)
+#     comp_self_confi = models.CharField(max_length=150, null=True)
+#     comp_commitment = models.CharField(max_length=150, null=True)
+#     comp_honesty = models.CharField(max_length=150, null=True)
+#     comp_diligence = models.CharField(max_length=150, null=True)
+#     comp_status = models.BooleanField(default=1)
+#     comp_createddate = models.DateTimeField(max_length=50)
+#     comp_updateddate = models.DateTimeField(default=now)
 
-class osas_r_relevant(models.Model):
-    rel_id = models.AutoField(primary_key=True)
-    rel_theoretical = models.CharField(max_length=150, null=True)
-    rel_technical = models.CharField(max_length=150, null=True)
-    rel_english_conv = models.CharField(max_length=150, null=True)
-    rel_foreign_lang = models.CharField(max_length=150, null=True)
-    rel_ability_present_ideas = models.CharField(max_length=150, null=True)
-    rel_correspondence = models.CharField(max_length=150, null=True)
-    rel_research = models.CharField(max_length=150, null=True)
-    rel_interpersonal = models.CharField(max_length=150, null=True)
-    rel_entrep = models.CharField(max_length=150, null=True)
-    rel_basic_comp_skill = models.CharField(max_length=150, null=True)
-    rel_adv_info_tech = models.CharField(max_length=150, null=True)
-    rel_stats_soft = models.CharField(max_length=150, null=True)
-    rel_management = models.CharField(max_length=150, null=True)
-    rel_problem_solving = models.CharField(max_length=150, null=True)
-    rel_critical_thinking = models.CharField(max_length=150, null=True)
-    rel_results_orient = models.CharField(max_length=150, null=True)
-    rel_flexibility = models.CharField(max_length=150, null=True)
-    rel_acc_precision = models.CharField(max_length=150, null=True)
-    rel_ability_work = models.CharField(max_length=150, null=True)
-    rel_respect = models.CharField(max_length=150, null=True)
-    rel_independence = models.CharField(max_length=150, null=True)
-    rel_initiative = models.CharField(max_length=150, null=True)
-    rel_professionalism = models.CharField(max_length=150, null=True)
-    rel_self_confi = models.CharField(max_length=150, null=True)
-    rel_commitment = models.CharField(max_length=150, null=True)
-    rel_honesty = models.CharField(max_length=150, null=True)
-    rel_diligence = models.CharField(max_length=150, null=True)
-    rel_status = models.BooleanField(default=1)
-    rel_createddate = models.DateTimeField(max_length=50)
-    rel_updatedddate = models.DateTimeField(default=now)
+# class osas_r_relevant(models.Model):
+#     rel_id = models.AutoField(primary_key=True)
+#     rel_theoretical = models.CharField(max_length=150, null=True)
+#     rel_technical = models.CharField(max_length=150, null=True)
+#     rel_english_conv = models.CharField(max_length=150, null=True)
+#     rel_foreign_lang = models.CharField(max_length=150, null=True)
+#     rel_ability_present_ideas = models.CharField(max_length=150, null=True)
+#     rel_correspondence = models.CharField(max_length=150, null=True)
+#     rel_research = models.CharField(max_length=150, null=True)
+#     rel_interpersonal = models.CharField(max_length=150, null=True)
+#     rel_entrep = models.CharField(max_length=150, null=True)
+#     rel_basic_comp_skill = models.CharField(max_length=150, null=True)
+#     rel_adv_info_tech = models.CharField(max_length=150, null=True)
+#     rel_stats_soft = models.CharField(max_length=150, null=True)
+#     rel_management = models.CharField(max_length=150, null=True)
+#     rel_problem_solving = models.CharField(max_length=150, null=True)
+#     rel_critical_thinking = models.CharField(max_length=150, null=True)
+#     rel_results_orient = models.CharField(max_length=150, null=True)
+#     rel_flexibility = models.CharField(max_length=150, null=True)
+#     rel_acc_precision = models.CharField(max_length=150, null=True)
+#     rel_ability_work = models.CharField(max_length=150, null=True)
+#     rel_respect = models.CharField(max_length=150, null=True)
+#     rel_independence = models.CharField(max_length=150, null=True)
+#     rel_initiative = models.CharField(max_length=150, null=True)
+#     rel_professionalism = models.CharField(max_length=150, null=True)
+#     rel_self_confi = models.CharField(max_length=150, null=True)
+#     rel_commitment = models.CharField(max_length=150, null=True)
+#     rel_honesty = models.CharField(max_length=150, null=True)
+#     rel_diligence = models.CharField(max_length=150, null=True)
+#     rel_status = models.BooleanField(default=1)
+#     rel_createddate = models.DateTimeField(max_length=50)
+#     rel_updatedddate = models.DateTimeField(default=now)
 
 
-class osas_r_employ(models.Model):
-    employ_id = models.AutoField(primary_key=True)
-    employ_first_job = models.CharField(max_length=250, null=False)
-    employ_howfind_1stjob = models.CharField(max_length=250, null=False)
-    employ_date1st_employ = models.DateField(max_length=12, default=now)
-    employ_date_current = models.DateField(max_length=12, default=now)
-    employ_type_work = models.CharField(max_length=100, null=True)
-    employ_work_pos = models.CharField(max_length=100, null=True)
-    employ_work_related = models.CharField(max_length=50, null=True)
-    employ_long = models.CharField(max_length=200, null=True)
-    employ_present_stat = models.CharField(max_length=250, null=True)
-    employ_job_level = models.CharField(max_length=250, null=True)
-    employ_reasons_unemployed = models.CharField(max_length=250, null=True)
-    employ_self_employed = models.CharField(max_length=200, null=True)
-    employ_area = models.CharField(max_length=250, null=True)
-    employ_address = models.CharField(max_length=250, null=True)
-    employ_nature_company = models.CharField(max_length=250, null=True)
-    employ_nature_industry = models.CharField(max_length=250, null=True)
-    employ_status = models.BooleanField(default=1)
-    employ_createddate = models.DateTimeField(max_length=50)
-    employ_updatedddate = models.DateTimeField(default=now)
+# class osas_r_employ(models.Model):
+#     employ_id = models.AutoField(primary_key=True)
+#     employ_first_job = models.CharField(max_length=250, null=False)
+#     employ_howfind_1stjob = models.CharField(max_length=250, null=False)
+#     employ_date1st_employ = models.DateField(max_length=12, default=now)
+#     employ_date_current = models.DateField(max_length=12, default=now)
+#     employ_type_work = models.CharField(max_length=100, null=True)
+#     employ_work_pos = models.CharField(max_length=100, null=True)
+#     employ_work_related = models.CharField(max_length=50, null=True)
+#     employ_long = models.CharField(max_length=200, null=True)
+#     employ_present_stat = models.CharField(max_length=250, null=True)
+#     employ_job_level = models.CharField(max_length=250, null=True)
+#     employ_reasons_unemployed = models.CharField(max_length=250, null=True)
+#     employ_self_employed = models.CharField(max_length=200, null=True)
+#     employ_area = models.CharField(max_length=250, null=True)
+#     employ_address = models.CharField(max_length=250, null=True)
+#     employ_nature_company = models.CharField(max_length=250, null=True)
+#     employ_nature_industry = models.CharField(max_length=250, null=True)
+#     employ_status = models.BooleanField(default=1)
+#     employ_createddate = models.DateTimeField(max_length=50)
+#     employ_updatedddate = models.DateTimeField(default=now)
 
-class osas_r_rate(models.Model):
-    rate_id = models.AutoField(primary_key=True)
-    rate_degree_prepared = models.CharField(max_length=200, null=True)
-    rate_practicum = models.CharField(max_length=200, null=True)
-    rate_good_career = models.CharField(max_length=200, null=True)
-    rate_degree_comp = models.CharField(max_length=250, null=True)
-    rate_my_educ = models.CharField(max_length=250, null=True)
-    rate_preferred_course = models.CharField(max_length=200, null=True)
-    rate_preferred_univ = models.CharField(max_length=200, null=True)
-    rate_satisfied = models.CharField(max_length=200, null=True)
-    rate_status = models.BooleanField(default=1)
-    rate_createddate = models.DateTimeField(max_length=50)
-    rate_updatedddate = models.DateTimeField(default=now)
+# class osas_r_rate(models.Model):
+#     rate_id = models.AutoField(primary_key=True)
+#     rate_degree_prepared = models.CharField(max_length=200, null=True)
+#     rate_practicum = models.CharField(max_length=200, null=True)
+#     rate_good_career = models.CharField(max_length=200, null=True)
+#     rate_degree_comp = models.CharField(max_length=250, null=True)
+#     rate_my_educ = models.CharField(max_length=250, null=True)
+#     rate_preferred_course = models.CharField(max_length=200, null=True)
+#     rate_preferred_univ = models.CharField(max_length=200, null=True)
+#     rate_satisfied = models.CharField(max_length=200, null=True)
+#     rate_status = models.BooleanField(default=1)
+#     rate_createddate = models.DateTimeField(max_length=50)
+#     rate_updatedddate = models.DateTimeField(default=now)
 
-class osas_t_profile(models.Model):
-    prof_id = models.AutoField(primary_key=True)
-    prof_name = models.CharField(max_length=100, verbose_name='Last Name')
-    prof_address = models.CharField(max_length=100, verbose_name='Address')
-    prof_tel = models.BigIntegerField(blank=True, verbose_name='Telephone Number')
-    prof_mobile = models.BigIntegerField(max_length=11, verbose_name='Mobile Number')
-    prof_email = models.EmailField(max_length=50, verbose_name='User Email')
-    prof_civil_stat = models.CharField(max_length=100, verbose_name='Telephone Number')
-    prof_sex = models.CharField(max_length=100, verbose_name='Gender')
-    prof_status = models.BooleanField(default=1)
-    prof_createddate = models.DateTimeField(max_length=50)
-    prof_updateddate = models.DateTimeField(default=now)
+# class osas_t_profile(models.Model):
+#     prof_id = models.AutoField(primary_key=True)
+#     prof_name = models.CharField(max_length=100, verbose_name='Last Name')
+#     prof_address = models.CharField(max_length=100, verbose_name='Address')
+#     prof_tel = models.BigIntegerField(blank=True, verbose_name='Telephone Number')
+#     prof_mobile = models.BigIntegerField(max_length=11, verbose_name='Mobile Number')
+#     prof_email = models.EmailField(max_length=50, verbose_name='User Email')
+#     prof_civil_stat = models.CharField(max_length=100, verbose_name='Telephone Number')
+#     prof_sex = models.CharField(max_length=100, verbose_name='Gender')
+#     prof_status = models.BooleanField(default=1)
+#     prof_createddate = models.DateTimeField(max_length=50)
+#     prof_updateddate = models.DateTimeField(default=now)
 
-class SAMPLE(models.Model):
-    sample = models.AutoField(primary_key=True)
-  
+

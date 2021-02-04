@@ -18,7 +18,9 @@
             <li class="dropdown navbar-user">
                 <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
                     <img src="{%static 'OsasSystem/assets/img/user/user.png' %}" alt="" /> 
-                    <span class="d-none d-md-inline">User Name</span> <b class="caret"></b>
+                    <span class="d-none d-md-inline">{{request.session.session_user_role}}</span> <b class="caret"></b>
+                    <label id="auth_username" hidden name="auth_username">{{request.session.session_user_username}}</label>
+                    <label  id="auth_id" hidden name="auth_id">{{request.session.session_user_id}}</label>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right">
                     <a href="javascript:;" class="dropdown-item">Account Setting</a>
