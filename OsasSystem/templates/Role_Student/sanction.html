@@ -74,46 +74,44 @@
                 </thead>
                 <tbody>
                     {% for osas_t_sanction in sanction %}
-                    <tr class="odd gradeA tr_" id="{{osas_t_sanction.sanction_control_number}}">
+                    <tr class="odd gradeA tr_" id="{{osas_t_sanction.sanction_id}}">
                         <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
-                        <td width="40%">
+                        <td width="30%" class="align-middle">
                             <dl class="row mb-0 p-2" style="line-height: .6rem;">
-                                <dd class="col-sm-8 gritter- text-nowrap " ><strong class="contol_number">{{ osas_t_sanction.sanction_control_number }}</strong></dd>
-                                <dd class="col-sm-8 gritter- text-nowrap " ><strong class="stud_no">{{ osas_t_sanction.sanction_stud_id.stud_no}}</strong></dd>
-                                <dd class="col-sm-8 gritter- text-nowrap violation" >{{ osas_t_sanction.sanction_code_id.ds_code_id.ct_name }}</dd>
-                                <dd class="col-sm-8 gritter- text-nowrap offense" >{{ osas_t_sanction.sanction_code_id.ds_violation_count }}</dd>
+                                <dd class="col-sm-8 gritter- text-nowrap cn{{osas_t_sanction.sanction_id}}" ><strong class="contol_number">{{ osas_t_sanction.sanction_control_number }}</strong></dd>
+                                <dd class="col-sm-8 gritter- text-nowrap " ><strong class="stud_no sn{{osas_t_sanction.sanction_id}}">{{ osas_t_sanction.sanction_stud_id.stud_no}}</strong></dd>
+                                <dd class="col-sm-8 gritter- text-nowrap violation v{{osas_t_sanction.sanction_id}}" >{{ osas_t_sanction.sanction_code_id.ds_code_id.ct_name }}</dd>
+                                <dd class="col-sm-8 gritter- text-nowrap offense o{{osas_t_sanction.sanction_id}}" >{{ osas_t_sanction.sanction_code_id.ds_violation_count }}</dd> 
                                 {% if osas_t_sanction.sanction_excuse_id.excuse_status %}
-                                <dd class="col-sm-8 gritter-"><strong><a href=""><span class="label label-success status_">Excuse <i class="far fa-envelope text-white-lighter fa-lg"></i></span></a></strong></dd>
+                                <dd class="col-sm-8 gritter- text-nowrap " ><a class="excuse{{osas_t_sanction.sanction_excuse_id.excuse_status}}" data-toggle="modal" href="#modal-view" onClick="viewExcuse('{{ osas_t_sanction.sanction_excuse_id }}')" ><span class="label label-success status_ ">Excuse <i class="far fa-envelope text-white-lighter fa-lg"></i></span></a></dd>
                                 {% endif %}
                             </dl>
                         </td>
                         <td width="35%"><dl class="row mb-0 p-2" style="line-height: .6rem;">
-                            <dd class="col-sm-8 gritter- text-nowrap " ><strong class="sanc_status">{{ osas_t_sanction.sanction_code_id.ds_status}}</strong></dd>
-                            <dd class="col-sm-8 gritter- text-nowrap sanc_date" >{{ osas_t_sanction.sanction_datecreated|date:"Y-m-d"}}</dd>
+                            <dd class="col-sm-8 gritter- text-nowrap " ><strong class="sanc_status s{{osas_t_sanction.sanction_id}}">{{ osas_t_sanction.sanction_code_id.ds_status}}</strong></dd>
+                            <dd class="col-sm-8 gritter- text-nowrap sanc_date d{{osas_t_sanction.sanction_id}}" >{{ osas_t_sanction.sanction_datecreated|date:"Y-m-d"}}</dd>
                             {% if osas_t_sanction.sanction_designation_id.designation_office is not none %}
-                            <dd class="col-sm-8 gritter- text-nowrap office" >{{ osas_t_sanction.sanction_designation_id.designation_office }}</dd>
+                            <dd class="col-sm-8 gritter- text-nowrap office of{{osas_t_sanction.sanction_id}}" >{{ osas_t_sanction.sanction_designation_id.designation_office }}</dd>
                             {%elif osas_t_sanction.sanction_status == "PENDING" %}
-                            <dd class="col-sm-8 gritter- text-nowrap office" ></dd>
+                            <dd class="col-sm-8 gritter- text-nowrap office of{{osas_t_sanction.sanction_id}}" ></dd>
                             {%else%}
-                            <dd class="col-sm-8 gritter- text-nowrap office" >N/A</dd>
+                            <dd class="col-sm-8 gritter- text-nowrap office of{{osas_t_sanction.sanction_id}}" >{{ osas_t_sanction.sanction_designation_id.designation_office }}</dd>
                             {%endif%}
-                            <dd class="col-sm-8 gritter- text-nowrap hrs" >{{ osas_t_sanction.sanction_code_id.ds_hrs }} Hour(s)</dd>
+                            <dd class="col-sm-8 gritter- text-nowrap hrs hr{{osas_t_sanction.sanction_id}}" >{{ osas_t_sanction.sanction_code_id.ds_hrs }} Hour(s)</dd>
                             {% if osas_t_sanction.sanction_status == "COMPLETED"%}
-                            <dd class="col-sm-8 gritter-"><strong><span class="badge badge-danger status_">{{ osas_t_sanction.sanction_status }}</span></strong></dd>
-                            {% elif osas_t_sanction.sanction_status == "ACTIVE" %}
-                            <dd class="col-sm-8 gritter-"><strong><span class="badge badge-warning status_">{{ osas_t_sanction.sanction_status }}</span></strong></dd>
+                            <dd class="col-sm-8 gritter-"><strong><span class="badge badge-danger status_ ss{{osas_t_sanction.sanction_id}}">{{ osas_t_sanction.sanction_status }}</span></strong></dd>
+                            {% elif osas_t_sanction.sanction_status == "ACTIVE"%}
+                            <dd class="col-sm-8 gritter- "><strong><span class="badge badge-warning status_ ss{{osas_t_sanction.sanction_id}}">{{ osas_t_sanction.sanction_status }}</span></strong></dd>
                             {% else %}
-                            <dd class="col-sm-8 gritter-"><strong><span class="badge badge-info status_">{{ osas_t_sanction.sanction_status }}</span></strong></dd>
+                            <dd class="col-sm-8 gritter-"><strong><span class="badge badge-info status_ ss{{osas_t_sanction.sanction_id}}">{{ osas_t_sanction.sanction_status }}</span></strong></dd>
                             {% endif %}
                         </dl>
                         </td>
                         <td  width="25%" class="align-middle action_btn" id="action_btn"><div class="text-nowrap"><div class="btn-group ">
                             <button id="view-btn" class="btn btn-white"  data-toggle="modal" href="#modal_view" onClick="viewSanction('{{ osas_t_sanction.sanction_id }}')"><i class="fas fa-search mr-2"></i>View</button>
-                            {% if osas_t_sanction.sanction_status == "COMPLETED"%}
-
-                            {%elif osas_t_sanction.sanction_status == "PENDING" or osas_t_sanction.sanction_status == "ACTIVE" and osas_t_sanction.sanction_excuse_id.excuse_status == "PENDING"%}
-
-                            {% else %}
+                            {% if osas_t_sanction.sanction_status == "COMPLETED" %}
+                            {% elif osas_t_sanction.sanction_excuse_id.excuse_status == "PENDING" %}
+                            {% else%}
                             <button id="edit-btn" class="btn btn-success"  data-toggle="modal" href="#modal-dialog" onClick="addExcuse('{{ osas_t_sanction.sanction_id }}')"><i class="fas fa-edit mr-2"></i>Excuse</button>
                             {%endif%}
                             </div>
@@ -183,6 +181,15 @@
     </div>
 </div>
 
+<div class="modal fade" id="modal-view" role="dialog"  data-backdrop="static">
+    <div class="modal-dialog modal-sm" role="document" style="width:500px;">
+        <div class="modal-content" style="background-color:whitesmoke;">
+            <form  method="POST" class="form-control-with-bg" id="form2">
+                {% csrf_token %}
+            </form> 
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block page-level %}
@@ -253,23 +260,24 @@ $('#donwload').click(function(){
     var i = 0
     $("#data-table .tr_").each(function() {
         i ++
-        control_number = $(this).closest("tbody tr").find("td :eq(2)").html() 
-        student_number = $(this).closest("tbody tr").find("td :eq(4)").html() 
-        sanction = $(this).closest("tbody tr").find("td :eq(5)").html()
-        violation = $(this).closest("tbody tr").find("td :eq(6)").html()  
-        sanc_status = $(this).closest("tbody tr").find("td :eq(9)").html() 
-        date = $(this).closest("tbody tr").find("td :eq(10)").html()  
-        office = $(this).closest("tbody tr").find("td :eq(11)").html() 
+        tr_id = $(this).attr('id')
+        control_number = $(this).find('.cn'+tr_id+'').text() 
+        student_number = $(this).find('.sn'+tr_id+'').text() 
+        sanction = $(this).find('.v'+tr_id+'').text() 
+        violation = $(this).find('.o'+tr_id+'').text() 
+        sanc_status = $(this).find('.s'+tr_id+'').text() 
+        date = $(this).find('.d'+tr_id+'').text() 
+        office = $(this).find('.of'+tr_id+'').text() 
+        hrs = $(this).find('.hr'+tr_id+'').text() 
+        Status = $(this).find('.ss'+tr_id+'').text() 
         if(office){
-            office = $(this).closest("tbody tr").find("td :eq(11)").html() 
+            office = $(this).find('.of'+tr_id+'').text() 
         }
         else{
             office = "N/A"
         }
-        hrs = $(this).closest("tbody tr").find("td :eq(12)").html()
-        Status = $(this).closest("tbody tr").find("td :eq(15)").html()
         console.log(control_number,student_number)
-        wme.document.write("<tr class='odd gradeA tr_' id='{{osas_t_sanction.sanction_control_number}}'><td width='1%' class='f-s-600 text-inverse' style='border: 1px solid lightgrey; text-align: center;'>"+i+"</td><td style='border: 1px solid lightgrey;' width='30%'><dl class='row mb-0 p-2' style='line-height: .6rem; '><dd class='col-sm-8 gritter-' style=' margin: 3px 0px 7px 0px; padding-left: 7px;'><strong class='contol_number' style='padding-bottom: 15px;'>"+control_number+"</strong></dd><dd style=' margin: 3px 0px 7px 0px; padding-left: 7px;' class='col-sm-8 gritter- ' ><strong class='stud_no'>"+student_number+"</strong></dd><dd style=' margin: 3px 0px 7px 0px; padding-left: 7px;' class='col-sm-8 gritter- sanc_date' >"+date+"</dd></dl><td style='border: 1px solid lightgrey;' width='30%'><dl class='row mb-0 p-2' style='line-height: .6rem; '><dd style=' margin: 3px 0px 7px 0px; padding-left: 7px;' class='col-sm-8 gritter- violation'>"+sanction+"</dd><dd style=' margin: 3px 0px 7px 0px; padding-left: 7px;' class='col-sm-8 gritter- offense'>"+violation+"</dd><dd style=' margin: 3px 0px 7px 0px; padding-left: 7px;' class='col-sm-8 gritter-' ><strong class='sanc_status'>"+sanc_status+"</strong></dd></dl></td><td style='border: 1px solid lightgrey; text-align: right;' width='30%'><dl class='row mb-0 p-2' style='line-height: .6rem; '><dd style=' margin: 3px 0px 7px 0px; padding-left: 7px;' class='col-sm-8 gritter- office' >Designation: "+office+"</dd><dd class='col-sm-8 gritter- hrs' style=' margin: 3px 0px 7px 0px; padding-left: 7px;' >"+hrs+"</dd><dd class='col-sm-8 gritter-' style=' margin: 3px 0px 7px 0px; padding-left: 7px;' ><strong><span class='badge badge-danger status_'>"+Status+"</span></strong></dd></dl></td></tr>")
+        wme.document.write("<tr class='odd gradeA tr_' id='{{osas_t_sanction.sanction_control_number}}'><td width='1%' class='f-s-600 text-inverse' style='border: 1px solid lightgrey; text-align: center;'>"+i+"</td><td style='border: 1px solid lightgrey;' width='30%'><dl class='row mb-0 p-2' style='line-height: .6rem; '><dd class='col-sm-8 gritter-' style=' margin: 3px 0px 7px 0px; padding-left: 7px;'><strong class='contol_number' style='padding-bottom: 15px;'>"+control_number+"</strong></dd><dd style=' margin: 3px 0px 7px 0px; padding-left: 7px;' class='col-sm-8 gritter- ' ><strong class='stud_no'>"+student_number+"</strong></dd><dd style=' margin: 3px 0px 7px 0px; padding-left: 7px;' class='col-sm-8 gritter- sanc_date' >"+date+"</dd></dl><td style='border: 1px solid lightgrey;' width='40%'><dl class='row mb-0 p-2' style='line-height: .6rem; '><dd style=' margin: 3px 0px 7px 0px; padding-left: 7px;' class='col-sm-8 gritter- violation'>"+sanction+"</dd><dd style=' margin: 3px 0px 7px 0px; padding-left: 7px;' class='col-sm-8 gritter- offense'>"+violation+"</dd><dd style=' margin: 3px 0px 7px 0px; padding-left: 7px;' class='col-sm-8 gritter-' ><strong class='sanc_status'>"+sanc_status+"</strong></dd></dl></td><td style='border: 1px solid lightgrey; text-align: right;' width='30%'><dl class='row mb-0 p-2' style='line-height: .6rem; '><dd style=' margin: 3px 0px 7px 0px; padding-left: 7px;' class='col-sm-8 gritter- office' >Designation: "+office+"</dd><dd class='col-sm-8 gritter- hrs' style=' margin: 3px 0px 7px 0px; padding-left: 7px;' >"+hrs+"</dd><dd class='col-sm-8 gritter-' style=' margin: 3px 0px 7px 0px; padding-left: 7px;' ><strong><span class='badge badge-danger status_'>"+Status+"</span></strong></dd></dl></td></tr>")
     });
     wme.document.write("</tbody></table>")
     wme.document.close();
@@ -279,14 +287,51 @@ $('#donwload').click(function(){
     $(".action_btn").show();
 })
 
-$('#btn_rem').click(function(){
-    $("#data-table .tr_").each(function() {
-        control_number = $(this).closest("tbody tr").find("td :eq(15)").html() 
-        console.log(control_number)
-    });
-}); 
+// $('#btn_rem').click(function(){
+//     $("#data-table .tr_").each(function() {
+//         control_number = $(this).closest("tbody tr").find("td :eq(15)").html() 
+//         console.log(control_number)
+//     });
+// }); 
 
-
+function viewExcuse(sanction_excuse_id) {
+    console.log(sanction_excuse_id)
+    if (sanction_excuse_id) {
+        if (document.getElementById("excuse_image")){
+            var myobj = document.getElementById("excuse_image");
+            myobj.remove();
+        }
+        if (document.getElementById("btn_excuse_submit")){
+            var myobj = document.getElementById("btn_excuse_submit");
+            myobj.remove();
+        }
+        tr_id = sanction_excuse_id;
+        sanction = $(this).closest("tbody tr").find("td :eq(2)").textContent 
+        $('#sanction_excuse_id').val(sanction_excuse_id);
+        $.ajax({
+        type:'POST',
+        url : "{% url 'sanctioning_student_view_excuse' %}",
+        data: {
+            sanction_excuse_id:sanction_excuse_id,
+            csrfmiddlewaretoken: "{{ csrf_token }}",
+        },
+        dataType: 'json',
+        success: function(data){
+            if (data.excuse_val){
+                sample = data.excuse_val.proof.replace(/\"/g, "")
+                date2 = moment(data.excuse_val.date).endOf('day').fromNow();  
+                $("#form2").append(' <div id="excuse_image" class="card"><button type="button" class="close" id="modal_close" data-dismiss="modal" aria-hidden="true" style="color: gray; margin: 6px;">×</button><input class="form-control" id="sanction_excuse_id" type="hidden" name="sanction_excuse_id"/><a href="/media/'+sample+'" target="blank"><img class="card-img-top" src="/media/'+sample+'" width="100" height="auto" alt="Card image cap" /></a><div class="card-body" style="font-family: Roboto;"><h5 class="card-title">'+data.excuse_val.sanction+'</h5><hr>Reason:</br><br><label class="card-text" style=" font-size: 12px;"><i>"'+data.excuse_val.reason+'"</i></label><hr><p class="card-text">Uploaded '+date2+'</p></div></div><button class="btn btn_success col-md-12 " type="submit" id="btn_excuse_submit" style="height: 33px; padding: 5px; background: linear-gradient(to right, #66ccff -1%, #3366ff 98%); border:none; color: white;" >Accept<i class="far fa-paper-plane m-l-3 zoom"></i></button>')
+            }
+            if(data.error){
+                console.log(data.error)
+            }
+        },
+        error: function(error){
+            console.log(error)
+        }
+    })
+    }
+}
 
 function viewSanction(sanction_id) {
     if (document.getElementById("col_1")){

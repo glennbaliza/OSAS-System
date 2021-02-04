@@ -1047,8 +1047,9 @@ def sanctioning_student_view_excuse(request):
     sanction_excuse_id = request.POST.get('sanction_excuse_id')
     try:
         t = osas_t_excuse.objects.get(excuse_id = sanction_excuse_id)
+        e = osas_t_sanction.objects.get(sanction_excuse_id = osas_t_excuse.objects.get(excuse_id = sanction_excuse_id))
         image = json.dumps(str(t.excuse_proof))
-        excuse_val = {'id': t.excuse_id, 'reason':t.excuse_reason, 'proof':image, 'status':t.excuse_status ,'date':t.excuse_datecreated, 'sanction':t.excuse_sanction_id.sanction_code_id.ds_code_id.ct_name}
+        excuse_val = {'id': t.excuse_id, 'reason':t.excuse_reason, 'proof':image, 'status':t.excuse_status ,'date':t.excuse_datecreated, 'sanction':e.sanction_code_id.ds_code_id.ct_name}
         data = {'excuse_val':excuse_val}
         return JsonResponse(data, safe=False)
     except ObjectDoesNotExist:
