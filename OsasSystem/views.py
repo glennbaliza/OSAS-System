@@ -2,7 +2,6 @@ import random
 from io import BytesIO
 from django.template.loader import get_template
 from django.views import View
-from xhtml2pdf import pisa
 from django.shortcuts import render, redirect, get_object_or_404, reverse, HttpResponse
 from django.http import HttpResponseRedirect, Http404, JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
@@ -10,31 +9,12 @@ from .models import osas_r_userrole, osas_r_course, osas_r_section_and_year, osa
 from django.contrib import messages
 from django.views.decorators.cache import cache_control
 from datetime import datetime, date, timedelta
-from dateutil import parser
+from dateutil import parser 
 from django.views.decorators.csrf import csrf_exempt
 import re
 import json
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 
-
-
-
-def render_to_pdf(template_src, context_dict={}):
-	template = get_template(template_src)
-	html  = template.render(context_dict)
-	result = BytesIO()
-	pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
-	if not pdf.err:
-		return HttpResponse(result.getvalue(), content_type='application/pdf')
-	return None
-
-
-#Opens up page as PDF
-class ViewPDF(View):
-	def get(self, request, *args, **kwargs):
-
-		pdf = render_to_pdf('pdf_templte.html', data)
-		return HttpResponse(pdf, content_type='application/pdf')
 
 
 
@@ -1016,7 +996,6 @@ def sanctioning_role_student(request):
     
 @csrf_exempt
 def sanctioning_excuse_add(request):
-    
     sanction_id = request.POST.get("sanction_id")
     excuse = request.POST.get("essay_text")
     stud_no1 = request.session['session_user_no']
@@ -1026,22 +1005,33 @@ def sanctioning_excuse_add(request):
     cleantext = re.sub(cleanr, '', excuse)
 
     try:
-        t = osas_t_excuse.objects.get(excuse_stud_id = osas_r_personal_info.objects.get(stud_no = stud_no1),excuse_sanction_id = osas_t_sanction.objects.get(sanction_id = sanction_id), excuse_status = "PENDING" )
-        data = {'error':True}
-        return JsonResponse(data, safe=False)
-    except ObjectDoesNotExist:
-        t = osas_t_excuse( 
+        t = osas_t_sanction.objects.get(sanction_id = sanction_id)
+        if t.sanction_excuse_id:
+            data = {'error':True}
+            return JsonResponse(data, safe=False)
+        else:
+            e = osas_t_excuse( 
             excuse_reason = cleantext, 
             excuse_status = "PENDING", 
             excuse_stud_id = osas_r_personal_info.objects.get(stud_no = stud_no1), 
-            excuse_sanction_id = osas_t_sanction.objects.get(sanction_id = sanction_id),
             excuse_proof = proof
-        )
-        t.save()
-        p = osas_t_excuse.objects.get(excuse_stud_id = osas_r_personal_info.objects.get(stud_no = stud_no1),excuse_sanction_id = osas_t_sanction.objects.get(sanction_id = sanction_id))
-        e = osas_t_sanction.objects.get(sanction_id = sanction_id)
-        e.sanction_excuse_id = osas_t_excuse.objects.get(excuse_id = p.excuse_id)
-        e.save()
+            )
+            e.save()
+           
+            try:
+                r = osas_t_excuse.objects.get(excuse_reason = cleantext, excuse_status = "PENDING", excuse_stud_id = osas_r_personal_info.objects.get(stud_no = stud_no1))
+
+                ex_id = r.excuse_id
+                if ex_id:
+                    t.sanction_excuse_id = osas_t_excuse.objects.get(excuse_id = ex_id)
+                    t.save()
+                    return redirect('/sanctioning_role_student')
+                else:
+                    return redirect('/sanctioning_role_student')
+            except ObjectDoesNotExist:
+                data = {'error':True}
+                return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
         return redirect('/sanctioning_role_student')
 
 def sanctioning_student(request):

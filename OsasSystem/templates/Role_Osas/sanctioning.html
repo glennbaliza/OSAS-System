@@ -82,29 +82,29 @@
                         <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
                         <td width="30%" class="align-middle">
                             <dl class="row mb-0 p-2" style="line-height: .6rem;">
-                                <dd class="col-sm-8 gritter- text-nowrap " ><strong class="contol_number">{{ osas_t_sanction.sanction_control_number }}</strong></dd>
-                                <dd class="col-sm-8 gritter- text-nowrap " ><strong class="stud_no">{{ osas_t_sanction.sanction_stud_id.stud_no}}</strong></dd>
-                                <dd class="col-sm-8 gritter- text-nowrap violation" >{{ osas_t_sanction.sanction_code_id.ds_code_id.ct_name }}</dd>
-                                <dd class="col-sm-8 gritter- text-nowrap offense" >{{ osas_t_sanction.sanction_code_id.ds_violation_count }}</dd> 
+                                <dd class="col-sm-8 gritter- text-nowrap " ><strong class="contol_number" id="cn{{osas_t_sanction.sanction_id}}">{{ osas_t_sanction.sanction_control_number }}</strong></dd>
+                                <dd class="col-sm-8 gritter- text-nowrap " ><strong class="stud_no sn{{forloop.counter}}">{{ osas_t_sanction.sanction_stud_id.stud_no}}</strong></dd>
+                                <dd class="col-sm-8 gritter- text-nowrap violation v{{forloop.counter}}" >{{ osas_t_sanction.sanction_code_id.ds_code_id.ct_name }}</dd>
+                                <dd class="col-sm-8 gritter- text-nowrap offense o{{forloop.counter}}" >{{ osas_t_sanction.sanction_code_id.ds_violation_count }}</dd> 
                             </dl>
                         </td>
                         <td width="30%"><dl class="row mb-0 p-2" style="line-height: .6rem;">
-                            <dd class="col-sm-8 gritter- text-nowrap " ><strong class="sanc_status">{{ osas_t_sanction.sanction_code_id.ds_status}}</strong></dd>
-                            <dd class="col-sm-8 gritter- text-nowrap sanc_date" >{{ osas_t_sanction.sanction_datecreated|date:"Y-m-d"}}</dd>
+                            <dd class="col-sm-8 gritter- text-nowrap " ><strong class="sanc_status s{{forloop.counter}}">{{ osas_t_sanction.sanction_code_id.ds_status}}</strong></dd>
+                            <dd class="col-sm-8 gritter- text-nowrap sanc_date d{{forloop.counter}}" >{{ osas_t_sanction.sanction_datecreated|date:"Y-m-d"}}</dd>
                             {% if osas_t_sanction.sanction_designation_id.designation_office is not none %}
                             <dd class="col-sm-8 gritter- text-nowrap office" >{{ osas_t_sanction.sanction_designation_id.designation_office }}</dd>
                             {%elif osas_t_sanction.sanction_status == "PENDING" %}
-                            <dd class="col-sm-8 gritter- text-nowrap office" ></dd>
+                            <dd class="col-sm-8 gritter- text-nowrap office of{{forloop.counter}}" ></dd>
                             {%else%}
-                            <dd class="col-sm-8 gritter- text-nowrap office" >{{ osas_t_sanction.sanction_designation_id.designation_office }}</dd>
+                            <dd class="col-sm-8 gritter- text-nowrap office of{{forloop.counter}}" >{{ osas_t_sanction.sanction_designation_id.designation_office }}</dd>
                             {%endif%}
-                            <dd class="col-sm-8 gritter- text-nowrap hrs" >{{ osas_t_sanction.sanction_code_id.ds_hrs }} Hour(s)</dd>
+                            <dd class="col-sm-8 gritter- text-nowrap hrs hr{{forloop.counter}}" >{{ osas_t_sanction.sanction_code_id.ds_hrs }} Hour(s)</dd>
                             {% if osas_t_sanction.sanction_status == "COMPLETED"%}
-                            <dd class="col-sm-8 gritter-"><strong><span class="badge badge-danger status_">{{ osas_t_sanction.sanction_status }}</span></strong></dd>
+                            <dd class="col-sm-8 gritter-"><strong><span class="badge badge-danger status_ ss{{forloop.counter}}">{{ osas_t_sanction.sanction_status }}</span></strong></dd>
                             {% elif osas_t_sanction.sanction_status == "ACTIVE"%}
-                            <dd class="col-sm-8 gritter-"><strong><span class="badge badge-warning status_">{{ osas_t_sanction.sanction_status }}</span></strong></dd>
+                            <dd class="col-sm-8 gritter- "><strong><span class="badge badge-warning status_ ss{{forloop.counter}}">{{ osas_t_sanction.sanction_status }}</span></strong></dd>
                             {% else %}
-                            <dd class="col-sm-8 gritter-"><strong><span class="badge badge-info status_">{{ osas_t_sanction.sanction_status }}</span></strong></dd>
+                            <dd class="col-sm-8 gritter-"><strong><span class="badge badge-info status_ ss{{forloop.counter}}">{{ osas_t_sanction.sanction_status }}</span></strong></dd>
                             {% endif %}
                         </dl>
                         </td>
@@ -366,11 +366,10 @@ $('#donwload').click(function(){
     wme.focus();
     wme.print();
     wme.close();
-    $(".action_btn").show();
 })
 
 // $('#btn_rem').click(function(){
-//     $("#data-table .tr_").each(function() {
+//     $("#data-table .tr_").each(f unction() {
 //         control_number = $(this).closest("tbody tr").find("dl :eq(9)").html() 
 //         console.log(control_number)
 //     });

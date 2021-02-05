@@ -125,21 +125,6 @@ class osas_r_auth_user(models.Model):
     def __str__(self):
         return self.auth_id
 
-# class osas_r_code_conduct(models.Model):
-#     coc_id = models.AutoField(primary_key = True)
-#     coc_violation_offense = models.CharField(max_length = 200)
-#     coc_status = models.CharField(max_length = 50)
-#     coc_sanction_date = models.DateTimeField(default = now)
-#     def __str__(self):
-#         return self.coc_id
-
-# class osas_code_title(models.Model): # ex. lost id, sample_desc
-#     code_id = models.AutoField(primary_key = True)
-#     code_title = models.CharField(max_length = 200)
-#     code_datecreated = models.DateTimeField(default = now)
-#     code_status = models.CharField(max_length = 10, default = "Active")
-#     def __str__(self):
-#         return self.code_id
 
 class osas_r_disciplinary_sanction(models.Model): # ex. 1st offense, sample_desc, 16hrs, 5days
     ds_id = models.AutoField(primary_key = True)
@@ -192,7 +177,6 @@ class osas_t_excuse(models.Model):
     excuse_reason = models.CharField(max_length = 200)
     excuse_proof = models.ImageField(upload_to=image_path, null=True, blank = True)
     excuse_status = models.CharField(max_length = 10)
-    excuse_sanction_id = models.OneToOneField('osas_t_sanction', on_delete = models.CASCADE, null =True)
     excuse_stud_id = models.ForeignKey('osas_r_personal_info', on_delete = models.CASCADE)
     excuse_datecreated = models.DateTimeField(default = now)
     excuse_dateupdated = models.DateField(default = now)

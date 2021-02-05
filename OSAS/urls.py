@@ -7,7 +7,6 @@ from django.conf import settings
 urlpatterns = [
     path('', include('OsasSystem.urls')),
     path('home/', views.home, name="home"),
-    path('pdf_view/', views.ViewPDF.as_view(), name="pdf_view"),
 #---------------------------------------------LOGIN------------------------------------------------------------------------------------------------
     path('login/', views.login, name="login"),
     path('login/', views.logout, name="logout"),
