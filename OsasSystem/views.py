@@ -561,9 +561,7 @@ def id_request_remove(request):
     try:
         today = datetime.today()
         osas_t_sanction.objects.get(sanction_t_id = osas_t_id.objects.get(lost_id = r_id)).delete()
-        s = osas_t_id.objects.get(lost_id = r_id)
-        s.lost_id_status = "CANCELLED"
-        s.save()
+        s = osas_t_id.objects.get(lost_id = r_id).delete()
         data = {'success': True}
         return JsonResponse(data, safe=False)
     except ObjectDoesNotExist:
@@ -613,7 +611,7 @@ def add_id_request(request):
             n = osas_t_id.objects.filter(lost_stud_id = osas_r_personal_info.objects.get(stud_id = stud.stud_id))
             if n:
                 if osas_t_id.objects.filter(lost_stud_id = osas_r_personal_info.objects.get(stud_id = stud.stud_id), lost_id_status = "COMPLETED"):
-                    if osas_t_id.objects.filter(lost_stud_id = osas_r_personal_info.objects.get(stud_id = stud.stud_id), lost_id_status = "PROCESSING"):
+                    if osas_t_id.objects.filter(lost_stud_id = osas_r_personal_info.objects.get(stud_id = stud.stud_id), lost_id_status = "PROCESSING") or osas_t_id.objects.filter(lost_stud_id = osas_r_personal_info.objects.get(stud_id = stud.stud_id), lost_id_status = "PENDING"):
                         data = {'error': True} #sanction already exist
                         return JsonResponse(data, safe=False)
                     else:
@@ -735,7 +733,7 @@ def add_id_request(request):
                     t = osas_t_sanction(sanction_t_id = osas_t_id.objects.get(request_id = r_id), sanction_control_number = random_str, sanction_code_id = osas_r_disciplinary_sanction.objects.get(ds_code_id = osas_r_code_title.objects.get(ct_name = "Loss ID / Registration Card"), ds_violation_count = "1st Offense / Violation"), sanction_stud_id = osas_r_personal_info.objects.get(stud_id = stud.stud_id), sanction_rendered_hr = 0, sanction_status = "COMPLETED", sanction_datecreated = today,)
                     t.save()    
 
-                    data = {'error': True, 'sanction':random_str}
+                    data = {'success': True, 'sanction':random_str}
                     return JsonResponse(data, safe=False)  
                 else:
                     today = datetime.today()
@@ -755,8 +753,6 @@ def add_id_request(request):
                     t.save()    
                     data = {'id': r_id, 'sanction':random_str}
                     return JsonResponse(data, safe=False)   
-                   
-                         
         else:
             data = {'error': 'object'}
             return JsonResponse(data, safe=False) 
@@ -1159,6 +1155,32 @@ def sanction_assign_office(request):
         data = {'success':office}
         return JsonResponse(data, safe=False)
     
+def sanction_student_delete(request):
+    sanc_id = request.POST.get('sanction_id')
+    try:
+        t = osas_t_sanction.objects.get(sanction_id = sanc_id)
+        if t.sanction_t_id:
+            i = osas_t_id.objects.get(lost_id = str(t.sanction_t_id)).delete()
+            t.delete()
+        else:
+            t.delete()
+        data = {'success':True}
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        return render(request, 'sanctioning_student.html')
+
+def sanction_student_complete(request):
+    sanc_id = request.POST.get('sanction_id')
+    try:
+        t = osas_t_sanction.objects.get(sanction_id = sanc_id)
+        t.sanction_status = "COMPLETED"
+        t.sanction_rendered_hr = t.sanction_code_id.ds_hrs
+        t.sanction_excuse_id = None
+        t.save()
+        data = {'success':t.sanction_rendered_hr}
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        return render(request, 'sanctioning_student.html')
 
 def sanction_student_view(request):
     today = datetime.today()

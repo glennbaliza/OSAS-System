@@ -107,6 +107,17 @@
                     {% endfor %}
                 </tbody>
             </table>
+            {% else %}
+            <table id="data-table" class="table table-striped table-bordered" >
+                <thead>
+                    <tr>
+                        <th width="1%"></th>
+                        <th width="30%">Sanction Information</th>
+                        <th width="30%">Status</th>
+                        <th data-orderable="false">Action</th>
+                    </tr>
+                </thead>
+            </table>
             {% endif %}
         </div>
     </div>
@@ -285,41 +296,7 @@
 <script>
     $(document).ready(function() {
         $('#data-table').DataTable( {
-        ordering: true,
-        buttons: [
-            {
-                extend: 'print',
-                text:      '<i class="fa fa-print"></i> print',
-                titleAttr: 'print',
-                className: 'btn-theme02 btn-sm',
-                title: '',
-                exportOptions:{
-                    columns: [0,1,2]
-                },
-                // customize: function ( win ) {
-                //     $(win.document.body) 
-                //         .css( 'font-size', '1pt' )
-                //         .prepend('<div class="row" style="margin-left: 50px; margin-top: 40px"><div class="row"><img src="https://www.freelogovectors.net/wp-content/uploads/2017/05/pup-logo-Polytechnic_University_of_the_Philippines.png" style="width: 130px; height: 130px;"/><div style="margin-left: 20px;"><p style="font-family: Arial, Helvetica, sans-serif; font-size: 18px; color: black; margin-top: 28px;">Republic of the Philippines</p><p style="font-family: Trajan Pro; font-size: 20px; color: black; margin-top: -15px;"><b>Polytechnic University of the Philippines</b></p><p style="font-family: Arial, Helvetica, sans-serif; color: black; margin-top: -15px;"><b>Quezon City Branch</b></p></div></div></div><br/><br/><div class="container-fluid" style="background: whitesmoke; height: 70px;" ><div class="row"><p style="margin-top: 16px; padding-left:  15px; font-family: Roboto; font-size: 24px; color: gray;"><b>STUDENT SANCTION</b></p></div></div><br/><br/>'
-                //         );
-                //     $(win.document.body)
-                //         .css( 'font-size', '12pt' )
-                //         .css( 'background-color', 'white' );
-  
-                //     $(win.document.body).find( 'table' )
-                //         .addClass( 'compact' )
-                //         .css( 'font-size', 'inherit')
-                //         .css( 'width', '1050px' )
-                //         .css( 'margin', 'auto' )
-                //         .css( 'text-align', 'left' );
- 
-                //     $(win.document.body).find('tr:nth-child(odd) td').each(function(index){
-                //     $(this).css('background-color','#D0D0D0');
-                //     });
-                    
-
-                // }
-            }
-        ]
+        ordering: false,
     } );
         student_list()
         code_list()

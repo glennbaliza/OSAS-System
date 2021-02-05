@@ -14,7 +14,7 @@ def image_path(instance, filename):
     randomstr =''.join((random.choice(chars)) for x in range(5))
     _now = datetime.now()
 
-    return 'profile_pic/{year}-{month}-{day}-{imageid}-{basename}-{randomstring}{ext}'.format(imageid = instance, basename = basefilename, randomstring=randomstr, ext=file_extension, year=_now.strftime('%Y'), month=_now.strftime('%m'), day=_now.strftime('%d')) 
+    return 'proof_pic/{year}-{month}-{day}-{basename}-{randomstring}{ext}'.format(basename = basefilename, randomstring=randomstr, ext=file_extension, year=_now.strftime('%Y'), month=_now.strftime('%m'), day=_now.strftime('%d')) 
 
 class osas_r_course(models.Model):
     
@@ -83,7 +83,7 @@ class osas_t_id(models.Model):
    
     
     def __str__(self):
-        return self.lost_id
+        return str(self.lost_id)
         
 # class osas_t_admission(models.Model):
 
@@ -103,7 +103,7 @@ class osas_r_userrole(models.Model):
     date_created = models.DateTimeField(max_length=50, blank=True)
     date_updated = models.DateTimeField(default=now)
 
-    s_image = models.ImageField(upload_to=image_path, default='profile_pic/image.jpg')
+    s_image = models.ImageField(upload_to=image_path, default='proof_pic/image.jpg')
 
  #--- for image -----#
     # def image_tag(self):

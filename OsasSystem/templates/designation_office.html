@@ -82,7 +82,18 @@
                 </tbody>
             </table>
             {% else %}
-                <center><p>No Office Records</p></center>   
+            <table id="data-table" class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th width="1%"></th>
+                        <th data-orderable="false">Office Name</th>
+                        <th data-orderable="false">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <center><p>No Office Records</p></center>  
+                </tbody>
+            </table> 
             {% endif %}
         </div>
     </div>
@@ -162,6 +173,13 @@
 {% endblock %}
 
 {% block page-js %}
+<script>
+    $(document).ready(function() {
+			$('#data-table').DataTable({
+				ordering: false,
+			});
+		});
+</script>
 <script>
    
    $("#modal-edit").on('click','#btn_update',function(){
