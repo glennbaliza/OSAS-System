@@ -1,7 +1,7 @@
 {% load static %}
 
 <!-- begin #sidebar -->
-{% if request.session.session_user_role == 'HEAD OSAS' or request.session.session_user_role == 'OSAS STAFF'%}
+
 <div id="sidebar" class="sidebar bg-black-darker">
     <!-- begin sidebar scrollbar -->
     <div data-scrollbar="true" data-height="100%">
@@ -21,13 +21,14 @@
                 </a>
             </li>
         </ul>
+        {% if request.session.session_user_role == 'HEAD OSAS'%}
         <!-- end sidebar user -->
         <!-- begin sidebar nav -->
         <ul class="nav">
             <li class="nav-header">Navigation</li>
             <li class="has-sub">
                 <a href="{% url 'home' %}">
-                    <i class="fa fa-th-large"></i>
+                    <i class="far fa-chart-bar"></i>
                     <span>Dashboard</span>
                 </a>
             </li>
@@ -36,7 +37,7 @@
             <li class="has-sub">
                 <a href="javascript:;">
                     <b class="caret"></b>
-                    <i class="fa fa-align-left"></i> 
+                    <i class="far fa-list-alt"></i> 
                     <span>Student Services</span>
                 </a>
                 <ul class="sub-menu">
@@ -48,7 +49,7 @@
                     <li class="has-sub">
                         <a href="javascript:;">
                             <b class="caret"></b>
-                            Grievance
+                            Grievances
                         </a>
                         <ul class="sub-menu">
                             <li><a href="javascript:;">Lodge Complaint</a></li>
@@ -57,8 +58,7 @@
                     </li>
                     <li class="has-sub">
                         <a href="{% url 'lost_id' %}">
-                            <b class="caret"></b>
-                            ID
+                            Lost ID
                         </a>
                     </li>
                     <li class="has-sub">
@@ -70,12 +70,12 @@
                     <li class="has-sub">
                         <a href="javascript:;">
                             <b class="caret"></b>
-                            Sanction
+                            Student Sanction
                         </a>
                         <ul class="sub-menu">
                             <li><a href="{%url 'sanctioning_student' %}">Sanctioning Students</a></li>
                             <li><a href="{%url 'sanctioning_student_completed' %}">Finished Students</a></li>
-                            <li><a href="javascript:;">Excused Students</a></li>
+                            <li><a href="{%url 'sanctioning_excused_approved' %}">Excused Students</a></li>
                             <li><a href="{%url 'desciplinary_sanction' %}">Disciplinary Sanctions</a></li>
                         </ul>
                     </li>
@@ -84,7 +84,7 @@
             <li class="has-sub">
                 <a href="javascript:;">
                     <b class="caret"></b>
-                    <i class="fa fa-medkit"></i>
+                    <i class="fas fa-users"></i>
                     <span>Alumni</span>
                 </a>
                 <ul class="sub-menu">
@@ -97,7 +97,7 @@
             <li class="has-sub">
                 <a href="javascript:;">
                     <b class="caret"></b>
-                    <i class="fa fa-medkit"></i>
+                    <i class="far fa-file-alt "></i>
                     <span>Report</span>
                 </a>
                 <ul class="sub-menu">
@@ -108,7 +108,7 @@
             <li class="has-sub">
                 <a href="javascript:;">
                     <b class="caret"></b>
-                    <i class="fa fa-medkit"></i>
+                    <i class="fas fa-cog fa-spin"></i>
                     <span>System Setup</span>
                 </a>
                 <ul class="sub-menu">
@@ -122,10 +122,40 @@
             </li>
             <li><a href="javascript:;" class="sidebar-minify-btn" data-click="sidebar-minify"><i class="fa fa-angle-double-left"></i></a></li>
         </ul>
+        {% endif%}
+        {% if request.session.session_user_role == 'OSAS STAFF'%}
+        <ul class="nav">
+            <li class="nav-header">Navigation</li>
+            <li class="has-sub">
+                <a href="{% url 'student_profile' %}">
+                    <i class="far fa-user"></i>
+                    <span>Student Profile</span>
+                </a>
+            </li>
+            <li class="has-sub">
+                <a href="{% url 'lost_id' %}">
+                    <i class="far fa-address-card"></i>
+                    <span>Lost ID</span>
+                </a>
+            </li>
+            <li class="has-sub">
+                <a>
+                    <b class="caret"></b>
+                    <i class="far fa-list-alt"></i>
+                    <span>Sanction</span>
+                </a>
+                <ul class="sub-menu">
+                    <li><a href="{%url 'sanctioning_student' %}">Sanctioning Students</a></li>
+                    <li><a href="{%url 'sanctioning_student_completed' %}">Finished Students</a></li>
+                    <li><a href="{%url 'sanctioning_excused_approved' %}">Excused Students</a></li>
+                </ul>
+            </li>
+        </ul>
+        {% endif %}
         <!-- end sidebar nav -->
     </div>
     <!-- end sidebar scrollbar -->
 </div>
-{% endif%}
+
 <div class="sidebar-bg"></div>
 <!-- end #sidebar -->

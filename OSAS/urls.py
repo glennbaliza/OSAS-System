@@ -16,6 +16,7 @@ urlpatterns = [
  
 #---------------------------------------STUDENT PROFILE--------------------------------------------------------------------------------------------
     path('student_profile/', views.student_profile, name="student_profile"),
+    path('student_profile_view/', views.student_profile_view, name="student_profile_view"),
     path('student_process_add/', views.student_process_add, name="student_process_add"),
     path('add_student/', views.add_student, name="add_student"),
     path('<int:stud_id>/edit_student/', views.edit_student, name="edit_student"),
@@ -71,6 +72,7 @@ urlpatterns = [
     path('sanctioning_student/', views.sanctioning_student, name="sanctioning_student"),
     path('sanctioning_student_view_excuse/', views.sanctioning_student_view_excuse, name="sanctioning_student_view_excuse"),
     path('sanctioning_student_completed/', views.sanctioning_student_completed, name="sanctioning_student_completed"),  
+    path('sanctioning_excused_approved/', views.sanctioning_excused_approved, name="sanctioning_excused_approved"),  
     path('sanction_student_list/', views.sanction_student_list, name="sanction_student_list"), 
     path('sanction_student_data/', views.sanction_student_data, name="sanction_student_data"),
     path('sanction_code_list/', views.sanction_code_list, name="sanction_code_list"), 
@@ -79,11 +81,20 @@ urlpatterns = [
     path('sanction_student_delete/', views.sanction_student_delete, name="sanction_student_delete"), 
     path('sanction_student_view/', views.sanction_student_view, name="sanction_student_view"),
     path('sanction_student_complete/', views.sanction_student_complete, name="sanction_student_complete"),
+    path('sanction_excuse_approve/', views.sanction_excuse_approve, name="sanction_excuse_approve"),
     path('designated_office_list/', views.designated_office_list, name="designated_office_list"), 
     path('designation_office_data/', views.designation_office_data, name="designation_office_data"), 
     path('designation_office/', views.designation_office, name="designation_office"),
     path('designation_office_delete/', views.designation_office_delete, name="designation_office_delete"),
     path('designation_office_edit/', views.designation_office_edit, name="designation_office_edit"),
     path('designation_office_add/', views.designation_office_add, name="designation_office_add"),
-    
+#------------------------------------------------GRIEVANCES-------------------------------------------------------
+    path('student_file_complaint/', views.student_file_complaint, name="student_file_complaint"),
+    path('student_file_complaint_add/', views.student_file_complaint_add, name="student_file_complaint_add"),
+    path('student_file_complaint_add_proof/', views.student_file_complaint_add_proof, name="student_file_complaint_add_proof"),
+    path('student_file_complaint_edit_proof/', views.student_file_complaint_edit_proof, name="student_file_complaint_edit_proof"),
+    path('student_file_complaint_get/', views.student_file_complaint_get, name="student_file_complaint_get"),
+    path('student_file_complaint_edit/', views.student_file_complaint_edit, name="student_file_complaint_edit"),
+    path('student_file_complaint_remove/', views.student_file_complaint_remove, name="student_file_complaint_remove"),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

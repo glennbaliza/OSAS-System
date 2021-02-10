@@ -102,6 +102,8 @@
                             <dd class="col-sm-8 gritter-"><strong><span class="badge badge-danger status_ ss{{osas_t_sanction.sanction_id}}">{{ osas_t_sanction.sanction_status }}</span></strong></dd>
                             {% elif osas_t_sanction.sanction_status == "ACTIVE"%}
                             <dd class="col-sm-8 gritter- "><strong><span class="badge badge-warning status_ ss{{osas_t_sanction.sanction_id}}">{{ osas_t_sanction.sanction_status }}</span></strong></dd>
+                            {% elif osas_t_sanction.sanction_status == "EXCUSED"%}
+                            <dd class="col-sm-8 gritter- "><strong><span class="badge badge-success status_ ss{{osas_t_sanction.sanction_id}}">{{ osas_t_sanction.sanction_status }}</span></strong></dd>
                             {% else %}
                             <dd class="col-sm-8 gritter-"><strong><span class="badge badge-info status_ ss{{osas_t_sanction.sanction_id}}">{{ osas_t_sanction.sanction_status }}</span></strong></dd>
                             {% endif %}
@@ -109,10 +111,11 @@
                         </td>
                         <td  width="25%" class="align-middle action_btn" id="action_btn"><div class="text-nowrap"><div class="btn-group ">
                             <button id="view-btn" class="btn btn-white"  data-toggle="modal" href="#modal_view" onClick="viewSanction('{{ osas_t_sanction.sanction_id }}')"><i class="fas fa-search mr-2"></i>View</button>
-                            {% if osas_t_sanction.sanction_status == "COMPLETED" %}
-                            {% elif osas_t_sanction.sanction_excuse_id.excuse_status == "PENDING" %}
-                            {% else%}
+                            {% if osas_t_sanction.sanction_excuse_id == None and osas_t_sanction.sanction_status == "PENDING" or osas_t_sanction.sanction_status == "ACTIVE"%}
                             <button id="edit-btn" class="btn btn-success"  data-toggle="modal" href="#modal-dialog" onClick="addExcuse('{{ osas_t_sanction.sanction_id }}')"><i class="fas fa-edit mr-2"></i>Excuse</button>
+
+                            {% else%}
+                            
                             {%endif%}
                             </div>
                         </td>
@@ -331,7 +334,7 @@ function viewExcuse(sanction_excuse_id) {
             if (data.excuse_val){
                 sample = data.excuse_val.proof.replace(/\"/g, "")
                 date2 = moment(data.excuse_val.date).endOf('day').fromNow();  
-                $("#form2").append('<div id="excuse_image" class="card"><button type="button" class="close" id="modal_close" data-dismiss="modal" aria-hidden="true" style="color: gray; margin: 6px;">×</button><input class="form-control" id="sanction_excuse_id" type="hidden" name="sanction_excuse_id"/><div class="card-body" style="font-family: Roboto;"><h5 class="card-title">'+data.excuse_val.sanction+'</h5><hr>Reason:<br><label class="card-text" style=" font-size: 12px;"><i>"'+data.excuse_val.reason+'"</i></label><br><a href="/media/'+sample+'" target="blank">'+sample+'</a><br><br><i><small class="card-text">Uploaded '+date2+'.</small></i></div></div><button class="btn btn_success col-md-12 " type="submit" id="btn_excuse_submit" style="height: 33px; padding: 5px; background: linear-gradient(to right, #66ccff -1%, #3366ff 98%); border:none; color: white;" >Accept<i class="far fa-paper-plane m-l-3 zoom"></i></button>')
+                $("#form2").append('<div id="excuse_image" class="card"><button type="button" class="close" id="modal_close" data-dismiss="modal" aria-hidden="true" style="color: gray; margin: 6px;">×</button><input class="form-control" id="sanction_excuse_id" type="hidden" name="sanction_excuse_id"/><div class="card-body" style="font-family: Roboto;"><h5 class="card-title">'+data.excuse_val.sanction+'</h5><hr>Reason:<br><label class="card-text" style=" font-size: 12px;"><i>"'+data.excuse_val.reason+'"</i></label><br><a href="/media/'+sample+'" target="blank">'+sample+'</a><br><br><i><small class="card-text">Uploaded '+date2+'.</small></i></div></div>')
             }
             if(data.error){
                 console.log(data.error)

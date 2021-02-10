@@ -77,11 +77,11 @@ class osas_t_id(models.Model):
     lost_id = models.AutoField(primary_key=True)
     request_id = models.CharField(unique=True, max_length=10)
     lost_id_status = models.CharField(max_length=13, default='PENDING')
+    lost_id_sanction_excuse = models.CharField(max_length=13, null=True, blank=True)
     lost_stud_id = models.ForeignKey(osas_r_personal_info, on_delete=models.CASCADE)
     date_created = models.DateTimeField(max_length=50)
     date_updated = models.DateTimeField(max_length=50)
    
-    
     def __str__(self):
         return str(self.lost_id)
         
@@ -186,6 +186,23 @@ class osas_t_excuse(models.Model):
 
     def __str__(self):
         return str(self.excuse_id)
+
+#----------------------------------------------GRIEVANCES-------------------------------------------------------------
+class osas_t_complaint(models.Model):
+    comp_id = models.AutoField(primary_key = True)
+    comp_number = models.CharField(max_length = 10)
+    comp_letter = models.CharField(max_length = 2000)
+    comp_pic = models.ImageField(upload_to=image_path, null=True, blank = True)
+    comp_status = models.CharField(max_length = 10, default = "PENDING")
+    comp_stud_id = models.ForeignKey('osas_r_personal_info', on_delete = models.CASCADE)
+    comp_datecreated = models.DateTimeField(default = now)
+    comp_seen = models.CharField(max_length = 10, null=True)
+
+    def image_tag(self):
+        return mark_safe('<img src="/media/%s" width = "50" height="50" />'%(self.comp_pic))
+
+    def __str__(self):
+        return str(self.comp_id)
 
 #---------------------------------------------ALUMNI-------------------------------------------------
 

@@ -4,68 +4,6 @@
 {% block page-css %}
     <!-- <link href="{% static 'OsasSystem/assets/plugins/DataTables/media/css/dataTables.bootstrap.min.css' %}" rel="stylesheet" />
     <link href="{% static 'OsasSystem/assets/plugins/DataTables/extensions/Responsive/css/responsive.bootstrap.min.css' %}" rel="stylesheet" /> -->
-    <Style>
-        #data-table {
-            counter-reset: rowNumber + 1;
-            background-color:white;
-        }
-        #IDLost_Info_table{
-            background-color:white;
-        }
-
-        #data-table tr {
-            counter-increment: rowNumber;
-        }
-
-        #data-table tr td:first-child::before {
-            content: counter(rowNumber);
-        }
-        .slide-submit {
-            position: relative;
-            width: 300px;
-            height: 40px;
-            line-height: 50px;
-            background: white;
-            padding: 4px;
-            border: 1px solid #DDDDDD;
-            }
-            .slide-submit button {
-            position: absolute;
-            height: 29px;
-            top: 0px;
-            left: 0;
-            bottom: 0;
-            z-index: 10;
-            margin: 4px;
-            width: 50%;
-            background: #DD3A3A;
-            font-weight: bold;
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 2px;
-            transition: all 200ms linear;
-            cursor: pointer;
-            }
-        .slide-submit button.submitted {
-            width: 97%;
-            opacity: 0.8;
-        }
-        .slide-submit button.submitted + label {
-            display: none;
-        }
-        .slide-submit label {
-            position: absolute;
-            z-index: 8;
-            top: -7px;
-            right: 0px;
-            width: 50%;
-            font-size: 14px;
-            text-align: center;
-            color: #A7ADB3;
-            font-weight: bold;
-        }
-    </Style>
 {% endblock%}
 
 {% block title %}
@@ -86,16 +24,18 @@
         {% endif %}
     </div>
 
-    <h1 class="page-header mb-1">Page Title</h1>
+    <h1 class="page-header mb-1">Lost ID</h1>
     <p class="mb-5">Page Description</p>
     <div class="row" hidden><img src="https://www.freelogovectors.net/wp-content/uploads/2017/05/pup-logo-Polytechnic_University_of_the_Philippines.png" style="width: 130px; height: 130px;"/></div>
     <div class="panel" id="refresh">
         <div class="panel-heading p-25">
             <div class="btn-group btn-group-toggle pull-right" data-toggle="buttons">
-                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal_add" id="test"><i class="fas fa-search mr-2" ></i>Add New</button>
+                {% if request.session.session_user_role == 'HEAD OSAS'%}
+                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal_add" id="test"><i class="fas fa-search-plus mr-2" ></i>Add New</button>
+                {% endif %}
                 <button class="btn btn-gray" id="donwload">Print  <i class="fas fa-print text-white-lighter f-s-16"></i></button>
             </div>
-            <h2 class="panel-title" style="font-size:16px;">Lost ID</h2>
+            <h2 class="panel-title" style="font-size:16px;">Lost ID list</h2>
         </div>
 
         <div class="panel-body">
@@ -112,7 +52,7 @@
                 <tbody>
                     {% for id in id_request %}
                     <tr class="odd gradeA tr_" id="{{ id.lost_id }}">
-                        <td width="1%" class="f-s-600 text-inverse"></td>
+                        <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
                         <td><dl class="row mb-0 p-2" style="line-height: .6rem;">
                             <dd class="col-sm-8 gritter-" id="IDLost_studno" ><strong>{{ id.lost_stud_id }}</strong></dd>
                             <dd class="col-sm-8" id="IDLost_name">{{ id.lost_stud_id.stud_lname }}, {{ id.lost_stud_id.stud_fname }}  {{ id.lost_stud_id.stud_mname }}</dd>
@@ -145,10 +85,12 @@
                         <td class="align-middle"><div class="text-nowrap"><div>
                             <button class="btn btn-white" id="btn_view" 
                             onClick="viewID('{{ id.lost_id }}')"><i class="fas fa-search mr-2"></i>View</button>
+                            {% if request.session.session_user_role == 'HEAD OSAS'%}
                             {% if id.lost_id_status == 'PENDING'%}
                             <button id="delete_btn" class="btn btn-danger" onClick="deleteID('{{ id.lost_id }}')"><i class="fas fa-trash-alt mr-2"></i>Delete</button>
                             {% elif id.lost_id_status == 'PROCESSING'%}
                             <button id="delete_btn" class="btn btn-danger" onClick="deleteID('{{ id.lost_id }}')"><i class="fas fa-trash-alt mr-2"></i>Delete</button>
+                            {% endif %}
                             {% endif %}
                           </div>
                         </td>

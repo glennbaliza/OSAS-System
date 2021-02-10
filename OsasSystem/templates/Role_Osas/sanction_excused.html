@@ -1,0 +1,917 @@
+{% extends 'base.html'%}
+{% load static %}
+
+{% block page-css %}
+    <!-- <link href="{% static 'OsasSystem/assets/plugins/DataTables/media/css/dataTables.bootstrap.min.css' %}" rel="stylesheet" />
+    <link href="{% static 'OsasSystem/assets/plugins/DataTables/extensions/Responsive/css/responsive.bootstrap.min.css' %}" rel="stylesheet" /> -->
+    <style media="print">
+        .hidden-print {
+        display: none;
+        }
+    </style>
+    <Style>
+      .scroll {
+            max-height: 100px;
+            overflow-y: auto;
+        }
+        @media print {
+            body.modal-open {
+                visibility: hidden;
+            }
+
+            body.modal-open .modal .modal-header,
+            body.modal-open .modal .modal-body {
+                visibility: visible; /* make visible modal body and header */
+            }
+            /* .modal {
+                position: absolute;
+                left: 0;
+                top: 0;
+                margin: 0;
+                padding: 0;
+                overflow: visible!important;
+            } */
+        }
+    </Style>
+{% endblock%}
+
+{% block title %}
+    Sanction Excuse
+{% endblock %}
+
+
+{% block content%}
+<div id="content" class="content">
+
+    {% if messages %}
+    <p class="alert alert-danger">
+        {% for message in messages %}
+            <i><strong>{{ message }}</strong></i>
+        {% endfor %}
+    </p>
+    {% endif %} 
+
+    <h1 class="page-header mb-1">Sanctioning Students</h1>
+	<p class="mb-5">Page Description</p>
+    <!-- end page-header -->
+    <!-- begin panel -->
+    <div class="row" hidden><img src="https://www.freelogovectors.net/wp-content/uploads/2017/05/pup-logo-Polytechnic_University_of_the_Philippines.png" style="width: 130px; height: 130px;"/></div>
+
+    <div class="panel" id="refresh">
+        <div class="panel-heading p-25">
+            <div class="btn-group btn-group-toggle pull-right" data-toggle="buttons">
+                <button class="btn btn-gray" id="donwload">Print  <i class="fas fa-print text-white-lighter f-s-16"></i></button>
+            </div>
+            <h2 class="panel-title" style="font-size:16px;">Sanctioning Student List</h2>
+        </div>
+        <div class="panel-body">
+            {% if sanction%}
+            <table id="data-table" class="table table-striped table-bordered" >
+                <thead>
+                    <tr>
+                        <th width="1%"></th>
+                        <th width="1%">Sanction Information</th>
+                        <th width="1%">Status</th>
+                        <th data-orderable="false">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for osas_t_sanction in sanction %}
+                    <tr class="odd gradeA tr_" id="{{osas_t_sanction.sanction_id}}">
+                        <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
+                        <td width="30%" class="align-middle">
+                            <dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                <dd class="col-sm-8 gritter- text-nowrap cn{{osas_t_sanction.sanction_id}}" ><strong class="contol_number">{{ osas_t_sanction.sanction_control_number }}</strong></dd>
+                                <dd class="col-sm-8 gritter- text-nowrap " ><strong class="stud_no sn{{osas_t_sanction.sanction_id}}">{{ osas_t_sanction.sanction_stud_id.stud_no}}</strong></dd>
+                                <dd class="col-sm-8 gritter- text-nowrap violation v{{osas_t_sanction.sanction_id}}" >{{ osas_t_sanction.sanction_code_id.ds_code_id.ct_name }}</dd>
+                                <dd class="col-sm-8 gritter- text-nowrap offense o{{osas_t_sanction.sanction_id}}" >{{ osas_t_sanction.sanction_code_id.ds_violation_count }}</dd> 
+                                {% if request.session.session_user_role == 'HEAD OSAS'%}
+                                {% if osas_t_sanction.sanction_excuse_id.excuse_status %}
+                                <dd class="col-sm-8 gritter- text-nowrap " ><a class="excuse{{osas_t_sanction.sanction_excuse_id.excuse_status}}" data-toggle="modal" href="#modal-view" onClick="viewExcuse('{{ osas_t_sanction.sanction_excuse_id }}')" ><span class="label label-success status_">Excuse <i class="far fa-envelope text-white-lighter fa-lg"></i></span></a></dd>
+                                {% endif %}
+                                {% endif %}
+                            </dl>
+                        </td>
+                        <td width="30%"><dl class="row mb-0 p-2" style="line-height: .6rem;">
+                            <dd class="col-sm-8 gritter- text-nowrap " ><strong class="sanc_status s{{osas_t_sanction.sanction_id}}">{{ osas_t_sanction.sanction_code_id.ds_status}}</strong></dd>
+                            <dd class="col-sm-8 gritter- text-nowrap sanc_date d{{osas_t_sanction.sanction_id}}" >{{ osas_t_sanction.sanction_datecreated|date:"Y-m-d"}}</dd>
+                            {% if osas_t_sanction.sanction_designation_id.designation_office is not none %}
+                            <dd class="col-sm-8 gritter- text-nowrap office of{{osas_t_sanction.sanction_id}}" >{{ osas_t_sanction.sanction_designation_id.designation_office }}</dd>
+                            {%elif osas_t_sanction.sanction_status == "PENDING" %}
+                            <dd class="col-sm-8 gritter- text-nowrap office of{{osas_t_sanction.sanction_id}}" ></dd>
+                            {%else%}
+                            <dd class="col-sm-8 gritter- text-nowrap office of{{osas_t_sanction.sanction_id}}" >{{ osas_t_sanction.sanction_designation_id.designation_office }}</dd>
+                            {%endif%}
+                            <dd class="col-sm-8 gritter- text-nowrap hrs hr{{osas_t_sanction.sanction_id}}" >{{ osas_t_sanction.sanction_code_id.ds_hrs }} Hour(s)</dd>
+                            {% if osas_t_sanction.sanction_status == "COMPLETED"%}
+                            <dd class="col-sm-8 gritter-"><strong><span class="badge badge-danger status_ ss{{osas_t_sanction.sanction_id}}">{{ osas_t_sanction.sanction_status }}</span></strong></dd>
+                            {% elif osas_t_sanction.sanction_status == "ACTIVE"%}
+                            <dd class="col-sm-8 gritter- "><strong><span class="badge badge-warning status_ ss{{osas_t_sanction.sanction_id}}">{{ osas_t_sanction.sanction_status }}</span></strong></dd>
+                            {% else %}
+                            <dd class="col-sm-8 gritter-"><strong><span class="badge badge-info status_ ss{{osas_t_sanction.sanction_id}}">{{ osas_t_sanction.sanction_status }}</span></strong></dd>
+                            {% endif %}
+                        </dl>
+                        </td>
+                        <td class="align-middle action_btn text-nowrap" id="action_btn"><div class="text-nowrap"><div class="btn-group ">
+                            <button id="view-btn" class="btn btn-white  m-l-1"  data-toggle="modal" href="#modal_view" onClick="viewSanction('{{ osas_t_sanction.sanction_id }}')"><i class="fas fa-search mr-2"></i>View</button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <table id="data-table" class="table table-striped table-bordered" >
+                <thead>
+                    <tr>
+                        <th width="1%"></th>
+                        <th width="30%">Sanction Information</th>
+                        <th width="30%">Status</th>
+                        <th data-orderable="false">Action</th>
+                    </tr>
+                </thead>
+            </table>
+            {% endif %}
+        </div>
+    </div>
+</div>
+ <!-- #modal-dialog -->
+
+<div class="modal fade" id="modal-edit" role="dialog"  data-backdrop="static">
+    <div class="modal-dialog  modal-md" role="document">
+        <div class="modal-content">
+            <form  method="POST" class="form-control-with-bg" id="form4"></form>
+                {% csrf_token %}
+                <div class="panel panel-inverse" >
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="color: gray; margin: 6px;">×</button>  
+                    <div class="panel-body" >
+                        <div class="col">
+                            <h1 class="page-header mb-1">Assign new office</h1>
+                            <p class="mb-5">Page Description</p>
+                            <div class="col-lg-12 form-check-inline" id="error">
+                            </div>
+                            <div class="col-lg-12 form-check-inline">
+                                <div class="col">
+                                    <input class="form-control" id="sanction_id2" type="hidden" name="sanction_id2"/>
+                                    <label style="font-size: 12px;" class="col-form-label text-md-right">Designation Office: <span class="text-danger">*</span></label>
+                                    <select class="form-control" id="office_name2" name="office_name2" data-parsley-required="true" >
+                                        <option disabled selected value="">--select--</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <hr>
+                        </div>
+                    </div>  
+                    <br>
+                    <div class="panel-footer">
+                        <button class="btn btn_success col-md-3 pull-right m-l-10 " type="submit" id="btn_submit" style="height: 33px; padding: 5px; background: linear-gradient(to right, #66ccff -1%, #3366ff 98%); border:none; color: white;" >Submit<i class="far fa-paper-plane m-l-3 zoom"></i></button>
+                        <a class="btn btn-white pull-right m-l-10" data-dismiss="modal">Back<i class="fas fa-reply m-l-3 zoom"></i></a>
+                    </div>
+                </div> 
+            </form> 
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_view" role="dialog"  data-backdrop="static">
+    <div class="modal-dialog  modal-md" role="document">
+        <div class="modal-content" style="background-color:whitesmoke;">
+            <form  method="POST" class="form-control-with-bg" id="form3">
+                <div class="panel panel-inverse" >
+                    <button type="button" class="close" id="modal_close1" data-dismiss="modal" aria-hidden="true" style="color: gray; margin: 6px;">×</button>  
+                    <div class="panel-body" style="background-color:whitesmoke;" id="info_modal">
+                        
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-view" role="dialog"  data-backdrop="static">
+    <div class="modal-dialog " role="document" id="myModal">
+        <div class="modal-content">
+            <form  method="POST" class="form-control-with-bg" id="form2">
+                <input class="form-control" id="excuse_id" type="hidden" name="excuse_id"/>
+                {% csrf_token %}
+            </form> 
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block page-level %}
+	<script src="{%static 'OsasSystem/assets/plugins/bootstrap-sweetalert/sweetalert.min.js' %}"></script>
+    <script src="{%static 'OsasSystem/assets/js/demo/ui-modal-notification.demo.min.js' %}"></script>
+    <script src="{%static 'OsasSystem/assets/index.js' %}"></script>
+    <script scr="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
+{% endblock %}
+
+{% block page-js %}
+<script>
+    $(document).ready(function() {
+        $('#data-table').DataTable({
+        ordering: false,
+    });
+        student_list()
+        code_list()
+        office_list()
+    });
+</script>
+<script>
+
+$('#donwload').click(function(){
+    var wme = window.open("","", "width = 1050px, height = auto");
+    wme.document.write("<div class='row' style='margin-left: 50px; margin-top: 20px;'><img src='https://www.freelogovectors.net/wp-content/uploads/2017/05/pup-logo-Polytechnic_University_of_the_Philippines.png' style='width: 110px; height: 107px;'/><div style='margin-right: 40px; float: right;'><p style='font-family: Arial, Helvetica, sans-serif; font-size: 18px; color: black; margin-top: 15px;'>Republic of the Philippines</p><p style='font-family: Trajan Pro; font-size: 20px; color: black; margin-top: -15px;'><b>Polytechnic University of the Philippines</b></p><p style='font-family: Arial, Helvetica, sans-serif; color: black; margin-top: -15px;'><b>Quezon City Branch</b></p></div></div></div><br/><div class='container-fluid' style='background: whitesmoke; height: 70px; margin-top: -10px'><div class='row'><p style='padding-top: 20px; padding-left:  15px; font-family: Roboto; font-size: 24px; color: gray;'><b>STUDENT SANCTION</b></p></div></div>"
+    );
+    wme.document.write("<table style='border-collapse: collapse; width: 100%; font-family: Roboto; font-size:13px;' id='data-table' class='table table-striped table-bordered' ><thead ><tr><th  width='5%' style='border: 1px solid lightgrey; text-align: left; padding: 5px; font-size:15px;'></th><th width='90%' colspan='2' style='border: 1px solid lightgrey; text-align: left; padding: 5px;'>Sanction Information</th><th width='10%' style='border: 1px solid lightgrey; text-align: right; font-size:15px; padding: 5px;'>Status</th></tr></thead><tbody>");
+    var i = 0
+    $("#data-table .tr_").each(function() {
+        i ++
+        tr_id = $(this).attr('id')
+        control_number = $(this).find('.cn'+tr_id+'').text() 
+        student_number = $(this).find('.sn'+tr_id+'').text() 
+        sanction = $(this).find('.v'+tr_id+'').text() 
+        violation = $(this).find('.o'+tr_id+'').text() 
+        sanc_status = $(this).find('.s'+tr_id+'').text() 
+        date = $(this).find('.d'+tr_id+'').text() 
+        office = $(this).find('.of'+tr_id+'').text() 
+        hrs = $(this).find('.hr'+tr_id+'').text() 
+        Status = $(this).find('.ss'+tr_id+'').text() 
+        if(office){
+            office = $(this).find('.of'+tr_id+'').text() 
+        }
+        else{
+            office = "N/A"
+        }
+        console.log(control_number,student_number)
+      
+        wme.document.write("<tr class='odd gradeA tr_' id='{{osas_t_sanction.sanction_control_number}}'><td width='1%' class='f-s-600 text-inverse' style='border: 1px solid lightgrey; text-align: center;'>"+i+"</td><td style='border: 1px solid lightgrey;' width='30%'><dl class='row mb-0 p-2' style='line-height: .6rem; '><dd class='col-sm-8 gritter-' style=' margin: 3px 0px 7px 0px; padding-left: 7px;'><strong class='contol_number' style='padding-bottom: 15px;'>"+control_number+"</strong></dd><dd style=' margin: 3px 0px 7px 0px; padding-left: 7px;' class='col-sm-8 gritter- ' ><strong class='stud_no'>"+student_number+"</strong></dd><dd style=' margin: 3px 0px 7px 0px; padding-left: 7px;' class='col-sm-8 gritter- sanc_date' >"+date+"</dd></dl><td style='border: 1px solid lightgrey;' width='40%'><dl class='row mb-0 p-2' style='line-height: .6rem; '><dd style=' margin: 3px 0px 7px 0px; padding-left: 7px;' class='col-sm-8 gritter- violation'>"+sanction+"</dd><dd style=' margin: 3px 0px 7px 0px; padding-left: 7px;' class='col-sm-8 gritter- offense'>"+violation+"</dd><dd style=' margin: 3px 0px 7px 0px; padding-left: 7px;' class='col-sm-8 gritter-' ><strong class='sanc_status'>"+sanc_status+"</strong></dd></dl></td><td style='border: 1px solid lightgrey; text-align: right;' width='30%'><dl class='row mb-0 p-2' style='line-height: .6rem; '><dd style=' margin: 3px 0px 7px 0px; padding-left: 7px;' class='col-sm-8 gritter- office' >Designation: "+office+"</dd><dd class='col-sm-8 gritter- hrs' style=' margin: 3px 0px 7px 0px; padding-left: 7px;' >"+hrs+"</dd><dd class='col-sm-8 gritter-' style=' margin: 3px 0px 7px 0px; padding-left: 7px;' ><strong><span class='badge badge-danger status_'>"+Status+"</span></strong></dd></dl></td></tr>")
+    });
+    wme.document.write("</tbody></table>")
+    wme.document.close();
+    wme.focus();
+    wme.print();
+    wme.close();
+})
+
+function deleteSanction(sanction_id) {
+    if (sanction_id) {
+        console.log(sanction_id)
+        swal({
+        title: "Are you sure?",
+        text: "you want this sanction record to be deleted?", 
+        icon: "warning",
+        buttons: {
+            cancel: {
+                text: 'Cancel',
+                value: null,
+                visible: true,
+                className: 'btn btn-default',
+                closeModal: true,
+            },
+            confirm: {
+                text: 'Yes',
+                value: true,
+                visible: true,
+                className: 'btn btn-warning',
+                closeModal: true
+            }
+        }
+        })
+        .then((willDelete) => {
+        if (willDelete) {
+            $.ajax({
+                url: '{% url "sanction_student_delete" %}',
+                type: "POST",
+                data: {
+                    sanction_id:sanction_id,
+                    csrfmiddlewaretoken: "{{ csrf_token }}",
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.error) {
+                       console.log(error)
+                    }
+                    if (data.success) {
+                        $("#data-table #" + sanction_id).remove();
+                        refresh_div()
+                        swal("Success!", {
+                        icon: "success",
+                        })
+                    }
+                }
+            });
+        } 
+    });
+    }
+}
+
+function completSanction(sanction_id) {
+    if (sanction_id) {
+        swal({
+        title: "Are you sure?",
+        text: "you want this sanction record to be completed?", 
+        icon: "warning",
+        buttons: {
+            cancel: {
+                text: 'Cancel',
+                value: null,
+                visible: true,
+                className: 'btn btn-default',
+                closeModal: true,
+            },
+            confirm: {
+                text: 'Yes',
+                value: true,
+                visible: true,
+                className: 'btn btn-warning',
+                closeModal: true
+            }
+        }
+        })
+        .then((willDelete) => {
+        if (willDelete) {
+            $.ajax({
+                url: '{% url "sanction_student_complete" %}',
+                type: "POST",
+                data: {
+                    sanction_id:sanction_id,
+                    csrfmiddlewaretoken: "{{ csrf_token }}",
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.error) {
+                       console.log(error)
+                    }
+                    if (data.success) {
+                        $("#data-table #" + sanction_id).remove();
+                        refresh_div()
+                        swal("Success!  " + student + " " + "is added to sanctioning record", {
+                        icon: "success",
+                        })
+                    }
+                }
+            });
+        } 
+    });
+    }
+}
+
+
+function student_list(){
+    $.ajax({
+        type:'GET',
+        url : "{% url 'sanction_student_list' %}",
+        success: function(response){
+            const studData = response.data
+            studData.map(item=>{
+                $("#student").append('<option value="'+item.stud_no+ '" >'+item.stud_no+'</option>')
+            })
+        },
+        error: function(error){
+            console.log(error)
+        }
+    })
+}
+
+$("#modal-view").on('click','#btn_excuse_approve',function(e){
+        var excuse_id = $('input[name="excuse_id"]').val().trim();
+        console.log(excuse_id)
+        if (excuse_id) {
+            swal({
+            title: "Are you sure?",
+            text: "You want to approve this excuse request?", 
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+          if (willDelete) {
+            $.ajax({
+                url: '{% url "sanction_excuse_approve" %}',
+                type: "POST",
+                data: {
+                    excuse_id: excuse_id,
+                    csrfmiddlewaretoken: "{{ csrf_token }}",
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.success) {
+                        console.log(data.success)
+                        refresh_div()
+                        $('#modal-view').modal('hide');
+                        swal("Success! sanction has been approved", {
+                        icon: "success",
+                        })
+                    }
+                    if (data.error) {
+                        console.log(data.error)
+                    }
+                    
+                }
+            });
+        } 
+        });
+       } else {
+        alert("All fields must have a valid value.");
+    }
+    return false;
+});
+
+function viewExcuse(sanction_excuse_id) {
+    console.log(sanction_excuse_id)
+    $('#excuse_id').val(sanction_excuse_id);
+    if (sanction_excuse_id) {
+        if (document.getElementById("excuse_image")){
+            var myobj = document.getElementById("excuse_image");
+            myobj.remove();
+        }
+        if (document.getElementById("btn_excuse_submit")){
+            var myobj = document.getElementById("btn_excuse_submit");
+            myobj.remove();
+        }
+        tr_id = sanction_excuse_id;
+        sanction = $(this).closest("tbody tr").find("td :eq(2)").textContent 
+        $('#sanction_excuse_id').val(sanction_excuse_id);
+        $.ajax({
+        type:'POST',
+        url : "{% url 'sanctioning_student_view_excuse' %}",
+        data: {
+            sanction_excuse_id:sanction_excuse_id,
+            csrfmiddlewaretoken: "{{ csrf_token }}",
+        },
+        dataType: 'json',
+        success: function(data){
+            if (data.excuse_val){
+                sample = data.excuse_val.proof.replace(/\"/g, "")
+                date2 = moment(data.excuse_val.date).endOf('day').fromNow();  
+                $("#form2").append(' <div id="excuse_image" class="card"><button type="button" class="close" id="modal_close" data-dismiss="modal" aria-hidden="true" style="color: gray; margin: 6px;">×</button><input class="form-control" id="sanction_excuse_id" type="hidden" name="sanction_excuse_id"/><div class="card-body" style="font-family: Roboto;"><h5 class="card-title">'+data.excuse_val.sanction+'</h5><hr>Reason:<br><p class="card-text" style=" font-size: 14px; padding: 10px; color: black;">"'+data.excuse_val.reason+'"</p><br><a href="/media/'+sample+'" target="blank">'+sample+'</a><br><br><i><small class="card-text">Uploaded '+date2+'.</small></i></div></div>')
+
+                // myImage = $('#myImg').attr('src');
+    
+                //     var img = new Image();
+                //     img.src = myImage;
+                //     img.onload = getSize;
+
+                //     document.getElementById("myImg").src = img.src;
+
+                //     function getSize(){
+                //         var height = img.height / 2;
+                //         var width = img.width / 2;
+                //         var w = window.innerWidth;
+                //         var h = window.innerHeight;
+                //         var adjh = height * (w/width);
+                //         var adjw = w / 2;
+
+                //         if (adjh>h){
+                //             var wratio = h/adjh;
+                //             adjh = h / 2;
+                //             adjw = wratio * w / 2;
+                //         }
+                //         console.log(width,height)
+
+                //         document.getElementById("myImg").height = adjh / 1.5;
+                //         document.getElementById("myImg").width = adjw / 1.5;
+
+                //         document.getElementById("myModal").style.height = adjh / 1.5;
+                //         document.getElementById("myModal").style.width = adjw / 1.5;
+
+                //     }
+            }
+            if(data.error){
+                console.log(data.error)
+            }
+        },
+        error: function(error){
+            console.log(error)
+        }
+    })
+    }
+}
+
+// $('#btn_rem').click(function(){
+//     $("#data-table .tr_").each(function() {
+//         tr_id = $(this).attr('id')
+//         control_number = $(this).find('.cn'+tr_id+'').text() 
+//         student_number = $(this).find('.sn'+tr_id+'').text() 
+//         sanction = $(this).find('.v'+tr_id+'').text() 
+//         violation = $(this).find('.o'+tr_id+'').text() 
+//         sanc_status = $(this).find('.s'+tr_id+'').text() 
+//         date = $(this).find('.d'+tr_id+'').text() 
+//         office = $(this).find('.of'+tr_id+'').text() 
+//         hrs = $(this).find('.hr'+tr_id+'').text() 
+//         Status = $(this).find('.ss'+tr_id+'').text() 
+//         console.log(control_number,student_number, sanction,Status)
+//     });
+// }); 
+
+function editSanction(sanction_id) {
+    if (sanction_id) {
+        tr_id = sanction_id;
+        $('#sanction_id2').val(sanction_id);
+        office = $(tr_id).closest("tbody tr").find("td :eq(11)").html()
+        $('#office_name2').val(office);
+    }
+}
+
+$("#modal-edit").on('click','#btn_submit',function(e){
+        var sanction_id = $('input[name="sanction_id2"]').val().trim();
+        var office = $('#office_name2').val();
+        console.log(office)
+        if (sanction_id) {
+            swal({
+            title: "Are you sure?",
+            text: "You want to approve this pending request?", 
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+          if (willDelete) {
+            $.ajax({
+                url: '{% url "sanction_assign_office" %}',
+                type: "POST",
+                data: {
+                    sanction_id: sanction_id,
+                    office:office,
+                    csrfmiddlewaretoken: "{{ csrf_token }}",
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.success) {
+                        refresh_div()
+                        $('#modal-edit').modal('hide');
+                        swal("Success! sanction has been approved", {
+                        icon: "success",
+                        })
+                    }
+                    if (data.error) {
+                        console.log(data.error)
+                    }
+                    
+                }
+            });
+        } 
+        });
+       } else {
+        alert("All fields must have a valid value.");
+    }
+    return false;
+});
+function refresh_div()
+    { 
+        $( "#refresh" ).load(window.location.href + " #refresh" );
+    }
+
+// function viewSanction(sanction_id) {
+//     if (sanction_id) {
+//         tr_id = sanction_id;
+//         $('#sanction_id').val(sanction_id);
+//     }
+// }
+
+
+function viewSanction(sanction_id) {
+    if (document.getElementById("col_1")){
+        var myobj = document.getElementById("col_1");
+        myobj.remove();
+    }
+    if (document.getElementById("invoice-content")){
+        var myobj = document.getElementById("invoice-content");
+        myobj.remove();
+    }
+    if (document.getElementById("invoice-footer")){
+        var myobj = document.getElementById("invoice-footer");
+        myobj.remove();
+    }
+    console.log(sanction_id)
+    if (sanction_id) {
+        let today = moment().format('YYYY-MM-DD');
+        tr_id = sanction_id;
+        $('#sanction_id').val(sanction_id);
+        $.ajax({
+            url: '{% url "sanction_student_view" %}',
+            type: "POST",
+            data: {
+                sanction_id: sanction_id,
+                csrfmiddlewaretoken: "{{ csrf_token }}",
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.sanction_val) {
+                    $("#info_modal").append('<div class="col" id="col_1"><div class="invoice-company text-inverse f-w-600"><span class="pull-right hidden-print"><a href="javascript:;" class="btn btn-sm btn-white m-b-10 p-l-5"><i class="fa fa-file-pdf t-plus-1 text-danger fa-fw fa-lg"></i> Export as PDF</a><a href="javascript:;" onclick="" class="btn btn-sm btn-white m-b-10 p-l-5"><i class="fa fa-print t-plus-1 fa-fw fa-lg"></i> Print</a></span>OSAS Sanction</div><div class="invoice-header" style="margin: 0px;"><div class="invoice-from"><address class="m-t-5 m-b-5"><strong class="text-inverse">'+data.sanction_val.control_number+'</strong><br />'+data.sanction_val.stud_no+'<br />'+data.sanction_val.stud_lname + ", " + data.sanction_val.stud_fname + " " + data.sanction_val.stud_mname+'<br />'+data.sanction_val.stud_course+'<br />Phone: 0'+data.sanction_val.contact+'</address></div><div class="invoice-date"><div class="date text-inverse m-t-5">'+today +'</div><div class="invoice-detail"></div></div></div></div><div class="invoice-content" id="invoice-content"><div class="table-responsive"><table class="table table-invoice"><thead><tr><th width="60%">SANCTION DESCRIPTIONS</th><th class="text-right" width="40%">STATUS</th></tr></thead><tbody><tr><td class="text-nowrap"><span class="text-inverse">'+data.sanction_val.sanction_name+'</span><br /><span>'+data.sanction_val.violation+'</span><br /><span class="text-inverse">'+data.sanction_val.violation_status+'</span><br /><span>Designation: '+data.sanction_val.office+'</span></td><td class="text-right"><span class="text-inverse">'+data.sanction_val.datecreated+'</span><br /><span>Hour(s) to render - '+data.sanction_val.hrs+'</span><br /><span>Rendered hour(s) - '+data.sanction_val.rendered_hour+'</span><br /><span>'+data.sanction_val.sanc_status+'</span></td></tr></tbody></table></div></div><div  class="invoice-footer" id="invoice-footer"><p class="text-center m-b-5 f-w-600" style="margin-top: 15px;">THANK YOU FOR YOUR BUSINESS</p><p class="text-center" style="margin-bottom: -10px"><span class="m-r-10"><i class="fa fa-fw fa-lg fa-globe"></i> matiasgallipoli.com</span><span class="m-r-10"><i class="fa fa-fw fa-lg fa-phone-volume"></i> T:016-18192302</span><span class="m-r-10"><i class="fa fa-fw fa-lg fa-envelope"></i> rtiemps@gmail.com</span></p></div>')
+                }
+                
+            }
+        });
+       } else {
+        alert("All fields must have a valid value.");
+    }
+}
+
+
+document.getElementById("violation_name").disabled = true;
+document.getElementById("office_name").disabled = true;
+$("#modal-dialog").on('click','#btn_submit',function(){
+    if (document.getElementById("error_msg")){
+        var myobj = document.getElementById("error_msg");
+        myobj.remove();
+    }
+    var auth_id = document.getElementById("auth_id").innerText
+    student = $("#student").children("option:selected").val().trim();
+    code_name = $("#code_name").children("option:selected").val().trim();
+    violation_name = $("#violation_name").children("option:selected").val().trim();
+    office_name = $("#office_name").children("option:selected").val().trim();
+    start_date = document.getElementById("data_s_date").textContent
+    end_date = document.getElementById("data_e_date").textContent
+    if (!office_name){
+        office_name = "N/A"
+    }
+    if (student && code_name && violation_name ) {
+        swal({
+        title: "Are you sure?",
+        text: student + " " + "will be added to sanctioning records.", 
+        icon: "warning",
+        buttons: {
+            cancel: {
+                text: 'Cancel',
+                value: null,
+                visible: true,
+                className: 'btn btn-default',
+                closeModal: true,
+            },
+            confirm: {
+                text: 'Yes',
+                value: true,
+                visible: true,
+                className: 'btn btn-warning',
+                closeModal: true
+            }
+        }
+        })
+        .then((willDelete) => {
+        if (willDelete) {
+            $.ajax({
+                url: '{% url "sanction_student_add" %}',
+                type: "POST",
+                data: {
+                    auth_id:auth_id,
+                    student: student,
+                    code_name: code_name,
+                    violation_name:violation_name,
+                    office_name:office_name,
+                    start_date:start_date,
+                    end_date:end_date,
+                    csrfmiddlewaretoken: "{{ csrf_token }}",
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.error) {
+                        $("#error").append('<div class="container col-12" id="error_msg"><p class="alert alert-danger text-center" >Sanction for ' + student + "" + ' is already added to the record' + '</p></div>')
+                        // $("#error").hide(200);
+                    }
+                    if (data.sanction_val) {
+                        refresh_div()
+                    swal("Success!  " + student + " " + "is added to sanctioning record", {
+                        icon: "success",
+                        })
+                        updateDiv()
+                        $('#modal-dialog').modal('hide');
+                        $("#error").hide();
+                        return false;
+                    }
+                }
+            });
+        } 
+    });
+    } else {
+    alert("All fields must have a valid value.");
+    }
+});
+
+
+function updateDiv()
+    {   document.getElementById("student").selectedIndex = "0";
+        document.getElementById("code_name").selectedIndex = "0";
+        document.getElementById("violation_name").selectedIndex = "0";
+        document.getElementById("office_name").selectedIndex = "0";
+
+        document.getElementById('student_no').textContent = ""
+        document.getElementById('student_name').textContent = ""
+        document.getElementById('stud_course').textContent = ""
+        document.getElementById('stud_section').textContent = ""
+        document.getElementById('sanction_name').textContent = ""
+        document.getElementById('offense_name').textContent = ""
+        document.getElementById('status').textContent = ""
+        document.getElementById('office').textContent = ""
+        document.getElementById('hrs').textContent = ""
+        document.getElementById('days').textContent = ""
+        document.getElementById('desc').textContent = ""
+        document.getElementById('start_date').innerText = ""
+        document.getElementById('end_date').innerText = ""
+    }
+function student_list(){
+    $.ajax({
+        type:'GET',
+        url : "{% url 'sanction_student_list' %}",
+        success: function(response){
+            const studData = response.data
+            studData.map(item=>{
+                $("#student").append('<option value="'+item.stud_no+ '" >'+item.stud_no+'</option>')
+            })
+        },
+        error: function(error){
+            console.log(error)
+        }
+    })
+}
+
+function office_list(){
+    $.ajax({
+        type:'GET',
+        url : "{% url 'designated_office_list' %}",
+        success: function(response){
+            const studData = response.data
+            studData.map(item=>{
+                $("#office_name").append('<option value="'+item.designation_office+ '" >'+item.designation_office+'</option>')
+                $("#office_name2").append('<option value="'+item.designation_office+ '" >'+item.designation_office+'</option>')
+            })
+        },
+        error: function(error){
+            console.log(error)
+        }
+    })
+}
+
+const office_data = document.getElementById('office_name')
+office_data.addEventListener('change', e=>{
+    const selected_office = e.target.value
+    $.ajax({
+        type:'POST',
+        url : "{% url 'designation_office_data' %}",
+        data : {
+            selected_office:selected_office,
+            csrfmiddlewaretoken: "{{ csrf_token }}",
+        },
+        success: function(response){
+            const officeData = response.data
+            officeData.map(item=>{
+                $("#office").text(item.designation_office);
+                $("#office_name").text(item.designation_office);
+            })
+        },
+        error: function(error){
+            console.log(error)
+        }
+    })
+})
+
+const violation_data = document.getElementById('violation_name')
+violation_data.addEventListener('change', e=>{
+    selected_code = document.getElementById("code_name").value;
+    const selected_violation = e.target.value
+    $.ajax({
+        type:'POST',
+        url : "{% url 'sanction_code_data' %}",
+        data : {
+            selected_code:selected_code,
+            selected_violation:selected_violation,
+            csrfmiddlewaretoken: "{{ csrf_token }}",
+        },
+        success: function(response){
+            const violationData = response.data3
+            violationData.map(item=>{
+                $("#offense_name").text(item.ds_violation_count);
+                $("#status").text(item.ds_status);
+                $("#hrs").text(item.ds_hrs);
+                $("#days").text(item.ds_days);
+                $("#desc").text(item.ds_violation_desc);
+                if(item.ds_days == 0 && item.ds_hrs == 0){
+                    console.log(item.ds_days )
+                    document.getElementById("office_name").disabled = true;
+                    document.getElementById("office_name").selectedIndex = "0";
+               
+                    $("#office").text('N/A');
+                }
+                else{
+                    document.getElementById("office_name").disabled = false;
+                }
+                if(item.ds_hrs != 0 && item.ds_days != 0){
+                    var start = moment();
+                    document.getElementById("start_date").innerHTML = start.format('YYYY-MM-DD, dddd')
+                    var new_date = moment(start).add(item.ds_days, 'd');
+                    const end_date = moment(new_date)
+                    document.getElementById("end_date").innerHTML = end_date.format('YYYY-MM-DD, dddd')
+
+                    document.getElementById("data_s_date").innerHTML = start.format('YYYY-MM-DD')
+                    document.getElementById("data_e_date").innerHTML = end_date.format('YYYY-MM-DD')
+                    
+                }
+                else{
+                    $("#start_date").text('N/A');
+                    $("#end_date").text('N/A');
+                }
+                
+            })
+        },
+        error: function(error){
+            console.log(error)
+        }
+    })
+})
+
+function code_list(){
+    $.ajax({
+        type:'GET',
+        url : "{% url 'sanction_code_list' %}",
+        success: function(response){
+            const codeData = response.data
+            codeData.map(item=>{
+                $("#code_name").append('<option value="'+item.ct_name+ '" >'+item.ct_name+'</option>')
+            })
+        },
+        error: function(error){
+            console.log(error)
+        }
+    })
+}
+
+const code_data = document.getElementById('code_name')
+code_data.addEventListener('change', e=>{
+    const selected_code = e.target.value
+    document.getElementById("office_name").disabled = true;
+    document.getElementById("office_name").selectedIndex = "0";
+    document.getElementById('violation_name').innerHTML = ""
+    document.getElementById('offense_name').innerHTML = ""
+    document.getElementById('status').innerHTML = ""
+    document.getElementById('hrs').innerHTML = ""
+    document.getElementById('days').innerHTML = ""
+    document.getElementById('desc').innerHTML = ""
+
+    $.ajax({
+        type:'POST',
+        url : "{% url 'sanction_code_data' %}",
+        data : {
+            selected_code:selected_code,
+            csrfmiddlewaretoken: "{{ csrf_token }}",
+        },
+        success: function(response){
+            document.getElementById("violation_name").disabled = false;
+
+            const codeData = response.data
+            codeData.map(item=>{
+                $("#sanction_name").text(item.ct_name);
+            })
+            const violationData = response.obj_violation
+            $("#violation_name").append('<option  disabled selected value value="" >'+"--select--"+'</option>')
+            violationData.map(item=>{
+                $("#violation_name").append('<option value="'+item.ds_violation_count+ '" >'+item.ds_violation_count+'</option>')
+            })
+        },
+        error: function(error){
+            console.log(error)
+        }
+    })
+})
+
+
+
+const student_data = document.getElementById('student')
+student_data.addEventListener('change', e=>{
+    const selected_stud = e.target.value
+    $.ajax({
+        type:'POST',
+        url : "{% url 'sanction_student_data' %}",
+        data : {
+            selected_stud:selected_stud,
+            csrfmiddlewaretoken: "{{ csrf_token }}",
+        },
+        success: function(response){
+            const studData = response.data
+            studData.map(item=>{
+                $("#student_no").text(item.stud_no);
+                $("#student_name").text(item.stud_lname + ", " + item.stud_fname + " " + item.stud_mname);
+            })
+            const courseData = response.data2
+            courseData.map(item=>{
+                $("#stud_course").text(item.course_name);
+            })
+            courseData.map(item=>{ 
+            })
+            const secData = response.data3
+            secData.map(item=>{ 
+                $("#stud_section").text(item.yas_descriptions);
+            })
+        },
+        error: function(error){
+            console.log(error)
+        }
+    })
+})
+//https://stackoverflow.com/questions/3072233/getting-value-from-table-cell-in-javascript-not-jquery
+
+
+</script>
+{% endblock %}

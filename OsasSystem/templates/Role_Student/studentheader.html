@@ -1,11 +1,9 @@
 {% load static %}
-
-<div id="page-container" class="fade page-sidebar-fixed page-header-fixed">
     <!-- begin #header -->
     <div id="header" class="header navbar-default">
         <!-- begin navbar-header -->
         <div class="navbar-header">
-            <a href="index.html" class="navbar-brand"><span class="navbar-logo"></span> <b>Color</b> Admin</a>
+            <a href="{% url 'home' %}" class="navbar-brand"><span class="navbar-user"><img style="margin-top: 2px;" src="{%static 'OsasSystem/assets/img/logo/logo.png' %}" alt="" /> </span> <b>PUP</b> Quezon City Branch</a>
             <button type="button" class="navbar-toggle" data-click="sidebar-toggled">
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
@@ -18,15 +16,18 @@
         <ul class="navbar-nav navbar-right">
             <li class="dropdown navbar-user">
                 <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
-                    <span class="d-none d-md-inline">{{request.session.session_user_lname}} {{request.session.session_user_fname}}</span> <b class="caret"></b>
+                    <img src="{%static 'OsasSystem/assets/img/user/user.png' %}" alt="" /> 
+                    <span class="d-none d-md-inline">{{request.session.session_user_no}}</span> <b class="caret"></b>
+                    <label id="auth_username" hidden name="auth_username">{{request.session.session_user_username}}</label>
+                    <label  id="auth_id" hidden name="auth_id">{{request.session.session_user_id}}</label>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right">
-                    <a href="javascript:;" class="dropdown-item">Edit Profile</a>
-                    <a href="{% url 'logout' %}" class="dropdown-item">Log Out</a>
+                    <a href="javascript:;" class="dropdown-item">Account Setting</a>
+                    <div class="dropdown-divider"></div>
+                    <a href="javascript:;" class="dropdown-item">Log Out</a>
                 </div>
             </li>
         </ul>
         <!-- end header navigation right -->
     </div>
     <!-- end #header -->
-</div>

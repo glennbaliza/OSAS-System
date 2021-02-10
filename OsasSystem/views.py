@@ -5,7 +5,7 @@ from django.views import View
 from django.shortcuts import render, redirect, get_object_or_404, reverse, HttpResponse
 from django.http import HttpResponseRedirect, Http404, JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
-from .models import osas_r_userrole, osas_r_course, osas_r_section_and_year, osas_r_personal_info, osas_r_auth_user, osas_t_id, osas_t_sanction, osas_r_code_title, osas_r_disciplinary_sanction, osas_r_designation_office, osas_t_excuse
+from .models import osas_r_userrole, osas_r_course, osas_r_section_and_year, osas_r_personal_info, osas_r_auth_user, osas_t_id, osas_t_sanction, osas_r_code_title, osas_r_disciplinary_sanction, osas_r_designation_office, osas_t_excuse, osas_t_complaint
 from django.contrib import messages
 from django.views.decorators.cache import cache_control
 from datetime import datetime, date, timedelta
@@ -13,6 +13,8 @@ from dateutil import parser
 from django.views.decorators.csrf import csrf_exempt
 import re
 import json
+from django.db.models import Q
+import time
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 
 
@@ -58,7 +60,7 @@ def activate_account(request):
                 request.session['session_user_fname'] = stud.stud_fname
                 request.session['session_user_pass'] = stud.s_password
                 request.session['session_user_role'] = s.user_type
-                return HttpResponseRedirect('/dashboard', {'stud': stud}) #passing the values of student to the next template
+                return HttpResponseRedirect('/profile', {'stud': stud}) #passing the values of student to the next template
         else:
             messages.error(request, 'Either student number or password are incorrect.')
             return HttpResponseRedirect('/login')
@@ -217,6 +219,41 @@ def student_profile(request):
     student_yr_sec = osas_r_section_and_year.objects.order_by('yas_descriptions')
     context1 = {'student_yr_sec': student_yr_sec}
     return render(request, template_name, {'student_info': student_info, 'student_course': student_course, 'student_yr_sec': student_yr_sec})
+
+def student_profile_view(request):
+    today = datetime.today()
+    student_id = request.POST.get('student_id')
+    try:
+        d = osas_r_personal_info.objects.get(stud_id = student_id)
+      
+        student_val = {
+            'id':d.stud_id,
+            'stud_no':d.stud_no,
+            'stud_course_id':d.stud_course_id.course_name,
+            'stud_yas_id':d.stud_yas_id.yas_descriptions,
+            'stud_lname':d.stud_lname,
+            'stud_fname':d.stud_fname,
+            'stud_mname':d.stud_mname,
+            'stud_sname':d.stud_sname,
+            'stud_birthdate':d.stud_birthdate,
+            'stud_address':d.stud_address,
+            'stud_email':d.stud_email,
+            'stud_m_number':d.stud_m_number,
+            'stud_hs':d.stud_hs,
+            'stud_hs_add':d.stud_hs_add,
+            'stud_sh':d.stud_sh,
+            'stud_sh_add':d.stud_sh_add,
+            'stud_e_name':d.stud_e_name,
+            'stud_e_address':d.stud_e_address,
+            'stud_e_m_number':d.stud_e_m_number,
+
+        }
+        data = {'student_val':student_val}
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:  
+        data = {'error':True}
+        return JsonResponse(data, safe=False)
+
   
 # Populating 2 dropdown fields in 1 template from the data in 2 different table https://stackoverflow.com/questions/49353000/how-to-have-dropdown-selection-populate-datatables-table-in-template-from-django
 
@@ -231,26 +268,48 @@ def add_student(request):
 def student_process_add(request, *args):
     chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'
     randomstr =''.join((random.choice(chars)) for x in range(5))
-    l_name = request.POST.get('txt_l_name')
-    f_name = request.POST.get('txt_f_name')
-    m_name = request.POST.get('txt_m_name')
-    studno = request.POST.get('txt_studno')
-    d_of_birth = request.POST.get('date_of_birth')
+    l_name = request.POST.get('stud_lname')
+    f_name = request.POST.get('stud_fname')
+    m_name = request.POST.get('stud_mname')
+    studno = request.POST.get('stud_no')
+    d_of_birth = request.POST.get('stud_birthdate')
     gender = request.POST.get('txt_Gender')
-    address = request.POST.get('txt_address')
-    email = request.POST.get('txt_email')
-    mobile_number = request.POST.get('txt_mobile_number')
-    course = request.POST.get('txt_course')
-    yr_sec = request.POST.get('txt_yr_sec')
-    h_name = request.POST.get('txt_h_name')
-    h_address = request.POST.get('txt_h_address')
-    e_name = request.POST.get('txt_e_name')
-    e_number = request.POST.get('txt_e_number')
-    e_address = request.POST.get('txt_e_address')
+    if gender:
+        gender = request.POST.get('txt_Gender')
+    else:
+        gender = None
+    address = request.POST.get('stud_address')
+    email = request.POST.get('stud_email')
+    mobile_number = request.POST.get('stud_m_number')
+    course = request.POST.get('stud_course')
+    yr_sec = request.POST.get('year_sec')
+    h_name = request.POST.get('stud_hs')
+    h_address = request.POST.get('stud_hs_add')
+    e_name = request.POST.get('stud_e_name')
+    e_number = request.POST.get('stud_e_m_number')
+    e_address = request.POST.get('stud_e_address')
     stud_pass = randomstr
     try:
         n = osas_r_personal_info.objects.get(stud_no = studno)
-        return HttpResponseRedirect('/student_profile' , {'error_message': "Duplicated Course Information : " + studno})
+        n.stud_lname = request.POST.get('stud_lname')
+        n.stud_fname = request.POST.get('stud_fname')
+        n.stud_mname = request.POST.get('stud_mname')
+        n.stud_sname = request.POST.get('stud_sname')
+        n.stud_birthdate = request.POST.get('stud_birthdate')
+        n.stud_address = request.POST.get('stud_address')
+        n.stud_m_number = request.POST.get('stud_m_number')
+        n.stud_email = request.POST.get('stud_email')
+        n.stud_hs = request.POST.get('stud_hs')
+        n.stud_hs_add = request.POST.get('stud_hs_add')
+        n.stud_sh = request.POST.get('stud_sh')
+        n.stud_sh_add = request.POST.get('stud_sh_add')
+        n.stud_e_name = request.POST.get('stud_e_name')
+        n.stud_e_address = request.POST.get('stud_e_address')
+        n.stud_e_m_number = request.POST.get('stud_e_m_number')
+        if request.POST.get('stud_lname') and request.POST.get('stud_fname') and request.POST.get('stud_mname'):
+            n.save()
+        data = {'success':True}
+        return JsonResponse(data, safe=False)
     except ObjectDoesNotExist:
         today = datetime.today()
         stud = osas_r_personal_info(stud_no = studno, stud_lname = l_name, stud_fname = f_name, stud_mname = m_name, stud_birthdate = d_of_birth,stud_gender = gender, stud_address = address, stud_email = email, stud_m_number = mobile_number, stud_hs = h_name, stud_hs_add = h_address, stud_e_name = e_name,stud_e_address = e_address, stud_e_m_number = e_number, s_password = stud_pass , date_created = today, stud_role = osas_r_userrole.objects.get(user_type='STUDENT'), stud_course_id = osas_r_course.objects.get(course_name = course), stud_yas_id  = osas_r_section_and_year.objects.get(yas_descriptions = yr_sec))
@@ -568,6 +627,7 @@ def id_request_remove(request):
         data = {'error': r_id}
         return JsonResponse(data, safe=False)
 
+
 def lost_id_view(request):
     today = datetime.today()
     lost_id_ = request.POST.get('lost_id')
@@ -601,6 +661,7 @@ def lost_id_view(request):
 
 
 def add_id_request(request):
+
     chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
     randomstr =''.join((random.choice(chars)) for x in range(8))
     r_id = randomstr
@@ -615,10 +676,11 @@ def add_id_request(request):
                         data = {'error': True} #sanction already exist
                         return JsonResponse(data, safe=False)
                     else:
-                        count = osas_t_id.objects.filter(lost_stud_id = osas_r_personal_info.objects.get(stud_no = no)).exclude(lost_id_status = "COMPLETED" and "CANCELLED").count()
+                        final = osas_t_id.objects.filter(lost_stud_id = osas_r_personal_info.objects.get(stud_no = no), lost_id_status = "PENDING" and "PROCESSING" and "COMPLETED").exclude(lost_id_sanction_excuse = "EXCUSED").count()
+                    
                         t = osas_r_code_title.objects.filter(ct_name = "Loss ID / Registration Card")
                         if t:
-                            if count == 1:
+                            if final == 1:
                                 try:
                                     sanction = osas_t_sanction.objects.get(sanction_code_id = osas_r_disciplinary_sanction.objects.get(ds_code_id = osas_r_code_title.objects.get(ct_name = "Loss ID / Registration Card"), ds_violation_count = "2nd Offense / Violation"), sanction_stud_id = osas_r_personal_info.objects.get(stud_no = stud.stud_id))
                                     data = {'error': True} #sanction already exist
@@ -663,7 +725,7 @@ def add_id_request(request):
                                         
                                         data = {'id': r_id, 'sanction':random_str}
                                         return JsonResponse(data, safe=False)
-                            elif count == 2:
+                            elif final == 2:
                                 try:
                                     sanction = osas_t_sanction.objects.get(sanction_code_id = osas_r_disciplinary_sanction.objects.get(ds_code_id = osas_r_code_title.objects.get(ct_name = "Loss ID / Registration Card"), ds_violation_count = "More Than Two (2) Offense / Violation"), sanction_stud_id = osas_r_personal_info.objects.get(stud_no = stud.stud_id))
                                     data = {'error': True} #sanction already exist
@@ -986,10 +1048,39 @@ def desciplinary_sanction_edit(request):
         data = {'error':True}
         return JsonResponse(data, safe=False)
 
+def sanction_excuse_approve(request):
+    excuse_id = request.POST.get("excuse_id")
+    try:
+        r = osas_t_excuse.objects.get(excuse_id = excuse_id)
+        r.excuse_status = "APPROVED"
+        r.save()
+        try:
+            t = osas_t_sanction.objects.get(sanction_excuse_id = r.excuse_id)
+            t.sanction_status = "EXCUSED"
+            t.save()
+            if t.sanction_t_id:
+                i = osas_t_id.objects.get(lost_id = str(t.sanction_t_id))
+                i.lost_id_sanction_excuse = "EXCUSED"
+                i.save()
+                data = {'success':True}
+                return JsonResponse(data, safe=False)
+            else:
+                data = {'error':'t.sanction_t_id'}
+                return JsonResponse(data, safe=False)
+
+        except ObjectDoesNotExist:
+            data = {'error':'osas_t_excuse.objects.get(excuse_id = excuse_id)'}
+            return JsonResponse(data, safe=False)
+           
+    except ObjectDoesNotExist:
+        data = {'error':'osas_t_excuse.objects.get(excuse_id = excuse_id)'}
+        return JsonResponse(data, safe=False)
+
 def sanctioning_role_student(request):
     sanction = osas_t_sanction.objects.filter(sanction_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']))
     return render(request, 'Role_Student/sanction.html', {'sanction':sanction})
     
+
 @csrf_exempt
 def sanctioning_excuse_add(request):
     sanction_id = request.POST.get("sanction_id")
@@ -1013,9 +1104,9 @@ def sanctioning_excuse_add(request):
             excuse_proof = proof
             )
             e.save()
-           
+            ex_id = e.excuse_id
             try:
-                r = osas_t_excuse.objects.get(excuse_reason = cleantext, excuse_status = "PENDING", excuse_stud_id = osas_r_personal_info.objects.get(stud_no = stud_no1))
+                r = osas_t_excuse.objects.get(excuse_id = ex_id)
 
                 ex_id = r.excuse_id
                 if ex_id:
@@ -1025,13 +1116,13 @@ def sanctioning_excuse_add(request):
                 else:
                     return redirect('/sanctioning_role_student')
             except ObjectDoesNotExist:
-                data = {'error':True}
+                data = {'error' :ex_id}
                 return JsonResponse(data, safe=False)
     except ObjectDoesNotExist:
         return redirect('/sanctioning_role_student')
 
 def sanctioning_student(request):
-    sanction = osas_t_sanction.objects.exclude(sanction_status = "COMPLETED").order_by('-sanction_datecreated')
+    sanction = osas_t_sanction.objects.all().filter(Q(sanction_status = "PENDING") | Q(sanction_status ="ACTIVE")).exclude(Q(sanction_status = "COMPLETED") | Q(sanction_status =  "EXCUSED")).order_by('-sanction_datecreated')
     student = osas_r_personal_info.objects.order_by('stud_no')
     office = osas_r_designation_office.objects.order_by('designation_office')
     descipline = osas_r_disciplinary_sanction.objects.order_by('ds_code_id')
@@ -1051,6 +1142,15 @@ def sanctioning_student_view_excuse(request):
     except ObjectDoesNotExist:
         data = {'error':True}
         return JsonResponse(data, safe=False)
+
+def sanctioning_excused_approved(request):
+    sanction = osas_t_sanction.objects.filter(sanction_status = "EXCUSED" ).order_by('-sanction_datecreated')
+    student = osas_r_personal_info.objects.order_by('stud_no')
+    office = osas_r_designation_office.objects.order_by('designation_office')
+    descipline = osas_r_disciplinary_sanction.objects.order_by('ds_code_id')
+    coc_sunction_list = osas_t_sanction.objects.order_by('sanction_dateupdated')
+
+    return render(request, 'Role_Osas/sanction_excused.html', {'coc_sunction_list':coc_sunction_list, 'descipline':descipline, 'student':student, 'office':office, 'sanction':sanction})
 
 def sanctioning_student_completed(request):
     sanction2 = osas_t_sanction.objects.filter(sanction_status = "COMPLETED").order_by('-sanction_datecreated')
@@ -1098,21 +1198,24 @@ def sanction_student_data(request):
 def sanction_student_add(request):
     today = datetime.today()
     chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
-    randomstr =''.join((random.choice(chars)) for x in range(5))
+    randomstr =''.join((random.choice(chars)) for x in range(8))
     auth_id = request.POST.get('auth_id')
     student = request.POST.get('student')
     code_name = request.POST.get('code_name')
     violation_name = request.POST.get('violation_name')
     if violation_name == "1st Offense / Violation":
-        sanc_status = "Completed"
+        sanc_status = "COMPLETED"
     else:
-        sanc_status = "Active"
+        if request.session['session_user_role'] != "HEAD OSAS":
+            sanc_status = "PENDING"
+        else:
+            sanc_status = "ACTIVE"
     office_name = request.POST.get('office_name')
     start_date = request.POST.get('start_date')
     end_date = request.POST.get('end_date')
     if office_name == "N/A":
         office_name = "N/A"
-    control_number = "SS-" + randomstr
+    control_number = randomstr
     start_date = request.POST.get('start_date')
     if start_date == "N/A":
         today = None
@@ -1272,3 +1375,93 @@ def designation_office_delete(request):
     except ObjectDoesNotExist:
         return render(request, 'designation_office.html')
 
+def student_file_complaint(request):
+    stud_complaint = osas_t_complaint.objects.filter(comp_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no'])).order_by('-comp_datecreated')
+    context = {'stud_complaint': stud_complaint}
+    return render(request, 'Role_Student/file_a_complaint.html', {'stud_complaint':stud_complaint})
+
+def student_file_complaint_get(request):
+    comp_id = request.POST.get('comp_id')
+    try:
+        c = osas_t_complaint.objects.get(comp_id = comp_id)
+        image = json.dumps(str(c.comp_pic))
+        comp_val = {"id":c.comp_id, "number":c.comp_number, 'letter':c.comp_letter, 'pic':image, 'status':c.comp_status, 'stud':c.comp_stud_id.stud_no}
+        data = {'comp_val':comp_val}
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        data = {'error':"error"}
+        return JsonResponse(data, safe=False)
+
+def student_file_complaint_edit(request):
+    comp_id = request.POST.get('comp_id')
+    letter = request.POST.get('letter')
+    try:
+        c = osas_t_complaint.objects.get(comp_id = comp_id, comp_status = "PENDING")
+        c.comp_letter = letter
+        today = datetime.today()
+        c.comp_datecreated = today
+        c.save()
+        data = {'success':"success"}
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        data = {'error':"error"}
+        return JsonResponse(data, safe=False)
+
+def student_file_complaint_add(request):
+    letter = request.POST.get('sample')
+    stud_no = request.session['session_user_no']
+    chars = ""
+    chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
+    randomstr =''.join((random.choice(chars)) for x in range(8))
+    random_str = randomstr
+    try:
+        c = osas_t_complaint.objects.get(comp_stud_id = osas_r_personal_info.objects.get(stud_no = stud_no), comp_status = "PENDING")
+        data = {'error':"error"}
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        c = osas_t_complaint(comp_stud_id = osas_r_personal_info.objects.get(stud_no = stud_no), comp_number = random_str, comp_letter = letter)
+        comp_id = c.comp_id
+        c.save()
+        data = {'success':"success"}
+        return JsonResponse(data, safe=False)
+
+def student_file_complaint_add_proof(request):
+    proof_image = request.FILES.get('image')
+    stud_no = request.session['session_user_no']
+    try:
+        c = osas_t_complaint.objects.get(comp_stud_id = osas_r_personal_info.objects.get(stud_no = stud_no), comp_status = "PENDING")
+        c.comp_pic = proof_image
+        c.save()
+        data = {'success':True}
+        time.sleep(1)
+        return HttpResponseRedirect('/student_file_complaint') 
+    except ObjectDoesNotExist:
+        data = {'error':True}
+        return JsonResponse(data, safe=False)
+
+def student_file_complaint_edit_proof(request):
+    proof_image = request.FILES.get('image1')
+    stud_no = request.session['session_user_no']
+    try:
+        c = osas_t_complaint.objects.get(comp_stud_id = osas_r_personal_info.objects.get(stud_no = stud_no), comp_status = "PENDING")
+        if proof_image:
+            proof_img = request.FILES.get('image1')
+            c.comp_pic = proof_img
+            today = datetime.today()
+            c.comp_datecreated = today
+            c.save()
+        data = {'success':True}
+        time.sleep(.7)
+        return HttpResponseRedirect('/student_file_complaint') 
+    except ObjectDoesNotExist:
+        return HttpResponseRedirect('/student_file_complaint')  
+
+def student_file_complaint_remove(request):
+    comp_id = request.POST.get('comp_id')
+    try:
+        osas_t_complaint.objects.get(comp_id = comp_id, comp_status = "PENDING").delete()
+        data = {'success': True}
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        data = {'error': r_id}
+        return JsonResponse(data, safe=False)
