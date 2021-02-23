@@ -50,7 +50,7 @@
 {% endblock%}
 
 {% block title %}
-    Student Profile
+    Lodge Complaint
 {% endblock %}
 
 
@@ -256,7 +256,7 @@
                     <div class="col">
                         <h1 class="page-header mb-1">Edit complaint</h1>
                         <p class="mb-5">Page Description</p>
-                        <div class="col-lg-12" id="error">
+                        <div class="col-lg-12" id="error1">
                         </div>
                         <div class="col-lg-12 col-md-6">
                             <button class="btn btn-gray pull-right" id="donwload1">Print <i class="fas fa-print text-white-lighter f-s-16"></i></button>
@@ -317,7 +317,7 @@
     });
 </script>
 <script>
-    
+
 function deleteComplaint(comp_id) {
     console.log(comp_id)
     swal({
@@ -440,7 +440,7 @@ function editComplaint(comp_id) {
 }
 
 $("#modal-edit_pic").on('click','#btn_submit_edit_pic',function(){
-    swal("Success!  Complaint has sent", {
+    swal("Success!  Attachment has been eddited", {
     icon: "success",
     })
 });
@@ -502,27 +502,18 @@ $("#modal-edit").on('click','#btn_submit',function(e){
                         }
                         if (data.error) {
                             console.log(data.error)
-                            $("#error").append('<div class="container col-lg-12" id="error_msg"><p class="alert alert-danger text-center" >Warning! field must have valid value' + '</p></div>')
+                            $("#error1").append('<div class="container col-lg-12" id="error_msg"><p class="alert alert-danger text-center" >Warning! your letter of complaint is already seen, you are no longer able to edit your letter.' + '</p></div>')
                             setTimeout(function(){
                                 if (document.getElementById("error_msg")){
                                     var myobj = document.getElementById("error_msg");
                                     myobj.remove();
                                 }
-                            }, 2000);
+                            }, 3000);
                         }
                         
                     }
                 });
             } 
-            else{
-                $("#error").append('<div class="container col-lg-12" id="error_msg"><p class="alert alert-danger text-center" >Warning! field must have valid value' + '</p></div>')
-                setTimeout(function(){
-                    if (document.getElementById("error_msg")){
-                        var myobj = document.getElementById("error_msg");
-                        myobj.remove();
-                    }
-                }, 2000);
-            }
         }
     });
 });
@@ -579,7 +570,7 @@ $("#modal-add").on('click','#btn_submit',function(e){
 $('#donwload1').click(function(){
     var wme = window.open("","", "width = 793.7007874px, height = 1122.519685px");
     sample = CKEDITOR.instances.essay_text1.getData();
-    wme.document.write("<page size='A4' style='word-wrap:break-word;'><div style='padding: 20px;'' id='letter_complaint'><div class='row' style='margin-left: 30px; margin-top: 20px;' id='puplogo'><img src='https://www.freelogovectors.net/wp-content/uploads/2017/05/pup-logo-Polytechnic_University_of_the_Philippines.png' style='width: 121px; height: 118px;'/><div style='float: right;'><p style='font-family: Arial, Helvetica, sans-serif; font-size: 18px; color: black; margin-top: 15px;'>Republic of the Philippines</p><p style='font-family: Trajan Pro; font-size: 20px; color: black; margin-top: -15px;'><b>Polytechnic University of the Philippines</b></p><p style='font-family: Arial, Helvetica, sans-serif; color: black; margin-top: -15px;'><b>Quezon City Branch</b></p></div><br/></div></div><div id='textt' style='margin: 50px 50px 50px 50px;'>"+sample+"</div></div></page>");
+    wme.document.write("<page size='A4' style='word-wrap:break-word;'><div style='padding: 20px;'' id='letter_complaint'><div class='row' style='margin-left: 30px; margin-top: 20px;' id='puplogo'><img src='/media/PUPLOGO.png' style='width: 121px; height: 118px;'/><div style='float: right;'><p style='font-family: Arial, Helvetica, sans-serif; font-size: 18px; color: black; margin-top: 15px;'>Republic of the Philippines</p><p style='font-family: Trajan Pro; font-size: 20px; color: black; margin-top: -15px;'><b>Polytechnic University of the Philippines</b></p><p style='font-family: Arial, Helvetica, sans-serif; color: black; margin-top: -15px;'><b>Quezon City Branch</b></p></div><br/></div></div><div id='textt' style='margin: 50px 50px 50px 50px;'>"+sample+"</div></div></page>");
 
     wme.document.close();
     wme.focus();
@@ -590,7 +581,7 @@ $('#donwload1').click(function(){
 $('#donwload').click(function(){
     var wme = window.open("","", "width = 793.7007874px, height = 1122.519685px");
     sample = CKEDITOR.instances.essay_text.getData();
-    wme.document.write("<page size='A4' style='word-wrap:break-word;'><div style='padding: 20px;'' id='letter_complaint'><div class='row' style='margin-left: 30px; margin-top: 20px;' id='puplogo'><img src='https://www.freelogovectors.net/wp-content/uploads/2017/05/pup-logo-Polytechnic_University_of_the_Philippines.png' style='width: 121px; height: 118px;'/><div style='float: right;'><p style='font-family: Arial, Helvetica, sans-serif; font-size: 18px; color: black; margin-top: 15px;'>Republic of the Philippines</p><p style='font-family: Trajan Pro; font-size: 20px; color: black; margin-top: -15px;'><b>Polytechnic University of the Philippines</b></p><p style='font-family: Arial, Helvetica, sans-serif; color: black; margin-top: -15px;'><b>Quezon City Branch</b></p></div><br/></div></div><div id='textt' style='margin: 50px 50px 50px 50px;'>"+sample+"</div></div></page>");
+    wme.document.write("<page size='A4' style='word-wrap:break-word;'><div style='padding: 20px;'' id='letter_complaint'><div class='row' style='margin-left: 30px; margin-top: 20px;' id='puplogo'><img src='/media/PUPLOGO.png' style='width: 121px; height: 118px;'/><div style='float: right;'><p style='font-family: Arial, Helvetica, sans-serif; font-size: 18px; color: black; margin-top: 15px;'>Republic of the Philippines</p><p style='font-family: Trajan Pro; font-size: 20px; color: black; margin-top: -15px;'><b>Polytechnic University of the Philippines</b></p><p style='font-family: Arial, Helvetica, sans-serif; color: black; margin-top: -15px;'><b>Quezon City Branch</b></p></div><br/></div></div><div id='textt' style='margin: 50px 50px 50px 50px;'>"+sample+"</div></div></page>");
 
     wme.document.close();
     wme.focus();

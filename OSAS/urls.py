@@ -97,4 +97,6 @@ urlpatterns = [
     path('student_file_complaint_edit/', views.student_file_complaint_edit, name="student_file_complaint_edit"),
     path('student_file_complaint_remove/', views.student_file_complaint_remove, name="student_file_complaint_remove"),
 
+    path('lodge_complaint/', views.lodge_complaint, name="lodge_complaint"),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

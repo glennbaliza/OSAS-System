@@ -1375,6 +1375,10 @@ def designation_office_delete(request):
     except ObjectDoesNotExist:
         return render(request, 'designation_office.html')
 
+def lodge_complaint(request):
+    stud_complaints = osas_t_complaint.objects.all().order_by('-comp_datecreated')
+    return render(request, 'Role_Osas/lodge_complaint.html', { 'stud_complaints':stud_complaints})
+
 def student_file_complaint(request):
     stud_complaint = osas_t_complaint.objects.filter(comp_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no'])).order_by('-comp_datecreated')
     context = {'stud_complaint': stud_complaint}
@@ -1385,7 +1389,10 @@ def student_file_complaint_get(request):
     try:
         c = osas_t_complaint.objects.get(comp_id = comp_id)
         image = json.dumps(str(c.comp_pic))
-        comp_val = {"id":c.comp_id, "number":c.comp_number, 'letter':c.comp_letter, 'pic':image, 'status':c.comp_status, 'stud':c.comp_stud_id.stud_no}
+        if request.session['session_user_role'] == "HEAD OSAS":
+            c.comp_seen = "Seen"
+            c.save()
+        comp_val = {"id":c.comp_id, "number":c.comp_number, 'letter':c.comp_letter, 'pic':image, 'status':c.comp_status, 'stud':c.comp_stud_id.stud_no, 'lname':c.comp_stud_id.stud_lname, 'fname':c.comp_stud_id.stud_fname, 'mname':c.comp_stud_id.stud_mname , 'course':c.comp_stud_id.stud_course_id.course_name, 'date':c.comp_datecreated}
         data = {'comp_val':comp_val}
         return JsonResponse(data, safe=False)
     except ObjectDoesNotExist:
@@ -1396,7 +1403,7 @@ def student_file_complaint_edit(request):
     comp_id = request.POST.get('comp_id')
     letter = request.POST.get('letter')
     try:
-        c = osas_t_complaint.objects.get(comp_id = comp_id, comp_status = "PENDING")
+        c = osas_t_complaint.objects.get(comp_id = comp_id, comp_status = "PENDING", comp_seen = None)
         c.comp_letter = letter
         today = datetime.today()
         c.comp_datecreated = today
@@ -1443,7 +1450,7 @@ def student_file_complaint_edit_proof(request):
     proof_image = request.FILES.get('image1')
     stud_no = request.session['session_user_no']
     try:
-        c = osas_t_complaint.objects.get(comp_stud_id = osas_r_personal_info.objects.get(stud_no = stud_no), comp_status = "PENDING")
+        c = osas_t_complaint.objects.get(comp_stud_id = osas_r_personal_info.objects.get(stud_no = stud_no), comp_status = "PENDING", comp_seen = None)
         if proof_image:
             proof_img = request.FILES.get('image1')
             c.comp_pic = proof_img

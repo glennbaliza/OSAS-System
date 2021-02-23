@@ -195,7 +195,7 @@ class osas_t_complaint(models.Model):
     comp_pic = models.ImageField(upload_to=image_path, null=True, blank = True)
     comp_status = models.CharField(max_length = 10, default = "PENDING")
     comp_stud_id = models.ForeignKey('osas_r_personal_info', on_delete = models.CASCADE)
-    comp_datecreated = models.DateTimeField(default = now)
+    comp_datecreated = models.DateField(default = now)
     comp_seen = models.CharField(max_length = 10, null=True)
 
     def image_tag(self):
