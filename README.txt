@@ -2,10 +2,13 @@
 OSAS SUPPORT SYSTEM
 
 
-hey
+#1 makemigrations
+python manage.py makemigrations
 
+#2 migrate
+python manage.py migrate
 
+note: if error something ODBC
+run this code to mysql console.
 
-heyeheye
-
-hilo wurld
+create user ODBC identified by ''; grant all on osas.* to 'ODBC'@'%';
