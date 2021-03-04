@@ -13,139 +13,201 @@
 {% block content %}
 
 <div id="content" class="content">
+    <ol class="breadcrumb pull-right">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Dashboard</a></li>
+        <li class="breadcrumb-item">System Setup</li>
+        <li class="breadcrumb-item">Course</li>
+    </ol>
+    <h1 class="page-header mb-1"><i class="fas fa-graduation-cap mr-2" ></i>Course</h1>
+    <p class="mb-5">Page Description</p>
+
 
     <div class="row">
-        <div class="col-lg-12 col-md-6">
-            <button type="button" href="#modal-dialog" id="btn_rem"  class="update btn btn-danger" data-toggle="modal">+ Add new course<span class="glyphicon glyphicon-trash"></span></button> 
-        </div>
-    </div>
-    <div class="col-lg-12 col-md-6">
-        {% if error_message %}
-            <p class="alert alert-danger">
-                <strong>{{ error_message }}</strong>
-            </p>
-        {% endif %} 
-    </div>
-</br>
-
-    <!-- begin row -->
-    <div class="row">
-        <!-- begin col-10 -->
-        <div class="col-lg-12 col-md-6">
-            <!-- begin panel -->
-            <div class="panel panel-inverse">
-                <!-- begin panel-heading -->
-                <div class="panel-heading">
-                    <div class="panel-heading-btn">
-                        <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-success" data-click="panel-reload"><i class="fa fa-redo"></i></a>
-                        <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-warning" data-click="panel-collapse"><i class="fa fa-minus"></i></a>
-                    </div>
-                    <h4 class="panel-title">User List</h4>
+        <div class="col-lg-3">
+            <div class="panel" data-sortable-id="index-1">
+                <div class="panel-heading p-25">
+                    <h2 class="panel-title" style="font-size:16px;">Filter <i class="fas fa-filter mr-2" ></i></h2>
                 </div>
-                <!-- end panel-heading -->
-                <!-- begin panel-body -->
+                <div class="panel-body" style="padding: 0%; height: 295px;">
+                    <form id="validate_form" method="POST" action="{% url 'course' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group" >
+                            <label style="text-align: left; margin-bottom: 7px; margin-top: 4px;" class="col-sm-12">Course Code:</label> 
+                            {% if course_lists %}
+                            <div class="col-sm-12">
+                                <select id="filter_code" name="filter_code" class="form-control">
+                                    <option selected disabled="true">--Select--</option>
+                                    {% for osas_r_course in course_lists %}
+                                    <option  value="{{ osas_r_course.course_code }}">{{ osas_r_course.course_code }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="form-group" >
+                            <label style="text-align: left; margin-bottom: 7px; margin-top: 4px;" class="col-sm-12">Course Name:</label> 
+                            {% if course_lists %}
+                            <div class="col-sm-12">
+                                <select id="filter_name" name="filter_name" class="form-control">
+                                    <option selected disabled="true">--Select--</option>
+                                    {% for osas_r_course in course_lists %}
+                                    <option  value="{{ osas_r_course.course_name }}">{{ osas_r_course.course_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="form-group" >
+                            <label style="text-align: left; margin-bottom: 7px; margin-top: 4px;" class="col-sm-12">Course Name:</label> 
+                            <div class="col-sm-12">
+                                <select id="filter_status" name="filter_status" class="form-control">
+                                    <option selected disabled="true">--Select--</option>
+                                    <option  value="ACTIVE">Active</option>
+                                    <option  value="INACTIVE">Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <button type="submit" class="btn btn-success col-sm-12">Filter <i class="fas fa-filter mr-2" ></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-9">
+            <div class="panel">
+                <div class="panel-heading p-25">
+                    <div class="btn-group btn-group-toggle pull-right" data-toggle="buttons">
+                        <button class="btn btn-success" href="#modal_add" id="btn_rem" data-toggle="modal"><i class="fas fa-plus mr-2"></i>New Course</button>
+                    </div>
+                    <h2 class="panel-title" style="font-size:16px;"><i class="fas fa-graduation-cap mr-2" ></i>Course List</h2>  
+                </div>
                 <div class="panel-body">
                     {% if course_list %}
-                    <div class="table-responsive">
-                        <table id="data-table-buttons" class="table table-striped table-bordered">
+                    <table id="data-table" class="table table-striped table-bordered">
                         <thead>
                             <tr>
-                                <th hidden></th>
-                                <th class="text-nowrap">Course code</th>
-                                <th class="text-nowrap">Course name</th>
-                                <th class="text-nowrap">Status</th>
-                                <!-- <th class="text-nowrap">Profile Picture</th> -->
-                                <!-- <th class="text-nowrap">Status</th> -->
-                                <th class="text-nowrap">Action</th>  
+                                <th width="1%"></th>
+                                <th data-orderable="false">Course Details</th>
+                                <th data-orderable="false">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for osas_r_course in course_list %}
-                            <tr>
-                                <td hidden >{{ osas_r_course.course_id }}</td>  
-                                <td>{{ osas_r_course.course_code }}</td>
-                                <td>{{ osas_r_course.course_name }}</td>
-                                <td>{{ osas_r_course.course_status }}</td>        
-                                <!-- <td class="text-center"><img src="/media/{{osas_r_userrole.s_image}}" class="rounded-circle" width="50" alt="userimage"/></td> -->
-                                <!-- <td class="text-center"><span {% if  index.2  < index.3 %}class = "dot" style=" height: 25px; width: 25px; background-color: red; border-radius: 50%;display: inline-block;" {% elif  index.2  == index.3 %}class = "dot" style=" height: 25px; width: 25px; background-color: #EEA843; border-radius: 50%;display: inline-block;" {% else %} class="dot" style=" height: 25px; width: 25px; background-color: #4EEC1E; border-radius: 50%; display:inline-block;" {% endif %}></span></td> -->
-                                <td class="with-btn" nowrap >
-                                    <!-- {% if index.2 < index.3 %}
-                                    <a id="btnEditTable"  value="{{index.0}}" class="btn btn-sm btn-primary width-70 m-r-2" style="color: white;">Order</a>
-                                    {% endif %} -->
-                                    <!-- <button type="button" id="view" class="update btn btn-primary btn-lg"><span class="glyphicon glyphicon-eye-open"></span></button> -->
-                                    <a href="{% url 'course_edit' osas_r_course.course_id %}"><button type="button"  id="edit"  class="update btn btn-warning btn-lg"><span class="glyphicon glyphicon-pencil"></span></button></a>
-                                    <!-- <a id="btnEditTable"  value="{{index.0}}" class="btn btn-sm btn-primary width-70 m-r-2" style="color: white;">Edit</a> -->
-                                    <!-- {% if request.session.session_assign == 9 %} -->
-                                    <button type="button" href="#modal-dialog" id="btn_rem"  class="update btn btn-danger btn-lg" data-toggle="modal"><span class="glyphicon glyphicon-trash"></span></button> 
-                                    <!-- <a  class="btn btn-sm btn-success" data-toggle="modal">Demo</a> -->
-                                    <!-- {% endif %} -->
-                                    <button type="button" id="button_del" method="post" class="update btn btn-danger btn-lg"><span class="glyphicon glyphicon-trash"></span></button> 
-                                    <!-- <a id="btnRemarks"  class="btn btn-sm btn-white width-70"><center>Remarks</center></a>
-                                     -->
+                            <tr class="odd gradeA tr_" id="{{ osas_r_course.course_id }}">
+                                <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
+                                <td><dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                    <dd class="col-sm-8 gritter-  cc{{ osas_r_course.course_id }}" ><strong>{{ osas_r_course.course_code }}</strong></dd>
+                                    <dd class="col-sm-8 gritter-  cn{{ osas_r_course.course_id  }}" >{{ osas_r_course.course_name }}</dd>
+                                    <dd class="col-sm-8 gritter-  cd{{ osas_r_course.course_id  }}" >{{ osas_r_course.course_edit_date|date:"Y-m-d" }}</dd>
+                                    {% if osas_r_course.course_status == "ACTIVE" %}
+                                    <dd class="col-sm-8 gritter- "><strong><span class="badge badge-warning  cs{{ osas_r_course.course_id }}">{{ osas_r_course.course_status }}</span></strong></dd>
+                                    {% else %}
+                                    <dd class="col-sm-8 gritter- "><strong><span class="badge badge-danger  cs{{ osas_r_course.course_id }}">{{ osas_r_course.course_status }}</span></strong></dd>
+                                    {% endif %}
+                                </dl>
+                                </td>
+                                <td><div class="text-nowrap"><div class="btn-group ">
+                                    {% if  osas_r_course.course_status == "ACTIVE"%}
+                                    <button id="edit-btn" class="btn btn-info" data-toggle="modal" href="#modal_view" onClick="editCourse('{{osas_r_course.course_id}}')"><i class="fas fa-edit mr-2"></i>Edit</button>
+                                    <button id="delete-btn" class="btn btn-danger" onClick="deleteCourse('{{osas_r_course.course_id }}')"><i class="fas fa-trash-alt mr-2"></i>Deactivivate</button>
+                                    {% else %}
+                                    <button id="delete-btn" class="btn btn-success" onClick="deleteCourse('{{ osas_r_course.course_id }}')"><i class="fas fa-redo mr-2"></i>Activate</button>
+                                    {% endif %}
+                                  </div>
                                 </td>
                             </tr>
                             {% endfor %}
                         </tbody>
-                        </table>
-                    </div>
+                    </table>
+                    {% else %}
+                    <table id="data-table" class="table table-striped table-bordered tabless">
+                        <thead>
+                            <tr>
+                                <th width="1%"></th>
+                                <th data-orderable="false">Course Details</th>
+                                <th data-orderable="false">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table> 
                     {% endif %}
                 </div>
-                <!-- end panel-body -->
             </div>
-            <!-- end panel -->
-        </div>
-        <!-- end col-10 -->
-    </div>
-    <!-- end row -->
-</div>
- <!-- #modal-dialog -->
-
-
-<!-- begin #content -->
-<div class="modal fade" id="modal-dialog">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Courses</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-            </div>
-            <div class="modal-body">
-                <form id="validate_form" data-parsley-validate="" action="{% url 'add_course' %}" method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <div class="col-lg-12 col-md-6 ">
-                        <div class="stats-content">
-                            <label>Course code</label>
-                            <input type="text" name="course_code" placeholder="Course code" id="course_code"  class="form-control" required  data-parsley-trigger="keyup"> 
-                        </div>
-                    </div>
-                    <div class="col-lg-12 col-md-6 ">
-                        <div class="stats-content">
-                            <label>Course name</label>
-                            <input type="text" name="course_name" placeholder="Course name" id="course_name"  class="form-control" required  data-parsley-trigger="keyup"> 
-                        </div>
-                    </div>
-                   
-                    <div class="col-lg-12 col-md-6 ">
-                        <div class="stats-content">
-                            <label>Status</label>
-                            <select id="user_role" name="course_status" class="form-control" required>
-                                <option  value="Active">Active</option>
-                                <option  value="Inactive">Inactive</option>
-                            </select>  
-                        </div>
-                    </div>
-                    </br>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-success btn-sm btn-sm">Add Course</button>  
-                        <button type="cancel" class="btn btn-warning btn-sm btn-sm" data-dismiss="modal">Cancel</button>
-                    </div>
-                </form>
-            </div>  
         </div>
     </div>
 </div>
- 
 
+<div class="modal fade" id="modal_add" role="dialog" data-backdrop="static">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content " style="background-color:whitesmoke;">
+            <div class="panel panel-inverse">
+                <button type="button" class="close"  data-dismiss="modal" aria-hidden="true" style="color: gray; margin: 6px;">×</button>
+                <div class="panel-body" style="background-color:whitesmoke;"> 
+                    <div class="col">
+                        <h1 class="page-header mb-1">New Course</h1>
+                        <p class="mb-5">Page Description</p>
+                        <div class="col-lg-12 form-check-inline" id="error">
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="col-12" >
+                                <label  class="col-form-label text-md-right">Course Code: <span class="text-danger">*</span></label>
+                                <input id="course_code" name="course_code" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="text" data-parsley-trigger="keyup">
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="col-12" >
+                                <label  class="col-form-label text-md-right">Course Name: <span class="text-danger">*</span></label>
+                                <input id="course_name" name="course_name" type="text" class="form-control" data-parsley-required="true" data-parsley-type="text" data-parsley-trigger="keyup">
+                            </div>
+                        </div>
+                    </div>    
+                </div>
+            </div>
+            <div class="panel-footer" style=" background-color:white;">
+                <button class="btn btn_success col-md-3 pull-right m-l-10 " id="btn_submit" style="height: 33px; padding: 5px; background: linear-gradient(to right, #66ccff -1%, #3366ff 98%); border:none; color: white;" >Submit<i class="far fa-paper-plane m-l-3 zoom"></i></button>
+                <a class="btn btn-white pull-right m-l-10" data-dismiss="modal">Back<i class="fas fa-reply m-l-3 zoom"></i></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_view" role="dialog" data-backdrop="static">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content " style="background-color:whitesmoke;">
+            <div class="panel panel-inverse">
+                <button type="button" class="close"  data-dismiss="modal" aria-hidden="true" style="color: gray; margin: 6px;">×</button>
+                <div class="panel-body" style="background-color:whitesmoke;"> 
+                    <div class="col">
+                        <h1 class="page-header mb-1">New Course</h1>
+                        <p class="mb-5">Page Description</p>
+                        <div class="col-lg-12 form-check-inline" id="error1">
+                        </div>
+                        <input id="course_id" name="course_id" type="text" hidden/>
+                        <div class="col-lg-12">
+                            <div class="col-12" >
+                                <label  class="col-form-label text-md-right">Course Code: <span class="text-danger">*</span></label>
+                                <input id="course_code1" name="course_code1" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="text" data-parsley-trigger="keyup">
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="col-12" >
+                                <label  class="col-form-label text-md-right">Course Name: <span class="text-danger">*</span></label>
+                                <input id="course_name1" name="course_name1" type="text" class="form-control" data-parsley-required="true" data-parsley-type="text" data-parsley-trigger="keyup">
+                            </div>
+                        </div>
+                    </div>    
+                </div>
+            </div>
+            <div class="panel-footer" style=" background-color:white;">
+                <button class="btn btn_success col-md-3 pull-right m-l-10 " id="btn_submit" style="height: 33px; padding: 5px; background: linear-gradient(to right, #66ccff -1%, #3366ff 98%); border:none; color: white;" >Submit<i class="far fa-paper-plane m-l-3 zoom"></i></button>
+                <a class="btn btn-white pull-right m-l-10" data-dismiss="modal">Back<i class="fas fa-reply m-l-3 zoom"></i></a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block page-level %}
@@ -154,19 +216,146 @@
 {% endblock %}
 {% block page-js %}
 <script>
+    $(document).ready(function() {
+        $('#data-table').DataTable({
+                    ordering: false,
+        });
+    });
+</script>   
+<script>
+function editCourse(course_id){
+    $.ajax({
+        type:'POST',
+        url : "{% url 'edit_course' %}",
+        data: {
+            course_id:course_id,
+            csrfmiddlewaretoken: "{{ csrf_token }}",
+        },
+        success: function(data){
+            $('#course_id').val(data.id);
+            $('#course_code1').val(data.course_code);
+            $('#course_name1').val(data.course_name);
+        },
+        error: function(error){
+            console.log(error)
+        }
+    })
+}
+$("#modal_view").on('click','#btn_submit',function(){
+    var course_id = $('input[name="course_id"]').val().trim();
+    var course_name1 = $('input[name="course_name1"]').val().trim();
+    var course_code1 = $('input[name="course_code1"]').val().trim();
+    if (course_name1 && course_code1){
+        $.ajax({
+            url: '{% url "update_course" %}',
+            type: "POST",
+            data: {
+                course_id: course_id,
+                course_name1:course_name1,
+                course_code1:course_code1,
+                csrfmiddlewaretoken: "{{ csrf_token }}",
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.success) {
+                    swal("Success! Course has been successfully updated.", {
+                        icon: "success",
+                    })
+                    window.location.reload()
+                }
+                if (data.error) {
+                    console.log(data.error)
+                    $("#error1").append('<div class="container col-12" id="error_msg"><p class="alert alert-danger text-center" style="font-size:11px;" >Course is already in record.</p></div>')
+                    setTimeout(function(){
+                        if (document.getElementById("error_msg")){
+                            var myobj = document.getElementById("error_msg");
+                            myobj.remove();
+                        }
+                    }, 2000);
+                }
+                
+            }
+        });
+    }
+    else {
+    $("#error1").append('<div class="container col-12" id="error_msg"><p class="alert alert-danger text-center" style="font-size:11px;" >All fields must have a valid value.</p></div>')
+    setTimeout(function(){
+        if (document.getElementById("error_msg")){
+            var myobj = document.getElementById("error_msg");
+            myobj.remove();
+        }
+    }, 2000);
+    }
+    return false;
+});
+function deleteCourse(course_id) {
+    swal({
+        title: "Are you sure?",
+        text: "You want to deactivate this record?", 
+        icon: "warning",
+        buttons: true,
+        dangerMode: true,
+    })
+    .then((willDelete) => {
+        if (willDelete) {
+            $.ajax({
+                url: '{% url "deactivate_course" %}',
+                type: "POST",
+                data: {
+                    course_id: course_id,
+                    csrfmiddlewaretoken: "{{ csrf_token }}",
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.deleted) {
+                    $("#data-table #" + course_id).remove();
+                    swal("Success! Course has been deactivated.", {
+                        icon: "success",
+                    });
+                    window.location.reload()
+                    }
+                }
+                
+            });
+        } 
+    });
+}
 
-var table = $('#data-table-buttons').DataTable();
- 
- new $.fn.dataTable.Buttons( table, {
-     name: 'commands',
-     buttons: [ 'copy', 'csv', 'excel' ]
- } );
-  
- table.buttons( 0, null ).containers().appendTo( 'body' );
+$('#modal_add').on('click','#btn_submit', function(event){
+    var course_code = $('input[name="course_code"]').val().trim();
+    var course_name = $('input[name="course_name"]').val().trim();
+    if (course_name && course_code){
+        $.ajax({
+            url : "{% url 'add_course' %}",
+            type : "POST",
+            dataType: 'json',
+            data : {
+                course_name: course_name,
+                course_code:course_code,
+                csrfmiddlewaretoken: "{{ csrf_token }}",
+            },
+            success : function(data){
+                if (data.error) {
+                    $("#error").append('<div class="container col-12" id="error_msg"><p class="alert alert-danger text-center" style="font-size:11px;" >'+ course_code + " " + ' is already in record' + '</p></div>')
+                }
+                else {
+                    swal("Success!  " + "New Year and Section is successfully added.", {
+                    icon: "success",
+                    })
+                    $('#modal_add').modal('hide');
+                    window.location.reload()  
+                }
+            },
+            error: function(error){
+                    console.log(error);
+            }
+        });
+    }
+    else {
+    alert("All fields must have a valid value.");}
+    return false;
+});
 
-    // $("#data-table-buttons").DataTable({
-    //     buttons: [ 'copy', 'csv', 'excel' ]
-    // })
     $("#validate_form").parsley();
 
 </script>

@@ -24,91 +24,92 @@
         </p>
         {% endif %}
     </div>
+    <ol class="breadcrumb pull-right">
+        <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+        <li class="breadcrumb-item active">Student Profile</li>
+    </ol>
+    <h1 class="page-header mb-1"><i class="far fa-address-book mr-2" ></i>Student Profile</i></h1>
+    <p class="mb-5">Page Description</p>
+    
     <div class="row">
         <div class="col-lg-12 col-md-6">
-            <div class="panel panel-inverse">
-                <div class="card" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1), 0 1px 1px 0 rgba(0, 0, 0, 0.19);">
-                    <div class="card-header bg-dark">
-                        <button data-dismiss="alert" data-target="#closeablecard" type="button" class="close bg-white" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                        <ul class="nav nav-tabs card-header-tabs">
-                        <li class="nav-item" >
-                        <a class="nav-link active" style=" font-family: Roboto;">STUDENT INFORMATION</a>
-                        </li>
-                        </ul>
-                    </div>
-                    <div class="panel-body">
+            <div class="panel" id="refresh">
+                <div class="panel-heading p-25">
+                    <h2 class="panel-title" style="font-size:16px;"><i class="fas fa-address-book mr-2" ></i>Student Details  </i></h2>
+                </div>
+                <div class="panel-body">
+                    <div class="col">  
                         <form id="validate_form" action="{% url 'OsasSystem:student_profile_edit' %}" method="POST" enctype="multipart/form-data">
-                                {% csrf_token %}
-                            <!-- <a href="" class="pull-right"><p>Edit</p></a> -->
-                            <h6>PERSONAL INFORMATION</h6>
+                            {% csrf_token %}
                             <table class="table table-striped">
+                                <tbody>
                                     <tr>
                                         <th style="width: 50%;">
                                             <div class="form-group row" >
-                                                <label style="font-family: Roboto; font-size: 10px;" class="col-sm-3 col-form-label col-form-label-sm">STUDENT NUMBER</label>
+                                                <label style="font-size: 11px;" class="col-sm-3 col-form-label col-form-label-sm">Student Number:</label>
                                                 <div class="col-sm-9">
-                                                <input disabled type="text" class="form-control form-control-md" placeholder="" value="{{profile.stud_no}}">
+                                                <input disabled type="text" class="form-control form-control-md" value="{{profile.stud_no}}">
                                                 </div>
                                             </div>
                                         </th> 
                                         <th style="width: 50%;">
                                             <div class="form-group row">
-                                                <label style="font-family: Roboto; font-size: 10px;" class=" col-sm-2 col-form-label col-form-label-sm">COURSE</label>
+                                                <label style="font-size: 11px;" class=" col-sm-2 col-form-label col-form-label-sm">Course Name:</label>
                                                 <div class="col-sm-10">
                                                 <input disabled type="email" class="form-control form-control-md" placeholder="col-form-label-sm" value="{{profile.stud_course_id}}">
                                                 </div>
                                             </div>
                                         </th> 
                                     </tr>
-                            </tbody>
+                                </tbody>
                             </table>
                             <table style=" margin-top: -17px;" class="table table-striped">
-                                <tr>
-                                    <th style="width: 25%;" style="font-family: Roboto; font-size: 10px;">
-                                        <div class="form-group row" >
-                                            {% if n %}
-                                            <label style="font-family: Roboto; font-size: 10px;" class="col-sm-3 col-form-label col-form-label-sm">LAST NAME</label> 
-                                            <div class="col-sm-9" style="margin-top: 4px;">
-                                                <input type="text" class="form-control form-control-md" name="txt_l_name" value="{{profile.stud_lname}}" id="txt_l_name" required data-parsley-trigger="keyup" placeholder="{{profile.stud_lname}}">
-                                            </div>  
-                                            {% endif %}
-                                        </div>
-                                    </th> 
-                                    <th style="width: 25%;">
-                                        <div class="form-group row">
-                                            <label style="font-family: Roboto; font-size: 10px;" class="col-sm-3 col-form-label col-form-label-sm">FIRST NAME</label>
-                                            <div class="col-sm-9" style="margin-top: 4px;">
-                                                <input type="text" class="form-control form-control-md" name="txt_f_name" value="{{profile.stud_fname}}" id="txt_f_name" required data-parsley-trigger="keyup" placeholder="{{profile.stud_fname}}">
+                                <tbody>
+                                    <tr>
+                                        <th style="width: 25%;" style="font-family: Roboto; font-size: 10px;">
+                                            <div class="form-group row" >
+                                                {% if n %}
+                                                <label style="font-size: 11px;" class="col-sm-3 col-form-label col-form-label-sm">Last Name:</label> 
+                                                <div class="col-sm-9" style="margin-top: 4px;">
+                                                    <input type="text" class="form-control form-control-md" name="txt_l_name" value="{{profile.stud_lname}}" id="txt_l_name" required data-parsley-trigger="keyup" placeholder="Last name">
+                                                </div>  
+                                                {% endif %}
                                             </div>
-                                        </div>
-                                    </th> 
-                                    <th style="width: 25%;">
-                                        <div class="form-group row">
-                                            <label style="font-family: Roboto; font-size: 10px;" class="col-sm-3 col-form-label col-form-label-sm">MIDDLE NAME</label>
-                                            <div class="col-sm-9" style="margin-top: 4px;">
-                                                <input type="text" class="form-control form-control-md" name="txt_m_name" value="{{profile.stud_mname}}" id="txt_m_name" required data-parsley-trigger="keyup" placeholder="{{profile.stud_mname}}">
+                                        </th> 
+                                        <th style="width: 25%;">
+                                            <div class="form-group row">
+                                                <label style="font-size: 11px;" class="col-sm-3 col-form-label col-form-label-sm">First Name:</label>
+                                                <div class="col-sm-9" style="margin-top: 4px;">
+                                                    <input type="text" class="form-control form-control-md" name="txt_f_name" value="{{profile.stud_fname}}" id="txt_f_name" required data-parsley-trigger="keyup" placeholder="First name">
+                                                </div>
                                             </div>
-                                        </div>
-                                    </th> 
-                                    <th style="width: 25%;">
-                                        <div class="form-group row">
-                                            <label style="font-family: Roboto; font-size: 10px;" class="col-sm-3 col-form-label col-form-label-sm">SUFFIX NAME</label>
-                                            <div class="col-sm-9" style="margin-top: 4px;">
-                                                <input type="text" class="form-control form-control-md" name="txt_s_name" value="{{profile.stud_sname}}" id="txt_s_name"  data-parsley-trigger="keyup" placeholder="N/A">
+                                        </th> 
+                                        <th style="width: 25%;">
+                                            <div class="form-group row">
+                                                <label style="font-size: 11px;" class="col-sm-3 col-form-label col-form-label-sm">Middle Name:</label>
+                                                <div class="col-sm-9" style="margin-top: 4px;">
+                                                    <input type="text" class="form-control form-control-md" name="txt_m_name" value="{{profile.stud_mname}}" id="txt_m_name" required data-parsley-trigger="keyup" placeholder="Middle name">
+                                                </div>
                                             </div>
-                                        </div>
-                                    </th> 
-                                </tr>
-                        </tbody>
-                        </table>
+                                        </th> 
+                                        <th style="width: 25%;">
+                                            <div class="form-group row">
+                                                <label style="font-size: 11px;" class="col-sm-3 col-form-label col-form-label-sm">Suffix Name:</label>
+                                                <div class="col-sm-9" style="margin-top: 4px;">
+                                                    <input type="text" class="form-control form-control-md" name="txt_s_name" value="{{profile.stud_sname}}" id="txt_s_name"  data-parsley-trigger="keyup" placeholder="Suffic name">
+                                                </div>
+                                            </div>
+                                        </th> 
+                                    </tr>
+                                </tbody>
+                            </table>
                             <table style=" margin-top: -17px;" class="table table-striped">
+                                <tbody>
                                     <tr>
                                         <th style="width: 33.33%;" style="font-family: Roboto; font-size: 10px;">
                                             <div class="form-group row" >
                                                 {% if n %}
-                                                <label style="font-family: Roboto; font-size: 10px;" class="col-sm-3 col-form-label col-form-label-sm">DATE OF BIRTH</label> 
+                                                <label style="font-size: 11px;" class="col-sm-3 col-form-label col-form-label-sm">Date of Birth:</label> 
                                                 <div class="col-sm-9" style="margin-top: 4px;">
                                                     <input type="text" class="form-control form-control-md" name="date_of_birth" value="{{n}}" id="datepickers" onload="datePickerChange" placeholder="{% now 'Y-m-d' %}">
                                                 </div>  
@@ -117,88 +118,87 @@
                                         </th> 
                                         <th style="width: 33.33%;">
                                             <div class="form-group row">
-                                                <label style="font-family: Roboto; font-size: 10px;" class="col-sm-3 col-form-label col-form-label-sm">EMAIL ADDRESS</label>
+                                                <label style="font-size: 11px;" class="col-sm-3 col-form-label col-form-label-sm">Email Address:</label>
                                                 <div class="col-sm-9">
-                                                <input style="margin-top: 4px;" type="email" id="txt_email" name="txt_email" placeholder="" class="form-control form-control-md" required data-parsley-trigger="keyup" value="{{profile.stud_email}}">
+                                                <input style="margin-top: 4px;" type="email" id="txt_email" name="txt_email" placeholder="Email address" class="form-control form-control-md" required data-parsley-trigger="keyup" value="{{profile.stud_email}}">
                                                 </div>
                                             </div>
                                         </th> 
                                         <th style="width: 33.33%;">
                                             <div class="form-group row">
-                                                <label style="font-family: Roboto; font-size: 10px;" class="col-sm-3 col-form-label col-form-label-sm">MOBILE NUMBER</label>
+                                                <label style="font-family: Roboto; font-size: 10px;" class="col-sm-3 col-form-label col-form-label-sm">Mobile Number:</label>
                                                 <div class="col-sm-9" style="margin-top: 4px;">
                                                     <input  type="text" id="txt_mobile_number" class="form-control form-control-md" name="txt_mobile_number" placeholder="ex. 09123456789" required data-parsley-trigger="keyup" value="{{profile.stud_m_number}}">
                                                 </div>
                                             </div>
                                         </th> 
                                     </tr>
-                            </tbody>
+                                </tbody>
                             </table>
                             <table style="margin-top: -17px;" class="table table-striped">
+                                <tbody>
                                     <tr>
                                         <th>
                                             <div class="form-group row" >
-                                                <label style="font-family: Roboto; font-size: 10px;" class="col-sm-1 col-form-label col-form-label-sm">ADDRESS</label> 
+                                                <label style="font-size: 11px;" class="col-sm-1 col-form-label col-form-label-sm">Permanent Address:</label> 
                                                 <div class="col-sm-11" >
                                                     <input type="text" id="txt_address" name="txt_address" class="form-control form-control-md" placeholder="Adress" required data-parsley-trigger="keyup" value="{{profile.stud_address}}">
                                                 </div>  
                                             </div>
                                         </th> 
                                     </tr>
-                            </tbody>
+                                </tbody>
                             </table>
-                            <h6>EDUCATIONAL BACKGROUND</h6>
-                            <table class="table table-striped">
-                                <form class="form-inline">
+                            <table style="margin-top: -17px;" class="table table-striped">
+                                <tbody>
                                     <tr>
                                         <th style="width: 35%;">
                                             <div class="form-group row" >
-                                                <label style="font-family: Roboto; font-size: 10px;" class="col-sm-3 col-form-label col-form-label-sm">HIGH SCHOOL NAME</label>
+                                                <label style="font-size: 11px;" class="col-sm-3 col-form-label col-form-label-sm">High School Name:</label>
                                                 <div class="col-sm-9" style="margin-top: 4px;">
-                                                <input type="text" class="form-control form-control-md" placeholder="" value="{{profile.stud_no}}">
+                                                <input type="text" class="form-control form-control-md" id="txt_h_name" name="txt_h_name"  placeholder="High school name" value="{{profile.stud_hs}}">
                                                 </div>
                                             </div>
                                         </th> 
                                         <th style="width: 50%;">
                                             <div class="form-group row">
-                                                <label style="font-family: Roboto; font-size: 10px;" class="col-sm-2 col-form-label col-form-label-sm">HIGH SCHOOL ADDRESS</label>
+                                                <label style="font-size: 11px;" class="col-sm-2 col-form-label col-form-label-sm">High School Address:</label>
                                                 <div class="col-sm-10" style="margin-top: 4px;">
                                                 <input  style="margin-bottom: 8px;" type="text" id="txt_h_address" name="txt_h_address" class="form-control form-control-md" placeholder="School address" required data-parsley-trigger="keyup" value="{{profile.stud_hs_add}}">
                                                 </div>
                                             </div>
                                         </th> 
                                     </tr>
-                            </tbody>
+                                </tbody>
                             </table>
                             <table style="margin-top: -17px;" class="table table-striped">
-                                <form class="form-inline">
+                                <tbody>
                                     <tr>
                                         <th style="width: 35%;">
                                             <div class="form-group row" >
-                                                <label style="font-family: Roboto; font-size: 10px;" class="col-sm-3 col-form-label col-form-label-sm">SENIOR HIGH SCHOOL NAME</label>
+                                                <label style="font-size: 11px;" class="col-sm-3 col-form-label col-form-label-sm">Senior High School Name:</label>
                                                 <div class="col-sm-9" style="margin-top: 4px;">
-                                                <input type="text" class="form-control form-control-md" placeholder="" value="{{profile.stud_no}}">
+                                                <input type="text" class="form-control form-control-md" id="txt_sh_name" name="txt_sh_name"  placeholder="School Name" value="{{profile.stud_sh}}">
                                                 </div>
                                             </div>
                                         </th> 
                                         <th style="width: 50%;">
                                             <div class="form-group row">
-                                                <label style="font-family: Roboto; font-size: 10px;" class="col-sm-3 col-form-label col-form-label-sm">SENIOR HIGH SCHOOL ADDRESS</label>
-                                                <div class="col-sm-9" style="margin-top: 4px;">
-                                                    <input style="margin-bottom: 8px;" type="text" id="txt_sh_address" name="txt_sh_address" class="form-control form-control-md" placeholder="School address" required data-parsley-trigger="keyup" value="{{profile.stud_sh_add}}">
+                                                <label style="font-size: 11px;" class="col-sm-2 col-form-label col-form-label-sm">Senior High Address:</label>
+                                                <div class="col-sm-10" style="margin-top: 4px;">
+                                                <input  style="margin-bottom: 8px;" type="text" id="txt_sh_address" name="txt_sh_address" class="form-control form-control-md" placeholder="School address" required data-parsley-trigger="keyup" value="{{profile.stud_sh_add}}">
                                                 </div>
                                             </div>
                                         </th> 
                                     </tr>
-                            </tbody>
+                                </tbody>
                             </table>
-                            <h6>IN CASE OF EMERGENCY</h6>
-                            <table class="table table-striped">
-                                <form class="form-inline">
+                            <table style="margin-top: -17px;" class="table table-striped">
+                                <tbody>
                                     <tr>
                                         <th style="width: 50%;">
                                             <div class="form-group row" >
-                                                <label style="font-family: Roboto; font-size: 10px;" class="col-sm-4 col-form-label col-form-label-sm">EMERGENCY CONTACT PERSON</label>
+                                                <label style=" font-size: 11px;" class="col-sm-4 col-form-label col-form-label-sm">Emergency Contact Person:</label>
                                                 <div class="col-sm-8">
                                                     <input  type="text" id="txt_e_name" name="txt_e_name" class="form-control form-control-md" placeholder="Full name" required data-parsley-trigger="keyup" value="{{profile.stud_e_name}}">
                                                 </div>
@@ -206,37 +206,39 @@
                                         </th> 
                                         <th style="width: 50%;">
                                             <div class="form-group row">
-                                                <label style="font-family: Roboto; font-size: 10px;" class="col-sm-4 col-form-label col-form-label-sm">EMERGENCY CONTACT NO.</label>
+                                                <label style="font-size: 11px;" class="col-sm-4 col-form-label col-form-label-sm">Emergency Contact Number:</label>
                                                 <div class="col-sm-8">
                                                     <input type="text" id="txt_e_number" name="txt_e_number" placeholder="ex. 09123456789" class="form-control form-control-md" required data-parsley-trigger="keyup" value="{{profile.stud_e_m_number}}">
                                                 </div>
                                             </div>
                                         </th> 
                                     </tr>
-                            </tbody>
+                                </tbody>
                             </table>
                             <table style=" margin-top: -17px;" class="table table-striped">
+                                <tbody>
                                     <tr>
                                         <th>
                                             <div class="form-group row" >
-                                                <label style="font-family: Roboto; font-size: 10px;" class="col-sm-2 col-form-label col-form-label-sm">EMERGENCY CONTACT ADDRESS</label> 
+                                                <label style="font-size: 11px;" class="col-sm-2 col-form-label col-form-label-sm">Emergency Contact Address:</label> 
                                                 <div class="col-sm-10">
                                                     <input type="text" id="txt_e_address" name="txt_e_address" class="form-control form-control-md" placeholder="Address" required data-parsley-trigger="keyup" value="{{profile.stud_e_address}}">
                                                 </div>  
                                             </div>
                                         </th> 
                                     </tr>
-                            </tbody>
+                                </tbody>
                             </table>
-                            <button type="button" id="cancel"  class="update btn btn-danger btn-lg pull-right " >CANCEL<span class="glyphicon glyphicon-pencil"></span></button>
-                            <button type="submit" id="submit"  class="update btn btn-warning btn-lg pull-right" style="margin-right: 5px;">EDIT<span class="glyphicon glyphicon-pencil"></span></button>
+                            <div class="panel-footer" >
+                                <button class="btn btn_success col-md-3 pull-right m-l-10 " type="submit" id="btn_add" style="height: 33px; padding: 5px; background: linear-gradient(to right, #66ccff -1%, #3366ff 98%); border:none; color: white;" >Update<i class="far fa-paper-plane m-l-3 zoom"></i></button>
+                            </div>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+
 
 
 
@@ -246,6 +248,7 @@
 {% block page-level %}
 	<script src="{%static 'OsasSystem/assets/plugins/bootstrap-sweetalert/sweetalert.min.js' %}"></script>
 	<script src="{%static 'OsasSystem/assets/js/demo/ui-modal-notification.demo.min.js' %}"></script>
+    <script src="{%static 'OsasSystem/assets/index.js' %}"></script>
 {% endblock %}
 
 {% block page-js %}

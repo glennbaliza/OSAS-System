@@ -21,10 +21,48 @@ import time
 
 
 def home(request):
-    return render(request, 'home.html', {})
+    stud_bbtled =  osas_r_personal_info.objects.filter(stud_course_id = osas_r_course.objects.get( course_code = 'BBTELEDHE')).count()
+    stud_bsit =  osas_r_personal_info.objects.all().filter(stud_course_id = osas_r_course.objects.get( course_code = 'BSIT')).count()
+    stud_bsbamm =  osas_r_personal_info.objects.filter(stud_course_id = osas_r_course.objects.get( course_code = 'BSBA-MM')).count()
+    stud_bsbahrm = osas_r_personal_info.objects.filter(stud_course_id = osas_r_course.objects.get( course_code = 'BSBAHRM')).count()
+    stud_bsent =  osas_r_personal_info.objects.filter(stud_course_id = osas_r_course.objects.get( course_code = 'BSENTREP')).count()
+    stud_domt =  osas_r_personal_info.objects.filter(stud_course_id = osas_r_course.objects.get( course_code = 'DOMTMOM')).count()
+
+    student_count = osas_r_personal_info.objects.all().count()
+    lost_id_count = osas_t_id.objects.all().count()
+    sanction_count = osas_t_sanction.objects.all().count()
+    grievances_count = osas_t_complaint.objects.all().count()
+
+    lost_id_pending = osas_t_id.objects.filter(lost_id_status__iexact = 'PENDING').count()
+    lost_id_process = osas_t_id.objects.filter(lost_id_status__iexact = 'PROCESSING').count()
+    lost_id_completed = osas_t_id.objects.filter(lost_id_status__iexact = 'COMPLETED').count()
+
+    complaint_pending = osas_t_complaint.objects.filter(comp_status__iexact = 'PENDING').count()
+    complaint_approved = osas_t_complaint.objects.filter(comp_status__iexact = 'APPROVED').count()
+    complaint_decline = osas_t_complaint.objects.filter(comp_status__iexact = 'DECLINED').count()
+
+    sanction_pending = osas_t_sanction.objects.filter(sanction_status__iexact = 'PENDING').count()
+    sanction_active = osas_t_sanction.objects.filter(sanction_status__iexact = 'ACTIVE').count()
+    sanction_completed = osas_t_sanction.objects.filter(sanction_status__iexact = 'COMPLETED').count()
+    sanction_excused = osas_t_sanction.objects.filter(sanction_status__iexact = 'EXCUSED').count()
+    
+    return render(request, 'home.html', {'stud_bbtled':stud_bbtled, 'stud_bsit':stud_bsit, 'stud_bsbamm':stud_bsbamm, 'stud_bsbahrm':stud_bsbahrm, 'stud_bsent':stud_bsent, 'stud_domt':stud_domt, 'lost_id_pending':lost_id_pending, 'lost_id_process':lost_id_process, 'lost_id_completed':lost_id_completed, 'sanction_pending':sanction_pending, 'sanction_active':sanction_active, 'sanction_completed':sanction_completed, 'sanction_excused':sanction_excused, 'complaint_pending':complaint_pending, 'complaint_approved':complaint_approved, 'complaint_decline':complaint_decline, 'student_count':student_count, 'lost_id_count':lost_id_count, 'sanction_count':sanction_count, 'grievances_count':grievances_count})
 
 def dashboard(request):
-    return render(request, 'Role_Student/dashboard.html', {})
+    lost_id_pending = osas_t_id.objects.filter(lost_stud_id = request.session['session_user_id'], lost_id_status__iexact = 'PENDING').count()
+    lost_id_process = osas_t_id.objects.filter(lost_stud_id = request.session['session_user_id'],lost_id_status__iexact = 'PROCESSING').count()
+    lost_id_completed = osas_t_id.objects.filter(lost_stud_id = request.session['session_user_id'],lost_id_status__iexact = 'COMPLETED').count()
+
+    complaint_pending = osas_t_complaint.objects.filter(comp_stud_id = request.session['session_user_id'], comp_status__iexact = 'PENDING').count()
+    complaint_approved = osas_t_complaint.objects.filter(comp_stud_id = request.session['session_user_id'], comp_status__iexact = 'APPROVED').count()
+    complaint_decline = osas_t_complaint.objects.filter(comp_stud_id = request.session['session_user_id'], comp_status__iexact = 'DECLINED').count()
+
+    sanction_pending = osas_t_sanction.objects.filter(sanction_stud_id = request.session['session_user_id'], sanction_status__iexact = 'PENDING').count()
+    sanction_active = osas_t_sanction.objects.filter(sanction_stud_id = request.session['session_user_id'], sanction_status__iexact = 'ACTIVE').count()
+    sanction_completed = osas_t_sanction.objects.filter(sanction_stud_id = request.session['session_user_id'], sanction_status__iexact = 'COMPLETED').count()
+    sanction_excused = osas_t_sanction.objects.filter(sanction_stud_id = request.session['session_user_id'], sanction_status__iexact = 'EXCUSED').count()
+
+    return render(request, 'Role_Student/dashboard.html', {'lost_id_pending':lost_id_pending, 'lost_id_process':lost_id_process, 'lost_id_completed':lost_id_completed, 'sanction_pending':sanction_pending, 'sanction_active':sanction_active, 'sanction_completed':sanction_completed, 'sanction_excused':sanction_excused, 'complaint_pending':complaint_pending, 'complaint_approved':complaint_approved, 'complaint_decline':complaint_decline})
 #--------------------------------------LOGIN------------------------------------------------------------------------------------------
 def login(request):
     try:
@@ -137,31 +175,125 @@ def r_employ(request):
     
 #------------------------------------YEAR AND SECTION------------------------------------------------------------------------------------
 def yr_sec(request):
-    user_list = osas_r_section_and_year.objects.order_by('-yas_descriptions')
-    context = {'user_list': user_list}
-    return render(request, 'year_section/yr_sec.html', context)
+    status = request.POST.get('filter_status')
+    if status:
+            user_list = osas_r_section_and_year.objects.all().filter(status = status ).order_by('yas_descriptions')
+            context = {'user_list': user_list}
+            return render(request, 'year_section/yr_sec.html', context)
+    else:   
+        user_list = osas_r_section_and_year.objects.all().filter(status = "ACTIVE").order_by('yas_descriptions')
+        context = {'user_list': user_list}
+        return render(request, 'year_section/yr_sec.html', context)
+    
 
 def add_yr_sec(request):
-    yas_description = request.POST.get('yr_sec_desc')
-    st = request.POST.get('yr_sec_status')
-    today = datetime.today()
-    d1 = today.strftime("%d/%m/%Y")
+    year_sec_name = request.POST.get('year_sec_name')
     try:
-        n = osas_r_section_and_year.objects.get(yas_descriptions = yas_description)
-        return render(request, 'year_section/yr_sec.html', {
-            'error_message': "Duplicated Course Information : " 
-        })
+        n = osas_r_section_and_year.objects.get(yas_descriptions = year_sec_name)
+        data = {'error':True}
+        return JsonResponse(data, safe=False)
     except ObjectDoesNotExist:
-        if yas_description:
-            add_yr_sec = osas_r_section_and_year(yas_descriptions= yas_description,status=st)
+        if year_sec_name:
+            add_yr_sec = osas_r_section_and_year(yas_descriptions= year_sec_name)
             add_yr_sec.save()
-            return HttpResponseRedirect('/yr_sec',  {'success_message': yas_description + "is added successfully"} )
+            data = {'success':True}
+            return JsonResponse(data, safe=False)
 
+def deactivate_yr_sec(request):
+    yas_id = request.POST.get("yas_id")
+    try:
+        n = osas_r_section_and_year.objects.get(yas_id = yas_id)
+        status_btn = n.status
+        if status_btn == "ACTIVE":
+            status_btn = "INACTIVE"
+        else:
+            status_btn = "ACTIVE"
+        n.status = status_btn
+        n.save()
+        data = {
+            'deleted':True,
+            'id':n.yas_id,
+            'yas_descriptions':n.yas_descriptions,
+            'status':n.status,
+            'yas_dateregistered':n.yas_dateregistered,
+        }
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        data = {'error':True}
+        return JsonResponse(data, safe=False)
+
+def edit_yr_sec(request):
+    yas_id = request.POST.get('yas_id')
+    try:
+        n = osas_r_section_and_year.objects.get(yas_id = yas_id)
+        data = {
+            'success':True,
+            'id':n.yas_id,
+            'yas_descriptions':n.yas_descriptions,
+            'status':n.status,
+            'yas_dateregistered':n.yas_dateregistered,
+        }
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        data = {'error':True}
+        return JsonResponse(data, safe=False)
+
+def update_yr_sec(request):
+    yr_id = request.POST.get('yr_id')
+    year_sec_name1 = request.POST.get('year_sec_name1')
+    try:
+        u = osas_r_section_and_year.objects.get(yas_id = yr_id)
+        original_yr = u.yas_descriptions 
+        if year_sec_name1:
+            try:
+                u = osas_r_section_and_year.objects.get(yas_descriptions = year_sec_name1)
+                if original_yr == year_sec_name1:
+                    u.yas_descriptions = year_sec_name1
+                    # u.save()
+                    data = {'success':True}
+                    return JsonResponse(data, safe=False)
+                else:
+                    data = {'error':True}
+                    return JsonResponse(data, safe=False)
+            except ObjectDoesNotExist:
+                u.yas_descriptions = year_sec_name1
+                u.save()
+                data = {'success':True}
+                return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        data = {'error':True}
+        return JsonResponse(data, safe=False)
 #---------------------------------------------COURSE--------------------------------------------------------------------------------------------
 def course(request):
-    course_list = osas_r_course.objects.order_by('course_name')
-    context = {'course_list': course_list}
-    return render(request, 'course/course.html', {'course_list':course_list})
+    filter_code = request.POST.get('filter_code')
+    filter_name = request.POST.get('filter_name')
+    status = request.POST.get('filter_status')
+    course_lists = osas_r_course.objects.order_by('course_name')
+    if filter_code and filter_name:
+        if status:
+            course_list = osas_r_course.objects.all().filter(course_code = filter_code, course_name = filter_name, course_status = status ).order_by('course_code')
+            return render(request, 'course/course.html', {'course_list':course_list, 'course_lists':course_lists})
+        else:   
+            course_list = osas_r_course.objects.all().filter(course_code = filter_code, course_name = filter_name).order_by('course_code')
+            return render(request, 'course/course.html', {'course_list':course_list, 'course_lists':course_lists})
+    elif filter_code and status:
+        course_list = osas_r_course.objects.all().filter(course_code = filter_code, course_status = status ).order_by('course_code')
+        return render(request, 'course/course.html', {'course_list':course_list, 'course_lists':course_lists})
+    elif filter_name and status:
+        course_list = osas_r_course.objects.all().filter(course_name = filter_name, course_status = status ).order_by('course_code')
+        return render(request, 'course/course.html', {'course_list':course_list, 'course_lists':course_lists})
+    elif status:
+        course_list = osas_r_course.objects.all().filter(course_status = status ).order_by('course_code')
+        return render(request, 'course/course.html', {'course_list':course_list, 'course_lists':course_lists})
+    elif filter_name:
+        course_list = osas_r_course.objects.all().filter(course_name = filter_name ).order_by('course_code')
+        return render(request, 'course/course.html', {'course_list':course_list, 'course_lists':course_lists})
+    elif filter_code:
+        course_list = osas_r_course.objects.all().filter(course_code = filter_code ).order_by('course_code')
+        return render(request, 'course/course.html', {'course_list':course_list, 'course_lists':course_lists})
+    else:
+        course_list = osas_r_course.objects.all().filter(course_status = "ACTIVE").order_by('course_code')
+        return render(request, 'course/course.html', {'course_list':course_list, 'course_lists':course_lists})
 
 def course_edit(request, course_id): 
     template_name = 'course/course_edit.html'
@@ -193,32 +325,163 @@ def process_course_edit(request, course_id):
         course_detail.save()
         return HttpResponseRedirect('/course_edit' , {'success_message': "Congratulations," })
 
-def add_course(request):
-    c_code = request.POST.get('course_code')
-    c_name = request.POST.get('course_name')
-    c_status = request.POST.get('course_status')
+def edit_course(request):
+    course_id = request.POST.get('course_id')
     try:
-        n = osas_r_course.objects.get(course_code = c_code)
-        return render(request, 'course/course.html', {
-            'error_message': "Duplicated Course Information : " + c_code
-        })
+        n = osas_r_course.objects.get(course_id = course_id)
+        data = {
+            'success':True,
+            'id':n.course_id,
+            'course_code':n.course_code,
+            'course_name':n.course_name,
+            'course_status':n.course_status,
+            'course_add_date':n.course_add_date,
+        }
+        return JsonResponse(data, safe=False)
     except ObjectDoesNotExist:
-        today = datetime.today()
-        d1 = today.strftime("%d/%m/%Y")
-        course = osas_r_course(course_code=c_code, course_name=c_name, course_add_date=today ,course_status=c_status)
-        course.save()
-        return HttpResponseRedirect('/course', {'success_message': c_code + "is added successfully"})
+        data = {'error':True}
+        return JsonResponse(data, safe=False)
+
+def update_course(request):
+    course_id = request.POST.get('course_id')
+    course_name1 = request.POST.get('course_name1')
+    course_code1 = request.POST.get('course_code1')
+    try:
+        u = osas_r_course.objects.get(course_id = course_id)
+        original_course_name = u.course_name 
+        orig_course_code = u.course_code 
+        if course_name1 and course_code1:
+            try:
+                u = osas_r_course.objects.get(course_code = course_code1, course_name = course_name1)
+                if original_course_name == course_name1:
+                    u.course_name = course_name1
+                    # u.save()
+                
+                if orig_course_code == course_code1:
+                    u.course_code = course_code1
+                else:
+                    data = {'error':True}
+                    return JsonResponse(data, safe=False)
+                    
+                data = {'success':True}
+                return JsonResponse(data, safe=False)
+            except ObjectDoesNotExist:
+                u.course_name = course_name1
+                u.course_code = course_code1
+                u.save()
+                data = {'success':True}
+                return JsonResponse(data, safe=False)
+        elif course_name1: 
+            try:
+                u = osas_r_course.objects.get( course_name = course_name1)
+                if original_course_name == course_name1:
+                    u.course_name = course_name1
+                    # u.save()
+                    data = {'error':True}
+                    return JsonResponse(data, safe=False)
+                else:
+                    data = {'error':True}
+                    return JsonResponse(data, safe=False)
+            except ObjectDoesNotExist:
+                u.course_name = course_name1
+                u.save()
+                data = {'success':True}
+                return JsonResponse(data, safe=False)
+        elif course_code1:
+            try:
+                u = osas_r_course.objects.get( course_code = course_code1)
+                if orig_course_code == course_code1:
+                    u.course_code = course_code1
+                    # u.save()
+                    data = {'error':True}
+                    return JsonResponse(data, safe=False)
+                else:
+                    data = {'error':True}
+                    return JsonResponse(data, safe=False)
+            except ObjectDoesNotExist:
+                u.course_code = course_code1
+                u.save()
+                data = {'success':True}
+                return JsonResponse(data, safe=False)
+
+    except ObjectDoesNotExist:
+        data = {'error':True}
+        return JsonResponse(data, safe=False)
+
+def deactivate_course(request):
+    course_id = request.POST.get("course_id")
+    try:
+        n = osas_r_course.objects.get(course_id = course_id)
+        status_btn = n.course_status
+        if status_btn == "ACTIVE":
+            status_btn = "INACTIVE"
+        else:
+            status_btn = "ACTIVE"
+        n.course_status = status_btn
+        n.save()
+        data = {
+            'deleted':True,
+            'id':n.course_id,
+            'course_code':n.course_code,
+            'course_name':n.course_name,
+            'course_status':n.course_status,
+            'course_add_date':n.course_add_date,
+        }
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        data = {'error':True}
+        return JsonResponse(data, safe=False)
+
+
+def add_course(request):
+    course_name = request.POST.get('course_name')
+    course_code = request.POST.get('course_code')
+    try:
+        n = osas_r_course.objects.get(course_code = course_code, course_name = course_name)
+        data = {'error':True}
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        n = osas_r_course(course_code = course_code, course_name = course_name)
+        n.save()
+        data = {'success':True}
+        return JsonResponse(data, safe=False)
 
 #---------------------------------------STUDENT PROFILE--------------------------------------------------------------------------------------------
 def student_profile(request):
+    txt_course1 = request.POST.get('txt_course')
+    txt_yr_sec1 = request.POST.get('yr_sec1')
+    txt_Gender1 = request.POST.get('Gender1')
     template_name = 'student/student_profile.html'
     student_info = osas_r_personal_info.objects.order_by('stud_no') 
-    context3 = {'student_info': student_info}
     student_course = osas_r_course.objects.order_by('course_name')
     context = {'student_course': student_course}
     student_yr_sec = osas_r_section_and_year.objects.order_by('yas_descriptions')
     context1 = {'student_yr_sec': student_yr_sec}
-    return render(request, template_name, {'student_info': student_info, 'student_course': student_course, 'student_yr_sec': student_yr_sec})
+    
+    if txt_course1 and txt_yr_sec1 and txt_Gender1:
+        student_info = osas_r_personal_info.objects.all().filter(stud_course_id = osas_r_course.objects.get(course_name = txt_course1), stud_yas_id = osas_r_section_and_year.objects.get(yas_descriptions = txt_yr_sec1), stud_gender = txt_Gender1).order_by('stud_no')
+        return render(request, template_name, {'student_info': student_info, 'student_course': student_course, 'student_yr_sec': student_yr_sec})
+    elif txt_course1 and txt_yr_sec1:
+        student_info = osas_r_personal_info.objects.all().filter(stud_course_id = osas_r_course.objects.get(course_name = txt_course1), stud_yas_id = osas_r_section_and_year.objects.get(yas_descriptions = txt_yr_sec1)).order_by('stud_no')
+        return render(request, template_name, {'student_info': student_info, 'student_course': student_course, 'student_yr_sec': student_yr_sec})
+    elif txt_course1 and txt_Gender1:
+        student_info = osas_r_personal_info.objects.all().filter(stud_course_id = osas_r_course.objects.get(course_name = txt_course1), stud_gender = txt_Gender1).order_by('stud_no')
+        return render(request, template_name, {'student_info': student_info, 'student_course': student_course, 'student_yr_sec': student_yr_sec})
+    elif txt_yr_sec1 and txt_Gender1:
+        student_info = osas_r_personal_info.objects.all().filter(stud_yas_id = osas_r_section_and_year.objects.get(yas_descriptions = txt_yr_sec1), stud_gender = txt_Gender1).order_by('stud_no')
+        return render(request, template_name, {'student_info': student_info, 'student_course': student_course, 'student_yr_sec': student_yr_sec})
+    elif txt_course1:
+        student_info = osas_r_personal_info.objects.all().filter(stud_course_id = osas_r_course.objects.get(course_name = txt_course1)).order_by('stud_no')
+        return render(request, template_name, {'student_info': student_info, 'student_course': student_course, 'student_yr_sec': student_yr_sec})
+    elif txt_Gender1:
+        student_info = osas_r_personal_info.objects.all().filter(stud_gender = txt_Gender1).order_by('stud_no')
+        return render(request, template_name, {'student_info': student_info, 'student_course': student_course, 'student_yr_sec': student_yr_sec})
+    elif txt_yr_sec1:
+        student_info = osas_r_personal_info.objects.all().filter(stud_yas_id = osas_r_section_and_year.objects.get(yas_descriptions = txt_yr_sec1)).order_by('stud_no')
+        return render(request, template_name, {'student_info': student_info, 'student_course': student_course, 'student_yr_sec': student_yr_sec})
+    else:
+        return render(request, template_name, {'student_info': student_info, 'student_course': student_course, 'student_yr_sec': student_yr_sec})
+
 
 def student_profile_view(request):
     today = datetime.today()
@@ -271,11 +534,12 @@ def student_process_add(request, *args):
     l_name = request.POST.get('stud_lname')
     f_name = request.POST.get('stud_fname')
     m_name = request.POST.get('stud_mname')
+    s_name = request.POST.get('stud_sname')
     studno = request.POST.get('stud_no')
     d_of_birth = request.POST.get('stud_birthdate')
-    gender = request.POST.get('txt_Gender')
+    gender = request.POST.get('stud_gender')
     if gender:
-        gender = request.POST.get('txt_Gender')
+        gender = request.POST.get('stud_gender')
     else:
         gender = None
     address = request.POST.get('stud_address')
@@ -285,6 +549,8 @@ def student_process_add(request, *args):
     yr_sec = request.POST.get('year_sec')
     h_name = request.POST.get('stud_hs')
     h_address = request.POST.get('stud_hs_add')
+    sh_name = request.POST.get('stud_sh')
+    sh_address = request.POST.get('stud_sh_add')
     e_name = request.POST.get('stud_e_name')
     e_number = request.POST.get('stud_e_m_number')
     e_address = request.POST.get('stud_e_address')
@@ -312,9 +578,33 @@ def student_process_add(request, *args):
         return JsonResponse(data, safe=False)
     except ObjectDoesNotExist:
         today = datetime.today()
-        stud = osas_r_personal_info(stud_no = studno, stud_lname = l_name, stud_fname = f_name, stud_mname = m_name, stud_birthdate = d_of_birth,stud_gender = gender, stud_address = address, stud_email = email, stud_m_number = mobile_number, stud_hs = h_name, stud_hs_add = h_address, stud_e_name = e_name,stud_e_address = e_address, stud_e_m_number = e_number, s_password = stud_pass , date_created = today, stud_role = osas_r_userrole.objects.get(user_type='STUDENT'), stud_course_id = osas_r_course.objects.get(course_name = course), stud_yas_id  = osas_r_section_and_year.objects.get(yas_descriptions = yr_sec))
+        stud = osas_r_personal_info(
+            stud_no = studno, 
+            stud_lname = l_name, 
+            stud_fname = f_name, 
+            stud_mname = m_name, 
+            stud_sname = s_name, 
+            stud_birthdate = d_of_birth,
+            stud_gender = gender, 
+            stud_address = address, 
+            stud_email = email, 
+            stud_m_number = mobile_number, 
+            stud_hs = h_name, 
+            stud_hs_add = h_address, 
+            stud_sh = sh_name, 
+            stud_sh_add = sh_address, 
+            stud_e_name = e_name,
+            stud_e_address = e_address, 
+            stud_e_m_number = e_number, 
+            s_password = stud_pass , 
+            date_created = today, 
+            stud_role = osas_r_userrole.objects.get(user_type='STUDENT'), 
+            stud_course_id = osas_r_course.objects.get(course_name = course), 
+            stud_yas_id  = osas_r_section_and_year.objects.get(yas_descriptions = yr_sec))
         stud.save()   
-        return HttpResponseRedirect('/student_profile' , {'success_message': "Congratulations," + " " + studno + "is successfully register."})
+        data = {'success':True}
+        return JsonResponse(data, safe=False)
+        # return HttpResponseRedirect('/student_profile' , {'success_message': "Congratulations," + " " + studno + "is successfully register."})
        
 def edit_student(request, stud_id): 
     template_name = 'student/edit_student.html'
@@ -435,16 +725,64 @@ def adduserrole(request):
             messages.error(request, usertype + ' ' + 'is already exist.')
             return render(request, 'userrole.html')
 
+def deactivate_user(request):
+    auth_id = request.POST.get("auth_id")
+
+    try:
+        u = osas_r_auth_user.objects.get(auth_id = auth_id, auth_role = osas_r_userrole.objects.get( user_type = "OSAS STAFF"))
+        status_btn = u.auth_status
+        if status_btn == "ACTIVE":
+            status_btn = "INACTIVE"
+        else:
+            status_btn = "ACTIVE"
+        u.auth_status = status_btn
+        u.save()
+        data = {
+            'deleted':True,
+            'id':u.auth_id,
+            'auth_lname':u.auth_lname,
+            'auth_fname':u.auth_fname,
+            'auth_username':u.auth_username,
+            'auth_password':u.auth_password,
+            'auth_role':u.auth_role.user_type,
+            'auth_status':u.auth_status,
+            'date_created':u.date_created
+        }
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        data = {'error':True}
+        return JsonResponse(data, safe=False)
+
 def deleteuser(request):
-    id = request.POST.get('del_user_id')
-    osas_r_userrole.objects.get(pk=id).delete()
-    return HttpResponseRedirect('/userrole')
+    auth_id = request.POST.get("auth_id")
+    try:
+        obj = osas_r_auth_user.objects.get(auth_id = auth_id, auth_role = osas_r_userrole.objects.get( user_type = "OSAS STAFF"))
+        data = {'deleted':True}
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        data = {'error':True}
+        return JsonResponse(data, safe=False)
 
 def auth_user(request):
-    template_name = 'auth_user.html'
-    auth_user = osas_r_auth_user.objects.order_by('auth_username')
+    date1 = request.POST.get('date_from')
+    date2 = request.POST.get('date_to')
+    status = request.POST.get('filter_status')
     userrole = osas_r_userrole.objects.order_by('user_type')
-    return render(request, template_name, {'auth_user': auth_user, 'userrole':userrole })
+    template_name = 'auth_user.html'
+    if date1 and date2:
+        if status:
+            auth_user = osas_r_auth_user.objects.all().filter(auth_status = status, date_updated__range=[date1, date2], auth_role = osas_r_userrole.objects.get(user_type = "OSAS STAFF")).order_by('-date_updated')
+            return render(request, template_name, {'auth_user': auth_user, 'userrole':userrole })
+        else:   
+            auth_user = osas_r_auth_user.objects.all().filter(date_updated__range=[date1, date2], auth_role = osas_r_userrole.objects.get(user_type = "OSAS STAFF")).order_by('-date_updated')
+            return render(request, template_name, {'auth_user': auth_user, 'userrole':userrole })
+    elif status:
+        auth_user = osas_r_auth_user.objects.all().filter(auth_status = status, auth_role = osas_r_userrole.objects.get(user_type = "OSAS STAFF")).order_by('-date_updated')
+        return render(request, template_name, {'auth_user': auth_user, 'userrole':userrole })
+    else:
+        auth_user = osas_r_auth_user.objects.all().filter(auth_role = osas_r_userrole.objects.get(user_type = "OSAS STAFF"), auth_status = "ACTIVE").order_by('-date_updated')
+        return render(request, template_name, {'auth_user': auth_user, 'userrole':userrole })
+    
 
 def auth_process_edit(request, auth_id):
     template_name = 'auth_process_edit.html'
@@ -455,6 +793,58 @@ def auth_process_edit(request, auth_id):
     except osas_r_auth_user.DoesNotExist:
             raise Http404("User profile does not exist")
     return render(request, template_name,{'auth_user':auth_user, 'role': role})
+
+def auth_edit_user(request):
+    auth_id = request.POST.get('auth_id')
+    try:
+        u = osas_r_auth_user.objects.get(auth_id=auth_id)
+        data = {
+            'success':True,
+            'id':u.auth_id,
+            'auth_lname':u.auth_lname,
+            'auth_fname':u.auth_fname,
+            'auth_username':u.auth_username,
+            'auth_password':u.auth_password,
+            'auth_role':u.auth_role.user_type,
+            'auth_status':u.auth_status,
+            'date_created':u.date_created
+        }
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        data = {'error':True}
+        return JsonResponse(data, safe=False)
+
+def auth_user_update(request):
+    auth_id = request.POST.get('user_id')
+    user_lname1 = request.POST.get('user_lname1')
+    user_fname1 = request.POST.get('user_fname1')
+    user_username1 = request.POST.get('user_username1')
+    try:
+        u = osas_r_auth_user.objects.get(auth_id = auth_id)
+        orig_username = u.auth_username 
+        if user_username1:
+            try:
+                u = osas_r_auth_user.objects.get(auth_username = user_username1)
+                if orig_username == user_username1:
+                    u.auth_lname = user_lname1
+                    u.auth_fname = user_fname1
+                    u.save()
+                else:
+                    data = {'error':True}
+                    return JsonResponse(data, safe=False)
+            except ObjectDoesNotExist:
+                u.auth_username = user_username1
+                u.auth_lname = user_lname1
+                u.auth_fname = user_fname1
+        else:
+            u.auth_lname = user_lname1
+            u.auth_fname = user_fname1
+        u.save()
+        data = {'success':True}
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        data = {'error':True}
+        return JsonResponse(data, safe=False)
 
 def auth_user_edit(request, auth_id):
     auth_user = get_object_or_404(osas_r_auth_user, pk=auth_id)
@@ -513,30 +903,31 @@ def auth_user_edit(request, auth_id):
         return render(request, 'auth_user.html')
         
 def auth_user_add(request):
-    _lname = request.POST.get('auth_lname')
-    _fname = request.POST.get('auth_fname')
-    _username = request.POST.get('auth_username')
-    _pass = request.POST.get('auth_pass')
-    _pass1 = request.POST.get('aut_pass1')
-    _user = request.POST.get('auth_user')
+    _lname = request.POST.get('user_lname')
+    _fname = request.POST.get('user_fname')
+    _username = request.POST.get('user_username')
+    _pass = request.POST.get('user_password')
+    _pass1 = request.POST.get('user_password1')
     try:
-        n = osas_r_auth_user.objects.get(auth_username=_username)
-        messages.error(request, _username +  ' ' + 'is already exist.')
-        return redirect('/auth_user')
+        n = osas_r_auth_user.objects.get(auth_username = _username)
+        data = {'error' :True}
+        return JsonResponse(data, safe=False)
     except ObjectDoesNotExist:
         today = datetime.today()
-        if _user:
-            if _pass == _pass1:
-                user = osas_r_auth_user.objects.create(auth_lname=_lname,auth_fname=_fname, auth_username=_username, auth_password=_pass, auth_role=osas_r_userrole.objects.get(user_type=_user),date_created=today)
-                # user.save()
-                messages.success(request, _username + ' ' +  'Successfully Added!')
-                return redirect('/auth_user')
-            else:
-                messages.success(request, 'Password does not match!')
-                return redirect('/auth_user')
-        else:
-            messages.error(request, _username + ' ' + 'is already taken.')
-            return render(request, 'auth_user.html')
+        u = osas_r_auth_user.objects.create(auth_lname=_lname,auth_fname=_fname, auth_username=_username, auth_password=_pass, auth_role = osas_r_userrole.objects.get(user_type= "OSAS STAFF"), date_created=today)
+        u.save()
+
+        data = {
+            'id':u.auth_id,
+            'auth_lname':u.auth_lname,
+            'auth_fname':u.auth_fname,
+            'auth_username':u.auth_username,
+            'auth_password':u.auth_password,
+            'auth_role':u.auth_role.user_type,
+            'auth_status':u.auth_status,
+            'date_created':u.date_created
+        }
+        return JsonResponse(data, safe=False)
 
 
 #----------------------------------ALUMNI--------------------------------------------------------------------------------------------
@@ -568,18 +959,64 @@ def id_request_form(request):
     return render(request, 'Role_Student/id_request_form.html')
 
 def student_lost_id(request):
-    stud_info =  osas_t_id.objects.filter(lost_stud_id = request.session['session_user_id'])
-    return render(request, 'Role_Student/student_lost_id.html', {'stud_info': stud_info})
+    date1 = request.POST.get('date_from')
+    date2 = request.POST.get('date_to')
+    status = request.POST.get('filter_status')
+    if status == "On Process":
+        status = "PROCESSING"
+
+    if date1 and date2:
+        if status:
+            stud_info = osas_t_id.objects.all().filter(lost_stud_id = request.session['session_user_id'], lost_id_status = status, date_updated__range=[date1, date2]).order_by('-date_created')
+            return render(request, 'Role_Student/student_lost_id.html', {'stud_info': stud_info})
+        else:   
+            stud_info = osas_t_id.objects.all().filter(lost_stud_id = request.session['session_user_id'], date_updated__range=[date1, date2]).order_by('-date_created')
+            return render(request, 'Role_Student/student_lost_id.html', {'stud_info': stud_info})
+    elif status:
+        stud_info = osas_t_id.objects.all().filter(lost_stud_id = request.session['session_user_id'], lost_id_status = status).order_by('-date_created')
+        return render(request, 'Role_Student/student_lost_id.html', {'stud_info': stud_info})
+    else:
+        stud_info = osas_t_id.objects.all().filter(lost_stud_id = request.session['session_user_id']).order_by('-date_created')
+        return render(request, 'Role_Student/student_lost_id.html', {'stud_info': stud_info})
+
 #-----------------------------ID---------------------------------------------------------------------------
 def lost_id(request):
+    date1 = request.POST.get('date_from')
+    date2 = request.POST.get('date_to')
+    status = request.POST.get('filter_status')
+    if status == "On Process":
+        status = "PROCESSING"
+    id_request =  osas_t_id.objects.all().order_by('-date_created')
+
     stud_list = osas_t_id.objects.filter(lost_id_status = 'COMPLETE') # queryset for all existing student_no
     stud_ = osas_r_personal_info.objects.all()
     stud_list2 = osas_r_personal_info.objects.filter(stud_id__in = stud_.values_list('stud_id',)) # queryset for all the student then exclude the data that existing in the osas_t_id
-    id_request =  osas_t_id.objects.exclude(lost_id_status = 'CANCELLED').order_by('-date_created')
-    pending_list =  osas_t_id.objects.filter(lost_id_status = 'PENDING').order_by('-date_created')
-    process_list =  osas_t_id.objects.filter(lost_id_status = 'PROCESSING').order_by('-date_created')
-    complete_list =  osas_t_id.objects.filter(lost_id_status = 'COMPLETED').order_by('-date_created')
-    return render(request, 'id/lost_id.html', {'stud_list2': stud_list2, 'complete_list': complete_list, 'pending_list': pending_list, 'process_list': process_list, 'id_request': id_request, 'stud_list':stud_list})
+   
+    if date1 and date2:
+        if status:
+            id_request = osas_t_id.objects.all().filter(lost_id_status = status, date_updated__range=[date1, date2]).order_by('-date_created')
+            return render(request, 'id/lost_id.html', {'stud_list2': stud_list2, 'id_request': id_request, 'stud_list':stud_list})
+        else:   
+            id_request = osas_t_id.objects.all().filter(date_updated__range=[date1, date2]).order_by('-date_created')
+            return render(request, 'id/lost_id.html', {'stud_list2': stud_list2, 'id_request': id_request, 'stud_list':stud_list})
+    elif status:
+        id_request = osas_t_id.objects.all().filter(lost_id_status = status).order_by('-date_created')
+        return render(request, 'id/lost_id.html', {'stud_list2': stud_list2, 'id_request': id_request, 'stud_list':stud_list})
+    else:
+        id_request = osas_t_id.objects.all().order_by('-date_created')
+        return render(request, 'id/lost_id.html', {'stud_list2': stud_list2, 'id_request': id_request, 'stud_list':stud_list})
+
+def lost_id_student_data(request):
+    selected_student = request.POST.get('selected_student')
+    t = osas_r_personal_info.objects.get(stud_no = selected_student)
+    data = {
+        'lname': t.stud_lname,
+        'fname': t.stud_fname,
+        'mname': t.stud_mname,
+        'sname': t.stud_sname,
+        'course': t.stud_course_id.course_name
+    }
+    return JsonResponse(data, safe=False)
 
 def id_request_process(request):
     r_id = request.POST.get('lost_id')
@@ -908,6 +1345,8 @@ def student_profile_edit(request):
         h_address = request.POST.get('txt_h_address')
         sh_name = request.POST.get('txt_sh_name')
         sh_address = request.POST.get('txt_sh_address')
+        sh_name = request.POST.get('txt_sh_name')
+        sh_address = request.POST.get('txt_sh_address')
         e_name = request.POST.get('txt_e_name')
         e_number = request.POST.get('txt_e_number')
         e_address = request.POST.get('txt_e_address')
@@ -946,7 +1385,6 @@ def student_profile_edit(request):
         student_profile.stud_sh_add = sh_address
         student_profile.date_updated = today
         student_profile.save()
-        messages.success(request, str(s), 'Successfully Updated!')
         return HttpResponseRedirect('/profile')
 
 
@@ -1077,8 +1515,23 @@ def sanction_excuse_approve(request):
         return JsonResponse(data, safe=False)
 
 def sanctioning_role_student(request):
-    sanction = osas_t_sanction.objects.filter(sanction_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']))
-    return render(request, 'Role_Student/sanction.html', {'sanction':sanction})
+    date1 = request.POST.get('date_from')
+    date2 = request.POST.get('date_to')
+    status = request.POST.get('filter_status')
+    if date1 and date2:
+        if status:
+            sanction = osas_t_sanction.objects.all().filter(sanction_status = status, sanction_datecreated__range=[date1, date2], sanction_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no'])).order_by('-sanction_datecreated')
+            return render(request, 'Role_Student/sanction.html', {'sanction':sanction})
+        else:
+            sanction = osas_t_sanction.objects.all().filter(sanction_datecreated__range=[date1, date2], sanction_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no'])).order_by('-sanction_datecreated')
+            return render(request, 'Role_Student/sanction.html', {'sanction':sanction})
+    elif status:
+        sanction = osas_t_sanction.objects.all().filter(sanction_status = status, sanction_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no'])).order_by('-sanction_datecreated')
+        return render(request, 'Role_Student/sanction.html', {'sanction':sanction})
+    else:
+        sanction = osas_t_sanction.objects.all().filter(sanction_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no'])).order_by('-sanction_datecreated')
+        return render(request, 'Role_Student/sanction.html', {'sanction':sanction})
+
     
 
 @csrf_exempt
@@ -1122,13 +1575,28 @@ def sanctioning_excuse_add(request):
         return redirect('/sanctioning_role_student')
 
 def sanctioning_student(request):
-    sanction = osas_t_sanction.objects.all().filter(Q(sanction_status = "PENDING") | Q(sanction_status ="ACTIVE")).exclude(Q(sanction_status = "COMPLETED") | Q(sanction_status =  "EXCUSED")).order_by('-sanction_datecreated')
+    date1 = request.POST.get('date_from')
+    date2 = request.POST.get('date_to')
+    status = request.POST.get('filter_status')
     student = osas_r_personal_info.objects.order_by('stud_no')
     office = osas_r_designation_office.objects.order_by('designation_office')
     descipline = osas_r_disciplinary_sanction.objects.order_by('ds_code_id')
     coc_sunction_list = osas_t_sanction.objects.order_by('sanction_dateupdated')
+    if date1 and date2:
+        if status:
+            sanction = osas_t_sanction.objects.all().filter(sanction_status = status, sanction_datecreated__range=[date1, date2]).order_by('-sanction_datecreated')
+            return render(request, 'Role_Osas/sanctioning.html', {'coc_sunction_list':coc_sunction_list, 'descipline':descipline, 'student':student, 'office':office, 'sanction':sanction})
+        else:
+            sanction = osas_t_sanction.objects.all().filter(sanction_datecreated__range=[date1, date2]).order_by('-sanction_datecreated')
+            return render(request, 'Role_Osas/sanctioning.html', {'coc_sunction_list':coc_sunction_list, 'descipline':descipline, 'student':student, 'office':office, 'sanction':sanction})
+    elif status:
+        sanction = osas_t_sanction.objects.all().filter(sanction_status = status).order_by('-sanction_datecreated')
+        return render(request, 'Role_Osas/sanctioning.html', {'coc_sunction_list':coc_sunction_list, 'descipline':descipline, 'student':student, 'office':office, 'sanction':sanction})
+    else:
+        sanction = osas_t_sanction.objects.all().order_by('-sanction_datecreated')
+        return render(request, 'Role_Osas/sanctioning.html', {'coc_sunction_list':coc_sunction_list, 'descipline':descipline, 'student':student, 'office':office, 'sanction':sanction})
+    
 
-    return render(request, 'Role_Osas/sanctioning.html', {'coc_sunction_list':coc_sunction_list, 'descipline':descipline, 'student':student, 'office':office, 'sanction':sanction})
 
 def sanctioning_student_view_excuse(request):
     sanction_excuse_id = request.POST.get('sanction_excuse_id')
@@ -1136,7 +1604,7 @@ def sanctioning_student_view_excuse(request):
         t = osas_t_excuse.objects.get(excuse_id = sanction_excuse_id)
         e = osas_t_sanction.objects.get(sanction_excuse_id = osas_t_excuse.objects.get(excuse_id = sanction_excuse_id))
         image = json.dumps(str(t.excuse_proof))
-        excuse_val = {'id': t.excuse_id, 'reason':t.excuse_reason, 'proof':image, 'status':t.excuse_status ,'date':t.excuse_datecreated, 'sanction':e.sanction_code_id.ds_code_id.ct_name}
+        excuse_val = {'id': t.excuse_id, 'status':t.excuse_status,'reason':t.excuse_reason, 'proof':image, 'status':t.excuse_status ,'date':t.excuse_datecreated, 'sanction':e.sanction_code_id.ds_code_id.ct_name}
         data = {'excuse_val':excuse_val}
         return JsonResponse(data, safe=False)
     except ObjectDoesNotExist:
@@ -1144,13 +1612,26 @@ def sanctioning_student_view_excuse(request):
         return JsonResponse(data, safe=False)
 
 def sanctioning_excused_approved(request):
-    sanction = osas_t_sanction.objects.filter(sanction_status = "EXCUSED" ).order_by('-sanction_datecreated')
+    date1 = request.POST.get('date_from')
+    date2 = request.POST.get('date_to')
+
     student = osas_r_personal_info.objects.order_by('stud_no')
     office = osas_r_designation_office.objects.order_by('designation_office')
     descipline = osas_r_disciplinary_sanction.objects.order_by('ds_code_id')
     coc_sunction_list = osas_t_sanction.objects.order_by('sanction_dateupdated')
 
-    return render(request, 'Role_Osas/sanction_excused.html', {'coc_sunction_list':coc_sunction_list, 'descipline':descipline, 'student':student, 'office':office, 'sanction':sanction})
+    if date1 and date2:
+        sanction = osas_t_sanction.objects.filter(sanction_status = "EXCUSED",sanction_datecreated__range=[date1, date2]).order_by('-sanction_datecreated')
+        return render(request, 'Role_Osas/sanction_excused.html', {'coc_sunction_list':coc_sunction_list, 'descipline':descipline, 'student':student, 'office':office, 'sanction':sanction}) 
+    elif date1:
+        sanction = osas_t_sanction.objects.filter(sanction_status = "EXCUSED", sanction_datecreated = date1).order_by('-sanction_datecreated')
+        return render(request, 'Role_Osas/sanction_excused.html', {'coc_sunction_list':coc_sunction_list, 'descipline':descipline, 'student':student, 'office':office, 'sanction':sanction})
+    elif date2:
+        sanction = osas_t_sanction.objects.filter(sanction_status = "EXCUSED", sanction_datecreated = date2).order_by('-sanction_datecreated')
+        return render(request, 'Role_Osas/sanction_excused.html', {'coc_sunction_list':coc_sunction_list, 'descipline':descipline, 'student':student, 'office':office, 'sanction':sanction})
+    else:
+        sanction = osas_t_sanction.objects.filter(sanction_status = "EXCUSED" ).order_by('-sanction_datecreated')
+        return render(request, 'Role_Osas/sanction_excused.html', {'coc_sunction_list':coc_sunction_list, 'descipline':descipline, 'student':student, 'office':office, 'sanction':sanction})
 
 def sanctioning_student_completed(request):
     sanction2 = osas_t_sanction.objects.filter(sanction_status = "COMPLETED").order_by('-sanction_datecreated')
@@ -1376,13 +1857,58 @@ def designation_office_delete(request):
         return render(request, 'designation_office.html')
 
 def lodge_complaint(request):
-    stud_complaints = osas_t_complaint.objects.all().order_by('-comp_datecreated')
-    return render(request, 'Role_Osas/lodge_complaint.html', { 'stud_complaints':stud_complaints})
+    date1 = request.POST.get('date_from')
+    date2 = request.POST.get('date_to')
+    status = request.POST.get('filter_status')
+    category = request.POST.get('filter_cat')
+    if status and category:
+        stud_complaints = osas_t_complaint.objects.all().filter(comp_status = status, comp_category = category).order_by('-comp_datecreated')
+        return render(request, 'Role_Osas/lodge_complaint.html', { 'stud_complaints':stud_complaints})
+    if date1 and date2:
+        if status:
+            stud_complaints = osas_t_complaint.objects.all().filter(comp_status = status, comp_datecreated__range=[date1, date2]).order_by('-comp_datecreated')
+            return render(request, 'Role_Osas/lodge_complaint.html', { 'stud_complaints':stud_complaints})
+        elif category:
+            stud_complaints = osas_t_complaint.objects.all().filter(comp_category = category, comp_datecreated__range=[date1, date2]).order_by('-comp_datecreated')
+            return render(request, 'Role_Osas/lodge_complaint.html', { 'stud_complaints':stud_complaints})
+        else:
+            stud_complaints = osas_t_complaint.objects.all().filter(comp_datecreated__range=[date1, date2]).order_by('-comp_datecreated')
+            return render(request, 'Role_Osas/lodge_complaint.html', { 'stud_complaints':stud_complaints})
+    elif status:
+        stud_complaints = osas_t_complaint.objects.all().filter(comp_status = status).order_by('-comp_datecreated')
+        return render(request, 'Role_Osas/lodge_complaint.html', { 'stud_complaints':stud_complaints})
+    elif category:
+        stud_complaints = osas_t_complaint.objects.all().filter(comp_category = category).order_by('-comp_datecreated')
+        return render(request, 'Role_Osas/lodge_complaint.html', { 'stud_complaints':stud_complaints})
+    elif date1:
+        stud_complaints = osas_t_complaint.objects.all().filter(comp_datecreated = date1).order_by('-comp_datecreated')
+        return render(request, 'Role_Osas/lodge_complaint.html', { 'stud_complaints':stud_complaints})
+    elif date2:
+        stud_complaints = osas_t_complaint.objects.all().filter(comp_datecreated = date2).order_by('-comp_datecreated')
+        return render(request, 'Role_Osas/lodge_complaint.html', { 'stud_complaints':stud_complaints})
+    else:
+        stud_complaints = osas_t_complaint.objects.all().order_by('-comp_datecreated')
+        return render(request, 'Role_Osas/lodge_complaint.html', { 'stud_complaints':stud_complaints})
+    
 
 def student_file_complaint(request):
-    stud_complaint = osas_t_complaint.objects.filter(comp_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no'])).order_by('-comp_datecreated')
-    context = {'stud_complaint': stud_complaint}
-    return render(request, 'Role_Student/file_a_complaint.html', {'stud_complaint':stud_complaint})
+    date1 = request.POST.get('date_from')
+    date2 = request.POST.get('date_to')
+    status = request.POST.get('filter_status')
+
+    if date1 and date2:
+        if status:
+            stud_complaint = osas_t_complaint.objects.all().filter(comp_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), comp_status = status, comp_datecreated__range=[date1, date2]).order_by('-comp_datecreated')
+            return render(request, 'Role_Student/file_a_complaint.html', {'stud_complaint':stud_complaint})
+        else:
+            stud_complaint = osas_t_complaint.objects.all().filter(comp_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), comp_datecreated__range=[date1, date2]).order_by('-comp_datecreated')
+            return render(request, 'Role_Student/file_a_complaint.html', {'stud_complaint':stud_complaint})
+    elif status:
+        stud_complaint = osas_t_complaint.objects.all().filter(comp_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), comp_status = status).order_by('-comp_datecreated')
+        return render(request, 'Role_Student/file_a_complaint.html', {'stud_complaint':stud_complaint})
+    else:
+        stud_complaint = osas_t_complaint.objects.all().filter(comp_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no'])).order_by('-comp_datecreated')
+        return render(request, 'Role_Student/file_a_complaint.html', {'stud_complaint':stud_complaint})
 
 def student_file_complaint_get(request):
     comp_id = request.POST.get('comp_id')
@@ -1415,22 +1941,25 @@ def student_file_complaint_edit(request):
         return JsonResponse(data, safe=False)
 
 def student_file_complaint_add(request):
-    letter = request.POST.get('sample')
+    letter = request.POST.get('essay_text')
     stud_no = request.session['session_user_no']
+    category = request.POST.get('g_category')
+    nature_complaint = request.POST.get('n_complaint')
+    g_assign = request.POST.get('g_assig')
+    proof_image = request.FILES.get('image')
     chars = ""
     chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
     randomstr =''.join((random.choice(chars)) for x in range(8))
     random_str = randomstr
     try:
         c = osas_t_complaint.objects.get(comp_stud_id = osas_r_personal_info.objects.get(stud_no = stud_no), comp_status = "PENDING")
-        data = {'error':"error"}
-        return JsonResponse(data, safe=False)
+        messages.error(request, 'Complaint cannot be send while you have a pending complaint')
+        return HttpResponseRedirect('/student_file_complaint')  
     except ObjectDoesNotExist:
-        c = osas_t_complaint(comp_stud_id = osas_r_personal_info.objects.get(stud_no = stud_no), comp_number = random_str, comp_letter = letter)
+        c = osas_t_complaint(comp_stud_id = osas_r_personal_info.objects.get(stud_no = stud_no), comp_number = random_str, comp_letter = letter, comp_pic = proof_image, comp_category = category, comp_nature = nature_complaint, comp_g_assign = g_assign)
         comp_id = c.comp_id
         c.save()
-        data = {'success':"success"}
-        return JsonResponse(data, safe=False)
+        return HttpResponseRedirect('/student_file_complaint')  
 
 def student_file_complaint_add_proof(request):
     proof_image = request.FILES.get('image')
@@ -1472,3 +2001,19 @@ def student_file_complaint_remove(request):
     except ObjectDoesNotExist:
         data = {'error': r_id}
         return JsonResponse(data, safe=False)
+
+def lodge_complaint_approve(request):
+    comp_id = request.POST.get('comp_id')
+    stats = request.POST.get('status')
+    try:
+        if stats == "APPROVED":
+            t = osas_t_complaint.objects.get(comp_id = comp_id, comp_status = "PENDING")
+            t.comp_status = "APPROVED"
+        elif stats == "DECLINED":
+            t = osas_t_complaint.objects.get(comp_id = comp_id, comp_status = "PENDING")
+            t.comp_status = "DECLINED"
+        t.save()
+        data = {'success':True}
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        return HttpResponseRedirect('/student_file_complaint')  

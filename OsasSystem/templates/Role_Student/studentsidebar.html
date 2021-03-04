@@ -27,21 +27,22 @@
             <li class="nav-header">Navigation</li>
             {% if request.session.session_user_role == 'STUDENT'%}
             <li class="has-sub">
+                <a href="{% url 'dashboard' %}">
+                    <i class="far fa-chart-bar"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="has-sub">
                 <a href="{% url 'profile' %}">
                     <i class="far fa-user"></i>
                     <span>Student Profile</span>
                 </a>
             </li>
             <li class="has-sub">
-                <a >
-                    <b class="caret"></b> 
+                <a href="{% url 'student_file_complaint' %}">
                     <i class="far fa-comments"></i> 
-                    <span>Grievances</span>
+                    <span>File a Complaint</span>
                 </a>
-                <ul class="sub-menu">
-                    <li><a href="{% url 'student_file_complaint' %}">Lodge Complaint</a></li>
-                    <li><a href="javascript:;">Complaint History</a></li>
-                </ul>
             </li>
             <li class="has-sub">
                 <a href="{% url 'student_lost_id' %}">

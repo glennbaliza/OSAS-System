@@ -21,21 +21,73 @@
         {% endfor %}
     </p>
     {% endif %} 
-
-    <h1 class="page-header mb-1">Student Profile</h1>
+    <ol class="breadcrumb pull-right">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Dashboard</a></li>
+        <li class="breadcrumb-item active">Student Profile</li>
+    </ol>
+    <h1 class="page-header mb-1"><i class="far fa-address-book mr-2" ></i>Student Profile</i></h1>
     <p class="mb-5">Page Description</p>
-    <div class="row" hidden><img src="https://www.freelogovectors.net/wp-content/uploads/2017/05/pup-logo-Polytechnic_University_of_the_Philippines.png" style="width: 130px; height: 130px;"/></div>
-    <!-- end page-header -->
-    <!-- begin panel -->
-			<div class="panel" id="refresh">
+
+    <img hidden id="myImg" style="width: 111px; height: 108px;"/>
+    <div class="row">
+        <div class="col-lg-3">
+            <div class="panel" data-sortable-id="index-1">
+                <div class="panel-heading p-25">
+                    <h2 class="panel-title" style="font-size:16px;">Filter <i class="fas fa-filter mr-2" ></i></h2>
+                </div>
+                <div class="panel-body" style="padding: 0%; height: 250px;">
+                    <form id="validate_form1" method="POST" action="{% url 'student_profile' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <label style="text-align: left; margin-bottom: 4px; margin-top: 4px;" class="col-sm-12">Course:</label> 
+                        <div class="col-sm-12" > 
+                            {% if student_course %}
+                            <select id="filter_course" name="txt_course" class="form-control form-control-md">
+                                <option selected disabled="true">--Select Course--</option>
+                                {% for osas_r_course in student_course %}
+                                <option value="{{ osas_r_course.course_name }}" id="course1" name="course1" >{{ osas_r_course.course_name }}</option>
+                                {% endfor %}
+                            </select>
+                            {% endif %}
+                        </div>  
+                        <label style="text-align: left; margin-bottom: 4px; margin-top: 4px;" class="col-sm-12">Year/Section:</label> 
+                        <div class="col-sm-12">
+                            {% if student_yr_sec %}
+                            <select id="filter_yr1" name="yr_sec1" class="form-control form-control-md" >
+                                    <option selected disabled="true">--Select--</option>
+                                    {% for osas_r_section_and_year in student_yr_sec%}
+                                    <option  value="{{ osas_r_section_and_year.yas_descriptions }}" name="yr_sec1">{{ osas_r_section_and_year.yas_descriptions }}</option>
+                                    {% endfor %}
+                            </select>
+                            {% endif %}
+                        </div>  
+                        <div class="form-group" >
+                            <label style="text-align: left; margin-bottom: 7px; margin-top: 4px;" class="col-sm-12">Gender:</label> 
+                            <div class="col-sm-12">
+                                <select id="filter_Gender1" name="Gender1" class="form-control">
+                                    <option selected disabled="true">--Select--</option>
+                                    <option  value="Male">Male</option>
+                                    <option  value="Female">Female</option>
+                                    <option  value="Others">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <button type="submit" class="btn btn-success col-sm-12">Filter <i class="fas fa-filter mr-2" ></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-9">
+            <div class="panel" id="refresh">
 				<div class="panel-heading p-25">
 					<div class="btn-group btn-group-toggle pull-right" data-toggle="buttons">
                         {% if request.session.session_user_role == 'HEAD OSAS'%}
-						<button class="btn btn-success"  data-toggle="modal" href="#modal-dialog" id="btn_rem"><i class="fas fa-search mr-2"></i>Add New</button>
+						<button class="btn btn-success"  data-toggle="modal" href="#modal-dialog" id="btn_rem"><i class="fas fa-plus mr-2"></i>Add New</button>
                         {% endif %}
-                        <button class="btn btn-gray" id="donwload">Print  <i class="fas fa-print text-white-lighter f-s-16"></i></button>
+                        <button class="btn btn-gray" id="donwload">Report <i class="fas fa-file-alt text-white-lighter f-s-16"></i></button>
                     </div>
-					<h2 class="panel-title" style="font-size:16px;">Student List</h2>
+					<h2 class="panel-title" style="font-size:16px;"><i class="fas fa-address-card mr-2" ></i>Student List  </i></h2>
 				</div>
 				<div class="panel-body">
                     {% if student_info %}
@@ -50,7 +102,7 @@
 						<tbody>
                             {% for osas_r_personal_info in student_info %}
 							<tr class="odd gradeA tr_" id="{{ osas_r_personal_info.stud_id }}">
-								<td width="1%" class="f-s-600 text-inverse">{{ osas_r_personal_info.stud_id }}</td>
+								<td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
 								<td><dl class="row mb-0 p-2" style="line-height: .6rem;">
                                     <dd class="col-sm-8 gritter-" ><strong>{{ osas_r_personal_info.stud_no }}</strong></dd>
                                     <dd class="col-sm-8">{{ osas_r_personal_info.stud_lname }} {{ osas_r_personal_info.stud_fname }}  {{ osas_r_personal_info.stud_mname }}</dd>
@@ -63,7 +115,7 @@
 								<td  class="align-middle"><div class="text-nowrap"><div class="btn-group ">
 									<button id="view-btn" class="btn btn-white"  onClick="viewStudent('{{ osas_r_personal_info.stud_id }}')"><i class="fas fa-search mr-2"></i>View</button>
                                     {% if request.session.session_user_role == 'HEAD OSAS'%}
-									<button id="delete-btn" class="btn btn-danger" ><i class="fas fa-trash-alt mr-2"></i>Delete</button>
+									<!-- <button id="delete-btn" class="btn btn-danger" ><i class="fas fa-trash-alt mr-2"></i>Delete</button> -->
                                     {% endif %}
 								  </div>
 								</td>
@@ -71,9 +123,22 @@
                             {% endfor %}
 						</tbody>
                     </table>
+                    {% else %}
+                    <table id="data-table" class="table table-striped table-bordered" >
+                        <thead>
+                            <tr>
+                                <th width="1%"></th>
+								<th data-orderable="false">Student Information</th>
+								<th data-orderable="false">Action</th>
+                            </tr>
+                        </thead>
+                    </table>
                     {% endif %}
+                    
 				</div>
 			</div>
+        </div>
+    </div>
 </div>
  <!-- #modal-dialog -->
 
@@ -87,11 +152,12 @@
                         <input class="form-control" id="student_id_" type="hidden" name="student_id_"/>
                         <h1 class="page-header mb-1">Student Information</h1>
                         <p class="mb-5">Page Description</p>
-                        <form  method="POST" enctype="multipart/form-data">
+                        <form  id="validate_form_add" method="POST" enctype="multipart/form-data">
                                 {% csrf_token %}
                             <!-- <a href="" class="pull-right"><p>Edit</p></a> -->
                             <h6>PERSONAL INFORMATION</h6>
                             <table class="table table-striped">
+                                <tbody>
                                     <tr>
                                         <th style="width: 50%;">
                                             <div class="form-group row" >
@@ -106,7 +172,7 @@
                                                 <label style="font-family: Roboto; font-size: 10px;" class=" col-sm-2 col-form-label col-form-label-sm">COURSE</label>
                                                 <div class="col-sm-10">
                                                     {% if student_course %}
-                                                    <select id="dd_course" name="txt_course" class="form-control form-control-md">
+                                                    <select id="dd_course" name="txt_course1" class="form-control form-control-md">
                                                         <option selected disabled="true">--Select Course--</option>
                                                         {% for osas_r_course in student_course %}
                                                         <option value="{{ osas_r_course.course_name }}" name="txt_course1" name="txt_course1" >{{ osas_r_course.course_name }}</option>
@@ -115,7 +181,7 @@
                                                     {% endif %}
                                                 </div>
                                             </div>
-                                        </th> 
+                                        </th>  
                                        
                                     </tr>
                             </tbody>
@@ -307,7 +373,7 @@
                                             <div class="form-group row" >
                                                 <label style="font-family: Roboto; font-size: 10px;" class="col-sm-2 col-form-label col-form-label-sm">EMERGENCY CONTACT ADDRESS</label> 
                                                 <div class="col-sm-10">
-                                                    <input type="text" id="txt_e_addres1s" name="txt_e_address1" class="form-control form-control-md" placeholder="enter your emergency contact address" required data-parsley-trigger="keyup" >
+                                                    <input type="text" id="txt_e_addres1" name="txt_e_address1" class="form-control form-control-md" placeholder="enter your emergency contact address" required data-parsley-trigger="keyup" >
                                                 </div>  
                                             </div>
                                         </th> 
@@ -331,7 +397,7 @@
     <div class="modal-dialog modal-lg"  role="document">
         <div class="modal-content " >
             <div class="panel panel-inverse">
-                <button type="button" class="close"  data-dismiss="modal" aria-hidden="true" style="color: gray; margin: 6px;">×</button>
+                <button type="button" class="close" id="btn_close" data-dismiss="modal" aria-hidden="true" style="color: gray; margin: 6px;">×</button>
                 <div class="panel-body" style="background-color:whitesmoke;"> 
                     <div class="col">
                         <input class="form-control" id="stud_id_" type="hidden" name="stud_id_"/>
@@ -536,8 +602,8 @@
                     </div>
                 </div>
                 <div class="panel-footer" >
-                    <button class="btn btn_success col-md-3 pull-right m-l-10 " type="submit" id="btn_submit" style="height: 33px; padding: 5px; background: linear-gradient(to right, #66ccff -1%, #3366ff 98%); border:none; color: white;" >Edit<i class="far fa-paper-plane m-l-3 zoom"></i></button>
-                    <a class="btn btn-white pull-right m-l-10" data-dismiss="modal">Back<i class="fas fa-reply m-l-3 zoom"></i></a>
+                    <button class="btn btn_success col-md-3 pull-right m-l-10 " type="submit" id="btn_submit" name="tangina" style="height: 33px; padding: 5px; background: linear-gradient(to right, #66ccff -1%, #3366ff 98%); border:none; color: white;" >Edit<i class="far fa-paper-plane m-l-3 zoom"></i></button>
+                    <a class="btn btn-white pull-right m-l-10" data-dismiss="modal" id="btn_back">Back<i class="fas fa-reply m-l-3 zoom"></i></a>
                 </div>
             </div>
         </div>
@@ -553,17 +619,27 @@
 
 {% block page-js %}
 <script>
+    $(document).ready(function() {
+        document.getElementById("myImg").src = "/media/PUPLOGO.png";
+        $('#data-table').DataTable({
+        ordering: false,
+    });
+    });
+</script>
+<script>
 
 $('#btn_rem').click(function(){
     $("#data-table .tr_").each(function() {
+        document.getElementById("myImg").src = "/media/PUPLOGO.png";
         control_number = $(this).closest("tbody tr").find("td :eq(9)").html() 
         console.log(control_number)
     });
 }); 
 
+
 $('#donwload').click(function(){
     var wme = window.open("","", "width = 1050px, height = auto");
-    wme.document.write("<div class='row' style='margin-left: 50px; margin-top: 20px;'><img src='https://www.freelogovectors.net/wp-content/uploads/2017/05/pup-logo-Polytechnic_University_of_the_Philippines.png' style='width: 110px; height: 107px;'/><div style='margin-right: 40px; float: right;'><p style='font-family: Arial, Helvetica, sans-serif; font-size: 18px; color: black; margin-top: 15px;'>Republic of the Philippines</p><p style='font-family: Trajan Pro; font-size: 20px; color: black; margin-top: -15px;'><b>Polytechnic University of the Philippines</b></p><p style='font-family: Arial, Helvetica, sans-serif; color: black; margin-top: -15px;'><b>Quezon City Branch</b></p></div></div></div><br/><div class='container-fluid' style='background: whitesmoke; height: 70px; margin-top: -10px'><div class='row'><p style='padding-top: 20px; padding-left:  15px; font-family: Roboto; font-size: 24px; color: gray;'><b>STUDENT INFORMATION</b></p></div></div>"
+    wme.document.write("<div class='row' style='margin-left: 50px; margin-top: 20px;'><img src='/media/PUPLOGO.png' style='width: 110px; height: 107px;'/><div style='margin-right: 40px; float: right;'><p style='font-family: Arial, Helvetica, sans-serif; font-size: 18px; color: black; margin-top: 15px;'>Republic of the Philippines</p><p style='font-family: Trajan Pro; font-size: 20px; color: black; margin-top: -15px;'><b>Polytechnic University of the Philippines</b></p><p style='font-family: Arial, Helvetica, sans-serif; color: black; margin-top: -15px;'><b>Quezon City Branch</b></p></div></div></div><br/><div class='container-fluid' style='background: whitesmoke; height: 70px; margin-top: -10px'><div class='row'><p style='padding-top: 20px; padding-left:  15px; font-family: Roboto; font-size: 24px; color: gray;'><b>STUDENT INFORMATION</b></p></div></div>"
     );
     wme.document.write("<table style='border-collapse: collapse; width: 100%; font-family: Roboto; font-size:13px;' id='data-table' class='table table-striped table-bordered' ><thead ><tr><th  width='5%' style='border: 1px solid lightgrey; text-align: left; padding: 5px; font-size:15px;'></th><th width='70%' style='border: 1px solid lightgrey; text-align: left; padding: 5px;'>Sanction Details</th><th width='25%' style='border: 1px solid lightgrey; text-align: left; padding: 5px;'>Contact</th></tr></thead><tbody>");
     var i = 0
@@ -692,8 +768,75 @@ $("#modal_view").on('click','#btn_submit',function(){
         
     }
 });
+$("#modal-dialog").on('click','#btn_add',function(){
+    var stud_no = $('input[name="stud_number1"]').val();
+    stud_course = $("#dd_course").children("option:selected").val().trim();
+    year_sec = $("#dd_yr1").children("option:selected").val().trim();
+    stud_gender = $("#txt_Gender1").children("option:selected").val().trim();
+    var stud_lname = $('input[name="txt_l_name1"]').val();
+    var stud_fname = $('input[name="txt_f_name1"]').val();
+    var stud_mname = $('input[name="txt_m_name1"]').val();
+    var stud_sname = $('input[name="txt_s_name1"]').val();
+    var stud_birthdate = $('input[name="date_of_birth1"]').val();
+    var stud_email = $('input[name="txt_email1"]').val();
+    var stud_m_number = $('input[name="txt_mobile_number1"]').val();
+    var stud_address = $('input[name="txt_address1"]').val();
+    var stud_hs = $('input[name="h_name1"]').val();
+    var stud_hs_add = $('input[name="txt_h_address1"]').val();
+    var stud_sh = $('input[name="s_name1"]').val();
+    var stud_sh_add = $('input[name="txt_sh_address1"]').val();
+    var stud_e_name = $('input[name="txt_e_name1"]').val();
+    var stud_e_m_number = $('input[name="txt_e_number1"]').val();
+    var stud_e_address = $('input[name="txt_e_address1"]').val();
+    console.log(stud_course)
+    if(stud_no){
+        $.ajax({
+            url: '{% url "student_process_add" %}',
+            type: "POST",
+            data: {
+                stud_no: stud_no,
+                year_sec: year_sec,
+                stud_course: stud_course,
+                stud_lname: stud_lname,
+                stud_fname: stud_fname,
+                stud_mname: stud_mname,
+                stud_sname: stud_sname,
+                stud_birthdate: stud_birthdate,
+                stud_email: stud_email,
+                stud_m_number: stud_m_number,
+                stud_address: stud_address,
+                stud_hs: stud_hs,
+                stud_gender: stud_gender,
+                stud_hs_add: stud_hs_add,
+                stud_sh: stud_sh,
+                stud_sh_add: stud_sh_add,
+                stud_e_name: stud_e_name,
+                stud_e_m_number: stud_e_m_number,
+                stud_e_address:stud_e_address,
+                csrfmiddlewaretoken: "{{ csrf_token }}",
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.success) {
+                    refresh_div()
+                    $('#modal-dialog').modal('hide');
+                    swal("Success! Student profile has been added.", {
+                        icon: "success",
+                    })
+
+                }
+                if (data.error) {
+                    console.log(data.error)
+                }
+                
+            }
+        });
+    }
+});
+
 
 $("#modal_view").on('click','#btn_update',function(){
+    console.log(stud_no)
     var stud_no = $('input[name="stud_number"]').val();
     var stud_course = $('input[name="stud_course"]').val();
     var year_sec = $('input[name="year_sec"]').val();

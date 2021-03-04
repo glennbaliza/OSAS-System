@@ -34,8 +34,13 @@
         {% endfor %}
     </p>
     {% endif %} 
-
-    <h1 class="page-header mb-1">Desciplinary Sanction</h1>
+    <ol class="breadcrumb pull-right">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Dashboard</a></li>
+        <li class="breadcrumb-item">Student Sanction</li>
+        <li class="breadcrumb-item">Sanction Setup</li>
+        <li class="breadcrumb-item">Desciplinary Sanction</li>
+    </ol>
+    <h1 class="page-header mb-1"><i class="fas fa-exclamation mr-2" ></i>Desciplinary Sanction</h1>
 	<p class="mb-5">Section 1. Student offenses shall be subjected to disciplinary measures
         by the University. <br>If the sanction imposed is suspension or dismissal, the
         student shall not be allowed to enter the University premises. <br>
@@ -43,14 +48,13 @@
         the Student Services.<br>
         Section 3. The grounds for disciplinary action and the corresponding
         sanctions/penalties are as follows:</p>
-    <!-- end page-header -->
-    <!-- begin panel -->
+
     <div class="panel" id="refresh">
         <div class="panel-heading p-25">
             <div class="btn-group btn-group-toggle pull-right" data-toggle="buttons">
-                <button class="btn btn-success"  data-toggle="modal" href="#modal-dialog" id="btn_rem"><i class="fas fa-search mr-2"></i>Add New</button>
+                <button class="btn btn-success"  data-toggle="modal" href="#modal-dialog" id="btn_rem"><i class="fas fa-plus mr-2"></i>New Sanction</button>
             </div>
-            <h2 class="panel-title" style="font-size:16px;">Sanction List</h2>
+            <h2 class="panel-title" style="font-size:16px;"><i class="fas fa-exclamation mr-2" ></i>Sanction List</h2>
         </div>
         <div class="panel-body">
             {% if ds_sanction %}
@@ -366,7 +370,7 @@ function deleteDescipline(ds_id) {
         $('#offense_desc1').val(desc);
         $("#offense_status1").find('option[value="'+ status +'"]').attr('selected','selected')
         
-    }
+    } 
 }
     //https://stackoverflow.com/questions/3072233/getting-value-from-table-cell-in-javascript-not-jquery
 

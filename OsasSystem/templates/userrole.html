@@ -51,18 +51,21 @@
         </div>
     </div>
 </div>
-<!-- #modal-without-animation -->
 <div id="content" class="content">
-
-    <h1 class="page-header mb-1">Page Title</h1>
+    <ol class="breadcrumb pull-right">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Dashboard</a></li>
+        <li class="breadcrumb-item">System Setup</li>
+        <li class="breadcrumb-item">User Role</li>
+    </ol>
+    <h1 class="page-header mb-1"><i class="far fa-user-circle mr-2" ></i> User Role</h1>
     <p class="mb-5">Page Description</p>
             
     <div class="panel">
         <div class="panel-heading p-25">
             <div class="btn-group btn-group-toggle pull-right" data-toggle="buttons">
-                <button class="btn btn-success" href="#modal-dialog" id="btn_rem" data-toggle="modal"><i class="fas fa-search mr-2"></i>Add New</button>
+                <button class="btn btn-success" href="#modal-dialog" id="btn_rem" data-toggle="modal"><i class="fas fa-plus mr-2"></i>New User Role</button>
             </div>
-            <h2 class="panel-title" style="font-size:16px;">User Role</h2>  
+            <h2 class="panel-title" style="font-size:16px;"><i class="fas fa-user-circle mr-2" ></i>User Role List</h2>  
         </div>
         <div class="panel-body">
             {% if user_list %}
@@ -70,7 +73,7 @@
                 <thead>
                     <tr>
                         <th width="1%"></th>
-                        <th data-orderable="false">Compact Data</th>
+                        <th data-orderable="false">User Role</th>
                         <th data-orderable="false">Action</th>
                     </tr>
                 </thead>
@@ -140,7 +143,6 @@ var table = $('#data-table').DataTable();
 
     $("#data-table").on('click','#delete-btn',function(){
         id = $(this).closest("tbody tr").find("td:eq(0)").html()
-        alert(id)
 		swal({
             title: "Are you sure?",
             text: "You want to delete this user?", 
@@ -155,7 +157,7 @@ var table = $('#data-table').DataTable();
 		$.ajax({
 			type: "POST",
 			url: "{% url 'deleteuser' %}",
-			data:{
+			data:{ 
 				del_user_id: id,
 				
 				csrfmiddlewaretoken: "{{ csrf_token }}",

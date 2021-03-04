@@ -25,87 +25,129 @@
         </p>
         {% endif %}
     </div>
-
-    <h1 class="page-header mb-1">Page Title</h1>
+    <ol class="breadcrumb pull-right">
+        <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+        <li class="breadcrumb-item active">Lost ID</li>
+    </ol>
+    <h1 class="page-header mb-1"><i class="far fa-address-card mr-2" ></i>Lost ID</i></h1>
     <p class="mb-5">Page Description</p>
-    <div class="row" hidden><img src="https://www.freelogovectors.net/wp-content/uploads/2017/05/pup-logo-Polytechnic_University_of_the_Philippines.png" style="width: 130px; height: 130px;"/></div>
-    <div class="panel" id="refresh">
-        <input class="form-control" id="stud_no_" type="hidden" name="stud_no_" value="{{request.session.session_user_no}}"/>
-        <div class="panel-heading p-25">
-            <div class="btn-group btn-group-toggle pull-right" data-toggle="buttons">
-                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal_add" onClick="addRequest('{{request.session.session_user_no}}')" id="test"><i class="fas fa-plus mr-2" ></i>New Request</button>
-                <button class="btn btn-gray" id="donwload">Print  <i class="fas fa-print text-white-lighter f-s-16"></i></button>
+    <img hidden id="myImg" style="width: 111px; height: 108px;"/>
+    <div class="row">
+        <div class="col-lg-2">
+            <div class="panel" data-sortable-id="index-1">
+                <div class="panel-heading p-25">
+                    <h2 class="panel-title" style="font-size:16px;">Filter <i class="fas fa-filter mr-2" ></i></h2>
+                </div>
+                <div class="panel-body" style="padding: 0%; height: 250px;">
+                    <form id="validate_form" method="POST" action="{% url 'student_lost_id' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <label style="text-align: left; margin-bottom: 4px; margin-top: 4px;" class="col-sm-12">From:</label> 
+                        <div class="col-sm-12" > 
+                            <input type="date" class="form-control col-sm-12" name="date_from">
+                        </div>  
+                        <label style="text-align: left; margin-bottom: 4px; margin-top: 4px;" class="col-sm-12">To:</label> 
+                        <div class="col-sm-12">
+                            <input type="date" class="form-control col-sm-12" name="date_to">
+                        </div>  
+                        <div class="form-group" >
+                            <label style="text-align: left; margin-bottom: 7px; margin-top: 4px;" class="col-sm-12">Status:</label> 
+                            <div class="col-sm-12">
+                                <select id="filter_status" name="filter_status" class="form-control">
+                                    <option selected disabled="true">--Select--</option>
+                                    <option  value="Pending">Pending</option>
+                                    <option  value="On Process">On Process</option>
+                                    <option  value="Completed">Completed</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <button type="submit" class="btn btn-success col-sm-12" data-toggle="modal" data-target="#modal_add" id="test">Filter <i class="fas fa-filter mr-2" ></i></button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <h2 class="panel-title" style="font-size:16px;">Lost ID</h2>
         </div>
-
-        <div class="panel-body">
-            <div class="col-lg-12 form-check-inline" id="error">
+        <div class="col-lg-10">
+            <div class="panel" id="refresh">
+                <input class="form-control" id="stud_no_" type="hidden" name="stud_no_" value="{{request.session.session_user_no}}"/>
+                <div class="panel-heading p-25">
+                    <div class="btn-group btn-group-toggle pull-right" data-toggle="buttons">
+                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal_add" onClick="addRequest('{{request.session.session_user_no}}')" id="test"><i class="fas fa-plus mr-2" ></i>New Request</button>
+                        <button class="btn btn-gray" id="donwload">Print  <i class="fas fa-print text-white-lighter f-s-16"></i></button>
+                    </div>
+                    <h2 class="panel-title" style="font-size:16px;"><i class="fas fa-address-card mr-2" ></i>Lost ID</h2>
+                </div>
+        
+                <div class="panel-body">
+                    <div class="col-lg-12 form-check-inline" id="error">
+                    </div>
+                    {% if stud_info %}
+                    <table id="data-table" class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th data-orderable="false"></th>
+                                <th data-orderable="false">Student Information</th>
+                                <th data-orderable="false">Transaction Detail</th>
+                                <th hidden data-orderable="false">Personal Detail</th>
+                                <th data-orderable="false">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for id in stud_info %}
+                            <tr class="odd gradeA tr_" id="{{ id.lost_id }}">
+                                <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
+                                <td><dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                    <dd class="col-sm-8 gritter-" id="IDLost_studno" ><strong>{{ id.lost_stud_id }}</strong></dd>
+                                    <dd class="col-sm-8" id="IDLost_name">{{ id.lost_stud_id.stud_lname }}, {{ id.lost_stud_id.stud_fname }}  {{ id.lost_stud_id.stud_mname }}</dd>
+                                    <dd class="col-sm-8" id="IDLost_course">{{ id.lost_stud_id.stud_course_id }}</dd>
+                                </dl>
+                                </td>
+                                <td><dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                    <dd class="col-sm-8 gritter-" id="IDLost_id" ><strong>{{ id.request_id }}</strong></dd>
+                                    {% if id.lost_id_status == 'PENDING'%}
+                                    <dd class="col-sm-8 gritter-"><strong><span class="badge badge-info">PENDING</span></strong></dd>
+                                    {% elif id.lost_id_status == 'PROCESSING'%}
+                                    <dd class="col-sm-8 gritter-"><strong><span class="badge badge-warning">ON PROCESS</span></strong></dd>
+                                    {% else %}
+                                    <dd class="col-sm-8 gritter-"><strong><span class="badge badge-danger">COMPLETED</span></strong></dd>
+                                    {% endif %}
+                                    <dd class="col-sm-8" id="IDLost_date">{{ id.date_updated|date:"Y-m-d" }}</dd>
+                                </dl>
+                                </td>
+                                <td hidden><dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                    <dd class="col-sm-8 gritter-" id="IDLost_status" >{{ id.lost_id_status }}</dd>
+                                    <dd class="col-sm-8 gritter-" id="IDLost_yrsec">{{ id.lost_stud_id.stud_yas_id }}</dd>
+                                    <dd class="col-sm-8 gritter-" id="IDLost_dob">{{ id.lost_stud_id.stud_birthdate }}</dd>
+                                    <dd class="col-sm-8 gritter-" id="IDLost_gender">{{ id.lost_stud_id.stud_gender }}</dd>
+                                    <dd class="col-sm-8" id="IDLost_address">{{ id.lost_stud_id.stud_address }}</dd>
+                                    <dd class="col-sm-8" id="IDLost_email">{{ id.lost_stud_id.stud_email }}</dd>
+                                    <dd class="col-sm-8" id="IDLost_contact">{{ id.lost_stud_id.stud_m_number }}</dd>
+                                    <dd class="col-sm-8" id="IDLost_contact">{{days_count }}</dd>
+                                </dl>
+                                </td>
+                                <td class="align-middle"><div class="text-nowrap"><div>
+                                    <button class="btn btn-white" id="btn_view" 
+                                    onClick="viewID('{{ id.lost_id }}')"><i class="fas fa-search mr-2"></i>View</button>
+                                  </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <table id="data-table" class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th data-orderable="false"></th>
+                                <th data-orderable="false">Student Information</th>
+                                <th data-orderable="false">Transaction Detail</th>
+                                <th data-orderable="false">Action</th>
+                            </tr>
+                        </thead>
+                    </table>
+                    {% endif %}
+                </div>
             </div>
-            {% if stud_info %}
-            <table id="data-table" class="table table-striped table-bordered">
-                <thead>
-                    <tr>
-                        <th data-orderable="false"></th>
-                        <th data-orderable="false">Student Information</th>
-                        <th data-orderable="false">Transaction Detail</th>
-                        <th data-orderable="false">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for id in stud_info %}
-                    <tr class="odd gradeA tr_" id="{{ id.lost_id }}">
-                        <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
-                        <td><dl class="row mb-0 p-2" style="line-height: .6rem;">
-                            <dd class="col-sm-8 gritter-" id="IDLost_studno" ><strong>{{ id.lost_stud_id }}</strong></dd>
-                            <dd class="col-sm-8" id="IDLost_name">{{ id.lost_stud_id.stud_lname }}, {{ id.lost_stud_id.stud_fname }}  {{ id.lost_stud_id.stud_mname }}</dd>
-                            <dd class="col-sm-8" id="IDLost_course">{{ id.lost_stud_id.stud_course_id }}</dd>
-                        </dl>
-                        </td>
-                        <td><dl class="row mb-0 p-2" style="line-height: .6rem;">
-                            <dd class="col-sm-8 gritter-" id="IDLost_id" ><strong>{{ id.request_id }}</strong></dd>
-                            {% if id.lost_id_status == 'PENDING'%}
-                            <dd class="col-sm-8 gritter-"><strong><span class="badge badge-info">PENDING</span></strong></dd>
-                            {% elif id.lost_id_status == 'PROCESSING'%}
-                            <dd class="col-sm-8 gritter-"><strong><span class="badge badge-warning">ON PROCESS</span></strong></dd>
-                            {% else %}
-                            <dd class="col-sm-8 gritter-"><strong><span class="badge badge-danger">COMPLETED</span></strong></dd>
-                            {% endif %}
-                            <dd class="col-sm-8" id="IDLost_date">{{ id.date_updated|date:"Y-m-d" }}</dd>
-                        </dl>
-                        </td>
-                        <td hidden><dl class="row mb-0 p-2" style="line-height: .6rem;">
-                            <dd class="col-sm-8 gritter-" id="IDLost_status" >{{ id.lost_id_status }}</dd>
-                            <dd class="col-sm-8 gritter-" id="IDLost_yrsec">{{ id.lost_stud_id.stud_yas_id }}</dd>
-                            <dd class="col-sm-8 gritter-" id="IDLost_dob">{{ id.lost_stud_id.stud_birthdate }}</dd>
-                            <dd class="col-sm-8 gritter-" id="IDLost_gender">{{ id.lost_stud_id.stud_gender }}</dd>
-                            <dd class="col-sm-8" id="IDLost_address">{{ id.lost_stud_id.stud_address }}</dd>
-                            <dd class="col-sm-8" id="IDLost_email">{{ id.lost_stud_id.stud_email }}</dd>
-                            <dd class="col-sm-8" id="IDLost_contact">{{ id.lost_stud_id.stud_m_number }}</dd>
-                            <dd class="col-sm-8" id="IDLost_contact">{{days_count }}</dd>
-                        </dl>
-                        </td>
-                        <td class="align-middle"><div class="text-nowrap"><div>
-                            <button class="btn btn-white" id="btn_view" 
-                            onClick="viewID('{{ id.lost_id }}')"><i class="fas fa-search mr-2"></i>View</button>
-                          </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            {% else %}
-            <table id="data-table" class="table table-striped table-bordered">
-                <thead>
-                    <tr>
-                        <th data-orderable="false"></th>
-                        <th data-orderable="false">Student Information</th>
-                        <th data-orderable="false">Transaction Detail</th>
-                        <th data-orderable="false">Action</th>
-                    </tr>
-                </thead>
-            </table>
-            {% endif %}
         </div>
     </div>
 </div>
@@ -172,6 +214,7 @@
 {% block page-js %}
 <script>
     $(document).ready(function() {
+        document.getElementById("myImg").src = "/media/PUPLOGO.png";
 			$('#data-table').DataTable({
 				ordering: false,
 			});
@@ -251,7 +294,7 @@ function addRequest(session_user_no){
 
 $('#donwload').click(function(){
     var wme = window.open("","", "width = 1050px, height = auto");
-    wme.document.write("<div class='row' style='margin-left: 50px; margin-top: 20px;'><img src='https://www.freelogovectors.net/wp-content/uploads/2017/05/pup-logo-Polytechnic_University_of_the_Philippines.png' style='width: 110px; height: 107px;'/><div style='margin-right: 40px; float: right;'><p style='font-family: Arial, Helvetica, sans-serif; font-size: 18px; color: black; margin-top: 15px;'>Republic of the Philippines</p><p style='font-family: Trajan Pro; font-size: 20px; color: black; margin-top: -15px;'><b>Polytechnic University of the Philippines</b></p><p style='font-family: Arial, Helvetica, sans-serif; color: black; margin-top: -15px;'><b>Quezon City Branch</b></p></div></div></div><br/><div class='container-fluid' style='background: whitesmoke; height: 70px; margin-top: -10px'><div class='row'><p style='padding-top: 20px; padding-left:  15px; font-family: Roboto; font-size: 24px; color: gray;'><b>STUDENT LOST ID</b></p></div></div>"
+    wme.document.write("<div class='row' style='margin-left: 50px; margin-top: 20px;'><img src='/media/PUPLOGO.png' style='width: 110px; height: 107px;'/><div style='margin-right: 40px; float: right;'><p style='font-family: Arial, Helvetica, sans-serif; font-size: 18px; color: black; margin-top: 15px;'>Republic of the Philippines</p><p style='font-family: Trajan Pro; font-size: 20px; color: black; margin-top: -15px;'><b>Polytechnic University of the Philippines</b></p><p style='font-family: Arial, Helvetica, sans-serif; color: black; margin-top: -15px;'><b>Quezon City Branch</b></p></div></div></div><br/><div class='container-fluid' style='background: whitesmoke; height: 70px; margin-top: -10px'><div class='row'><p style='padding-top: 20px; padding-left:  15px; font-family: Roboto; font-size: 24px; color: gray;'><b>STUDENT LOST ID</b></p></div></div>"
     );
     wme.document.write("<table style='border-collapse: collapse; width: 100%; font-family: Roboto; font-size:13px;' id='data-table' class='table table-striped table-bordered' ><thead ><tr><th  width='5%' style='border: 1px solid lightgrey; text-align: left; padding: 5px; font-size:15px;'></th><th width='70%' style='border: 1px solid lightgrey; text-align: left; padding: 5px;'>Sanction Information</th><th width='25%' style='border: 1px solid lightgrey; text-align: left; font-size:15px; padding: 5px;'>Status</th></tr></thead><tbody>");
     var i = 0

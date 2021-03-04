@@ -51,87 +51,114 @@
     </p>
     {% endif %} 
 
-    <h1 class="page-header mb-1">Sanctioning Students</h1>
+    <h1 class="page-header mb-1"><i class="fas fa-users mr-2" ></i> Sanctioning Excused Students</h1>
 	<p class="mb-5">Page Description</p>
     <!-- end page-header -->
     <!-- begin panel -->
-    <div class="row" hidden><img src="https://www.freelogovectors.net/wp-content/uploads/2017/05/pup-logo-Polytechnic_University_of_the_Philippines.png" style="width: 130px; height: 130px;"/></div>
+    <img hidden id="myImg" style="width: 111px; height: 108px;"/>
 
-    <div class="panel" id="refresh">
-        <div class="panel-heading p-25">
-            <div class="btn-group btn-group-toggle pull-right" data-toggle="buttons">
-                <button class="btn btn-gray" id="donwload">Print  <i class="fas fa-print text-white-lighter f-s-16"></i></button>
+    <div class="row">
+        <div class="col-lg-2">
+            <div class="panel" data-sortable-id="index-1">
+                <div class="panel-heading p-25">
+                    <h2 class="panel-title" style="font-size:16px;">Filter <i class="fas fa-filter mr-2" ></i></h2>
+                </div>
+                <div class="panel-body" style="padding: 0%; height: 200px;">
+                    <form id="validate_form" method="POST" action="{% url 'sanctioning_excused_approved' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <label style="text-align: left; margin-bottom: 4px; margin-top: 4px;" class="col-sm-12">From:</label> 
+                        <div class="col-sm-12" > 
+                            <input type="date" class="form-control col-sm-12" name="date_from">
+                        </div>  
+                        <label style="text-align: left; margin-bottom: 4px; margin-top: 4px;" class="col-sm-12">To:</label> 
+                        <div class="col-sm-12">
+                            <input type="date" class="form-control col-sm-12" name="date_to">
+                        </div>  
+                        <div class="col-sm-12 m-t-15">
+                            <button type="submit" class="btn btn-success col-sm-12">Filter <i class="fas fa-filter mr-2" ></i></button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <h2 class="panel-title" style="font-size:16px;">Sanctioning Student List</h2>
         </div>
-        <div class="panel-body">
-            {% if sanction%}
-            <table id="data-table" class="table table-striped table-bordered" >
-                <thead>
-                    <tr>
-                        <th width="1%"></th>
-                        <th width="1%">Sanction Information</th>
-                        <th width="1%">Status</th>
-                        <th data-orderable="false">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for osas_t_sanction in sanction %}
-                    <tr class="odd gradeA tr_" id="{{osas_t_sanction.sanction_id}}">
-                        <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
-                        <td width="30%" class="align-middle">
-                            <dl class="row mb-0 p-2" style="line-height: .6rem;">
-                                <dd class="col-sm-8 gritter- text-nowrap cn{{osas_t_sanction.sanction_id}}" ><strong class="contol_number">{{ osas_t_sanction.sanction_control_number }}</strong></dd>
-                                <dd class="col-sm-8 gritter- text-nowrap " ><strong class="stud_no sn{{osas_t_sanction.sanction_id}}">{{ osas_t_sanction.sanction_stud_id.stud_no}}</strong></dd>
-                                <dd class="col-sm-8 gritter- text-nowrap violation v{{osas_t_sanction.sanction_id}}" >{{ osas_t_sanction.sanction_code_id.ds_code_id.ct_name }}</dd>
-                                <dd class="col-sm-8 gritter- text-nowrap offense o{{osas_t_sanction.sanction_id}}" >{{ osas_t_sanction.sanction_code_id.ds_violation_count }}</dd> 
-                                {% if request.session.session_user_role == 'HEAD OSAS'%}
-                                {% if osas_t_sanction.sanction_excuse_id.excuse_status %}
-                                <dd class="col-sm-8 gritter- text-nowrap " ><a class="excuse{{osas_t_sanction.sanction_excuse_id.excuse_status}}" data-toggle="modal" href="#modal-view" onClick="viewExcuse('{{ osas_t_sanction.sanction_excuse_id }}')" ><span class="label label-success status_">Excuse <i class="far fa-envelope text-white-lighter fa-lg"></i></span></a></dd>
-                                {% endif %}
-                                {% endif %}
-                            </dl>
-                        </td>
-                        <td width="30%"><dl class="row mb-0 p-2" style="line-height: .6rem;">
-                            <dd class="col-sm-8 gritter- text-nowrap " ><strong class="sanc_status s{{osas_t_sanction.sanction_id}}">{{ osas_t_sanction.sanction_code_id.ds_status}}</strong></dd>
-                            <dd class="col-sm-8 gritter- text-nowrap sanc_date d{{osas_t_sanction.sanction_id}}" >{{ osas_t_sanction.sanction_datecreated|date:"Y-m-d"}}</dd>
-                            {% if osas_t_sanction.sanction_designation_id.designation_office is not none %}
-                            <dd class="col-sm-8 gritter- text-nowrap office of{{osas_t_sanction.sanction_id}}" >{{ osas_t_sanction.sanction_designation_id.designation_office }}</dd>
-                            {%elif osas_t_sanction.sanction_status == "PENDING" %}
-                            <dd class="col-sm-8 gritter- text-nowrap office of{{osas_t_sanction.sanction_id}}" ></dd>
-                            {%else%}
-                            <dd class="col-sm-8 gritter- text-nowrap office of{{osas_t_sanction.sanction_id}}" >{{ osas_t_sanction.sanction_designation_id.designation_office }}</dd>
-                            {%endif%}
-                            <dd class="col-sm-8 gritter- text-nowrap hrs hr{{osas_t_sanction.sanction_id}}" >{{ osas_t_sanction.sanction_code_id.ds_hrs }} Hour(s)</dd>
-                            {% if osas_t_sanction.sanction_status == "COMPLETED"%}
-                            <dd class="col-sm-8 gritter-"><strong><span class="badge badge-danger status_ ss{{osas_t_sanction.sanction_id}}">{{ osas_t_sanction.sanction_status }}</span></strong></dd>
-                            {% elif osas_t_sanction.sanction_status == "ACTIVE"%}
-                            <dd class="col-sm-8 gritter- "><strong><span class="badge badge-warning status_ ss{{osas_t_sanction.sanction_id}}">{{ osas_t_sanction.sanction_status }}</span></strong></dd>
-                            {% else %}
-                            <dd class="col-sm-8 gritter-"><strong><span class="badge badge-info status_ ss{{osas_t_sanction.sanction_id}}">{{ osas_t_sanction.sanction_status }}</span></strong></dd>
-                            {% endif %}
-                        </dl>
-                        </td>
-                        <td class="align-middle action_btn text-nowrap" id="action_btn"><div class="text-nowrap"><div class="btn-group ">
-                            <button id="view-btn" class="btn btn-white  m-l-1"  data-toggle="modal" href="#modal_view" onClick="viewSanction('{{ osas_t_sanction.sanction_id }}')"><i class="fas fa-search mr-2"></i>View</button>
-                            </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            {% else %}
-            <table id="data-table" class="table table-striped table-bordered" >
-                <thead>
-                    <tr>
-                        <th width="1%"></th>
-                        <th width="30%">Sanction Information</th>
-                        <th width="30%">Status</th>
-                        <th data-orderable="false">Action</th>
-                    </tr>
-                </thead>
-            </table>
-            {% endif %}
+        <div class="col-lg-10">
+            <div class="panel" id="refresh">
+                <div class="panel-heading p-25">
+                    <div class="btn-group btn-group-toggle pull-right" data-toggle="buttons">
+                        <button class="btn btn-gray" id="donwload">Report  <i class="fas fa-file-alt text-white-lighter f-s-16"></i></button>
+                    </div>
+                    <h2 class="panel-title" style="font-size:16px;"><i class="fas fa-users mr-2" ></i>Excused Student List</h2>
+                </div>
+                <div class="panel-body">
+                    {% if sanction%}
+                    <table id="data-table" class="table table-striped table-bordered" >
+                        <thead>
+                            <tr>
+                                <th width="1%"></th>
+                                <th width="1%">Sanction Information</th>
+                                <th width="1%">Status</th>
+                                <th data-orderable="false">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for osas_t_sanction in sanction %}
+                            <tr class="odd gradeA tr_" id="{{osas_t_sanction.sanction_id}}">
+                                <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
+                                <td width="30%" class="align-middle">
+                                    <dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                        <dd class="col-sm-8 gritter- text-nowrap cn{{osas_t_sanction.sanction_id}}" ><strong class="contol_number">{{ osas_t_sanction.sanction_control_number }}</strong></dd>
+                                        <dd class="col-sm-8 gritter- text-nowrap " ><strong class="stud_no sn{{osas_t_sanction.sanction_id}}">{{ osas_t_sanction.sanction_stud_id.stud_no}}</strong></dd>
+                                        <dd class="col-sm-8 gritter- text-nowrap violation v{{osas_t_sanction.sanction_id}}" >{{ osas_t_sanction.sanction_code_id.ds_code_id.ct_name }}</dd>
+                                        <dd class="col-sm-8 gritter- text-nowrap offense o{{osas_t_sanction.sanction_id}}" >{{ osas_t_sanction.sanction_code_id.ds_violation_count }}</dd> 
+                                        {% if request.session.session_user_role == 'HEAD OSAS'%}
+                                        {% if osas_t_sanction.sanction_excuse_id.excuse_status %}
+                                        <dd class="col-sm-8 gritter- text-nowrap " ><a class="excuse{{osas_t_sanction.sanction_excuse_id.excuse_status}}" data-toggle="modal" href="#modal-view" onClick="viewExcuse('{{ osas_t_sanction.sanction_excuse_id }}')" ><span class="label label-success status_">Excuse <i class="far fa-envelope text-white-lighter fa-lg"></i></span></a></dd>
+                                        {% endif %}
+                                        {% endif %}
+                                    </dl>
+                                </td>
+                                <td width="30%"><dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                    <dd class="col-sm-8 gritter- text-nowrap " ><strong class="sanc_status s{{osas_t_sanction.sanction_id}}">{{ osas_t_sanction.sanction_code_id.ds_status}}</strong></dd>
+                                    <dd class="col-sm-8 gritter- text-nowrap sanc_date d{{osas_t_sanction.sanction_id}}" >{{ osas_t_sanction.sanction_datecreated|date:"Y-m-d"}}</dd>
+                                    {% if osas_t_sanction.sanction_designation_id.designation_office is not none %}
+                                    <dd class="col-sm-8 gritter- text-nowrap office of{{osas_t_sanction.sanction_id}}" >{{ osas_t_sanction.sanction_designation_id.designation_office }}</dd>
+                                    {%elif osas_t_sanction.sanction_status == "PENDING" %}
+                                    <dd class="col-sm-8 gritter- text-nowrap office of{{osas_t_sanction.sanction_id}}" ></dd>
+                                    {%else%}
+                                    <dd class="col-sm-8 gritter- text-nowrap office of{{osas_t_sanction.sanction_id}}" >{{ osas_t_sanction.sanction_designation_id.designation_office }}</dd>
+                                    {%endif%}
+                                    <dd class="col-sm-8 gritter- text-nowrap hrs hr{{osas_t_sanction.sanction_id}}" >{{ osas_t_sanction.sanction_code_id.ds_hrs }} Hour(s)</dd>
+                                    {% if osas_t_sanction.sanction_status == "COMPLETED"%}
+                                    <dd class="col-sm-8 gritter-"><strong><span class="badge badge-danger status_ ss{{osas_t_sanction.sanction_id}}">{{ osas_t_sanction.sanction_status }}</span></strong></dd>
+                                    {% elif osas_t_sanction.sanction_status == "ACTIVE"%}
+                                    <dd class="col-sm-8 gritter- "><strong><span class="badge badge-warning status_ ss{{osas_t_sanction.sanction_id}}">{{ osas_t_sanction.sanction_status }}</span></strong></dd>
+                                    {% else %}
+                                    <dd class="col-sm-8 gritter-"><strong><span class="badge badge-info status_ ss{{osas_t_sanction.sanction_id}}">{{ osas_t_sanction.sanction_status }}</span></strong></dd>
+                                    {% endif %}
+                                </dl>
+                                </td>
+                                <td class="align-middle action_btn text-nowrap" id="action_btn"><div class="text-nowrap"><div class="btn-group ">
+                                    <button id="view-btn" class="btn btn-white  m-l-1"  data-toggle="modal" href="#modal_view" onClick="viewSanction('{{ osas_t_sanction.sanction_id }}')"><i class="fas fa-search mr-2"></i>View</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <table id="data-table" class="table table-striped table-bordered" >
+                        <thead>
+                            <tr>
+                                <th width="1%"></th>
+                                <th width="30%">Sanction Information</th>
+                                <th width="30%">Status</th>
+                                <th data-orderable="false">Action</th>
+                            </tr>
+                        </thead>
+                    </table>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -211,6 +238,7 @@
 {% block page-js %}
 <script>
     $(document).ready(function() {
+        document.getElementById("myImg").src = "/media/PUPLOGO.png";
         $('#data-table').DataTable({
         ordering: false,
     });
@@ -223,7 +251,7 @@
 
 $('#donwload').click(function(){
     var wme = window.open("","", "width = 1050px, height = auto");
-    wme.document.write("<div class='row' style='margin-left: 50px; margin-top: 20px;'><img src='https://www.freelogovectors.net/wp-content/uploads/2017/05/pup-logo-Polytechnic_University_of_the_Philippines.png' style='width: 110px; height: 107px;'/><div style='margin-right: 40px; float: right;'><p style='font-family: Arial, Helvetica, sans-serif; font-size: 18px; color: black; margin-top: 15px;'>Republic of the Philippines</p><p style='font-family: Trajan Pro; font-size: 20px; color: black; margin-top: -15px;'><b>Polytechnic University of the Philippines</b></p><p style='font-family: Arial, Helvetica, sans-serif; color: black; margin-top: -15px;'><b>Quezon City Branch</b></p></div></div></div><br/><div class='container-fluid' style='background: whitesmoke; height: 70px; margin-top: -10px'><div class='row'><p style='padding-top: 20px; padding-left:  15px; font-family: Roboto; font-size: 24px; color: gray;'><b>STUDENT SANCTION</b></p></div></div>"
+    wme.document.write("<div class='row' style='margin-left: 50px; margin-top: 20px;'><img src='/media/PUPLOGO.png' style='width: 110px; height: 107px;'/><div style='margin-right: 40px; float: right;'><p style='font-family: Arial, Helvetica, sans-serif; font-size: 18px; color: black; margin-top: 15px;'>Republic of the Philippines</p><p style='font-family: Trajan Pro; font-size: 20px; color: black; margin-top: -15px;'><b>Polytechnic University of the Philippines</b></p><p style='font-family: Arial, Helvetica, sans-serif; color: black; margin-top: -15px;'><b>Quezon City Branch</b></p></div></div></div><br/><div class='container-fluid' style='background: whitesmoke; height: 70px; margin-top: -10px'><div class='row'><p style='padding-top: 20px; padding-left:  15px; font-family: Roboto; font-size: 24px; color: gray;'><b>STUDENT SANCTION</b></p></div></div>"
     );
     wme.document.write("<table style='border-collapse: collapse; width: 100%; font-family: Roboto; font-size:13px;' id='data-table' class='table table-striped table-bordered' ><thead ><tr><th  width='5%' style='border: 1px solid lightgrey; text-align: left; padding: 5px; font-size:15px;'></th><th width='90%' colspan='2' style='border: 1px solid lightgrey; text-align: left; padding: 5px;'>Sanction Information</th><th width='10%' style='border: 1px solid lightgrey; text-align: right; font-size:15px; padding: 5px;'>Status</th></tr></thead><tbody>");
     var i = 0

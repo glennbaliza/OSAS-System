@@ -46,6 +46,9 @@
     body{
         word-wrap:break-word;
     }
+    .float-child {
+    float: left;
+    }  
     </Style>
 {% endblock%}
 
@@ -56,99 +59,210 @@
 
 {% block content%}
 <div id="content" class="content " >
-
-    {% if messages %}
-    <p class="alert alert-danger">
-        {% for message in messages %}
-            <i><strong>{{ message }}</strong></i>
-        {% endfor %}
-    </p>
-    {% endif %} 
-
-    <h1 class="page-header mb-1">File a complaint</h1>
+    <ol class="breadcrumb pull-right">
+        <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+        <li class="breadcrumb-item active">File a Complaint</li>
+    </ol>
+    <h1 class="page-header mb-1"><i class="far fa-comments mr-2" ></i> File a complaint</h1>
 	<p class="mb-5">Page Description</p>
-    <!-- end page-header -->
-    <!-- begin panel -->
-    <div class="row" hidden><img src="https://www.freelogovectors.net/wp-content/uploads/2017/05/pup-logo-Polytechnic_University_of_the_Philippines.png" style="width: 130px; height: 130px;"/></div>
-
-    <div class="panel" id="refresh">
-        <div class="panel-heading p-25">
-            <div class="btn-group btn-group-toggle pull-right" data-toggle="buttons">
-                <button class="btn btn-success"  data-toggle="modal" href="#modal-add" id="btn_rem"><i class="fas fa-plus"></i> File Complaint</button>
-            </div>
-            <h2 class="panel-title" style="font-size:16px;">Letter of complaint</h2>
+    {% if messages %}
+    <div class="col-lg-12 form-check-inline" id="error">
+        <div class="container col-lg-12" id="error_msg">
+            {% for message in messages %}
+            <p class="alert alert-danger text-center" >{{ message }}</p>
+            {% endfor %}
         </div>
-        <div class="panel-body">
-            {% if stud_complaint %}
-            <table id="data-table" class="table table-striped table-bordered">
-                <thead>
-                    <tr>
-                        <th width="1%"></th>
-                        <th data-orderable="false">Complaint Detail</th>
-                        <th data-orderable="false">Complaint Status</th>
-                        <th data-orderable="false">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for osas_t_complaint in stud_complaint %}
-                    <tr class="odd gradeA" id="{{ osas_t_complaint.comp_id }}">
-                        <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
-                        <td class="office_data"><dl class="row mb-0 p-2" style="line-height: .6rem;">
-                            <dd class="col-sm-8 gritter-  off_name" ><strong>{{ osas_t_complaint.comp_number }}</strong></dd>
-                            {% if osas_t_complaint.comp_letter %}
-                            <dd class="col-sm-8 gritter- text-nowrap " ><a class="excuse{{osas_t_complaint.comp_id}}" data-toggle="modal" href="#modal-edit" onClick="editComplaint('{{ osas_t_complaint.comp_id }}')" ><span class="label label-success status_" >Complaint letter <i class="far fa-envelope text-white-lighter fa-lg"></i></span></a></dd>
-                            {% endif %}
-                            {% if osas_t_complaint.comp_pic %}
-                            <dd class="col-sm-8 gritter- text-nowrap m-t-2" ><a class="excuse{{osas_t_complaint.comp_id}}" data-toggle="modal" href="#modal-edit_pic" onClick="editComplaintPic('{{ osas_t_complaint.comp_id }}')" ><span class="label label-success status_">Proof image <i class="far fa-image text-white-lighter fa-lg"></i></span></a></dd>
-                            {% endif %}
-                        </dl>
-                        </td>
-                        <td class="align-middle" width="35%" ><dl class="row mb-0 p-2" style="line-height: .6rem;">
-                            <dd class="col-sm-8 gritter-  off_name" ><strong>{{ osas_t_complaint.comp_datecreated|date:"Y-m-d" }}</strong></dd>
-                            {% if osas_t_complaint.comp_status == "COMPLETED"%}
-                            <dd class="col-sm-8 gritter-"><strong><span class="badge badge-danger status_ ss{{osas_t_complaint.comp_status}}">{{ osas_t_complaint.comp_status }}</span></strong></dd>
-                            {% elif osas_t_complaint.comp_status == "ACTIVE"%}
-                            <dd class="col-sm-8 gritter- "><strong><span class="badge badge-warning status_ ss{{osas_t_complaint.comp_status}}">{{ osas_t_complaint.comp_status }}</span></strong></dd>
-                            {% elif osas_t_complaint.comp_status == "CANCELLED"%}
-                            <dd class="col-sm-8 gritter- "><strong><span class="badge badge-success status_ ss{{osas_t_complaint.comp_status}}">{{ osas_t_complaint.comp_status }}</span></strong></dd>
-                            {% else %}
-                            <dd class="col-sm-8 gritter-"><strong><span class="badge badge-info status_ ss{{osas_t_complaint.comp_status}}">{{ osas_t_complaint.comp_status }}</span></strong></dd>
-                            {% endif %}
-                        </dl>
-                        </td>
-                        <td  class="align-middle"> 
-                            <div class="text-nowrap">
-                                <div class="btn-group ">
-                                    <button id="delete-btn" class="btn btn-danger" onClick="deleteComplaint('{{osas_t_complaint.comp_id}}')"><i class="fas fa-trash-alt mr-2"></i>Delete</button>
-                                </div>
+    </div>
+    {% endif %} 
+    <img hidden id="myImg" style="width: 111px; height: 108px;"/>
+    <div class="row">
+        <div class="col-lg-2">
+            <div class="panel" data-sortable-id="index-1">
+                <div class="panel-heading p-25">
+                    <h2 class="panel-title" style="font-size:16px;">Filter <i class="fas fa-filter mr-2" ></i></h2>
+                </div>
+                <div class="panel-body" style="padding: 0%; height: 330px;">
+                    <form id="validate_form" method="POST" action="{% url 'student_file_complaint' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group" >
+                            <label style="text-align: left; margin-top: 4px;" class="col-sm-12">Category:</label> 
+                            <div class="col-sm-12">
+                                <select id="filter_cat" name="filter_cat" class="form-control">
+                                    <option selected disabled="true">--Select--</option>
+                                    <option  value="Student">Student</option>
+                                    <option  value="Faculty">Faculty</option>
+                                </select>
                             </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                    
-                </tbody>
-            </table>
-            {% else %}
-            <table id="data-table" class="table table-striped table-bordered">
-                <thead>
-                    <tr>
-                        <th width="1%"></th>
-                        <th data-orderable="false">Complaint Detail</th>
-                        <th data-orderable="false">Complaint Status</th>
-                        <th data-orderable="false">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table> 
-            {% endif %}
+                        </div>
+                        <label style="text-align: left; margin-bottom: 4px; margin-top: 4px;" class="col-sm-12">From:</label> 
+                        <div class="col-sm-12" > 
+                            <input type="date" class="form-control col-sm-12" name="date_from">
+                        </div>  
+                        <label style="text-align: left; margin-bottom: 4px; margin-top: 4px;" class="col-sm-12">To:</label> 
+                        <div class="col-sm-12">
+                            <input type="date" class="form-control col-sm-12" name="date_to">
+                        </div>  
+                        <div class="form-group" >
+                            <label style="text-align: left; margin-bottom: 7px; margin-top: 4px;" class="col-sm-12">Status:</label> 
+                            <div class="col-sm-12">
+                                <select id="filter_status" name="filter_status" class="form-control">
+                                    <option selected disabled="true">--Select--</option>
+                                    <option  value="PENDING">Pending</option>
+                                    <option  value="APPROVED">Approved</option>
+                                    <option  value="DECLINED">Declined</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <button type="submit" class="btn btn-success col-sm-12" data-toggle="modal" data-target="#modal_add" id="test">Filter <i class="fas fa-filter mr-2" ></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-10">
+            <div class="panel" id="refresh">
+                <div class="panel-heading p-25">
+                    <div class="btn-group btn-group-toggle pull-right" data-toggle="buttons">
+                        <button class="btn btn-success"  data-toggle="modal" href="#modal-add" id="btn_rem"><i class="fas fa-plus"></i> File Complaint</button>
+                    </div>
+                    <h2 class="panel-title" style="font-size:16px;"><i class="fas fa-comments mr-2" ></i> Complaint List</h2>
+                </div>
+                <div class="panel-body">
+                    {% if stud_complaint %}
+                    <table id="data-table" class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th width="1%"></th>
+                                <th data-orderable="false">Complaint Detail</th>
+                                <th data-orderable="false">Complaint Status</th>
+                                <th data-orderable="false">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for osas_t_complaint in stud_complaint %}
+                            <tr class="odd gradeA" id="{{ osas_t_complaint.comp_id }}">
+                                <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
+                                <td class="office_data"><dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                    <dd class="col-sm-8 gritter-  off_name" ><strong>{{ osas_t_complaint.comp_number }}</strong></dd>
+                                    {% if osas_t_complaint.comp_letter %}
+                                    <dd class="col-sm-8 gritter- text-nowrap " ><a class="excuse{{osas_t_complaint.comp_id}}" data-toggle="modal" href="#modal-edit" onClick="editComplaint('{{ osas_t_complaint.comp_id }}')" ><span class="label label-success status_" >Complaint letter <i class="far fa-envelope text-white-lighter fa-lg"></i></span></a></dd>
+                                    {% endif %}
+                                    {% if osas_t_complaint.comp_pic %}
+                                    <dd class="col-sm-8 gritter- text-nowrap m-t-2" ><a class="excuse{{osas_t_complaint.comp_id}}" data-toggle="modal" href="#modal-edit_pic" onClick="editComplaintPic('{{ osas_t_complaint.comp_id }}')" ><span class="label label-success status_">Proof image <i class="far fa-image text-white-lighter fa-lg"></i></span></a></dd>
+                                    {% endif %}
+                                    <dd class="col-sm-8 gritter-  off_name" ><strong>{{ osas_t_complaint.comp_datecreated|date:"Y-m-d" }}</strong></dd>
+                                </dl>
+                                </td>
+                                <td class="align-middle" width="35%" ><dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                    <dd class="col-sm-8 gritter-  off_name" ><strong>{{ osas_t_complaint.comp_g_assign }}</strong></dd>
+                                    <dd class="col-sm-8 gritter-  off_name" >{{ osas_t_complaint.comp_category }}</dd>
+                                    <dd class="col-sm-8 gritter-  off_name" >{{ osas_t_complaint.comp_nature }}</dd>
+                                    {% if osas_t_complaint.comp_status == "APPROVED"%}
+                                    <dd class="col-sm-8 gritter- "><strong><span class="badge badge-warning status_ ss{{osas_t_complaint.comp_status}}">{{ osas_t_complaint.comp_status }}</span></strong></dd>
+                                    {% elif osas_t_complaint.comp_status == "CANCELLED"%}
+                                    <dd class="col-sm-8 gritter- "><strong><span class="badge badge-danger status_ ss{{osas_t_complaint.comp_status}}">{{ osas_t_complaint.comp_status }}</span></strong></dd>
+                                    {% else %}
+                                    <dd class="col-sm-8 gritter-"><strong><span class="badge badge-info status_ ss{{osas_t_complaint.comp_status}}">{{ osas_t_complaint.comp_status }}</span></strong></dd>
+                                    {% endif %}
+                                </dl>
+                                </td>
+                                <td  class="align-middle"> 
+                                    <div class="text-nowrap">
+                                        <div class="btn-group ">
+                                            {% if osas_t_complaint.comp_letter %}
+                                            <button id="print_btn" class="btn btn-gray" onClick="printComplaint('{{osas_t_complaint.comp_id}}')"><i class="fas fa-print mr-2"></i>Print</button>
+                                            {% endif %}
+                                            {% if osas_t_complaint.comp_status == "PENDING"%}
+                                            <button id="delete-btn" class="btn btn-danger" onClick="deleteComplaint('{{osas_t_complaint.comp_id}}')"><i class="fas fa-trash-alt mr-2"></i>Delete</button>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <table id="data-table" class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th width="1%"></th>
+                                <th data-orderable="false">Complaint Detail</th>
+                                <th data-orderable="false">Complaint Status</th>
+                                <th data-orderable="false">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table> 
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
+<div class="modal fade" id="modal-add" role="dialog" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content " style="background-color:whitesmoke;">
+            <div class="panel panel-inverse">
+                <button type="button" class="close"  data-dismiss="modal" aria-hidden="true" style="color: gray; margin: 6px;">×</button>
+                <form  method="POST" class="form-control-with-bg" id="form1" action="{% url 'student_file_complaint_add' %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="panel-body" style="background-color:whitesmoke;"> 
+                        <div class="col-12">
+                            <h1 class="page-header mb-1">New Complaint</h1>
+                            <p class="mb-5">Page Description</p>
+                            <div class="col-lg-12 form-check-inline" id="error">
+                            </div>
+                        </div>
+                        <div class="col-lg-4 float-child">
+                            <input class="form-control" id="lost_id_" type="hidden" name="lost_id_"/>
+                            <div class="col-12 m-b-10" >
+                                <label  class="col-form-label text-md-right">Category: <span class="text-danger">*</span></label>
+                                <select style="margin-top: -3px;" id="g_category" name="g_category" class="form-control">
+                                    <option  value="--select--" selected hidden >--select--</option>
+                                    <option value="Student">Student</option> 
+                                    <option value="Faculty">Faculty</option>   
+                                </select>
+                            </div>
+                            <div class="col-12 m-b-10" >
+                                <label  class="col-form-label text-md-right">Nature of Complaint: <span class="text-danger">*</span></label>
+                                <select style="margin-top: -3px;" id="n_complaint" name="n_complaint" class="form-control">
+                                    <option  value="--select--" selected hidden >--select--</option>
+                                    <option value="Sample">Sample</option>   
+                                </select>
+                            </div>
+                            <div class="col-12  m-b-10" >
+                                <label  class="col-form-label text-md-right">Grievance Assigned To: <span class="text-danger">*</span></label>
+                                <input type="text" id="g_assig" name="g_assig" class="form-control form-control-md" placeholder="enter the name of student/teacher" required data-parsley-trigger="keyup" >
+                            </div>
+                            <div class="col-12 m-b-10" >
+                                <label style="font-size: 12px;" class="col-form-label text-md-right">Proof image: <span class="text-danger">*</span></label>
+                                <input type="file" id="image" name="image"></input>
+                            </div>
+                        </div>    
+                        <div class="col-8 float-child">
+                            <div class="col-lg-12 col-md-6">
+                                <input class="form-control" id="sanction_id" type="hidden" name="sanction_id"/>
+                                <label  class="col-form-label text-md-right">Complaint: <span class="text-danger">*</span></label>
+                                <textarea class="form-control essay_text" id="essay_text"  name="essay_text" placeholder="Write your reason here..."></textarea>
+                            </div>
+                        </div>   
+                    </div>
+                    <div class="panel-footer" style=" background-color:white;">
+                        <button type="submit" class="btn btn_success col-md-3 pull-right m-l-10 " style="height: 33px; padding: 5px; background: linear-gradient(to right, #66ccff -1%, #3366ff 98%); border:none; color: white;" >Submit<i class="far fa-paper-plane m-l-3 zoom"></i></button>
+                        <a class="btn btn-white pull-right m-l-10" data-dismiss="modal">Back<i class="fas fa-reply m-l-3 zoom"></i></a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
-
-<div class="modal fade" id="modal-add" role="dialog"  data-backdrop="static">
+<div class="modal fade" id="" role="dialog"  data-backdrop="static">
     <div class="modal-dialog modal-lg" role="document" id="myModal">
         <div class="modal-content">
             <input class="form-control" id="excuse_id" type="hidden" name="excuse_id"/>
@@ -165,7 +279,6 @@
                         </div>
                         <br>
                         <br>
-                        
                         <div class="col-lg-12 col-md-6">
                             <input class="form-control" id="sanction_id" type="hidden" name="sanction_id"/>
                             <textarea class="form-control essay_text" id="essay_text"  name="essay_text" placeholder="Write your reason here..."></textarea><br>
@@ -187,7 +300,7 @@
         <div class="modal-content">
             <div class="panel panel-inverse" >
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="color: gray; margin: 6px;">×</button>  
-                <form  method="POST" class="form-control-with-bg" id="form1" action="{% url 'student_file_complaint_add_proof' %}" method="post" enctype="multipart/form-data">
+                <form  method="POST" class="form-control-with-bg" id="form2" action="{% url 'student_file_complaint_add_proof' %}" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="panel-body">
                         <div class="col">
@@ -247,7 +360,7 @@
 </div>
 
 <div class="modal fade" id="modal-edit" role="dialog"  data-backdrop="static">
-    <div class="modal-dialog modal-lg" role="document" id="myModal">
+    <div class="modal-dialog modal-md" role="document" id="myModal">
         <div class="modal-content">
             <input class="form-control" id="comp_id" type="hidden" name="comp_id"/>
             <div class="panel panel-inverse" >
@@ -258,12 +371,6 @@
                         <p class="mb-5">Page Description</p>
                         <div class="col-lg-12" id="error1">
                         </div>
-                        <div class="col-lg-12 col-md-6">
-                            <button class="btn btn-gray pull-right" id="donwload1">Print <i class="fas fa-print text-white-lighter f-s-16"></i></button>
-                        </div>
-                        <br>
-                        <br>
-                        
                         <div class="col-lg-12 col-md-6">
                             <input class="form-control" id="sanction_id" type="hidden" name="sanction_id"/>
                             <textarea class="form-control essay_text1" id="essay_text1"  name="essay_text1" placeholder="Write your reason here..."></textarea><br>
@@ -298,6 +405,7 @@
 {% block page-js %}
 <script>
     $(document).ready(function() {
+        document.getElementById("myImg").src = "/media/PUPLOGO.png";
         $('#data-table').DataTable( {
         ordering: true,
         buttons: [
@@ -313,10 +421,38 @@
             }
         ]
     });
-        
     });
 </script>
 <script>
+
+function printComplaint(comp_id){
+    console.log(comp_id)
+    if (comp_id) {
+        $.ajax({
+            url: '{% url "student_file_complaint_get" %}',
+            type: "POST",
+            data: {
+                comp_id: comp_id,
+                csrfmiddlewaretoken: "{{ csrf_token }}",
+            },
+            dataType: 'json',
+            success: function(data){
+                if (data.comp_val) {
+                    console.log(data.comp_val.letter)
+                    var wme = window.open("","", "width = 793.7007874px, height = 1122.519685px");
+                    wme.document.write('<page size="A4" style="word-wrap:break-word;"><div style="padding: 20px;" id="letter_complaint"><div class="row" style="margin-left: 40px; margin-top: 20px;" id="puplogo"><img src="/media/PUPLOGO.png" style="width: 111px; height: 108px;"/><div style="float: right; margin-left: 40px;"><p style="font-family: Arial, Helvetica, sans-serif; font-size: 18px; color: black; margin-top: 15px;">Republic of the Philippines</p><p style="font-family: Trajan Pro; font-size: 20px; color: black; margin-top: -15px;"><b>Polytechnic University of the Philippines</b></p><p style="font-family: Arial, Helvetica, sans-serif; color: black; margin-top: -15px;"><b>Quezon City Branch</b></p></div><br/></div><div id="textt" style="margin: 50px 50px 50px 50px;"><label style="margin-bottom: -10px;">'+data.comp_val.lname+', '+data.comp_val.fname+' '+data.comp_val.mname+'</label><br><label style="margin-bottom: -10px;">'+data.comp_val.course+'</label><br><label style="margin-bottom: -10px;">'+data.comp_val.date+'</label><br><br><label style="margin-bottom: -10px;">Prof. Demelyn Espejo Monzon</label><br><label style="margin-bottom: -10px;">Head OSAS</label><br><label style="margin-bottom: -10px;">Office of the Student Affairs and Services</label><br><br><br><label style="margin-bottom: -10px;">Dear Prof. Demelyn Espejo Monzon,</label><br><br>'+data.comp_val.letter+'<br><br><label style="margin-bottom: -10px;">Yours Sincerely,</label><br><br><label style="margin-bottom: -10px;">'+data.comp_val.lname+', '+data.comp_val.fname+' '+data.comp_val.mname+'</label></div></div></page> ')
+                    wme.document.close();
+                    wme.focus();
+                    wme.print();
+                    wme.close();
+                }
+            },
+            error: function(error){
+                console.log(error)
+            }
+        })
+    }
+}
 
 function deleteComplaint(comp_id) {
     console.log(comp_id)
@@ -438,6 +574,7 @@ function editComplaint(comp_id) {
         })
     }
 }
+
 
 $("#modal-edit_pic").on('click','#btn_submit_edit_pic',function(){
     swal("Success!  Attachment has been eddited", {
@@ -609,12 +746,12 @@ CKEDITOR.editorConfig = function( config ) {
 };  
 
 CKEDITOR.replace('essay_text',{
-    height: 1122.519685,
+    height: 300,
     uiColor: '#9AB8F3',
 });
  
 CKEDITOR.replace('essay_text1',{
-    height: 1122.519685,
+    height: 300,
     uiColor: '#9AB8F3',
 });
  

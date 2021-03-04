@@ -21,9 +21,9 @@ class osas_r_course(models.Model):
     course_id = models.AutoField(primary_key=True)
     course_code = models.CharField(max_length=50, verbose_name='Course Code')
     course_name = models.CharField(max_length=250, verbose_name='Course Name')
-    course_add_date = models.DateTimeField(max_length=50, blank=True)
+    course_add_date = models.DateTimeField(max_length=50, default=now)
     course_edit_date = models.DateField(default=now)
-    course_status = models.CharField(max_length=10, default='Active')
+    course_status = models.CharField(max_length=10, default='ACTIVE')
         
     def __str__(self):
         return self.course_name
@@ -32,8 +32,8 @@ class osas_r_section_and_year(models.Model):
 
     yas_id = models.AutoField(primary_key=True)
     yas_descriptions = models.CharField(max_length=250,  verbose_name='yr and sec desc')
-    yas_dateregistered = models.DateTimeField(default=now)
-    status = models.CharField(max_length=50, default='Active')
+    yas_dateregistered = models.DateField(default=now)
+    status = models.CharField(max_length=50, default='ACTIVE')
     
     def __str__(self):
         return self.yas_descriptions
@@ -79,8 +79,8 @@ class osas_t_id(models.Model):
     lost_id_status = models.CharField(max_length=13, default='PENDING')
     lost_id_sanction_excuse = models.CharField(max_length=13, null=True, blank=True)
     lost_stud_id = models.ForeignKey(osas_r_personal_info, on_delete=models.CASCADE)
-    date_created = models.DateTimeField(max_length=50)
-    date_updated = models.DateTimeField(max_length=50)
+    date_created = models.DateField(max_length=50)
+    date_updated = models.DateField(max_length=50)
    
     def __str__(self):
         return str(self.lost_id)
@@ -100,8 +100,8 @@ class osas_r_userrole(models.Model):
 
     user_id = models.AutoField(primary_key=True)
     user_type = models.CharField(max_length=50, verbose_name='User Type')
-    date_created = models.DateTimeField(max_length=50, blank=True)
-    date_updated = models.DateTimeField(default=now)
+    date_created = models.DateField(max_length=50, blank=True)
+    date_updated = models.DateField(default=now)
 
     s_image = models.ImageField(upload_to=image_path, default='proof_pic/image.jpg')
 
@@ -119,9 +119,9 @@ class osas_r_auth_user(models.Model):
     auth_username = models.CharField(max_length=50)
     auth_password = models.CharField(max_length=16)
     auth_role = models.ForeignKey('osas_r_userrole', on_delete=models.CASCADE)
-    date_created = models.DateTimeField(max_length=50, blank=True)
-    date_updated = models.DateTimeField(default=now)
-    auth_status = models.CharField(max_length=10, default='Active')
+    date_created = models.DateField(max_length=50, blank=True)
+    date_updated = models.DateField(default=now)
+    auth_status = models.CharField(max_length=10, default='ACTIVE')
     def __str__(self):
         return self.auth_id
 
@@ -134,7 +134,7 @@ class osas_r_disciplinary_sanction(models.Model): # ex. 1st offense, sample_desc
     ds_days = models.IntegerField()
     ds_code_id = models.ForeignKey('osas_r_code_title', on_delete=models.CASCADE)
     ds_status = models.CharField(max_length = 50)
-    ds_datecreated = models.DateField(null = True)
+    ds_datecreated = models.DateField(default = now, null = True)
     def __str__(self):
         return str(self.ds_id)
 
@@ -178,7 +178,7 @@ class osas_t_excuse(models.Model):
     excuse_proof = models.ImageField(upload_to=image_path, null=True, blank = True)
     excuse_status = models.CharField(max_length = 10)
     excuse_stud_id = models.ForeignKey('osas_r_personal_info', on_delete = models.CASCADE)
-    excuse_datecreated = models.DateTimeField(default = now)
+    excuse_datecreated = models.DateField(default = now)
     excuse_dateupdated = models.DateField(default = now)
     
     def image_tag(self):
@@ -190,7 +190,10 @@ class osas_t_excuse(models.Model):
 #----------------------------------------------GRIEVANCES-------------------------------------------------------------
 class osas_t_complaint(models.Model):
     comp_id = models.AutoField(primary_key = True)
-    comp_number = models.CharField(max_length = 10)
+    comp_number = models.CharField(max_length = 10, blank=True)
+    comp_category = models.CharField(max_length = 50, blank=True)
+    comp_nature = models.CharField(max_length = 50, blank=True)
+    comp_g_assign = models.CharField(max_length = 50, blank=True)
     comp_letter = models.CharField(max_length = 2000)
     comp_pic = models.ImageField(upload_to=image_path, null=True, blank = True)
     comp_status = models.CharField(max_length = 10, default = "PENDING")

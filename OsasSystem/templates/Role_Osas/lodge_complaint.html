@@ -65,7 +65,7 @@ p{
 
 
 {% block content%}
-<div id="content" class="content">
+<div id="content" class="content"  >
     {% if messages %}
     <p class="alert alert-danger">
         {% for message in messages %}
@@ -73,88 +73,148 @@ p{
         {% endfor %}
     </p>
     {% endif %} 
-
-    <h1 class="page-header mb-1">File a complaint</h1>
+    <ol class="breadcrumb pull-right">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Dashboard</a></li>
+        <li class="breadcrumb-item active">Grievances</li>
+    </ol>
+    <h1 class="page-header mb-1"><i class="far fa-comments mr-2" ></i> Grievances</h1>
 	<p class="mb-5">Page Description</p>
     <!-- end page-header -->
     <!-- begin panel -->
-    <div class="row" hidden><img src="https://www.freelogovectors.net/wp-content/uploads/2017/05/pup-logo-Polytechnic_University_of_the_Philippines.png" style="width: 130px; height: 130px;"/></div>
-
-    <div class="panel" id="refresh">
-        <div class="panel-heading p-25">
-            <div class="btn-group btn-group-toggle pull-right" data-toggle="buttons">
-                <!-- <button class="btn btn-success"  data-toggle="modal" href="#modal-add" id="btn_rem"><i class="fas fa-plus"></i> File Complaint</button> -->
-            </div>
-            <h2 class="panel-title" style="font-size:16px;">Letter of complaint</h2>
-        </div>
-        <div class="panel-body">
-            {% if stud_complaints %}
-            <table id="data-table" class="table table-striped table-bordered">
-                <thead>
-                    <tr>
-                        <th width="1%"></th>
-                        <th data-orderable="false">Complaint Detail</th>
-                        <th data-orderable="false">Complaint Status</th>
-                        <th data-orderable="false">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for osas_t_complaint in stud_complaints %}
-                    <tr class="odd gradeA" id="{{ osas_t_complaint.comp_id }}">
-                        <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
-                        <td width="35%"><dl class="row mb-0 p-2" style="line-height: .6rem;">
-                            <dd class="col-sm-8 gritter-  off_name" ><strong>{{ osas_t_complaint.comp_stud_id.stud_no }}</strong></dd>
-                            {% if osas_t_complaint.comp_letter %}
-                            <dd class="col-sm-8 gritter- text-nowrap " ><a class="excuse{{osas_t_complaint.comp_id}}" data-toggle="modal" href="#modal-edit" onClick="editComplaint('{{ osas_t_complaint.comp_id }}')" ><span class="label label-success status_" >Complaint letter <i class="far fa-envelope text-white-lighter fa-lg"></i></span></a></dd>
-                            {% endif %}
-                            {% if osas_t_complaint.comp_pic %}
-                            <dd class="col-sm-8 gritter- text-nowrap m-t-2" ><a data-toggle="modal" href="#modal-edit_pic" onClick="editComplaintPic('{{ osas_t_complaint.comp_id }}')" ><span class="label label-success status_">Proof image <i class="far fa-image text-white-lighter fa-lg"></i></span></a></dd>
-                            {% endif %}
-                        </dl>
-                        </td>
-                        <td class="align-middle" width="35%" ><dl class="row mb-0 p-2" style="line-height: .6rem;">
-                            <dd class="col-sm-8 gritter-  off_name" ><strong>{{ osas_t_complaint.comp_number }}</strong></dd>
-                            <dd class="col-sm-8 gritter-  off_name" >{{ osas_t_complaint.comp_datecreated|date:"Y-m-d" }}</dd>
-                            {% if osas_t_complaint.comp_status == "COMPLETED"%}
-                            <dd class="col-sm-8 gritter-"><strong><span class="badge badge-danger status_ ss{{osas_t_complaint.comp_status}}">{{ osas_t_complaint.comp_status }}</span></strong></dd>
-                            {% elif osas_t_complaint.comp_status == "ACTIVE"%}
-                            <dd class="col-sm-8 gritter- "><strong><span class="badge badge-warning status_ ss{{osas_t_complaint.comp_status}}">{{ osas_t_complaint.comp_status }}</span></strong></dd>
-                            {% elif osas_t_complaint.comp_status == "CANCELLED"%}
-                            <dd class="col-sm-8 gritter- "><strong><span class="badge badge-success status_ ss{{osas_t_complaint.comp_status}}">{{ osas_t_complaint.comp_status }}</span></strong></dd>
-                            {% else %}
-                            <dd class="col-sm-8 gritter-"><strong><span class="badge badge-info status_ ss{{osas_t_complaint.comp_status}}">{{ osas_t_complaint.comp_status }}</span></strong></dd>
-                            {% endif %}
-                        </dl>
-                        </td>
-                        <td  class="align-middle" width="29%"> 
-                            <div class="text-nowrap">
-                                <div class="btn-group ">
-                                    {% if osas_t_complaint.comp_letter %}
-                                    <button id="print_btn" class="btn btn-gray" onClick="printComplaint('{{osas_t_complaint.comp_id}}')"><i class="fas fa-print mr-2"></i>Print</button>
-                                    {% endif %}
-                                    <button id="delete-btn" class="btn btn-danger" onClick="deleteComplaint('{{osas_t_complaint.comp_id}}')"><i class="fas fa-trash-alt mr-2"></i>Delete</button>
-                                </div>
+    <img hidden id="myImg" style="width: 111px; height: 108px;"/>
+    <div class="row">
+        <div class="col-lg-2">
+            <div class="panel" data-sortable-id="index-1">
+                <div class="panel-heading p-25">
+                    <h2 class="panel-title" style="font-size:16px;">Filter <i class="fas fa-filter mr-2" ></i></h2>
+                </div>
+                <div class="panel-body" style="padding: 0%; height: 330px;">
+                    <form id="validate_form" method="POST" action="{% url 'lodge_complaint' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group" >
+                            <label style="text-align: left; margin-top: 4px;" class="col-sm-12">Category:</label> 
+                            <div class="col-sm-12">
+                                <select id="filter_cat" name="filter_cat" class="form-control">
+                                    <option selected disabled="true">--Select--</option>
+                                    <option  value="Student">Student</option>
+                                    <option  value="Faculty">Faculty</option>
+                                </select>
                             </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                    
-                </tbody>
-            </table>
-            {% else %}
-            <table id="data-table" class="table table-striped table-bordered">
-                <thead>
-                    <tr>
-                        <th width="1%"></th>
-                        <th data-orderable="false">Complaint Detail</th>
-                        <th data-orderable="false">Complaint Status</th>
-                        <th data-orderable="false">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table> 
-            {% endif %}
+                        </div>
+                        <label style="text-align: left; margin-bottom: 4px; margin-top: 4px;" class="col-sm-12">From:</label> 
+                        <div class="col-sm-12" > 
+                            <input type="date" class="form-control col-sm-12" name="date_from">
+                        </div>  
+                        <label style="text-align: left; margin-bottom: 4px; margin-top: 4px;" class="col-sm-12">To:</label> 
+                        <div class="col-sm-12">
+                            <input type="date" class="form-control col-sm-12" name="date_to">
+                        </div>  
+                        <div class="form-group" >
+                            <label style="text-align: left; margin-bottom: 7px; margin-top: 4px;" class="col-sm-12">Status:</label> 
+                            <div class="col-sm-12">
+                                <select id="filter_status" name="filter_status" class="form-control">
+                                    <option selected disabled="true">--Select--</option>
+                                    <option  value="PENDING">Pending</option>
+                                    <option  value="APPROVED">Approved</option>
+                                    <option  value="DECLINED">Declined</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <button type="submit" class="btn btn-success col-sm-12">Filter <i class="fas fa-filter mr-2" ></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-10">
+            <div class="panel" id="refresh">
+                <div class="panel-heading p-25">
+                    <div class="btn-group btn-group-toggle pull-right" data-toggle="buttons">
+                        <!-- <button class="btn btn-success"  data-toggle="modal" href="#modal-add" id="btn_rem"><i class="fas fa-plus"></i> File Complaint</button> -->
+                        <button class="btn btn-gray" id="donwload">Report  <i class="fas fa-file-alt text-white-lighter f-s-16"></i></button>
+                    </div>
+                    <h2 class="panel-title" style="font-size:16px;"><i class="fas fa-list mr-2" ></i> Complaint List</h2>
+                </div>
+                <div class="panel-body">
+                    {% if stud_complaints %}
+                    <table id="data-table" class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th width="1%"></th>
+                                <th data-orderable="false" class="text-nowrap">Complaint Detail</th>
+                                <th data-orderable="false" class="text-nowrap">Suspect Information</th>
+                                <th data-orderable="false">Complaint Status</th>
+                                <th data-orderable="false">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for osas_t_complaint in stud_complaints %}
+                            <tr class="odd gradeA tr_" id="{{ osas_t_complaint.comp_id }}">
+                                <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
+                                <td class="text-nowrap"><dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                    <dd class="col-sm-8 gritter-  " ><strong class="sn{{osas_t_complaint.comp_id}}">{{ osas_t_complaint.comp_stud_id.stud_no }}</strong></dd>
+                                    <dd hidden class="col-sm-8 gritter-  " ><strong class="sc{{osas_t_complaint.comp_id}}">{{ osas_t_complaint.comp_stud_id.stud_course_id.course_name }}</strong></dd>
+                                    {% if osas_t_complaint.comp_letter %}
+                                    <dd class="col-sm-8 gritter- text-nowrap " ><a class="excuse{{osas_t_complaint.comp_id}}" data-toggle="modal" href="#modal-edit" onClick="editComplaint('{{ osas_t_complaint.comp_id }}')" ><span class="label label-success status_" >Complaint letter <i class="far fa-envelope text-white-lighter fa-lg"></i></span></a></dd>
+                                    {% endif %}
+                                    {% if osas_t_complaint.comp_pic %}
+                                    <dd class="col-sm-8 gritter- text-nowrap m-t-2" ><a data-toggle="modal" href="#modal-edit_pic" onClick="editComplaintPic('{{ osas_t_complaint.comp_id }}')" ><span class="label label-success status_">Proof image <i class="far fa-image text-white-lighter fa-lg"></i></span></a></dd>
+                                    {% endif %}
+                                </dl>
+                                </td>
+                                <td class="text-nowrap"><dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                    <dd class="col-sm-8 gritter- " ><strong class="scn{{osas_t_complaint.comp_id}}">{{ osas_t_complaint.comp_g_assign }}</strong></dd>
+                                    <dd class="col-sm-8 gritter- " ><strong class="catn{{osas_t_complaint.comp_id}}">{{ osas_t_complaint.comp_category }}</strong></dd>
+                                    <dd class="col-sm-8 gritter- " ><strong class="nn{{osas_t_complaint.comp_id}}">{{ osas_t_complaint.comp_nature }}</strong></dd>
+                                </dl>
+                                </td>
+                                <td class="align-middle" class="text-nowrap" width="35%" ><dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                    <dd class="col-sm-8 gritter- " ><strong><span class=" cc{{osas_t_complaint.comp_id}}">{{ osas_t_complaint.comp_number }}</span></strong></dd>
+                                    <dd class="col-sm-8 gritter- cd{{osas_t_complaint.comp_id}}">{{ osas_t_complaint.comp_datecreated|date:"Y-m-d" }}</dd>
+                                    {% if osas_t_complaint.comp_status == "APPROVED"%}
+                                    <dd class="col-sm-8 gritter- "><strong><span class="badge badge-warning  ss{{osas_t_complaint.comp_id}}">{{ osas_t_complaint.comp_status }}</span></strong></dd>
+                                    {% elif osas_t_complaint.comp_status == "DECLINED"%}
+                                    <dd class="col-sm-8 gritter- "><strong><span class="badge badge-danger  ss{{osas_t_complaint.comp_id}}">{{ osas_t_complaint.comp_status }}</span></strong></dd>
+                                    {% else %}
+                                    <dd class="col-sm-8 gritter-"><strong><span class="badge badge-info  ss{{osas_t_complaint.comp_id}}">{{ osas_t_complaint.comp_status }}</span></strong></dd>
+                                    {% endif %}
+                                </dl>
+                                </td>
+                                <td  class="align-middle" width="29%" class="text-nowrap"> 
+                                    <div class="text-nowrap">
+                                        <div class="btn-group ">
+                                            {% if osas_t_complaint.comp_letter %}
+                                            <button id="print_btn" class="btn btn-gray" onClick="printComplaint('{{osas_t_complaint.comp_id}}')"><i class="fas fa-print mr-2"></i>Print</button>
+                                            {% endif %}
+                                            {% if osas_t_complaint.comp_status == "PENDING" %}
+                                            <button class="btn btn-success m-l-1" id="btn_approve" onClick="approveComplaint('{{osas_t_complaint.comp_id}}')"><i class="fas fa-check mr-2"></i>Approve</button>
+                                            <button id="delete-btn" class="btn btn-danger" onClick="deleteComplaint('{{osas_t_complaint.comp_id}}')"><i class="fas fa-trash-alt mr-2"></i>Decline</button>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <table id="data-table" class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th width="1%"></th>
+                                <th data-orderable="false">Complaint Detail</th>
+                                <th data-orderable="false">Complaint Status</th>
+                                <th data-orderable="false">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table> 
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -207,10 +267,165 @@ p{
 {% block page-js %}
 <script>
     $(document).ready(function() {
-        
+        document.getElementById("myImg").src = "/media/PUPLOGO.png";
+        $('#data-table').DataTable({
+				ordering: false,
+			});
     });
 </script>
 <script>
+
+$('#donwload').click(function(){
+    var wme = window.open("","", "width = 1050px, height = auto");
+    wme.document.write("<div class='row' style='margin-left: 50px; margin-top: 20px;'><img src='/media/PUPLOGO.png' style='width: 110px; height: 107px;'/><div style='margin-right: 40px; float: right;'><p style='font-family: Arial, Helvetica, sans-serif; font-size: 18px; color: black; margin-top: 15px;'>Republic of the Philippines</p><p style='font-family: Trajan Pro; font-size: 20px; color: black; margin-top: -15px;'><b>Polytechnic University of the Philippines</b></p><p style='font-family: Arial, Helvetica, sans-serif; color: black; margin-top: -15px;'><b>Quezon City Branch</b></p></div></div></div><br/><div class='container-fluid' style='background: whitesmoke; height: 70px; margin-top: -10px'><div class='row'><p style='padding-top: 20px; padding-left:  15px; font-family: Roboto; font-size: 24px; color: gray;'><b>STUDENT GRIEVANCES</b></p></div></div>"
+    );
+    wme.document.write("<table style='border-collapse: collapse; width: 100%; font-family: Roboto; font-size:13px;' id='data-table' class='table table-striped table-bordered' ><thead ><tr>");
+    wme.document.write("<th  width='5%' style='border: 1px solid lightgrey; text-align: left; padding: 5px; font-size:15px;'></th>");
+    wme.document.write("<th width='45%' style='border: 1px solid lightgrey; text-align: left; padding: 5px;'>Complainant Info</th>");
+    wme.document.write("<th width='25%'  style='border: 1px solid lightgrey; text-align: left; padding: 5px;'>Assigned Suspect</th>");
+    wme.document.write("<th width='25%' style='border: 1px solid lightgrey; text-align: left; padding: 5px;'>Complaint Status</th>");
+    
+    wme.document.write("</tr></thead><tbody>");
+    var i = 0
+    $("#data-table .tr_").each(function() {
+        i ++
+        tr_id = $(this).attr('id')
+        complaint_number = $(this).find('.cc'+tr_id+'').text() 
+        student_number = $(this).find('.sn'+tr_id+'').text() 
+        student_course = $(this).find('.sc'+tr_id+'').text() 
+        suspect_name = $(this).find('.scn'+tr_id+'').text() 
+        category_name = $(this).find('.catn'+tr_id+'').text() 
+        nature_complaint = $(this).find('.nn'+tr_id+'').text() 
+        date = $(this).find('.cd'+tr_id+'').text() 
+        Status = $(this).find('.ss'+tr_id+'').text() 
+       
+        console.log(complaint_number,student_number)
+        wme.document.write("<tr class='odd gradeA tr_' id='{{osas_t_complaint.comp_id}}'>")
+        wme.document.write("<td width='1%' class='f-s-600 text-inverse' style='border: 1px solid lightgrey; text-align: center;'>"+i+"</td>")
+        wme.document.write("<td style='border: 1px solid lightgrey;' width='45%'><dl class='row mb-0 p-2' style='line-height: .6rem; '><dd class='col-sm-8 gritter-' style=' margin: 3px 0px 7px 0px; padding-left: 7px;'><strong style='padding-bottom: 15px;'>"+complaint_number+"</strong></dd><dd class='col-sm-8 gritter-' style=' margin: 3px 0px 7px 0px; padding-left: 7px;'><strong class='contol_number' style='padding-bottom: 15px;'>"+student_number+"</strong></dd><dd style=' margin: 3px 0px 7px 0px; padding-left: 7px;' class='col-sm-8 gritter- '>"+student_course+"</dd></dl></td>")
+        wme.document.write("<td style='border: 1px solid lightgrey;' width='25%'><dl class='row mb-0 p-2' style='line-height: .6rem; '><dd class='col-sm-8 gritter-' style=' margin: 3px 0px 7px 0px; padding-left: 7px;'><strong class='contol_number' style='padding-bottom: 15px;'>"+suspect_name+"</strong></dd><dd style=' margin: 3px 0px 7px 0px; padding-left: 7px;' class='col-sm-8 gritter- offense'>"+category_name+"</dd><dd style=' margin: 3px 0px 7px 0px; padding-left: 7px;' class='col-sm-8 gritter- office' >"+nature_complaint+"</dd></dl></td>")
+        wme.document.write("<td style='border: 1px solid lightgrey;' width='25%'><dl class='row mb-0 p-2' style='line-height: .6rem; '><dd class='col-sm-8 gritter-' style=' margin: 3px 0px 7px 0px; padding-left: 7px;'>"+date+"</dd><dd class='col-sm-8 gritter-' style=' margin: 3px 0px 7px 0px; padding-left: 7px;'><strong style='padding-bottom: 15px;'>"+Status+"</strong></dd></dl></td>");
+    });
+    wme.document.write("</tr></tbody></table>")
+    wme.document.close();
+    wme.focus();
+    wme.print();
+    wme.close();
+})
+
+function refresh_div()
+    { 
+        $( "#refresh" ).load(window.location.href + " #refresh" );
+
+    }
+
+function deleteComplaint(comp_id) {
+    status = "DECLINED"
+    if (comp_id) {
+        swal({
+        title: "Are you sure?",
+        text: "you want this complaint letter to approve?", 
+        icon: "warning",
+        buttons: {
+            cancel: {
+                text: 'Cancel',
+                value: null,
+                visible: true,
+                className: 'btn btn-default',
+                closeModal: true,
+            },
+            confirm: {
+                text: 'Yes',
+                value: true,
+                visible: true,
+                className: 'btn btn-warning',
+                closeModal: true
+            }
+        }
+        })
+        .then((willDelete) => {
+        if (willDelete) {
+            $.ajax({
+                url: '{% url "lodge_complaint_approve" %}',
+                type: "POST",
+                data: {
+                    status: status,
+                    comp_id:comp_id,
+                    csrfmiddlewaretoken: "{{ csrf_token }}",
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.error) {
+                       console.log(error)
+                    }
+                    if (data.success) {
+                        $("#data-table #" + comp_id).remove();
+                        refresh_div()
+                        swal("Success!  " + "Complaint is successfully approved.", {
+                        icon: "success",
+                        })
+                    }
+                }
+            });
+        } 
+    });
+    }
+}
+
+function approveComplaint(comp_id) {
+    status = "APPROVED"
+    if (comp_id) {
+        swal({
+        title: "Are you sure?",
+        text: "you want this complaint letter to approve?", 
+        icon: "warning",
+        buttons: {
+            cancel: {
+                text: 'Cancel',
+                value: null,
+                visible: true,
+                className: 'btn btn-default',
+                closeModal: true,
+            },
+            confirm: {
+                text: 'Yes',
+                value: true,
+                visible: true,
+                className: 'btn btn-warning',
+                closeModal: true
+            }
+        }
+        })
+        .then((willDelete) => {
+        if (willDelete) {
+            $.ajax({
+                url: '{% url "lodge_complaint_approve" %}',
+                type: "POST",
+                data: {
+                    comp_id:comp_id,
+                    status:status,
+                    csrfmiddlewaretoken: "{{ csrf_token }}",
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.error) {
+                       console.log(error)
+                    }
+                    if (data.success) {
+                        $("#data-table #" + comp_id).remove();
+                        refresh_div()
+                        swal("Success!  " + "Complaint is successfully approved.", {
+                        icon: "success",
+                        })
+                    }
+                }
+            });
+        } 
+    });
+    }
+}
+
+
 function printComplaint(comp_id){
     console.log(comp_id)
     if (comp_id) {

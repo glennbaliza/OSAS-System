@@ -34,8 +34,13 @@
         {% endfor %}
     </p>
     {% endif %} 
-
-    <h1 class="page-header mb-1">Designation Offices</h1>
+    <ol class="breadcrumb pull-right">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Dashboard</a></li>
+        <li class="breadcrumb-item">Student Sanction</li>
+        <li class="breadcrumb-item">Sanction Setup</li>
+        <li class="breadcrumb-item">Designation Office</li>
+    </ol>
+    <h1 class="page-header mb-1"><i class="fas fa-building mr-2" ></i>Designation Offices</h1>
 	<p class="mb-5">Section 1: Student offenses shall be subjected to disciplinary measures
         by the University. If the sanction imposed is suspension or dismissal, the
         student shall not be allowed to enter the University premises. <br> Section 2. All complaints involving students shall be referred to the Office of
@@ -45,9 +50,9 @@
     <div class="panel" id="refresh">
         <div class="panel-heading p-25">
             <div class="btn-group btn-group-toggle pull-right" data-toggle="buttons">
-                <button class="btn btn-success"  data-toggle="modal" href="#modal-dialog" id="btn_rem"><i class="fas fa-search mr-2"></i>Add New</button>
+                <button class="btn btn-success"  data-toggle="modal" href="#modal-dialog" id="btn_rem"><i class="fas fa-plus mr-2"></i>New Designation</button>
             </div>
-            <h2 class="panel-title" style="font-size:16px;">Office List</h2>
+            <h2 class="panel-title" style="font-size:16px;"><i class="far fa-building mr-2" ></i>Office List</h2>
         </div>
         <div class="panel-body">
             {% if office_list %}
@@ -211,7 +216,7 @@
     $('form#form2').trigger("reset");
     $('#modal-edit').modal('hide');
     return false;
-});
+}); 
 
 function editOffice(designation_id) {
     if (designation_id) {
@@ -276,14 +281,13 @@ function deleteOffice(designation_id) {
                     csrfmiddlewaretoken: "{{ csrf_token }}",
                 },
                 success: function(data){
-                    console.log(office_name)
                     if (data.office_data) {
                         appendToUsrTable(data.office_data);
                         swal("Success! request has been completed", {
                                 icon: "success",
                             }).then((willreload) => {
                             if(willreload){
-                                updateDiv();
+                                // updateDiv();
                             }
                         });
                     }

@@ -7,82 +7,128 @@
 
 {% block content %}
 {% if request.session.session_user_role == 'STUDENT'%}
-		<!-- begin #content -->
-		<div id="content" class="content">
-			<!-- begin page-header -->
-			<h1 class="page-header">Dashboard v2 <small>header small text goes here...</small></h1>
-			<!-- end page-header -->
-			<!-- begin row -->
-			<div class="row">
-				<!-- begin col-3 -->
-				<div class="col-lg-12 col-md-6">
-					{% if messages %}
-							{% for message in messages %}
-								{% if message.tags %}  
-									<script>alert("{{ message }}")</script> 
-								{% endif %}
-							{% endfor %}
-					{% endif %}
+<div id="content" class="content">
+	<ol class="breadcrumb pull-right">
+        <li class="breadcrumb-item active">Dashboard</li>
+    </ol>
+    <h1 class="page-header mb-1"><i class="far fa-chart-bar mr-2" ></i>Student Dashboard</i></h1>
+    <p class="mb-5">Page Description</p>
+	<div class="row">
+		<div class="col-lg-4">
+			<div class="panel">
+				<div class="panel-heading p-25">
+					<h2 class="panel-title" style="font-size:16px;"><i class="far fa-address-card mr-2" ></i> Lost ID</h2>
 				</div>
-			    <div class="col-lg-3 col-md-6">
-			        <div class="widget widget-stats bg-gradient-green">
-						<div class="stats-icon stats-icon-lg"><i class="fa fa-globe fa-fw"></i></div>
-			        	<div class="stats-content">
-							<div class="stats-title">TODAY'S VISITS</div>
-							<div class="stats-number">7,842,900</div>
-							<div class="stats-progress progress">
-								<div class="progress-bar" style="width: 70.1%;"></div>
-							</div>
-							<div class="stats-desc">Better than last week (70.1%)</div>
-                        </div>
-			        </div>
-			    </div>
-			    <!-- end col-3 -->
-			    <!-- begin col-3 -->
-			    <div class="col-lg-3 col-md-6">
-			        <div class="widget widget-stats bg-gradient-blue">
-			            <div class="stats-icon stats-icon-lg"><i class="fa fa-dollar-sign fa-fw"></i></div>
-						<div class="stats-content">
-							<div class="stats-title">TODAY'S PROFIT</div>
-							<div class="stats-number">180,200</div>
-							<div class="stats-progress progress">
-								<div class="progress-bar" style="width: 40.5%;"></div>
-							</div>
-							<div class="stats-desc">Better than last week (40.5%)</div>
+				<div class="panel-body p-t-0">
+					<div class="table-responsive">
+						<table class="table table-valign-middle">
+							<thead>
+								<tr>	
+									<th>Status</th>
+									<th>Total</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td><label class="label label-info">Pending</label></td>
+									<td>{{lost_id_pending}}</td>
+								</tr>
+								<tr>
+									<td><label class="label label-warning">Active</label></td>
+									<td>{{lost_id_process}}</td>
+								</tr>
+								<tr>
+									<td><label class="label label-danger">Completed</label></td>
+									<td>{{lost_id_completed}}</td>
+								</tr>
+							</tbody>
+						</table>
+						<div class="stats-link d-flex justify-content-end">
+							<a href="{% url 'student_lost_id' %}">View Detail <i class="fa fa-arrow-alt-circle-right"></i></a>
 						</div>
-			        </div>
-			    </div>
-			    <!-- end col-3 -->
-			    <!-- begin col-3 -->
-			    <div class="col-lg-3 col-md-6">
-			        <div class="widget widget-stats bg-gradient-purple">
-			            <div class="stats-icon stats-icon-lg"><i class="fa fa-archive fa-fw"></i></div>
-			        	<div class="stats-content">
-							<div class="stats-title">NEW ORDERS</div>
-							<div class="stats-number">38,900</div>
-							<div class="stats-progress progress">
-								<div class="progress-bar" style="width: 76.3%;"></div>
-							</div>
-							<div class="stats-desc">Better than last week (76.3%)</div>
-						</div>
-			        </div>
-			    </div>
-			    <!-- end col-3 -->
-			    <!-- begin col-3 -->
-			    <div class="col-lg-3 col-md-6">
-			        <div class="widget widget-stats bg-gradient-black">
-			            <div class="stats-icon stats-icon-lg"><i class="fa fa-comment-alt fa-fw"></i></div>
-			        	<div class="stats-content">
-							<div class="stats-title">NEW COMMENTS</div>
-							<div class="stats-number">3,988</div>
-							<div class="stats-progress progress">
-								<div class="progress-bar" style="width: 54.9%;"></div>
-							</div>
-							<div class="stats-desc">Better than last week (54.9%)</div>
-						</div>
-			        </div>
-			    </div>
+					</div>
+				</div>
+			</div>
 		</div>
+		<div class="col-lg-4">
+			<div class="panel">
+				<div class="panel-heading p-25">
+					<h2 class="panel-title" style="font-size:16px;"><i class="far fa-list-alt mr-2" ></i> Sanction</h2>
+				</div>
+				<div class="panel-body p-t-0">
+					<div class="table-responsive">
+						<table class="table table-valign-middle">
+							<thead>
+								<tr>	
+									<th>Status</th>
+									<th>Total</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td><label class="label label-info">Pending</label></td>
+									<td>{{sanction_pending}}</td>
+								</tr>
+								<tr>
+									<td><label class="label label-warning">Active</label></td>
+									<td>{{sanction_active}}</td>
+								</tr>
+								<tr>
+									<td><label class="label label-danger">Completed</label></td>
+									<td>{{sanction_completed}}</td>
+								</tr>
+								<tr>
+									<td><label class="label label-success">Excused</label></td>
+									<td>{{sanction_excused}}</td>
+								</tr>
+							</tbody>
+						</table>
+						<div class="stats-link d-flex justify-content-end">
+							<a href="{% url 'sanctioning_role_student' %}">View Detail <i class="fa fa-arrow-alt-circle-right"></i></a>
+						</div>
+					</div>
+				</div>
+				
+			</div>
+		</div>
+		<div class="col-lg-4">
+			<div class="panel">
+				<div class="panel-heading p-25">
+					<h2 class="panel-title" style="font-size:16px;"><i class="fas fa-comments mr-2" ></i> Grievances</i></h2>
+				</div>
+				<div class="panel-body p-t-0">
+					<div class="table-responsive">
+						<table class="table table-valign-middle">
+							<thead>
+								<tr>	
+									<th>Status</th>
+									<th>Total</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td><label class="label label-info">Pending</label></td>
+									<td>{{complaint_pending}}</td>
+								</tr>
+								<tr>
+									<td><label class="label label-warning">Approved</label></td>
+									<td>{{complaint_approved}}</td>
+								</tr>
+								<tr>
+									<td><label class="label label-danger">Declined</label></td>
+									<td>{{complaint_decline}}</td>
+								</tr>
+							</tbody>
+						</table>
+						<div class="stats-link d-flex justify-content-end">
+							<a href="{% url 'student_file_complaint' %}">View Detail <i class="fa fa-arrow-alt-circle-right"></i></a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 {% endif %}
 
 {% endblock %}

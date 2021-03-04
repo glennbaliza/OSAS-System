@@ -24,19 +24,27 @@ urlpatterns = [
     path('userrole/', views.userrole, name="userrole"),
     path('<int:user_id>/edit_user/', views.edit_user, name="edit_user"),
     path('adduserrole/', views.adduserrole, name="adduserrole"),
+    path('deactivate_user/', views.deactivate_user, name="deactivate_user"),
     path('deleteuser/', views.deleteuser, name="deleteuser"),
 
     path('auth_user/', views.auth_user, name="auth_user"),
     path('auth_user_add/', views.auth_user_add, name="auth_user_add"),
+    path('auth_edit_user/', views.auth_edit_user, name="auth_edit_user"),
+    path('auth_user_update/', views.auth_user_update, name="auth_user_update"),
     path('<int:auth_id>/auth_process_edit/', views.auth_process_edit, name="auth_process_edit"),   
 #-----------------------------------------YEAR AND SECTION-----------------------------------------------------------------------------------------
     path('yr_sec/', views.yr_sec, name="yr_sec"),
     path('add_yr_sec/', views.add_yr_sec, name="add_yr_sec"),
-
+    path('edit_yr_sec/', views.edit_yr_sec, name="edit_yr_sec"),
+    path('update_yr_sec/', views.update_yr_sec, name="update_yr_sec"),
+    path('deactivate_yr_sec/', views.deactivate_yr_sec, name="deactivate_yr_sec"),
     path('r_employ', views.r_employ, name="r_employ"),
 #--------------------------------------------COURSE------------------------------------------------------------------------------------------------
     path('course/', views.course, name="course"),  
     path('add_course/', views.add_course, name="add_course"), 
+    path('deactivate_course/', views.deactivate_course, name="deactivate_course"), 
+    path('edit_course/', views.edit_course, name="edit_course"), 
+    path('update_course/', views.update_course, name="update_course"), 
     path('<int:course_id>/course/course_edit', views.course_edit, name="course_edit"),
 #--------------------------------------------ALUMNI-------------------------------------------------------------------------
     path('alumni/r_referral/', views.r_referral, name="r_referral"),
@@ -46,6 +54,7 @@ urlpatterns = [
     path('lost_id/', views.lost_id, name="lost_id"),
     path('lost_id_view/', views.lost_id_view, name="lost_id_view"),
     path('add_id_request/', views.add_id_request, name="add_id_request"),
+    path('lost_id_student_data/', views.lost_id_student_data, name="lost_id_student_data"),
     path('id_request_form/', views.id_request_form, name="id_request_form"),
     path('id_request_process/', views.id_request_process, name="id_request_process"),
     path('id_request_completed/', views.id_request_completed, name="id_request_completed"),
@@ -98,5 +107,6 @@ urlpatterns = [
     path('student_file_complaint_remove/', views.student_file_complaint_remove, name="student_file_complaint_remove"),
 
     path('lodge_complaint/', views.lodge_complaint, name="lodge_complaint"),
+    path('lodge_complaint_approve/', views.lodge_complaint_approve, name="lodge_complaint_approve"),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
