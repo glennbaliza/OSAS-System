@@ -105,16 +105,17 @@ def activate_account(request):
     except ObjectDoesNotExist:
         u = osas_r_auth_user.objects.filter(auth_username=s_no).count()
         if u:
-            r = osas_r_auth_user.objects.get(auth_username=s_no)
-            f = osas_r_userrole.objects.get(user_id=r.auth_id)
+            r = osas_r_auth_user.objects.get(auth_username = s_no)
+            # userrole = r.auth_id
+            # f = osas_r_userrole.objects.get(user_id = userrole)
             if r.auth_username == s_no and r.auth_password == password:
-                if r.auth_role_id == 2:
+                if r.auth_role_id.user_type == "OSAS STAFF":
                     request.session['session_user_id'] = r.auth_id
                     request.session['session_user_lname'] = r.auth_lname
                     request.session['session_user_fname'] = r.auth_fname
                     request.session['session_user_username'] = r.auth_username
                     request.session['session_user_pass'] = r.auth_password
-                    request.session['session_user_role'] = f.user_type
+                    request.session['session_user_role'] = r.auth_role.user_type
                     return HttpResponseRedirect('/home')
                 else: 
                     request.session['session_user_id'] = r.auth_id
@@ -122,7 +123,7 @@ def activate_account(request):
                     request.session['session_user_fname'] = r.auth_fname
                     request.session['session_user_username'] = r.auth_username
                     request.session['session_user_pass'] = r.auth_password
-                    request.session['session_user_role'] = f.user_type
+                    request.session['session_user_role'] = r.auth_role.user_type
                     return HttpResponseRedirect('/home')
             else: 
                 messages.error(request, 'Incorrect username or password, please try again.')
@@ -144,7 +145,7 @@ def account_process(request):
                     if new_pass and conf_pass:
                         if new_pass == conf_pass:
                             stud.s_password = conf_pass
-                            stud.stud_status = 'Active'
+                            stud.stud_status = 'ACTIVE'
                             stud.save()
                             return HttpResponseRedirect('/login')
     
