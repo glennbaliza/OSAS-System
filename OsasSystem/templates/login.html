@@ -2,9 +2,7 @@
 {% load static %}
 
 {% block content %}
-		<!-- begin #page-loader -->
-        <div id="page-loader" class="fade show"><span class="spinner"></span></div>
-        <!-- end #page-loader -->
+
         
         <div class="login-cover">
             <div class="login-cover-image" style="background-image: url({%static 'OsasSystem/assets/img/PUP.jpg' %})" data-id="login-cover-image"></div>
@@ -13,60 +11,41 @@
         <!-- begin #page-container -->
         <div id="page-container" class="fade">
             <!-- begin login -->
-            <div class="container col-12">
+            <div class="container col-12 text-md-right" style="padding: 0px; padding-top: 10px; height: 10px;">
                 {% if messages %}
-                    <p class="alert alert-danger">
+                    <p class="alert" style="color: white; padding: 0px;">
                         {% for message in messages %}
-                            <i><strong>{{ message }}</strong></i>
+                            {{ message }}
                         {% endfor %}
                     </p>
                 {% endif %} 
             </div>
-
             <div class="login login-v2" data-pageload-addclass="animated fadeIn">
                 <!-- begin brand -->
                 <div class="login-header">
                     <div class="brand">
-                        <span class="logo"></span> <b>OSAS</b>
-                        <small>responsive bootstrap 3 admin template</small>
+                         <b>PUP</b> Quezon City Branch
+                        <small>Sign in to start your session</small>
                     </div>
                 </div>
                 <!-- end brand -->
                 <!-- begin login-content -->
                 <div class="login-content">
                     <form action="{% url 'activate_account'  %}" method="POST" class="margin-bottom-0">
-                        
-                        <!-- {% if messages %}
-                            {% for message in messages %}
-                                    {% if message.tags %}  <script>alert("{{ message }}")</script> 
-                                    {% endif %}
-                            {% endfor %}
-                        {% endif %} -->
-                         
                         {% csrf_token %}
                         <div class="form-group m-b-20">
-                            <input type="text" name="stud_no" id="stud_no" class="form-control form-control-lg" placeholder="Student number" required />
+                            <input type="text" class="form-control form-control-lg" placeholder="Username" required name="stud_no" id="stud_no" />
                         </div>
                         <div class="form-group m-b-20">
-                            <input type="password" name="pass" id="pass" class="form-control form-control-lg" placeholder="Password" required />
-                        </div>
-                        <div class="checkbox checkbox-css m-b-20">
-                            <input type="checkbox" id="remember_checkbox" /> 
-                            <label for="remember_checkbox">
-                                Remember Me
-                            </label>
+                            <input type="password" class="form-control form-control-lg" placeholder="Password" required  name="pass" id="pass"/>
                         </div>
                         <div class="login-buttons">
-                            <button type="submit" class="btn btn-success btn-block btn-lg">Sign me in</button>
+                            <button type="submit" class="btn btn-light btn-block btn-lg">Sign in</button>
                         </div>
-                        <!-- <div class="m-t-20">
-                            Not a member yet? Click <a href="{% url 'activate_account' %}">here</a> to register.
-                        </div> -->
                     </form>
                 </div>
                 <!-- end login-content -->
             </div>
-            <!-- end login -->
 
         </div>
         <!-- end page container -->

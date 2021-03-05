@@ -105,7 +105,8 @@ urlpatterns = [
     path('student_file_complaint_get/', views.student_file_complaint_get, name="student_file_complaint_get"),
     path('student_file_complaint_edit/', views.student_file_complaint_edit, name="student_file_complaint_edit"),
     path('student_file_complaint_remove/', views.student_file_complaint_remove, name="student_file_complaint_remove"),
-
+    path('student_file_complaint_check/', views.student_file_complaint_check, name="student_file_complaint_check"),
+    
     path('lodge_complaint/', views.lodge_complaint, name="lodge_complaint"),
     path('lodge_complaint_approve/', views.lodge_complaint_approve, name="lodge_complaint_approve"),
 

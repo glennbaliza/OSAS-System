@@ -98,7 +98,7 @@ def activate_account(request):
                 request.session['session_user_fname'] = stud.stud_fname
                 request.session['session_user_pass'] = stud.s_password
                 request.session['session_user_role'] = s.user_type
-                return HttpResponseRedirect('/profile', {'stud': stud}) #passing the values of student to the next template
+                return HttpResponseRedirect('/dashboard', {'stud': stud}) #passing the values of student to the next template
         else:
             messages.error(request, 'Either student number or password are incorrect.')
             return HttpResponseRedirect('/login')
@@ -109,7 +109,7 @@ def activate_account(request):
             # userrole = r.auth_id
             # f = osas_r_userrole.objects.get(user_id = userrole)
             if r.auth_username == s_no and r.auth_password == password:
-                if r.auth_role_id.user_type == "OSAS STAFF":
+                if r.auth_role_id == 2:
                     request.session['session_user_id'] = r.auth_id
                     request.session['session_user_lname'] = r.auth_lname
                     request.session['session_user_fname'] = r.auth_fname
@@ -1896,20 +1896,30 @@ def student_file_complaint(request):
     date1 = request.POST.get('date_from')
     date2 = request.POST.get('date_to')
     status = request.POST.get('filter_status')
-
+    category = request.POST.get('filter_cat')
+    student_course = osas_r_course.objects.order_by('course_name')
     if date1 and date2:
         if status:
             stud_complaint = osas_t_complaint.objects.all().filter(comp_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), comp_status = status, comp_datecreated__range=[date1, date2]).order_by('-comp_datecreated')
-            return render(request, 'Role_Student/file_a_complaint.html', {'stud_complaint':stud_complaint})
+            return render(request, 'Role_Student/file_a_complaint.html', {'stud_complaint':stud_complaint, 'student_course':student_course})
+        elif category:
+            stud_complaint = osas_t_complaint.objects.all().filter(comp_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), comp_category = category, comp_datecreated__range=[date1, date2]).order_by('-comp_datecreated')
+            return render(request, 'Role_Student/file_a_complaint.html', {'stud_complaint':stud_complaint, 'student_course':student_course})
         else:
             stud_complaint = osas_t_complaint.objects.all().filter(comp_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), comp_datecreated__range=[date1, date2]).order_by('-comp_datecreated')
-            return render(request, 'Role_Student/file_a_complaint.html', {'stud_complaint':stud_complaint})
+            return render(request, 'Role_Student/file_a_complaint.html', {'stud_complaint':stud_complaint, 'student_course':student_course})
+    elif status and category:
+        stud_complaint = osas_t_complaint.objects.all().filter(comp_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), comp_status = status, comp_category = category).order_by('-comp_datecreated')
+        return render(request, 'Role_Student/file_a_complaint.html', {'stud_complaint':stud_complaint, 'student_course':student_course})
     elif status:
         stud_complaint = osas_t_complaint.objects.all().filter(comp_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), comp_status = status).order_by('-comp_datecreated')
-        return render(request, 'Role_Student/file_a_complaint.html', {'stud_complaint':stud_complaint})
+        return render(request, 'Role_Student/file_a_complaint.html', {'stud_complaint':stud_complaint, 'student_course':student_course})
+    elif category:
+        stud_complaint = osas_t_complaint.objects.all().filter(comp_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), comp_category = category).order_by('-comp_datecreated')
+        return render(request, 'Role_Student/file_a_complaint.html', {'stud_complaint':stud_complaint, 'student_course':student_course})
     else:
         stud_complaint = osas_t_complaint.objects.all().filter(comp_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no'])).order_by('-comp_datecreated')
-        return render(request, 'Role_Student/file_a_complaint.html', {'stud_complaint':stud_complaint})
+        return render(request, 'Role_Student/file_a_complaint.html', {'stud_complaint':stud_complaint, 'student_course':student_course})
 
 def student_file_complaint_get(request):
     comp_id = request.POST.get('comp_id')
@@ -1947,7 +1957,7 @@ def student_file_complaint_add(request):
     category = request.POST.get('g_category')
     nature_complaint = request.POST.get('n_complaint')
     g_assign = request.POST.get('g_assig')
-    proof_image = request.FILES.get('image')
+    proof_image = request.FILES.get('p_image')
     chars = ""
     chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
     randomstr =''.join((random.choice(chars)) for x in range(8))
@@ -1961,6 +1971,24 @@ def student_file_complaint_add(request):
         comp_id = c.comp_id
         c.save()
         return HttpResponseRedirect('/student_file_complaint')  
+
+def student_file_complaint_check(request):
+    dd_course = request.POST.get('dd_course')
+    g_lname = request.POST.get('g_lname')
+    g_fname = request.POST.get('g_fname')
+    g_mname = request.POST.get('g_mname')
+    try:
+        if g_mname:
+            s = osas_r_personal_info.objects.get(stud_course_id = osas_r_course.objects.get(course_name = dd_course), stud_lname = g_lname, stud_fname = g_fname, stud_mname = g_mname)
+            data = {'success':True}
+            return JsonResponse(data, safe=False)
+        else:
+            s = osas_r_personal_info.objects.get(stud_course_id = osas_r_course.objects.get(course_name = dd_course), stud_lname = g_lname, stud_fname = g_fname)
+            data = {'success':True}
+            return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        data = {'error':True}
+        return JsonResponse(data, safe=False)
 
 def student_file_complaint_add_proof(request):
     proof_image = request.FILES.get('image')

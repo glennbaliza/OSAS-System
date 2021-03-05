@@ -39,12 +39,10 @@
 	{% block page-css %} 
 	
 	{% endblock %}
-</head>
+</head> 
 <body>
-	<!-- begin #page-loader -->
-	<div id="page-loader" class="fade show"><span class="spinner"></span></div>
+
 	<div id="page-container" class="page-container page-sidebar-fixed page-header-fixed">
-	<!-- end #page-loader -->
 	{% if request.session.session_user_role%}
 	<!-- begin #page-container -->
 	{% include 'Role_Student/studentsidebar.html'%}

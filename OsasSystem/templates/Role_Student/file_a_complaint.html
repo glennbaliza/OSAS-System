@@ -160,7 +160,7 @@
                                     <dd class="col-sm-8 gritter-  off_name" >{{ osas_t_complaint.comp_nature }}</dd>
                                     {% if osas_t_complaint.comp_status == "APPROVED"%}
                                     <dd class="col-sm-8 gritter- "><strong><span class="badge badge-warning status_ ss{{osas_t_complaint.comp_status}}">{{ osas_t_complaint.comp_status }}</span></strong></dd>
-                                    {% elif osas_t_complaint.comp_status == "CANCELLED"%}
+                                    {% elif osas_t_complaint.comp_status == "DECLINED"%}
                                     <dd class="col-sm-8 gritter- "><strong><span class="badge badge-danger status_ ss{{osas_t_complaint.comp_status}}">{{ osas_t_complaint.comp_status }}</span></strong></dd>
                                     {% else %}
                                     <dd class="col-sm-8 gritter-"><strong><span class="badge badge-info status_ ss{{osas_t_complaint.comp_status}}">{{ osas_t_complaint.comp_status }}</span></strong></dd>
@@ -206,7 +206,7 @@
 
 <div class="modal fade" id="modal-add" role="dialog" data-backdrop="static">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content " style="background-color:whitesmoke;">
+        <div class="modal-content ">
             <div class="panel panel-inverse">
                 <button type="button" class="close"  data-dismiss="modal" aria-hidden="true" style="color: gray; margin: 6px;">×</button>
                 <form  method="POST" class="form-control-with-bg" id="form1" action="{% url 'student_file_complaint_add' %}" method="post" enctype="multipart/form-data">
@@ -235,13 +235,38 @@
                                     <option value="Sample">Sample</option>   
                                 </select>
                             </div>
-                            <div class="col-12  m-b-10" >
+                            <div class="col-12  m-b-10" id="course_div" hidden>
+                                <label  class="col-form-label text-md-right">Course: <span class="text-danger">*</span></label>
+                                {% if student_course %}
+                                <select id="dd_course" name="txt_course1" class="form-control form-control-md">
+                                    <option selected disabled="true">--Select Course--</option>
+                                    {% for osas_r_course in student_course %}
+                                    <option value="{{ osas_r_course.course_name }}" name="txt_course1" name="txt_course1" >{{ osas_r_course.course_name }}</option>
+                                    {% endfor %}
+                                </select>
+                                {% endif %}
+                            </div>
+                            <div class="col-12  m-b-10" id="name_div" hidden>
+                                <label  class="col-form-label text-md-right">Last Name: <span class="text-danger">*</span></label>
+                                <input type="text" id="g_lname" name="g_lname" class="form-control form-control-md" placeholder="enter the last name of student" required data-parsley-trigger="keyup" autocomplete="off">
+                                <label  class="col-form-label text-md-right">First Name: <span class="text-danger">*</span></label>
+                                <input type="text" id="g_fname" name="g_fname" class="form-control form-control-md" placeholder="enter the first name of student" required data-parsley-trigger="keyup" autocomplete="off" >
+                                <label  class="col-form-label text-md-right">Middle Name:</label>
+                                <input type="text" id="g_mname" name="g_mname" class="form-control form-control-md" placeholder="enter the middle name of student" autocomplete="off" >
+                            </div>
+                            <div class="col-12  m-b-10" id="g_assign_div" hidden>
                                 <label  class="col-form-label text-md-right">Grievance Assigned To: <span class="text-danger">*</span></label>
-                                <input type="text" id="g_assig" name="g_assig" class="form-control form-control-md" placeholder="enter the name of student/teacher" required data-parsley-trigger="keyup" >
+                                <input type="text" id="g_assig" name="g_assig" class="form-control form-control-md" placeholder="enter the name of faculty" autocomplete="off" >
+                            </div>
+                            <div class="col-12  m-b-10" id="check_error">
+                            </div>
+                            <div class="col-12  m-b-10" id="check_name" hidden>
+                                <a onclick="checkName()" class="btn btn_success col-md-12 pull-right m-l-10 " id="check_submit" style="padding: 5px; background: linear-gradient(to right, #66ccff -1%, #3366ff 98%); border:none; color: white;">Check<i class="far fa-paper-plane m-l-3 zoom"></i></a>
+                                <a hidden id="btn_check" class="btn btn_success col-md-12 pull-right m-l-10 " id="check_submit" style="padding: 5px; background: linear-gradient(to right, #66ccff -1%, #3366ff 98%); border:none; color: white;">Checking...<i class="fas fa-spinner fa-pulse m-l-3 zoom"></i></a>
                             </div>
                             <div class="col-12 m-b-10" >
                                 <label style="font-size: 12px;" class="col-form-label text-md-right">Proof image: <span class="text-danger">*</span></label>
-                                <input type="file" id="image" name="image"></input>
+                                <input type="file" id="p_image" name="p_image"></input>
                             </div>
                         </div>    
                         <div class="col-8 float-child">
@@ -424,6 +449,97 @@
     });
 </script>
 <script>
+
+function checkName(){
+    var dd_course = $("#dd_course").children("option:selected").val();
+    var g_lname = $('input[name="g_lname"]').val();
+    var g_fname = $('input[name="g_fname"]').val();
+    var g_mname = $('input[name="g_mname"]').val();
+    document.getElementById('btn_check').hidden = false;
+    document.getElementById('check_submit').hidden = true;
+    if(dd_course && g_lname && g_fname){
+        setTimeout(function(){
+            $.ajax({
+                url: '{% url "student_file_complaint_check" %}',
+                type: "POST",
+                data: {
+                    dd_course: dd_course,
+                    g_lname:g_lname,
+                    g_fname:g_fname,
+                    g_mname: g_mname,
+                    csrfmiddlewaretoken: "{{ csrf_token }}",
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.success) {
+                        document.getElementById('btn_check').hidden = true;
+                        document.getElementById('check_error').hidden = false;
+                        $("#check_error").append('<div class="container col-12" id="error_msg" style="padding: 0px;"><p class="alert alert-success text-center" style="font-size:11px;">Student does exist <i class="fas fa-check m-l-3 zoom" ></i></p></div>');
+                        setTimeout(function(){
+                            document.getElementById('check_error').hidden = true;
+                            document.getElementById('check_submit').hidden = false;
+                            if (document.getElementById("error_msg")){
+                                var myobj = document.getElementById("error_msg");
+                                myobj.remove();
+                            }
+                        }, 2500);
+                    }
+                    if (data.error) {
+                        document.getElementById('btn_check').hidden = true;
+                        document.getElementById('check_error').hidden = false;
+                        $("#check_error").append('<div class="container col-12" id="error_msg" style="padding: 0px;"><p class="alert alert-danger text-center" style="font-size:11px;">Student does not exist <i class="fas fa-times m-l-3 zoom" ></i></p></div>');
+                        setTimeout(function(){
+                            document.getElementById('check_error').hidden = true;  
+                            document.getElementById('check_submit').hidden = false;
+                            if (document.getElementById("error_msg")){
+                                var myobj = document.getElementById("error_msg");
+                                myobj.remove();
+                            }
+                        }, 2500);
+                    
+                    }
+                    
+                }
+            });
+        }, 1500);
+    }
+    else{
+        document.getElementById('btn_check').hidden = true;
+        document.getElementById('check_error').hidden = false;
+        $("#check_error").append('<div class="container col-12" id="error_msg" style="padding: 0px;"><p class="alert alert-danger text-center" style="font-size:11px;">Missing input <i class="fas fa-times m-l-3 zoom" ></i></p></div>');
+        setTimeout(function(){
+            document.getElementById('check_error').hidden = true;
+            document.getElementById('check_submit').hidden = false;
+            if (document.getElementById("error_msg")){
+                var myobj = document.getElementById("error_msg");
+                myobj.remove();
+            }
+        }, 2500);
+        
+    }
+  
+    
+}
+
+const g_category = document.getElementById('g_category')
+g_category.addEventListener('change', e=>{ 
+    const selected_category = e.target.value
+    console.log(selected_category)
+    if(selected_category == "Student"){
+        document.getElementById('check_submit').hidden = false;
+        document.getElementById('check_name').hidden = false;
+        document.getElementById('name_div').hidden = false;
+        document.getElementById('course_div').hidden = false;
+        document.getElementById('g_assign_div').hidden = true;
+    }
+    if(selected_category == "Faculty"){
+        document.getElementById('check_name').hidden = true;
+        document.getElementById('g_assign_div').hidden = false;
+        document.getElementById('name_div').hidden = true;
+        document.getElementById('course_div').hidden = true;
+    }
+   
+})
 
 function printComplaint(comp_id){
     console.log(comp_id)
