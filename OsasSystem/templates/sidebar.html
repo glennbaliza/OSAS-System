@@ -21,7 +21,7 @@
                 </a>
             </li>
         </ul>
-        {% if request.session.session_user_role == 'HEAD OSAS'%}
+        {% if request.session.session_user_role == 'HEAD OSAS' or 'OSAS STAFF'%}
         <!-- end sidebar user -->
         <!-- begin sidebar nav -->
         <ul class="nav">
@@ -44,6 +44,7 @@
                     <span>Lost ID</span>
                 </a>
             </li>
+            {% if request.session.session_user_role == 'HEAD OSAS'%}
             <li class="has-sub">
                 <a href="{% url 'auth_user' %}">
                     <i class="fas fa-users"></i> 
@@ -56,6 +57,7 @@
                     <span>Student Profile</span>
                 </a>
             </li>
+            {% endif %}
             <li class="has-sub">
                 <a href="javascript:;">
                     <b class="caret"></b>
@@ -64,7 +66,7 @@
                 </a>
                 <ul class="sub-menu">
                     <li><a href="{%url 'sanctioning_student' %}">Sanctioning Students</a></li>
-                    <!-- <li><a href="{%url 'sanctioning_excused_approved' %}">Excused Students</a></li> -->
+                    {% if request.session.session_user_role == 'HEAD OSAS'%}
                     <li class="has-sub">
                         <a href="javascript:;">
                             <b class="caret"></b>
@@ -76,7 +78,7 @@
                             <li><a href="{% url 'designation_office' %}">Designation Office</a></li> 
                         </ul>
                     </li>
-            
+                    {% endif %}
                 </ul>
             </li>
             <!-- <li class="has-sub">
@@ -92,6 +94,7 @@
                     <li><a href="">Unemployed</a></li>
                 </ul>
             </li> -->
+            {% if request.session.session_user_role == 'HEAD OSAS'%}
             <li class="has-sub">
                 <a href="javascript:;">
                     <b class="caret"></b>
@@ -104,38 +107,11 @@
                     <li><a href="{% url 'course' %}">Courses</a></li>
                 </ul>
             </li>
+            {% endif %}
             <li><a href="javascript:;" class="sidebar-minify-btn" data-click="sidebar-minify"><i class="fa fa-angle-double-left"></i></a></li>
         </ul>
         {% endif%}
-        {% if request.session.session_user_role == 'OSAS STAFF'%}
-        <ul class="nav">
-            <li class="nav-header">Navigation</li>
-            <li class="has-sub">
-                <a href="{% url 'student_profile' %}">
-                    <i class="far fa-user"></i>
-                    <span>Student Profile</span>
-                </a>
-            </li>
-            <li class="has-sub">
-                <a href="{% url 'lost_id' %}">
-                    <i class="far fa-address-card"></i>
-                    <span>Lost ID</span>
-                </a>
-            </li>
-            <li class="has-sub">
-                <a>
-                    <b class="caret"></b>
-                    <i class="far fa-list-alt"></i>
-                    <span>Sanction</span>
-                </a>
-                <ul class="sub-menu">
-                    <li><a href="{%url 'sanctioning_student' %}">Sanctioning Students</a></li>
-                    <li><a href="{%url 'sanctioning_student_completed' %}">Finished Students</a></li>
-                    <li><a href="{%url 'sanctioning_excused_approved' %}">Excused Students</a></li>
-                </ul>
-            </li>
-        </ul>
-        {% endif %}
+      
         <!-- end sidebar nav -->
     </div>
     <!-- end sidebar scrollbar -->

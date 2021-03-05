@@ -1009,15 +1009,20 @@ def lost_id(request):
 
 def lost_id_student_data(request):
     selected_student = request.POST.get('selected_student')
-    t = osas_r_personal_info.objects.get(stud_no = selected_student)
-    data = {
-        'lname': t.stud_lname,
-        'fname': t.stud_fname,
-        'mname': t.stud_mname,
-        'sname': t.stud_sname,
-        'course': t.stud_course_id.course_name
-    }
-    return JsonResponse(data, safe=False)
+    try:
+        t = osas_r_personal_info.objects.get(stud_no = selected_student)
+        id_count = osas_t_id.objects.all().filter(lost_stud_id = osas_r_personal_info.objects.get(stud_no = selected_student), lost_id_status = 'PENDING').count()
+        data = {
+            'lname': t.stud_lname,
+            'fname': t.stud_fname,
+            'mname': t.stud_mname,
+            'sname': t.stud_sname,
+            'course': t.stud_course_id.course_name,
+            'count':id_count
+        }
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        return render(request, 'id/lost_id.html')
 
 def id_request_process(request):
     r_id = request.POST.get('lost_id')

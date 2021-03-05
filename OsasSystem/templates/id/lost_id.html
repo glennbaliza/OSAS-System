@@ -69,7 +69,7 @@
             <div class="panel" id="refresh">
                 <div class="panel-heading p-25">
                     <div class="btn-group btn-group-toggle pull-right" data-toggle="buttons">
-                        {% if request.session.session_user_role == 'HEAD OSAS'%}
+                        {% if request.session.session_user_role == 'HEAD OSAS' or 'STAFF OSAS'%}
                         <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal_add" id="test"><i class="fas fa-plus mr-2" ></i>Add New</button>
                         {% endif %}
                         <button class="btn btn-gray" id="donwload">Report <i class="fas fa-file-alt text-white-lighter f-s-16"></i></button>
@@ -168,8 +168,8 @@
                         <div class="col-lg-12 form-check-inline" id="error">
                         </div>
                         <input class="form-control" id="lost_id_" type="hidden" name="lost_id_"/>
-                        <div class="col-lg-12">
-                            <div class="col-12" >
+                        <div class="col-lg-12 form-check-inline" style="padding:0px;">
+                            <div class="col-11" >
                                 <label  class="col-form-label text-md-right">Student Number: <span class="text-danger">*</span></label>
                                 <select style="margin-top: -3px; " id="stud" name="stud" class="form-control">
                                     <option  value="--select--" selected hidden >--select--</option>
@@ -181,12 +181,21 @@
                                         
                                 </select> 
                             </div>
-                            <div class="col-12 text-md-center" style="margin-top: 10px;">
-                                <span  class="col-form-label" style="margin-top: 10px;" id="student_name"></span>
+                            <div class="col-lg-1 col-md-1" style="padding:0px; margin-top: 27px;">
+                                <a data-toggle="tooltip" data-placement="top" title="Check if the student have current Lost ID request." onclick="checkName()" class="btn btn_success col-md-12 pull-right " id="check_submit" style=" background: linear-gradient(to right, #66ccff -1%, #3366ff 98%); height: 34px; border:none; color: white;"><i class="fas fa-eye fa-lg zoom" style="margin-left: -3px; margin-top: 5px;"></i></a>
+
+                                <a data-toggle="tooltip" data-placement="top" title="checking..." hidden class="btn btn_success col-md-12 pull-right " id="check_loading" style=" background: linear-gradient(to right, #66ccff -1%, #3366ff 98%); height: 34px; border:none; color: white;"><i class="fas fa-spinner fa-pulse fa-lg zoom" style="margin-left: -3px; margin-top: 5px;"></i></a>
+
+                                <a data-toggle="tooltip" data-placement="top" title="This student doesn't have a pending or on process request." hidden class="btn btn_success col-md-12 pull-right " id="check_success" style=" background: linear-gradient(to right, #6aff7ee7 -1%, #00b436c2 98%); height: 34px; border:none; color: white;"><i class="fas fa-check fa-lg zoom" style="margin-left: -3px; margin-top: 5px;"></i></a>
+
+                                <a data-toggle="tooltip" data-placement="top" title="This student has a pending or on process request." hidden class="btn btn_success col-md-12 pull-right " id="check_failed" style=" background: linear-gradient(to right, #ff6a6ae7 -1%, #b40000c2 98%); height: 34px; border:none; color: white;"><i class="fas fa-times fa-lg zoom" style="margin-left: -3px; margin-top: 5px;"></i></a>
                             </div>
-                            <div class="col-12 text-md-center" >
-                                <span  class="col-form-label " style="margin-top: 10px;" id="student_course"></span>
-                            </div>
+                        </div>
+                        <div class="col-12 text-md-center" style="margin-top: 10px;">
+                            <span  class="col-form-label" style="margin-top: 10px;" id="student_name"></span>
+                        </div>
+                        <div class="col-12 text-md-center" >
+                            <span  class="col-form-label " style="margin-top: 10px;" id="student_course"></span>
                         </div>
                     </div>    
                 </div>
@@ -278,13 +287,63 @@
 		});
 </script>
 <script>
+const stud_sel = document.getElementById('stud')
+stud_sel.addEventListener('change', e=>{ 
+    const selected_stud = e.target.value
+    console.log(selected_stud)
+        document.getElementById('check_submit').hidden = false;
+        document.getElementById('check_loading').hidden = true;
+        document.getElementById('check_failed').hidden = true;
+        document.getElementById('check_success').hidden = true;
+
+   
+})
+
+function checkName(){
+    var selected_student = $("#stud").children("option:selected").val();
+    document.getElementById('check_submit').hidden = true;
+    document.getElementById('check_loading').hidden = false;
+    if(selected_student){
+        setTimeout(function(){
+            $.ajax({
+                url: '{% url "lost_id_student_data" %}',
+                type: "POST",
+                data: {
+                    selected_student: selected_student,
+                    csrfmiddlewaretoken: "{{ csrf_token }}",
+                },
+                dataType: 'json',
+                success: function (data) {  
+                    if (data.count) {
+                        document.getElementById('check_loading').hidden = true
+                        document.getElementById('check_submit').hidden = true;
+                        document.getElementById('check_failed').hidden = false;
+                    }
+                    else{
+                        document.getElementById('check_loading').hidden = true; 
+                        document.getElementById('check_submit').hidden = true;
+                        document.getElementById('check_success').hidden = false;
+                    }
+                    
+                },
+                error: function(error){
+                console.log(error)
+                }
+            });
+        }, 1500);
+    }
+    if(selected_student == "--select--"){
+        document.getElementById('check_loading').hidden = true;
+        document.getElementById('check_submit').hidden = false;
+    }
+}
 
 const student = document.getElementById('stud')
 student.addEventListener('change', e=>{
     
     const selected_student = e.target.value
     // document.getElementById("office_name").value = selected_office
-    console.log(selected_student)
+    // console.log(selected_student)
     $.ajax({
         type:'POST',
         url : "{% url 'lost_id_student_data' %}",
@@ -311,7 +370,7 @@ student.addEventListener('change', e=>{
 $('#test').click(function(){
     $("#data-table .tr_").each(function() {
         control_number = $(this).closest("tbody tr").find("td :eq(12)").html() 
-        console.log(control_number)
+        // console.log(control_number)
     });
 }); 
 
@@ -409,13 +468,15 @@ $("#data-table").on('click','#btn_view',function(){
                     $('#request_date').text(data.lost_Id_val.date);
                     $('#request_status').text(data.lost_Id_val.status);
                     if(data.lost_Id_val.status == "PENDING"){
+                        document.getElementById('btn_submit').hidden = false;
                         $('#btn_submit').text("Process").append('<i class="far fa-paper-plane m-l-3 zoom"></i>');
                     }
                     if(data.lost_Id_val.status == "PROCESSING"){
+                        document.getElementById('btn_submit').hidden = false;
                         $('#btn_submit').text("Complete").append('<i class="far fa-paper-plane m-l-3 zoom"></i>');
                     }
                     if(data.lost_Id_val.status == "COMPLETED"){
-                        $('#btn_submit').text("Archive").append('<i class="far fa-paper-plane m-l-3 zoom"></i>');
+                        document.getElementById('btn_submit').hidden = true;
                     }
                     $('#request_studno').text(data.lost_Id_val.stud_no);
                     $('#request_studname').text(data.lost_Id_val.stud_lname + ", " + data.lost_Id_val.stud_fname + " " + data.lost_Id_val.stud_mname);

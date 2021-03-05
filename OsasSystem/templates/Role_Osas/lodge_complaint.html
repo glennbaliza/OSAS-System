@@ -60,7 +60,7 @@ p{
 {% endblock%}
 
 {% block title %}
-    Student Lodge Complaint
+    Grievances
 {% endblock %}
 
 
@@ -187,9 +187,11 @@ p{
                                             {% if osas_t_complaint.comp_letter %}
                                             <button id="print_btn" class="btn btn-gray" onClick="printComplaint('{{osas_t_complaint.comp_id}}')"><i class="fas fa-print mr-2"></i>Print</button>
                                             {% endif %}
+                                            {% if request.session.session_user_role == 'HEAD OSAS'%}
                                             {% if osas_t_complaint.comp_status == "PENDING" %}
                                             <button class="btn btn-success m-l-1" id="btn_approve" onClick="approveComplaint('{{osas_t_complaint.comp_id}}')"><i class="fas fa-check mr-2"></i>Approve</button>
                                             <button id="delete-btn" class="btn btn-danger" onClick="deleteComplaint('{{osas_t_complaint.comp_id}}')"><i class="fas fa-trash-alt mr-2"></i>Decline</button>
+                                            {% endif %}
                                             {% endif %}
                                         </div>
                                     </div>
