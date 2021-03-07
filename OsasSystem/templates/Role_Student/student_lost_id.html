@@ -267,19 +267,29 @@ function addRequest(session_user_no){
                 else{
 				swal("Success! request has been completed", {
 		            icon: "success",
-		            }).then((willreload) => {
-		            	if(willreload){
-                            if (data){
-                                console.log(data.id)
-                                console.log(data.sanction)
-                                $('#modal_add').modal('hide');
-                                    window.location.reload()
- 
-                            }
-                            
-		            	}
-		            	
-                    });
+		            })
+                    lost_id = data.sanction
+                    sanction_id = data.sanction_id
+                    console.log(data.sanction)
+                    if (data){
+                        $.ajax({
+                            type: "POST",
+                            url: "{% url 'lost_id_notif_stud' %}",
+                            data:{
+                                lost_id: lost_id,
+                                sanction_id:sanction_id,
+                                stud: stud,
+                                csrfmiddlewaretoken: "{{ csrf_token }}",
+                            },
+                            success: function(data){
+                                console.log(lost_id,sanction_id)
+                            },
+                        });
+                       
+                        $('#modal_add').modal('hide');
+                            window.location.reload()
+
+                    }
                 }
 			},
 			error: function(error){

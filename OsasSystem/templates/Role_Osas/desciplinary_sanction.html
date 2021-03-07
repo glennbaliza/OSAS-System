@@ -79,7 +79,7 @@
                             <dd class="col-sm-8">{{ osas_r_disciplinary_sanction.ds_violation_count }} 
                                 {% if osas_r_disciplinary_sanction.ds_status == 'WARNING'%}
                                 <dd class="col-sm-8 gritter-"><strong><span class="label label-warning">{{ osas_r_disciplinary_sanction.ds_status }}</span></strong></dd>
-                                {% elif osas_r_disciplinary_sanction.ds_status == 'Student-assistance Service'%}
+                                {% elif osas_r_disciplinary_sanction.ds_status == 'Student-Assistance Service'%}
                                 <dd class="col-sm-8 gritter-"><strong><span class="label label-danger">{{ osas_r_disciplinary_sanction.ds_status }}</span></strong></dd>
                                 {% else %}
                                 <dd class="col-sm-8 gritter-"><strong><span class="label label-inverse">{{ osas_r_disciplinary_sanction.ds_status }}</span></strong></dd>
@@ -247,7 +247,7 @@
                             <div class="col form-check-inline">
                                 <div class="col-12">
                                     <label  class="col-form-label text-md-right">Offense Descriptions: <span class="text-danger">*</span></label>
-                                    <textarea id="offense_desc1" name="offense_desc" type="text" class="form-control" data-parsley-required="true" required data-parsley-pattern="^[a-zA-Z]+$" data-parsley-trigger="keyup" style="height: 130px;"></textarea>
+                                    <textarea id="offense_desc1" name="offense_desc1" type="text" class="form-control" data-parsley-required="true" required data-parsley-pattern="^[a-zA-Z]+$" data-parsley-trigger="keyup" style="height: 130px;"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -312,8 +312,7 @@ function deleteDescipline(ds_id) {
         offense_status = $("#offense_status1").children("option:selected").val().trim();
         var r_hours =  document.getElementById("r_hours1").value
         var r_days = document.getElementById("r_days1").value
-        var offense_desc = $('textarea[name="offense_desc"]').val().trim();
-        console.log(r_days) 
+        var offense_desc = $('textarea[name="offense_desc1"]').val().trim();
         if (sanction_id) {
         // Create Ajax Call
         $.ajax({

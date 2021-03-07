@@ -224,21 +224,23 @@
                                 <label  class="col-form-label text-md-right">Category: <span class="text-danger">*</span></label>
                                 <select style="margin-top: -3px;" id="g_category" name="g_category" class="form-control">
                                     <option  value="--select--" selected hidden >--select--</option>
-                                    <option value="Student">Student</option> 
-                                    <option value="Faculty">Faculty</option>   
+                                    <option value="STUDENT">STUDENT</option> 
+                                    <option value="FACULTY">FACULTY</option>   
                                 </select>
                             </div>
                             <div class="col-12 m-b-10" >
                                 <label  class="col-form-label text-md-right">Nature of Complaint: <span class="text-danger">*</span></label>
                                 <select style="margin-top: -3px;" id="n_complaint" name="n_complaint" class="form-control">
                                     <option  value="--select--" selected hidden >--select--</option>
-                                    <option value="Sample">Sample</option>   
+                                    <option value="LITTERING">LITTERING</option>   
+                                    <option value="SMOKING">SMOKING</option> 
+                                    <option value="VANDALISM">VANDALISM</option>   
                                 </select>
                             </div>
                             <div class="col-12  m-b-10" id="course_div" hidden>
                                 <label  class="col-form-label text-md-right">Course: <span class="text-danger">*</span></label>
                                 {% if student_course %}
-                                <select id="dd_course" name="txt_course1" class="form-control form-control-md">
+                                <select id="dd_course" name="dd_course" class="form-control form-control-md">
                                     <option selected disabled="true">--Select Course--</option>
                                     {% for osas_r_course in student_course %}
                                     <option value="{{ osas_r_course.course_name }}" name="txt_course1" name="txt_course1" >{{ osas_r_course.course_name }}</option>
@@ -248,9 +250,9 @@
                             </div>
                             <div class="col-12  m-b-10" id="name_div" hidden>
                                 <label  class="col-form-label text-md-right">Last Name: <span class="text-danger">*</span></label>
-                                <input type="text" id="g_lname" name="g_lname" class="form-control form-control-md" placeholder="enter the last name of student" required data-parsley-trigger="keyup" autocomplete="off">
+                                <input type="text" id="g_lname" name="g_lname" class="form-control form-control-md" placeholder="enter the last name of student" autocomplete="off">
                                 <label  class="col-form-label text-md-right">First Name: <span class="text-danger">*</span></label>
-                                <input type="text" id="g_fname" name="g_fname" class="form-control form-control-md" placeholder="enter the first name of student" required data-parsley-trigger="keyup" autocomplete="off" >
+                                <input type="text" id="g_fname" name="g_fname" class="form-control form-control-md" placeholder="enter the first name of student" autocomplete="off" >
                                 <label  class="col-form-label text-md-right">Middle Name:</label>
                                 <input type="text" id="g_mname" name="g_mname" class="form-control form-control-md" placeholder="enter the middle name of student" autocomplete="off" >
                             </div>
@@ -525,14 +527,14 @@ const g_category = document.getElementById('g_category')
 g_category.addEventListener('change', e=>{ 
     const selected_category = e.target.value
     console.log(selected_category)
-    if(selected_category == "Student"){
+    if(selected_category == "STUDENT"){
         document.getElementById('check_submit').hidden = false;
         document.getElementById('check_name').hidden = false;
         document.getElementById('name_div').hidden = false;
         document.getElementById('course_div').hidden = false;
         document.getElementById('g_assign_div').hidden = true;
     }
-    if(selected_category == "Faculty"){
+    if(selected_category == "FACULTY"){
         document.getElementById('check_name').hidden = true;
         document.getElementById('g_assign_div').hidden = false;
         document.getElementById('name_div').hidden = true;

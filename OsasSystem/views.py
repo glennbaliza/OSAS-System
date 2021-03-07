@@ -5,7 +5,7 @@ from django.views import View
 from django.shortcuts import render, redirect, get_object_or_404, reverse, HttpResponse
 from django.http import HttpResponseRedirect, Http404, JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
-from .models import osas_r_userrole, osas_r_course, osas_r_section_and_year, osas_r_personal_info, osas_r_auth_user, osas_t_id, osas_t_sanction, osas_r_code_title, osas_r_disciplinary_sanction, osas_r_designation_office, osas_t_excuse, osas_t_complaint
+from .models import osas_r_userrole, osas_r_course, osas_r_section_and_year, osas_r_personal_info, osas_r_auth_user, osas_t_id, osas_t_sanction, osas_r_code_title, osas_r_disciplinary_sanction, osas_r_designation_office, osas_t_excuse, osas_t_complaint, osas_notif
 from django.contrib import messages
 from django.views.decorators.cache import cache_control
 from datetime import datetime, date, timedelta
@@ -19,9 +19,43 @@ import time
 
 
 
+def notif_seen(request):
+    notif_lost_id = request.POST.get('notif_lost_id')
+    notif = osas_notif.objects.get(notif_lost_id = notif_lost_id)
+    notif.notif_head = "Seen"
+    notif.save()
+    data = {'success':notif_lost_id}
+    return JsonResponse(data, safe=False)
+
+def notif_sanction(request):
+    sanction_id = request.POST.get('sanction_id')
+    notif = osas_notif.objects.get(notif_sanction_id = sanction_id)
+    notif.notif_head = "Seen"
+    notif.save()
+    data = {'success':sanction_id}
+    return JsonResponse(data, safe=False)
+
+def notif_seen_stud(request):
+    notif_lost_id = request.POST.get('notif_lost_id')
+    notif = osas_notif.objects.get(notif_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), notif_lost_id = notif_lost_id)
+    notif.notif_stud = "Seen"
+    notif.save()
+    data = {'success':notif_lost_id}
+    return JsonResponse(data, safe=False)
+
+def notif_sanction_stud(request):
+    sanction_id = request.POST.get('sanction_id')
+    notif = osas_notif.objects.get(notif_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), notif_sanction_id = sanction_id)
+    notif.notif_stud = "Seen"
+    notif.save()
+    data = {'success':sanction_id}
+    return JsonResponse(data, safe=False)
 
 def home(request):
-    stud_bbtled =  osas_r_personal_info.objects.filter(stud_course_id = osas_r_course.objects.get( course_code = 'BBTELEDHE')).count()
+    notif = osas_notif.objects.all().filter(notif_head = 'Sent').count()
+    notif_info = osas_notif.objects.all().filter(notif_head = "Sent").order_by("-notif_datecreated")
+
+    stud_bbtled =  osas_r_personal_info.objects.filter(stud_course_id = osas_r_course.objects.get( course_code = 'BBTLEDHE')).count()
     stud_bsit =  osas_r_personal_info.objects.all().filter(stud_course_id = osas_r_course.objects.get( course_code = 'BSIT')).count()
     stud_bsbamm =  osas_r_personal_info.objects.filter(stud_course_id = osas_r_course.objects.get( course_code = 'BSBA-MM')).count()
     stud_bsbahrm = osas_r_personal_info.objects.filter(stud_course_id = osas_r_course.objects.get( course_code = 'BSBAHRM')).count()
@@ -46,9 +80,11 @@ def home(request):
     sanction_completed = osas_t_sanction.objects.filter(sanction_status__iexact = 'COMPLETED').count()
     sanction_excused = osas_t_sanction.objects.filter(sanction_status__iexact = 'EXCUSED').count()
     
-    return render(request, 'home.html', {'stud_bbtled':stud_bbtled, 'stud_bsit':stud_bsit, 'stud_bsbamm':stud_bsbamm, 'stud_bsbahrm':stud_bsbahrm, 'stud_bsent':stud_bsent, 'stud_domt':stud_domt, 'lost_id_pending':lost_id_pending, 'lost_id_process':lost_id_process, 'lost_id_completed':lost_id_completed, 'sanction_pending':sanction_pending, 'sanction_active':sanction_active, 'sanction_completed':sanction_completed, 'sanction_excused':sanction_excused, 'complaint_pending':complaint_pending, 'complaint_approved':complaint_approved, 'complaint_decline':complaint_decline, 'student_count':student_count, 'lost_id_count':lost_id_count, 'sanction_count':sanction_count, 'grievances_count':grievances_count})
+    return render(request, 'home.html', {'stud_bbtled':stud_bbtled, 'stud_bsit':stud_bsit, 'stud_bsbamm':stud_bsbamm, 'stud_bsbahrm':stud_bsbahrm, 'stud_bsent':stud_bsent, 'stud_domt':stud_domt, 'lost_id_pending':lost_id_pending, 'lost_id_process':lost_id_process, 'lost_id_completed':lost_id_completed, 'sanction_pending':sanction_pending, 'sanction_active':sanction_active, 'sanction_completed':sanction_completed, 'sanction_excused':sanction_excused, 'complaint_pending':complaint_pending, 'complaint_approved':complaint_approved, 'complaint_decline':complaint_decline, 'student_count':student_count, 'lost_id_count':lost_id_count, 'sanction_count':sanction_count, 'grievances_count':grievances_count, 'notif':notif, 'notif_info':notif_info})
 
 def dashboard(request):
+    notif = osas_notif.objects.all().filter(notif_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), notif_stud = 'Sent').count()
+    notif_info = osas_notif.objects.all().filter(notif_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), notif_stud = "Sent").order_by("-notif_datecreated")
     lost_id_pending = osas_t_id.objects.filter(lost_stud_id = request.session['session_user_id'], lost_id_status__iexact = 'PENDING').count()
     lost_id_process = osas_t_id.objects.filter(lost_stud_id = request.session['session_user_id'],lost_id_status__iexact = 'PROCESSING').count()
     lost_id_completed = osas_t_id.objects.filter(lost_stud_id = request.session['session_user_id'],lost_id_status__iexact = 'COMPLETED').count()
@@ -62,7 +98,7 @@ def dashboard(request):
     sanction_completed = osas_t_sanction.objects.filter(sanction_stud_id = request.session['session_user_id'], sanction_status__iexact = 'COMPLETED').count()
     sanction_excused = osas_t_sanction.objects.filter(sanction_stud_id = request.session['session_user_id'], sanction_status__iexact = 'EXCUSED').count()
 
-    return render(request, 'Role_Student/dashboard.html', {'lost_id_pending':lost_id_pending, 'lost_id_process':lost_id_process, 'lost_id_completed':lost_id_completed, 'sanction_pending':sanction_pending, 'sanction_active':sanction_active, 'sanction_completed':sanction_completed, 'sanction_excused':sanction_excused, 'complaint_pending':complaint_pending, 'complaint_approved':complaint_approved, 'complaint_decline':complaint_decline})
+    return render(request, 'Role_Student/dashboard.html', {'lost_id_pending':lost_id_pending, 'lost_id_process':lost_id_process, 'lost_id_completed':lost_id_completed, 'sanction_pending':sanction_pending, 'sanction_active':sanction_active, 'sanction_completed':sanction_completed, 'sanction_excused':sanction_excused, 'complaint_pending':complaint_pending, 'complaint_approved':complaint_approved, 'complaint_decline':complaint_decline, 'notif':notif,'notif_info':notif_info})
 #--------------------------------------LOGIN------------------------------------------------------------------------------------------
 def login(request):
     try:
@@ -84,7 +120,7 @@ def activate_account(request):
     s_no = request.POST.get('stud_no')
     password = request.POST.get('pass')
     try:
-        stud = osas_r_personal_info.objects.get(stud_no=s_no)
+        stud = osas_r_personal_info.objects.get (stud_no=s_no)
         c = osas_r_personal_info.objects.filter(stud_no=s_no, s_password= password )
         # s = osas_r_userrole.objects.get(user_id= stud.stud_role)
         if c:
@@ -98,7 +134,7 @@ def activate_account(request):
                 request.session['session_user_fname'] = stud.stud_fname
                 request.session['session_user_pass'] = stud.s_password
                 request.session['session_user_role'] = s.user_type
-                return HttpResponseRedirect('/dashboard', {'stud': stud}) #passing the values of student to the next template
+                return HttpResponseRedirect('/dashboard') #passing the values of student to the next template
         else:
             messages.error(request, 'Either student number or password are incorrect.')
             return HttpResponseRedirect('/login')
@@ -108,28 +144,32 @@ def activate_account(request):
             r = osas_r_auth_user.objects.get(auth_username = s_no)
             # userrole = r.auth_id
             # f = osas_r_userrole.objects.get(user_id = userrole)
-            if r.auth_username == s_no and r.auth_password == password:
-                if r.auth_role_id == 2:
-                    request.session['session_user_id'] = r.auth_id
-                    request.session['session_user_lname'] = r.auth_lname
-                    request.session['session_user_fname'] = r.auth_fname
-                    request.session['session_user_username'] = r.auth_username
-                    request.session['session_user_pass'] = r.auth_password
-                    request.session['session_user_role'] = r.auth_role.user_type
-                    return HttpResponseRedirect('/home')
+            if r.auth_status == "ACTIVE":
+                if r.auth_username == s_no and r.auth_password == password:
+                    if r.auth_role_id == 2:
+                        request.session['session_user_id'] = r.auth_id
+                        request.session['session_user_lname'] = r.auth_lname
+                        request.session['session_user_fname'] = r.auth_fname
+                        request.session['session_user_username'] = r.auth_username
+                        request.session['session_user_pass'] = r.auth_password
+                        request.session['session_user_role'] = r.auth_role.user_type
+                        return HttpResponseRedirect('/home', {'notif':notif})
+                    else: 
+                        request.session['session_user_id'] = r.auth_id
+                        request.session['session_user_lname'] = r.auth_lname
+                        request.session['session_user_fname'] = r.auth_fname
+                        request.session['session_user_username'] = r.auth_username
+                        request.session['session_user_pass'] = r.auth_password
+                        request.session['session_user_role'] = r.auth_role.user_type
+                        return HttpResponseRedirect('/home')
                 else: 
-                    request.session['session_user_id'] = r.auth_id
-                    request.session['session_user_lname'] = r.auth_lname
-                    request.session['session_user_fname'] = r.auth_fname
-                    request.session['session_user_username'] = r.auth_username
-                    request.session['session_user_pass'] = r.auth_password
-                    request.session['session_user_role'] = r.auth_role.user_type
-                    return HttpResponseRedirect('/home')
+                    messages.error(request, 'Incorrect password, please try again.')
+                    return HttpResponseRedirect('/login')
             else: 
-                messages.error(request, 'Incorrect username or password, please try again.')
+                messages.error(request, 'Your account is deactivated, failed to login.')
                 return HttpResponseRedirect('/login')
         else:
-            messages.error(request, 'Incorrect username or password, please try again.')
+            messages.error(request, 'Invalid username, please try again.')
             return HttpResponseRedirect('/login')
 
 def account_process(request):
@@ -177,14 +217,16 @@ def r_employ(request):
 #------------------------------------YEAR AND SECTION------------------------------------------------------------------------------------
 def yr_sec(request):
     status = request.POST.get('filter_status')
+    notif = osas_notif.objects.all().filter(notif_head = 'Sent').count()
+    notif_info = osas_notif.objects.all().filter(notif_head = "Sent").order_by("-notif_datecreated")
     if status:
             user_list = osas_r_section_and_year.objects.all().filter(status = status ).order_by('yas_descriptions')
             context = {'user_list': user_list}
-            return render(request, 'year_section/yr_sec.html', context)
+            return render(request, 'year_section/yr_sec.html', {'user_list':user_list, 'notif':notif, 'notif_info':notif_info})
     else:   
         user_list = osas_r_section_and_year.objects.all().filter(status = "ACTIVE").order_by('yas_descriptions')
         context = {'user_list': user_list}
-        return render(request, 'year_section/yr_sec.html', context)
+        return render(request, 'year_section/yr_sec.html', {'user_list':user_list, 'notif':notif, 'notif_info':notif_info})
     
 
 def add_yr_sec(request):
@@ -270,31 +312,33 @@ def course(request):
     filter_name = request.POST.get('filter_name')
     status = request.POST.get('filter_status')
     course_lists = osas_r_course.objects.order_by('course_name')
+    notif = osas_notif.objects.all().filter(notif_head = 'Sent').count()
+    notif_info = osas_notif.objects.all().filter(notif_head = "Sent").order_by("-notif_datecreated")
     if filter_code and filter_name:
         if status:
             course_list = osas_r_course.objects.all().filter(course_code = filter_code, course_name = filter_name, course_status = status ).order_by('course_code')
-            return render(request, 'course/course.html', {'course_list':course_list, 'course_lists':course_lists})
+            return render(request, 'course/course.html', {'course_list':course_list, 'course_lists':course_lists, 'notif':notif, 'notif_info':notif_info})
         else:   
             course_list = osas_r_course.objects.all().filter(course_code = filter_code, course_name = filter_name).order_by('course_code')
-            return render(request, 'course/course.html', {'course_list':course_list, 'course_lists':course_lists})
+            return render(request, 'course/course.html', {'course_list':course_list, 'course_lists':course_lists, 'notif':notif, 'notif_info':notif_info})
     elif filter_code and status:
         course_list = osas_r_course.objects.all().filter(course_code = filter_code, course_status = status ).order_by('course_code')
-        return render(request, 'course/course.html', {'course_list':course_list, 'course_lists':course_lists})
+        return render(request, 'course/course.html', {'course_list':course_list, 'course_lists':course_lists, 'notif':notif, 'notif_info':notif_info})
     elif filter_name and status:
         course_list = osas_r_course.objects.all().filter(course_name = filter_name, course_status = status ).order_by('course_code')
-        return render(request, 'course/course.html', {'course_list':course_list, 'course_lists':course_lists})
+        return render(request, 'course/course.html', {'course_list':course_list, 'course_lists':course_lists, 'notif':notif, 'notif_info':notif_info})
     elif status:
         course_list = osas_r_course.objects.all().filter(course_status = status ).order_by('course_code')
-        return render(request, 'course/course.html', {'course_list':course_list, 'course_lists':course_lists})
+        return render(request, 'course/course.html', {'course_list':course_list, 'course_lists':course_lists, 'notif':notif, 'notif_info':notif_info})
     elif filter_name:
         course_list = osas_r_course.objects.all().filter(course_name = filter_name ).order_by('course_code')
-        return render(request, 'course/course.html', {'course_list':course_list, 'course_lists':course_lists})
+        return render(request, 'course/course.html', {'course_list':course_list, 'course_lists':course_lists, 'notif':notif, 'notif_info':notif_info})
     elif filter_code:
         course_list = osas_r_course.objects.all().filter(course_code = filter_code ).order_by('course_code')
-        return render(request, 'course/course.html', {'course_list':course_list, 'course_lists':course_lists})
+        return render(request, 'course/course.html', {'course_list':course_list, 'course_lists':course_lists, 'notif':notif, 'notif_info':notif_info})
     else:
         course_list = osas_r_course.objects.all().filter(course_status = "ACTIVE").order_by('course_code')
-        return render(request, 'course/course.html', {'course_list':course_list, 'course_lists':course_lists})
+        return render(request, 'course/course.html', {'course_list':course_list, 'course_lists':course_lists, 'notif':notif, 'notif_info':notif_info})
 
 def course_edit(request, course_id): 
     template_name = 'course/course_edit.html'
@@ -458,31 +502,31 @@ def student_profile(request):
     context = {'student_course': student_course}
     student_yr_sec = osas_r_section_and_year.objects.order_by('yas_descriptions')
     context1 = {'student_yr_sec': student_yr_sec}
-    
+    notif = osas_notif.objects.all().filter(notif_head = 'Sent').count()
+    notif_info = osas_notif.objects.all().filter(notif_head = "Sent").order_by("-notif_datecreated")
     if txt_course1 and txt_yr_sec1 and txt_Gender1:
         student_info = osas_r_personal_info.objects.all().filter(stud_course_id = osas_r_course.objects.get(course_name = txt_course1), stud_yas_id = osas_r_section_and_year.objects.get(yas_descriptions = txt_yr_sec1), stud_gender = txt_Gender1).order_by('stud_no')
-        return render(request, template_name, {'student_info': student_info, 'student_course': student_course, 'student_yr_sec': student_yr_sec})
+        return render(request, template_name, {'student_info': student_info, 'student_course': student_course, 'student_yr_sec': student_yr_sec, 'notif':notif, 'notif_info':notif_info})
     elif txt_course1 and txt_yr_sec1:
         student_info = osas_r_personal_info.objects.all().filter(stud_course_id = osas_r_course.objects.get(course_name = txt_course1), stud_yas_id = osas_r_section_and_year.objects.get(yas_descriptions = txt_yr_sec1)).order_by('stud_no')
-        return render(request, template_name, {'student_info': student_info, 'student_course': student_course, 'student_yr_sec': student_yr_sec})
+        return render(request, template_name, {'student_info': student_info, 'student_course': student_course, 'student_yr_sec': student_yr_sec, 'notif':notif, 'notif_info':notif_info})
     elif txt_course1 and txt_Gender1:
         student_info = osas_r_personal_info.objects.all().filter(stud_course_id = osas_r_course.objects.get(course_name = txt_course1), stud_gender = txt_Gender1).order_by('stud_no')
-        return render(request, template_name, {'student_info': student_info, 'student_course': student_course, 'student_yr_sec': student_yr_sec})
+        return render(request, template_name, {'student_info': student_info, 'student_course': student_course, 'student_yr_sec': student_yr_sec, 'notif':notif, 'notif_info':notif_info})
     elif txt_yr_sec1 and txt_Gender1:
         student_info = osas_r_personal_info.objects.all().filter(stud_yas_id = osas_r_section_and_year.objects.get(yas_descriptions = txt_yr_sec1), stud_gender = txt_Gender1).order_by('stud_no')
-        return render(request, template_name, {'student_info': student_info, 'student_course': student_course, 'student_yr_sec': student_yr_sec})
+        return render(request, template_name, {'student_info': student_info, 'student_course': student_course, 'student_yr_sec': student_yr_sec, 'notif':notif, 'notif_info':notif_info})
     elif txt_course1:
         student_info = osas_r_personal_info.objects.all().filter(stud_course_id = osas_r_course.objects.get(course_name = txt_course1)).order_by('stud_no')
-        return render(request, template_name, {'student_info': student_info, 'student_course': student_course, 'student_yr_sec': student_yr_sec})
+        return render(request, template_name, {'student_info': student_info, 'student_course': student_course, 'student_yr_sec': student_yr_sec, 'notif':notif, 'notif_info':notif_info})
     elif txt_Gender1:
         student_info = osas_r_personal_info.objects.all().filter(stud_gender = txt_Gender1).order_by('stud_no')
-        return render(request, template_name, {'student_info': student_info, 'student_course': student_course, 'student_yr_sec': student_yr_sec})
+        return render(request, template_name, {'student_info': student_info, 'student_course': student_course, 'student_yr_sec': student_yr_sec, 'notif':notif, 'notif_info':notif_info})
     elif txt_yr_sec1:
         student_info = osas_r_personal_info.objects.all().filter(stud_yas_id = osas_r_section_and_year.objects.get(yas_descriptions = txt_yr_sec1)).order_by('stud_no')
-        return render(request, template_name, {'student_info': student_info, 'student_course': student_course, 'student_yr_sec': student_yr_sec})
+        return render(request, template_name, {'student_info': student_info, 'student_course': student_course, 'student_yr_sec': student_yr_sec, 'notif':notif, 'notif_info':notif_info})
     else:
-        return render(request, template_name, {'student_info': student_info, 'student_course': student_course, 'student_yr_sec': student_yr_sec})
-
+        return render(request, template_name, {'student_info': student_info, 'student_course': student_course, 'student_yr_sec': student_yr_sec, 'notif':notif, 'notif_info':notif_info})
 
 def student_profile_view(request):
     today = datetime.today()
@@ -681,7 +725,9 @@ def student_edit(request, stud_id):
 def userrole(request):
     user_list = osas_r_userrole.objects.order_by('user_type')
     context = {'user_list': user_list}
-    return render(request, 'userrole.html', {'user_list': user_list})
+    notif = osas_notif.objects.all().filter(notif_head = 'Sent').count()
+    notif_info = osas_notif.objects.all().filter(notif_head = "Sent").order_by("-notif_datecreated")
+    return render(request, 'userrole.html', {'user_list': user_list,'notif':notif, 'notif_info':notif_info})
     
 def edit_user(request, user_id): 
     template_name = 'edit_user.html'
@@ -770,19 +816,21 @@ def auth_user(request):
     status = request.POST.get('filter_status')
     userrole = osas_r_userrole.objects.order_by('user_type')
     template_name = 'auth_user.html'
+    notif = osas_notif.objects.all().filter(notif_head = 'Sent').count()
+    notif_info = osas_notif.objects.all().filter(notif_head = "Sent").order_by("-notif_datecreated")
     if date1 and date2:
         if status:
             auth_user = osas_r_auth_user.objects.all().filter(auth_status = status, date_updated__range=[date1, date2], auth_role = osas_r_userrole.objects.get(user_type = "OSAS STAFF")).order_by('-date_updated')
-            return render(request, template_name, {'auth_user': auth_user, 'userrole':userrole })
+            return render(request, template_name, {'auth_user': auth_user, 'userrole':userrole, 'notif':notif, 'notif_info':notif_info})
         else:   
             auth_user = osas_r_auth_user.objects.all().filter(date_updated__range=[date1, date2], auth_role = osas_r_userrole.objects.get(user_type = "OSAS STAFF")).order_by('-date_updated')
-            return render(request, template_name, {'auth_user': auth_user, 'userrole':userrole })
+            return render(request, template_name, {'auth_user': auth_user, 'userrole':userrole, 'notif':notif, 'notif_info':notif_info})
     elif status:
         auth_user = osas_r_auth_user.objects.all().filter(auth_status = status, auth_role = osas_r_userrole.objects.get(user_type = "OSAS STAFF")).order_by('-date_updated')
-        return render(request, template_name, {'auth_user': auth_user, 'userrole':userrole })
+        return render(request, template_name, {'auth_user': auth_user, 'userrole':userrole, 'notif':notif, 'notif_info':notif_info})
     else:
         auth_user = osas_r_auth_user.objects.all().filter(auth_role = osas_r_userrole.objects.get(user_type = "OSAS STAFF"), auth_status = "ACTIVE").order_by('-date_updated')
-        return render(request, template_name, {'auth_user': auth_user, 'userrole':userrole })
+        return render(request, template_name, {'auth_user': auth_user, 'userrole':userrole, 'notif':notif, 'notif_info':notif_info})
     
 
 def auth_process_edit(request, auth_id):
@@ -965,20 +1013,21 @@ def student_lost_id(request):
     status = request.POST.get('filter_status')
     if status == "On Process":
         status = "PROCESSING"
-
+    notif = osas_notif.objects.all().filter(notif_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), notif_stud = 'Sent').count()
+    notif_info = osas_notif.objects.all().filter(notif_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), notif_stud = "Sent").order_by("-notif_datecreated")
     if date1 and date2:
         if status:
             stud_info = osas_t_id.objects.all().filter(lost_stud_id = request.session['session_user_id'], lost_id_status = status, date_updated__range=[date1, date2]).order_by('-date_created')
-            return render(request, 'Role_Student/student_lost_id.html', {'stud_info': stud_info})
+            return render(request, 'Role_Student/student_lost_id.html', {'stud_info': stud_info, 'notif':notif, 'notif_info':notif_info})
         else:   
             stud_info = osas_t_id.objects.all().filter(lost_stud_id = request.session['session_user_id'], date_updated__range=[date1, date2]).order_by('-date_created')
-            return render(request, 'Role_Student/student_lost_id.html', {'stud_info': stud_info})
+            return render(request, 'Role_Student/student_lost_id.html', {'stud_info': stud_info, 'notif':notif, 'notif_info':notif_info})
     elif status:
         stud_info = osas_t_id.objects.all().filter(lost_stud_id = request.session['session_user_id'], lost_id_status = status).order_by('-date_created')
-        return render(request, 'Role_Student/student_lost_id.html', {'stud_info': stud_info})
+        return render(request, 'Role_Student/student_lost_id.html', {'stud_info': stud_info, 'notif':notif, 'notif_info':notif_info})
     else:
         stud_info = osas_t_id.objects.all().filter(lost_stud_id = request.session['session_user_id']).order_by('-date_created')
-        return render(request, 'Role_Student/student_lost_id.html', {'stud_info': stud_info})
+        return render(request, 'Role_Student/student_lost_id.html', {'stud_info': stud_info, 'notif':notif, 'notif_info':notif_info})
 
 #-----------------------------ID---------------------------------------------------------------------------
 def lost_id(request):
@@ -988,7 +1037,8 @@ def lost_id(request):
     if status == "On Process":
         status = "PROCESSING"
     id_request =  osas_t_id.objects.all().order_by('-date_created')
-
+    notif = osas_notif.objects.all().filter(notif_head = 'Sent').count()
+    notif_info = osas_notif.objects.all().filter(notif_head = "Sent").order_by("-notif_datecreated")
     stud_list = osas_t_id.objects.filter(lost_id_status = 'COMPLETE') # queryset for all existing student_no
     stud_ = osas_r_personal_info.objects.all()
     stud_list2 = osas_r_personal_info.objects.filter(stud_id__in = stud_.values_list('stud_id',)) # queryset for all the student then exclude the data that existing in the osas_t_id
@@ -996,16 +1046,16 @@ def lost_id(request):
     if date1 and date2:
         if status:
             id_request = osas_t_id.objects.all().filter(lost_id_status = status, date_updated__range=[date1, date2]).order_by('-date_created')
-            return render(request, 'id/lost_id.html', {'stud_list2': stud_list2, 'id_request': id_request, 'stud_list':stud_list})
+            return render(request, 'id/lost_id.html', {'stud_list2': stud_list2, 'id_request': id_request, 'stud_list':stud_list, 'notif':notif, 'notif_info':notif_info})
         else:   
             id_request = osas_t_id.objects.all().filter(date_updated__range=[date1, date2]).order_by('-date_created')
-            return render(request, 'id/lost_id.html', {'stud_list2': stud_list2, 'id_request': id_request, 'stud_list':stud_list})
+            return render(request, 'id/lost_id.html', {'stud_list2': stud_list2, 'id_request': id_request, 'stud_list':stud_list, 'notif':notif, 'notif_info':notif_info})
     elif status:
         id_request = osas_t_id.objects.all().filter(lost_id_status = status).order_by('-date_created')
-        return render(request, 'id/lost_id.html', {'stud_list2': stud_list2, 'id_request': id_request, 'stud_list':stud_list})
+        return render(request, 'id/lost_id.html', {'stud_list2': stud_list2, 'id_request': id_request, 'stud_list':stud_list, 'notif':notif, 'notif_info':notif_info})
     else:
         id_request = osas_t_id.objects.all().order_by('-date_created')
-        return render(request, 'id/lost_id.html', {'stud_list2': stud_list2, 'id_request': id_request, 'stud_list':stud_list})
+        return render(request, 'id/lost_id.html', {'stud_list2': stud_list2, 'id_request': id_request, 'stud_list':stud_list, 'notif':notif, 'notif_info':notif_info})
 
 def lost_id_student_data(request):
     selected_student = request.POST.get('selected_student')
@@ -1024,10 +1074,13 @@ def lost_id_student_data(request):
     except ObjectDoesNotExist:
         return render(request, 'id/lost_id.html')
 
-def id_request_process(request):
+def id_request_process(request): 
     r_id = request.POST.get('lost_id')
     status = request.POST.get('status')
-    
+    stud = request.POST.get('stud')
+    notif = osas_notif.objects.get(notif_stud_id = osas_r_personal_info.objects.get(stud_no = stud), notif_lost_id = r_id)
+    notif.notif_stud = "Sent"
+    notif.save()
     try:
         today = datetime.today()
         if status == "PENDING":
@@ -1040,10 +1093,11 @@ def id_request_process(request):
         id_request.lost_id_status = status
         id_request.date_updated = today
         id_request.save()   
+      
         data = {'success': True}
         return JsonResponse(data, safe=False)
     except ObjectDoesNotExist:
-        data = {'error': id_request}
+        data = {'error': id_request.lost_id_status}
         return JsonResponse(data, safe=False)
 
 def id_request_completed(request):
@@ -1140,12 +1194,13 @@ def add_id_request(request):
                                         today = datetime.today()
                                         lost_id = osas_t_id(request_id = r_id, lost_stud_id = osas_r_personal_info.objects.get(stud_no = no), date_created = today, date_updated=today)
                                         lost_id.save()
+                                        lostid = lost_id.lost_id
 
                                         s = osas_t_sanction(sanction_t_id = osas_t_id.objects.get(request_id = r_id), sanction_control_number = random_str, sanction_code_id = osas_r_disciplinary_sanction.objects.get(ds_code_id = osas_r_code_title.objects.get(ct_name = "Loss ID / Registration Card"), ds_violation_count = "2nd Offense / Violation"), sanction_stud_id = osas_r_personal_info.objects.get(stud_id = stud.stud_id), sanction_rendered_hr = 0, sanction_status = "PENDING", sanction_datecreated = today,)
                                         s.save()
 
-                                        
-                                        data = {'id': r_id, 'sanction':random_str} #disciplinary already exist
+                                        sanction_id = s.sanction_id
+                                        data = {'id': r_id, 'sanction':lostid, 'sanction_id':sanction_id} #disciplinary already exist
                                         return JsonResponse(data, safe=False)
 
                                     except ObjectDoesNotExist:
@@ -1160,13 +1215,13 @@ def add_id_request(request):
                                         today = datetime.today()
                                         lost_id = osas_t_id(request_id = r_id, lost_stud_id = osas_r_personal_info.objects.get(stud_no = no), date_created = today, date_updated=today)
                                         lost_id.save()
-                                    
+                                        lostid = lost_id.lost_id
 
                                         s = osas_t_sanction(sanction_t_id = osas_t_id.objects.get(request_id = r_id), sanction_control_number = random_str, sanction_code_id = osas_r_disciplinary_sanction.objects.get(ds_code_id = osas_r_code_title.objects.get(ct_name = "Loss ID / Registration Card"), ds_violation_count = "2nd Offense / Violation"), sanction_stud_id = osas_r_personal_info.objects.get(stud_id = stud.stud_id), sanction_rendered_hr = 0, sanction_status = "PENDING", sanction_datecreated = today,)
                                         s.save()
 
-                                        
-                                        data = {'id': r_id, 'sanction':random_str}
+                                        sanction_id = s.sanction_id
+                                        data = {'id': r_id, 'sanction':lostid, 'sanction_id':sanction_id}
                                         return JsonResponse(data, safe=False)
                             elif final == 2:
                                 try:
@@ -1186,12 +1241,13 @@ def add_id_request(request):
                                         today = datetime.today()
                                         lost_id = osas_t_id(request_id = r_id, lost_stud_id = osas_r_personal_info.objects.get(stud_no = no), date_created = today, date_updated=today)
                                         lost_id.save()
+                                        lostid = lost_id.lost_id
 
                                         s = osas_t_sanction(sanction_t_id = osas_t_id.objects.get(request_id = r_id), sanction_control_number = random_str, sanction_code_id = osas_r_disciplinary_sanction.objects.get(ds_code_id = osas_r_code_title.objects.get(ct_name = "Loss ID / Registration Card"), ds_violation_count = "More Than Two (2) Offense / Violation"), sanction_stud_id = osas_r_personal_info.objects.get(stud_id = stud.stud_id), sanction_rendered_hr = 0, sanction_status = "PENDING", sanction_datecreated = today,)
                                         s.save()
 
-                                        
-                                        data = {'id': r_id, 'sanction':random_str} #disciplinary already exist
+                                        sanction_id = s.sanction_id
+                                        data = {'id': r_id, 'sanction':lostid, 'sanction_id':sanction_id} #disciplinary already exist
                                         return JsonResponse(data, safe=False)
 
                                     except ObjectDoesNotExist:
@@ -1206,11 +1262,12 @@ def add_id_request(request):
                                         today = datetime.today()
                                         lost_id = osas_t_id(request_id = r_id, lost_stud_id = osas_r_personal_info.objects.get(stud_no = no), date_created = today, date_updated=today)
                                         lost_id.save()
+                                        lostid = lost_id.lost_id
 
                                         s = osas_t_sanction(sanction_t_id = osas_t_id.objects.get(request_id = r_id), sanction_control_number = random_str, sanction_code_id = osas_r_disciplinary_sanction.objects.get(ds_code_id = osas_r_code_title.objects.get(ct_name = "Loss ID / Registration Card"), ds_violation_count = "More Than Two (2) Offense / Violation"), sanction_stud_id = osas_r_personal_info.objects.get(stud_id = stud.stud_id), sanction_rendered_hr = 0, sanction_status = "PENDING", sanction_datecreated = today)
                                         s.save()
-
-                                        data = {'id': r_id, 'sanction':random_str}
+                                        sanction_id = s.sanction_id
+                                        data = {'id': r_id, 'sanction':lostid, 'sanction_id':sanction_id}
                                         return JsonResponse(data, safe=False)
                             else:
                                 data = {'max': 'reach maximum request'} #reach the maximum request
@@ -1229,21 +1286,23 @@ def add_id_request(request):
                     today = datetime.today()
                     lost_id = osas_t_id(request_id = r_id, lost_stud_id = osas_r_personal_info.objects.get(stud_no = no), date_created = today, date_updated=today)
                     lost_id.save()
-                    
+                    lostid = lost_id.lost_id
                     chars = ""
                     chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
                     randomstr =''.join((random.choice(chars)) for x in range(8))
                     random_str = randomstr
 
                     t = osas_t_sanction(sanction_t_id = osas_t_id.objects.get(request_id = r_id), sanction_control_number = random_str, sanction_code_id = osas_r_disciplinary_sanction.objects.get(ds_code_id = osas_r_code_title.objects.get(ct_name = "Loss ID / Registration Card"), ds_violation_count = "1st Offense / Violation"), sanction_stud_id = osas_r_personal_info.objects.get(stud_id = stud.stud_id), sanction_rendered_hr = 0, sanction_status = "COMPLETED", sanction_datecreated = today,)
-                    t.save()    
+                    t.save()   
+                    sanction_id = t.sanction_id
 
-                    data = {'success': True, 'sanction':random_str}
+                    data = {'success': True, 'sanction':lostid, 'sanction_id':sanction_id}
                     return JsonResponse(data, safe=False)  
                 else:
                     today = datetime.today()
                     lost_id = osas_t_id(request_id = r_id, lost_stud_id = osas_r_personal_info.objects.get(stud_no = no), date_created = today, date_updated=today)
                     lost_id.save()
+                    lostid = lost_id.lost_id
 
                     chars = ""
                     chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
@@ -1256,7 +1315,8 @@ def add_id_request(request):
 
                     t = osas_t_sanction(sanction_t_id = osas_t_id.objects.get(request_id = r_id), sanction_control_number = random_str, sanction_code_id = osas_r_disciplinary_sanction.objects.get(ds_code_id = osas_r_code_title.objects.get(ct_name = "Loss ID / Registration Card"), ds_violation_count = "1st Offense / Violation"), sanction_stud_id = osas_r_personal_info.objects.get(stud_id = stud.stud_id), sanction_rendered_hr = 0, sanction_status = "COMPLETED", sanction_datecreated = today)
                     t.save()    
-                    data = {'id': r_id, 'sanction':random_str}
+                    sanction_id = t.sanction_id
+                    data = {'id': r_id, 'sanction':lostid, 'sanction_id':sanctionid}
                     return JsonResponse(data, safe=False)   
         else:
             data = {'error': 'object'}
@@ -1264,7 +1324,30 @@ def add_id_request(request):
     data = {'error': 'object'}
     return JsonResponse(data, safe=False) 
 
+def lost_id_notif_stud(request):
+    #change the delete for id and sanction into cancelled
+    lost_id_ = request.POST.get('lost_id')
+    stud = request.POST.get('stud')
+    sanction_id = request.POST.get('sanction_id')
+    id_notif = osas_notif(notif_stud_id = osas_r_personal_info.objects.get(stud_no = stud), notif_lost_id = osas_t_id.objects.get(lost_id = lost_id_), notif_head = "Sent", notif_stat = 'Unseen')
+    id_notif.save()
+    notif_sanction_id = osas_notif(notif_stud_id = osas_r_personal_info.objects.get(stud_no = stud), notif_sanction_id = osas_t_sanction.objects.get(sanction_id = sanction_id), notif_head = "Sent", notif_stat = 'Unseen')
+    notif_sanction_id.save()
+    data = {'success': sanction_id}
+    return JsonResponse(data, safe=False) 
 
+def lost_id_notif_osas(request):
+    #change the delete for id and sanction into cancelled
+    stud = request.POST.get('stud')
+    lost_id_ = request.POST.get('lost_id')
+    sanction_id = request.POST.get('sanction_id')
+    id_notif = osas_notif(notif_stud_id = osas_r_personal_info.objects.get(stud_no = stud), notif_lost_id = osas_t_id.objects.get(lost_id = lost_id_), notif_stud = "Sent", notif_stat = 'Unseen')
+    id_notif.save()
+    notif_sanction_id = osas_notif(notif_stud_id = osas_r_personal_info.objects.get(stud_no = stud), notif_sanction_id = osas_t_sanction.objects.get(sanction_id = sanction_id), notif_stud = "Sent", notif_stat = 'Unseen')
+    notif_sanction_id.save()
+    data = {'success': 'true'}
+    return JsonResponse(data, safe=False) 
+    
 def edit_user(request, user_id): 
     template_name = 'edit_user.html'
     try:
@@ -1318,11 +1401,13 @@ def profile(request):
     template_name = 'Role_Student/profile.html'
     request.session['session_user_id']
     request.session['session_user_no']
+    notif = osas_notif.objects.all().filter(notif_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), notif_stud = 'Sent').count()
+    notif_info = osas_notif.objects.all().filter(notif_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), notif_stud = "Sent").order_by("-notif_datecreated")
     try:
         profile = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no'])
         s = profile.stud_birthdate
         n = datetime.strptime(str(s), "%Y-%m-%d").date()
-        return render(request, template_name, {'profile': profile, 'n': n})
+        return render(request, template_name, {'profile': profile, 'n': n, 'notif':notif, 'notif_info':notif_info})
     except ObjectDoesNotExist:
         return render(request, 'Role_Student/profile.html')
     
@@ -1398,7 +1483,9 @@ def student_profile_edit(request):
 def code_descipline(request):
     ct_list = osas_r_code_title.objects.order_by('ct_id')
     context = {'ct_list': ct_list}
-    return render(request, 'Role_Osas/code_of_descipline.html', {'ct_list': ct_list})
+    notif = osas_notif.objects.all().filter(notif_head = 'Sent').count()
+    notif_info = osas_notif.objects.all().filter(notif_head = "Sent").order_by("-notif_datecreated")
+    return render(request, 'Role_Osas/code_of_descipline.html', {'ct_list': ct_list, 'notif':notif, 'notif_info':notif_info})
 
 def ct_descipline_add(request):
     ct_title = request.POST.get('ct_title')
@@ -1435,7 +1522,9 @@ def desciplinary_sanction(request):
     context = {'ds_sanction': ds_sanction}
     code_name = osas_r_code_title.objects.order_by('ct_name').exclude(ct_name = 'Loss ID / Registration Card')
     context2 = {'code_name': code_name}
-    return render(request, 'Role_Osas/desciplinary_sanction.html', {'ds_sanction': ds_sanction, 'code_name': code_name})
+    notif = osas_notif.objects.all().filter(notif_head = 'Sent').count()
+    notif_info = osas_notif.objects.all().filter(notif_head = "Sent").order_by("-notif_datecreated")
+    return render(request, 'Role_Osas/desciplinary_sanction.html', {'ds_sanction': ds_sanction, 'code_name': code_name, 'notif':notif, 'notif_info':notif_info})
 
 def desiplinary_sanction_add(request):
     code_name = request.POST.get("code_name")
@@ -1509,34 +1598,36 @@ def sanction_excuse_approve(request):
                 data = {'success':True}
                 return JsonResponse(data, safe=False)
             else:
-                data = {'error':'t.sanction_t_id'}
+                data = {'error':True}
                 return JsonResponse(data, safe=False)
 
         except ObjectDoesNotExist:
-            data = {'error':'osas_t_excuse.objects.get(excuse_id = excuse_id)'}
+            data = {'error':True}
             return JsonResponse(data, safe=False)
            
     except ObjectDoesNotExist:
-        data = {'error':'osas_t_excuse.objects.get(excuse_id = excuse_id)'}
+        data = {'error':True}
         return JsonResponse(data, safe=False)
 
 def sanctioning_role_student(request):
     date1 = request.POST.get('date_from')
     date2 = request.POST.get('date_to')
     status = request.POST.get('filter_status')
+    notif = osas_notif.objects.all().filter(notif_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), notif_stud = 'Sent').count()
+    notif_info = osas_notif.objects.all().filter(notif_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), notif_stud = "Sent").order_by("-notif_datecreated")
     if date1 and date2:
         if status:
             sanction = osas_t_sanction.objects.all().filter(sanction_status = status, sanction_datecreated__range=[date1, date2], sanction_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no'])).order_by('-sanction_datecreated')
-            return render(request, 'Role_Student/sanction.html', {'sanction':sanction})
+            return render(request, 'Role_Student/sanction.html', {'sanction':sanction, 'notif':notif, 'notif_info':notif_info})
         else:
             sanction = osas_t_sanction.objects.all().filter(sanction_datecreated__range=[date1, date2], sanction_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no'])).order_by('-sanction_datecreated')
-            return render(request, 'Role_Student/sanction.html', {'sanction':sanction})
+            return render(request, 'Role_Student/sanction.html', {'sanction':sanction, 'notif':notif, 'notif_info':notif_info})
     elif status:
         sanction = osas_t_sanction.objects.all().filter(sanction_status = status, sanction_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no'])).order_by('-sanction_datecreated')
-        return render(request, 'Role_Student/sanction.html', {'sanction':sanction})
+        return render(request, 'Role_Student/sanction.html', {'sanction':sanction, 'notif':notif, 'notif_info':notif_info})
     else:
         sanction = osas_t_sanction.objects.all().filter(sanction_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no'])).order_by('-sanction_datecreated')
-        return render(request, 'Role_Student/sanction.html', {'sanction':sanction})
+        return render(request, 'Role_Student/sanction.html', {'sanction':sanction, 'notif':notif, 'notif_info':notif_info})
 
     
 
@@ -1588,19 +1679,22 @@ def sanctioning_student(request):
     office = osas_r_designation_office.objects.order_by('designation_office')
     descipline = osas_r_disciplinary_sanction.objects.order_by('ds_code_id')
     coc_sunction_list = osas_t_sanction.objects.order_by('sanction_dateupdated')
+
+    notif = osas_notif.objects.all().filter(notif_head = 'Sent').count()
+    notif_info = osas_notif.objects.all().filter(notif_head = "Sent").order_by("-notif_datecreated")
     if date1 and date2:
         if status:
             sanction = osas_t_sanction.objects.all().filter(sanction_status = status, sanction_datecreated__range=[date1, date2]).order_by('-sanction_datecreated')
-            return render(request, 'Role_Osas/sanctioning.html', {'coc_sunction_list':coc_sunction_list, 'descipline':descipline, 'student':student, 'office':office, 'sanction':sanction})
+            return render(request, 'Role_Osas/sanctioning.html', {'coc_sunction_list':coc_sunction_list, 'descipline':descipline, 'student':student, 'office':office, 'sanction':sanction, 'notif':notif, 'notif_info':notif_info})
         else:
             sanction = osas_t_sanction.objects.all().filter(sanction_datecreated__range=[date1, date2]).order_by('-sanction_datecreated')
-            return render(request, 'Role_Osas/sanctioning.html', {'coc_sunction_list':coc_sunction_list, 'descipline':descipline, 'student':student, 'office':office, 'sanction':sanction})
+            return render(request, 'Role_Osas/sanctioning.html', {'coc_sunction_list':coc_sunction_list, 'descipline':descipline, 'student':student, 'office':office, 'sanction':sanction, 'notif':notif, 'notif_info':notif_info})
     elif status:
         sanction = osas_t_sanction.objects.all().filter(sanction_status = status).order_by('-sanction_datecreated')
-        return render(request, 'Role_Osas/sanctioning.html', {'coc_sunction_list':coc_sunction_list, 'descipline':descipline, 'student':student, 'office':office, 'sanction':sanction})
+        return render(request, 'Role_Osas/sanctioning.html', {'coc_sunction_list':coc_sunction_list, 'descipline':descipline, 'student':student, 'office':office, 'sanction':sanction, 'notif':notif, 'notif_info':notif_info})
     else:
         sanction = osas_t_sanction.objects.all().order_by('-sanction_datecreated')
-        return render(request, 'Role_Osas/sanctioning.html', {'coc_sunction_list':coc_sunction_list, 'descipline':descipline, 'student':student, 'office':office, 'sanction':sanction})
+        return render(request, 'Role_Osas/sanctioning.html', {'coc_sunction_list':coc_sunction_list, 'descipline':descipline, 'student':student, 'office':office, 'sanction':sanction, 'notif':notif, 'notif_info':notif_info})
     
 
 
@@ -1682,12 +1776,22 @@ def sanction_student_data(request):
     obj_course = list(osas_r_course.objects.filter(course_name = o.stud_course_id).values())
     return JsonResponse({'data': obj_stud, 'data2':obj_course, 'data3':obj_section})
 
+def sanction_notif_osas(request):
+    #change the delete for id and sanction into cancelled
+    stud = request.POST.get('student')
+    sanction_id = request.POST.get('sanction_id')
+    notif_sanction_id = osas_notif(notif_stud_id = osas_r_personal_info.objects.get(stud_no = stud), notif_sanction_id = osas_t_sanction.objects.get(sanction_id = sanction_id), notif_stud = "Sent", notif_stat = 'Unseen')
+    notif_sanction_id.save()
+    data = {'success': 'true'}
+    return JsonResponse(data, safe=False)
+
 def sanction_student_add(request):
     today = datetime.today()
     chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
     randomstr =''.join((random.choice(chars)) for x in range(8))
     auth_id = request.POST.get('auth_id')
     student = request.POST.get('student')
+  
     code_name = request.POST.get('code_name')
     violation_name = request.POST.get('violation_name')
     if violation_name == "1st Offense / Violation":
@@ -1826,7 +1930,9 @@ def sanction_student_view(request):
 def designation_office(request):
     office_list = osas_r_designation_office.objects.order_by('designation_id')
     context = {'office_list': office_list}
-    return render(request, 'designation_office.html', {'office_list': office_list})
+    notif = osas_notif.objects.all().filter(notif_head = 'Sent').count()
+    notif_info = osas_notif.objects.all().filter(notif_head = "Sent").order_by("-notif_datecreated")
+    return render(request, 'designation_office.html', {'office_list': office_list, 'notif':notif, 'notif_info':notif_info})
 
 def designation_office_add(request):
     office = request.POST.get("officeInput")
@@ -1867,34 +1973,36 @@ def lodge_complaint(request):
     date2 = request.POST.get('date_to')
     status = request.POST.get('filter_status')
     category = request.POST.get('filter_cat')
+    notif = osas_notif.objects.all().filter(notif_head = 'Sent').count()
+    notif_info = osas_notif.objects.all().filter(notif_head = "Sent").order_by("-notif_datecreated")
     if status and category:
         stud_complaints = osas_t_complaint.objects.all().filter(comp_status = status, comp_category = category).order_by('-comp_datecreated')
-        return render(request, 'Role_Osas/lodge_complaint.html', { 'stud_complaints':stud_complaints})
+        return render(request, 'Role_Osas/lodge_complaint.html', { 'stud_complaints':stud_complaints, 'notif':notif, 'notif_info':notif_info})
     if date1 and date2:
         if status:
             stud_complaints = osas_t_complaint.objects.all().filter(comp_status = status, comp_datecreated__range=[date1, date2]).order_by('-comp_datecreated')
-            return render(request, 'Role_Osas/lodge_complaint.html', { 'stud_complaints':stud_complaints})
+            return render(request, 'Role_Osas/lodge_complaint.html', { 'stud_complaints':stud_complaints, 'notif':notif, 'notif_info':notif_info})
         elif category:
             stud_complaints = osas_t_complaint.objects.all().filter(comp_category = category, comp_datecreated__range=[date1, date2]).order_by('-comp_datecreated')
-            return render(request, 'Role_Osas/lodge_complaint.html', { 'stud_complaints':stud_complaints})
+            return render(request, 'Role_Osas/lodge_complaint.html', { 'stud_complaints':stud_complaints, 'notif':notif, 'notif_info':notif_info})
         else:
             stud_complaints = osas_t_complaint.objects.all().filter(comp_datecreated__range=[date1, date2]).order_by('-comp_datecreated')
-            return render(request, 'Role_Osas/lodge_complaint.html', { 'stud_complaints':stud_complaints})
+            return render(request, 'Role_Osas/lodge_complaint.html', { 'stud_complaints':stud_complaints, 'notif':notif, 'notif_info':notif_info})
     elif status:
         stud_complaints = osas_t_complaint.objects.all().filter(comp_status = status).order_by('-comp_datecreated')
-        return render(request, 'Role_Osas/lodge_complaint.html', { 'stud_complaints':stud_complaints})
+        return render(request, 'Role_Osas/lodge_complaint.html', { 'stud_complaints':stud_complaints, 'notif':notif, 'notif_info':notif_info})
     elif category:
         stud_complaints = osas_t_complaint.objects.all().filter(comp_category = category).order_by('-comp_datecreated')
-        return render(request, 'Role_Osas/lodge_complaint.html', { 'stud_complaints':stud_complaints})
+        return render(request, 'Role_Osas/lodge_complaint.html', { 'stud_complaints':stud_complaints, 'notif':notif, 'notif_info':notif_info})
     elif date1:
         stud_complaints = osas_t_complaint.objects.all().filter(comp_datecreated = date1).order_by('-comp_datecreated')
-        return render(request, 'Role_Osas/lodge_complaint.html', { 'stud_complaints':stud_complaints})
+        return render(request, 'Role_Osas/lodge_complaint.html', { 'stud_complaints':stud_complaints, 'notif':notif, 'notif_info':notif_info})
     elif date2:
         stud_complaints = osas_t_complaint.objects.all().filter(comp_datecreated = date2).order_by('-comp_datecreated')
-        return render(request, 'Role_Osas/lodge_complaint.html', { 'stud_complaints':stud_complaints})
+        return render(request, 'Role_Osas/lodge_complaint.html', { 'stud_complaints':stud_complaints, 'notif':notif, 'notif_info':notif_info})
     else:
         stud_complaints = osas_t_complaint.objects.all().order_by('-comp_datecreated')
-        return render(request, 'Role_Osas/lodge_complaint.html', { 'stud_complaints':stud_complaints})
+        return render(request, 'Role_Osas/lodge_complaint.html', { 'stud_complaints':stud_complaints, 'notif':notif, 'notif_info':notif_info})
     
 
 def student_file_complaint(request):
@@ -1903,28 +2011,30 @@ def student_file_complaint(request):
     status = request.POST.get('filter_status')
     category = request.POST.get('filter_cat')
     student_course = osas_r_course.objects.order_by('course_name')
+    notif = osas_notif.objects.all().filter(notif_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), notif_stud = 'Sent').count()
+    notif_info = osas_notif.objects.all().filter(notif_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), notif_stud = "Sent").order_by("-notif_datecreated")
     if date1 and date2:
         if status:
             stud_complaint = osas_t_complaint.objects.all().filter(comp_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), comp_status = status, comp_datecreated__range=[date1, date2]).order_by('-comp_datecreated')
-            return render(request, 'Role_Student/file_a_complaint.html', {'stud_complaint':stud_complaint, 'student_course':student_course})
+            return render(request, 'Role_Student/file_a_complaint.html', {'stud_complaint':stud_complaint, 'student_course':student_course, 'notif':notif, 'notif_info':notif_info})
         elif category:
             stud_complaint = osas_t_complaint.objects.all().filter(comp_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), comp_category = category, comp_datecreated__range=[date1, date2]).order_by('-comp_datecreated')
-            return render(request, 'Role_Student/file_a_complaint.html', {'stud_complaint':stud_complaint, 'student_course':student_course})
+            return render(request, 'Role_Student/file_a_complaint.html', {'stud_complaint':stud_complaint, 'student_course':student_course, 'notif':notif, 'notif_info':notif_info})
         else:
             stud_complaint = osas_t_complaint.objects.all().filter(comp_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), comp_datecreated__range=[date1, date2]).order_by('-comp_datecreated')
-            return render(request, 'Role_Student/file_a_complaint.html', {'stud_complaint':stud_complaint, 'student_course':student_course})
+            return render(request, 'Role_Student/file_a_complaint.html', {'stud_complaint':stud_complaint, 'student_course':student_course, 'notif':notif, 'notif_info':notif_info})
     elif status and category:
         stud_complaint = osas_t_complaint.objects.all().filter(comp_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), comp_status = status, comp_category = category).order_by('-comp_datecreated')
-        return render(request, 'Role_Student/file_a_complaint.html', {'stud_complaint':stud_complaint, 'student_course':student_course})
+        return render(request, 'Role_Student/file_a_complaint.html', {'stud_complaint':stud_complaint, 'student_course':student_course, 'notif':notif, 'notif_info':notif_info})
     elif status:
         stud_complaint = osas_t_complaint.objects.all().filter(comp_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), comp_status = status).order_by('-comp_datecreated')
-        return render(request, 'Role_Student/file_a_complaint.html', {'stud_complaint':stud_complaint, 'student_course':student_course})
+        return render(request, 'Role_Student/file_a_complaint.html', {'stud_complaint':stud_complaint, 'student_course':student_course, 'notif':notif, 'notif_info':notif_info})
     elif category:
         stud_complaint = osas_t_complaint.objects.all().filter(comp_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), comp_category = category).order_by('-comp_datecreated')
-        return render(request, 'Role_Student/file_a_complaint.html', {'stud_complaint':stud_complaint, 'student_course':student_course})
+        return render(request, 'Role_Student/file_a_complaint.html', {'stud_complaint':stud_complaint, 'student_course':student_course, 'notif':notif, 'notif_info':notif_info})
     else:
         stud_complaint = osas_t_complaint.objects.all().filter(comp_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no'])).order_by('-comp_datecreated')
-        return render(request, 'Role_Student/file_a_complaint.html', {'stud_complaint':stud_complaint, 'student_course':student_course})
+        return render(request, 'Role_Student/file_a_complaint.html', {'stud_complaint':stud_complaint, 'student_course':student_course, 'notif':notif, 'notif_info':notif_info})
 
 def student_file_complaint_get(request):
     comp_id = request.POST.get('comp_id')
@@ -1957,11 +2067,19 @@ def student_file_complaint_edit(request):
         return JsonResponse(data, safe=False)
 
 def student_file_complaint_add(request):
+    dd_course = request.POST.get('dd_course')
+    g_lname = request.POST.get('g_lname')
+    g_fname = request.POST.get('g_fname')
+    g_mname = request.POST.get('g_mname')
+
     letter = request.POST.get('essay_text')
     stud_no = request.session['session_user_no']
     category = request.POST.get('g_category')
     nature_complaint = request.POST.get('n_complaint')
-    g_assign = request.POST.get('g_assig')
+    if dd_course and g_lname and g_fname:
+        g_assign = g_fname + " " + g_mname + " " + g_lname
+    else:
+        g_assign = request.POST.get('g_assig')
     proof_image = request.FILES.get('p_image')
     chars = ""
     chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'

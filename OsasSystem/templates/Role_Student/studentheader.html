@@ -14,6 +14,53 @@
         
         <!-- begin header-nav -->
         <ul class="navbar-nav navbar-right">
+            <li class="dropdown">
+                <a  data-toggle="dropdown" class="dropdown-toggle f-s-14">
+                    <i class="fa fa-bell" style="color: #800000;"></i>
+                    {% if notif %}
+                    <span class="bg-red label" id="notif_unseen">{{notif}}</span>
+                    {% endif %}
+                </a>
+                
+                <ul class="dropdown-menu media-list dropdown-menu-right">
+                    <li class="dropdown-header">NOTIFICATIONS ({{notif}})</li>
+                    {% if notif_info %}
+                    {% for osas_notif in notif_info %}
+                    {% if osas_notif.notif_lost_id %}
+                    <li class="media" id="notif1">
+                        <a href="{% url 'student_lost_id' %}"  onClick="notif_stud_id('{{osas_notif.notif_lost_id}}')" >
+                            <div class="media-left">
+                                <i class="fas fa-address-card media-object bg-silver-darker"></i>
+                                <i class="far fa-comment-alt text-warning media-object-icon f-s-14"></i>
+                            </div>
+                            <div class="media-body">
+                                <h5 class="media-heading"><i class="far fa-address-card"></i><strong>  Lost ID</strong></h5>
+                                <h6 class="media-heading">You recieved new update!</h6>
+                                <p hidden id="lostid" value="{{osas_notif.notif_lost_id}}">{{osas_notif.notif_lost_id}}</p>
+                                <div class="text-muted f-s-11">{{ osas_notif.notif_datecreated }}</div>
+                            </div>
+                        </a>
+                    </li>
+                    {% elif osas_notif.notif_sanction_id %}
+                    <li class="media" id="notif1">
+                        <a href="{% url 'sanctioning_role_student' %}"  onClick="notif_stud_sanction('{{osas_notif.notif_sanction_id.sanction_id}}')">
+                            <div class="media-left">
+                                <i class="fas fa-user media-object bg-silver-darker"></i>
+                                <i class="far fa-comment-alt text-warning media-object-icon f-s-14"></i>
+                            </div>
+                            <div class="media-body">
+                                <h5 class="media-heading"><i class="far fa-user"></i> <strong> Student Sanction</strong></h5>
+                                <h6 class="media-heading">You recieved new update!</h6>
+                                <p hidden id="sanction" value="{{osas_notif.notif_sanction_id.sanction_id}}">{{osas_notif.notif_sanction_id.sanction_id}}</p>
+                                <div class="text-muted f-s-11">{{ osas_notif.notif_datecreated }}</div>
+                            </div>
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+                    {% endif %}
+                </ul>
+            </li>
             <li class="dropdown navbar-user">
                 <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
                     <img src="{%static 'OsasSystem/assets/img/user/user.png' %}" alt="" /> 

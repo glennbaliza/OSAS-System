@@ -152,7 +152,7 @@ p{
                             {% for osas_t_complaint in stud_complaints %}
                             <tr class="odd gradeA tr_" id="{{ osas_t_complaint.comp_id }}">
                                 <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
-                                <td class="text-nowrap"><dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                <td width="30%" class="text-nowrap"><dl class="row mb-0 p-2" style="line-height: .6rem;">
                                     <dd class="col-sm-8 gritter-  " ><strong class="sn{{osas_t_complaint.comp_id}}">{{ osas_t_complaint.comp_stud_id.stud_no }}</strong></dd>
                                     <dd hidden class="col-sm-8 gritter-  " ><strong class="sc{{osas_t_complaint.comp_id}}">{{ osas_t_complaint.comp_stud_id.stud_course_id.course_name }}</strong></dd>
                                     {% if osas_t_complaint.comp_letter %}
@@ -163,13 +163,13 @@ p{
                                     {% endif %}
                                 </dl>
                                 </td>
-                                <td class="text-nowrap"><dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                <td width="25%" class="text-nowrap"><dl class="row mb-0 p-2" style="line-height: .6rem;">
                                     <dd class="col-sm-8 gritter- " ><strong class="scn{{osas_t_complaint.comp_id}}">{{ osas_t_complaint.comp_g_assign }}</strong></dd>
                                     <dd class="col-sm-8 gritter- " ><strong class="catn{{osas_t_complaint.comp_id}}">{{ osas_t_complaint.comp_category }}</strong></dd>
                                     <dd class="col-sm-8 gritter- " ><strong class="nn{{osas_t_complaint.comp_id}}">{{ osas_t_complaint.comp_nature }}</strong></dd>
                                 </dl>
                                 </td>
-                                <td class="align-middle" class="text-nowrap" width="35%" ><dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                <td width="25%" class="align-middle" class="text-nowrap" width="35%" ><dl class="row mb-0 p-2" style="line-height: .6rem;">
                                     <dd class="col-sm-8 gritter- " ><strong><span class=" cc{{osas_t_complaint.comp_id}}">{{ osas_t_complaint.comp_number }}</span></strong></dd>
                                     <dd class="col-sm-8 gritter- cd{{osas_t_complaint.comp_id}}">{{ osas_t_complaint.comp_datecreated|date:"Y-m-d" }}</dd>
                                     {% if osas_t_complaint.comp_status == "APPROVED"%}
@@ -362,7 +362,7 @@ function deleteComplaint(comp_id) {
                     }
                     if (data.success) {
                         $("#data-table #" + comp_id).remove();
-                        refresh_div()
+                        window.location.reload()
                         swal("Success!  " + "Complaint is successfully approved.", {
                         icon: "success",
                         })
@@ -415,7 +415,7 @@ function approveComplaint(comp_id) {
                     }
                     if (data.success) {
                         $("#data-table #" + comp_id).remove();
-                        refresh_div()
+                        window.location.reload()
                         swal("Success!  " + "Complaint is successfully approved.", {
                         icon: "success",
                         })

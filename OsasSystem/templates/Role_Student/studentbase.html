@@ -9,6 +9,7 @@
 
 <head>
 	<meta charset="utf-8" />
+	<link rel="icon" type="image/x-icon" href="{% static 'OsasSystem/assets/img/logo/favicon.ico' %}" />
 	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" />
 	<meta content="" name="description" />
 	<meta content="" name="author" />
@@ -23,12 +24,12 @@
     <link href="{%static 'OsasSystem/assets/plugins/animate/animate.min.css' %}" rel="stylesheet" />
     <link href="{%static 'OsasSystem/assets/css/default/style.min.css' %}" rel="stylesheet" />
     <link href="{%static 'OsasSystem/assets/css/default/style-responsive.min.css' %}" rel="stylesheet" />
-	<link href="{%static 'OsasSystem/assets/css/default/theme/default.css' %}" rel="stylesheet" id="theme" />
+    <link href="{%static 'OsasSystem/assets/css/default/theme/default.css' %}" rel="stylesheet" id="theme" />
 	
 	<!-- ================== END BASE CSS STYLE ================== -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
 	<!-- ================== BEGIN PAGE LEVEL CSS STYLE ================== -->
-	<script src="{%static 'OsasSystem/assets/plugins/pace/pace.min.js' %}"></script>
+	<!-- <script src="{%static 'OsasSystem/assets/plugins/pace/pace.min.js' %}"></script> -->
     <link href="{%static 'OsasSystem/assets/plugins/DataTables/media/css/dataTables.bootstrap.min.css' %}" rel="stylesheet" />
     <link href="{%static 'OsasSystem/assets/plugins/DataTables/extensions/Responsive/css/responsive.bootstrap.min.css' %}" rel="stylesheet" />
 	<!-- ================== END PAGE LEVEL STYLE ================== -->
@@ -83,6 +84,7 @@
 	<script src="{%static 'OsasSystem/assets/plugins/DataTables/extensions/Buttons/js/buttons.print.min.js' %}"></script>
 	<script src="{%static 'OsasSystem/assets/plugins/DataTables/extensions/Responsive/js/dataTables.responsive.min.js' %}"></script>
 	<!-- ================== END PAGE LEVEL JS ================== -->
+	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script> -->
 	
 	<script src="{%static 'OsasSystem/assets/plugins/DataTables/media/js/jquery.dataTables.js' %}"></script>
 	<script src="{%static 'OsasSystem/assets/plugins/DataTables/media/js/dataTables.bootstrap.min.js' %}"></script>
@@ -106,6 +108,42 @@
 			
 		});
     </script>
+	<script>
+		function notif_stud_id(notif_lost_id){
+			$.ajax({
+				type:'POST',
+				url : "{% url 'notif_seen_stud' %}",
+				data:{
+					notif_lost_id: notif_lost_id,
+					csrfmiddlewaretoken: "{{ csrf_token }}",
+				},
+				success: function(data){
+					console.log(data.notif_lost_id)
+				},
+				error: function(error){
+					console.log(error)
+				}
+			})
+		}
+		function notif_stud_sanction(sanction_id){
+			console.log(sanction_id)
+			$.ajax({
+				type:'POST',
+				url : "{% url 'notif_sanction_stud' %}",
+				data:{
+					sanction_id: sanction_id,
+					csrfmiddlewaretoken: "{{ csrf_token }}",
+				},
+				success: function(data){
+					console.log(data.sanction_id)
+					
+				},
+				error: function(error){
+					console.log(error)
+				}
+			})
+		}
+	</script>
 </body>
 </html>
 

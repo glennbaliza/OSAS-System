@@ -157,7 +157,7 @@
                                 </td>
                                 <td  width="24%" class="align-middle action_btn text-nowrap" id="action_btn"><div class="text-nowrap"><div class="btn-group ">
                                     <button id="view-btn" class="btn btn-white  m-l-1"  data-toggle="modal" href="#modal_view" onClick="viewSanction('{{ osas_t_sanction.sanction_id }}')"><i class="fas fa-search mr-2"></i>View</button>
-                                    {% if request.session.session_user_role == 'HEAD OSAS'%}
+                              
                                     
                                     {% if osas_t_sanction.sanction_status == "ACTIVE"%}
                                     <button id="edit-btn" class="btn btn-info m-l-1"  data-toggle="modal" href="#modal-edit" onClick="editSanction('{{ osas_t_sanction.sanction_id }}')"><i class="fas fa-edit mr-2"></i>Edit</button>
@@ -170,7 +170,7 @@
                                     <button id="edit-btn" class="btn btn-info m-l-1"  data-toggle="modal" href="#modal-edit" onClick="editSanction('{{ osas_t_sanction.sanction_id }}')"><i class="fas fa-edit mr-2"></i>Edit</button>
                                     <button id="delete-btn" class="btn btn-danger m-l-1" onClick="deleteSanction('{{ osas_t_sanction.sanction_id }}')"><i class="fas fa-trash-alt mr-2"></i>Delete</button> 
                                     {%endif%}
-                                    {% endif %}
+                         
                                     </div>
                                 </td>
                             </tr>
@@ -548,7 +548,7 @@ $("#modal-view").on('click','#btn_excuse_approve',function(e){
                 success: function (data) {
                     if (data.success) {
                         console.log(data.success)
-                        refresh_div()
+                        window.location.reload()
                         $('#modal-view').modal('hide');
                         swal("Success! sanction has been approved", {
                         icon: "success",
@@ -567,6 +567,7 @@ $("#modal-view").on('click','#btn_excuse_approve',function(e){
     }
     return false;
 });
+
 
 function viewExcuse(sanction_excuse_id) {
     $('#excuse_id').val(sanction_excuse_id);
@@ -594,7 +595,7 @@ function viewExcuse(sanction_excuse_id) {
             if (data.excuse_val){
                 sample = data.excuse_val.proof.replace(/\"/g, "")
                 date2 = moment(data.excuse_val.date).endOf('day').fromNow();  
-                $("#form2").append(' <div id="excuse_image" class="card"><button type="button" class="close" id="modal_close" data-dismiss="modal" aria-hidden="true" style="color: gray; margin: 6px;">×</button><input class="form-control" id="sanction_excuse_id" type="hidden" name="sanction_excuse_id"/><div class="card-body" style="font-family: Roboto;"><h5 class="card-title">'+data.excuse_val.sanction+'</h5><hr>Reason:<br><p class="card-text" style=" font-size: 14px; padding: 10px; color: black;">"'+data.excuse_val.reason+'"</p><br><a href="/media/'+sample+'" target="blank">'+sample+'</a><br><br><i><small class="card-text">Uploaded '+date2+'.</small></i></div><div class="panel-footer align-items-center" id="panel_button" style="background-color: white;"><div class="col-md-12 offset-md-1" style="margin-top: 10px;" id="buttonss"><button class="btn btn_success col-md-5 m-r-2" type="submit" id="btn_excuse_decline" style="height: 33px; padding: 5px; background: linear-gradient(to right, #ff765e -1%, #ff0000 98%); border:none; color: white;" >Decline<i class="fas fa-times m-l-3 zoom"></i></button><button class="btn btn_success col-md-5 m-l-2" type="submit" id="btn_excuse_approve" style="height: 33px; padding: 5px; background: linear-gradient(to right, #66ccff -1%, #3366ff 98%); border:none; color: white;" >Approve<i class="fas fa-check m-l-3 zoom"></i></button></div></div></div>')
+                $("#form2").append(' <div id="excuse_image" class="card"><button type="button" class="close" id="modal_close" data-dismiss="modal" aria-hidden="true" style="color: gray; margin: 6px;">×</button><input class="form-control" id="sanction_excuse_id" type="hidden" name="sanction_excuse_id"/><div class="card-body" style="font-family: Roboto;"><h5 class="card-title">'+data.excuse_val.sanction+'</h5><hr>Reason:<br><p class="card-text" style=" font-size: 14px; padding: 10px; color: black;">"'+data.excuse_val.reason+'"</p><br><a href="/media/'+sample+'" target="blank">'+sample+'</a><br><br><i><small class="card-text">Uploaded '+date2+'.</small></i></div><div class="panel-footer align-items-center" id="panel_button" style="background-color: white;"><div class="col-md-12 offset-md-1" style="margin-top: 10px;" id="buttonss"><button class="btn btn_success col-md-5 " type="submit" id="btn_excuse_approve" style="height: 33px; padding: 5px; background: linear-gradient(to right, #66ccff -1%, #3366ff 98%); border:none; color: white; margin-left: 100px;" >Approve<i class="fas fa-check m-l-3 zoom"></i></button></div></div></div>')
                 console.log(data.excuse_val.status)
                 if (data.excuse_val.status == "APPROVED"){
                     $('#panel_button').hide();
@@ -692,7 +693,7 @@ $("#modal-edit").on('click','#btn_submit',function(e){
                 dataType: 'json',
                 success: function (data) {
                     if (data.success) {
-                        refresh_div()
+                        window.location.reload()
                         $('#modal-edit').modal('hide');
                         swal("Success! sanction has been approved", {
                         icon: "success",
@@ -825,6 +826,25 @@ $("#modal-dialog").on('click','#btn_submit',function(){
                         // $("#error").hide(200);
                     }
                     if (data.sanction_val) {
+                        sanction_id = data.sanction_val.id
+                        console.log(sanction_id)
+                        if (data){
+                            $.ajax({
+                                type: "POST",
+                                url: "{% url 'sanction_notif_osas' %}",
+                                data:{
+                                    sanction_id:sanction_id,
+                                    student: student,
+                                    csrfmiddlewaretoken: "{{ csrf_token }}",
+                                },
+                                success: function(data){
+    
+                                },
+                            });
+                            console.log(data.sanction)
+                            $('#modal_add').modal('hide');
+                                window.location.reload()
+                        }
                         refresh_div()
                     swal("Success!  " + student + " " + "is added to sanctioning record", {
                         icon: "success",

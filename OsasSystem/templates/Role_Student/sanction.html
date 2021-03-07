@@ -33,7 +33,7 @@
 {% endblock%}
 
 {% block title %}
-    Student Profile
+    Student Sanction
 {% endblock %}
 
 
@@ -150,7 +150,7 @@
                                 </td>
                                 <td  width="25%" class="align-middle action_btn" id="action_btn"><div class="text-nowrap"><div class="btn-group ">
                                     <button id="view-btn" class="btn btn-white"  data-toggle="modal" href="#modal_view" onClick="viewSanction('{{ osas_t_sanction.sanction_id }}')"><i class="fas fa-search mr-2"></i>View</button>
-                                    {% if osas_t_sanction.sanction_excuse_id == None and osas_t_sanction.sanction_status == "PENDING" or osas_t_sanction.sanction_status == "ACTIVE"%}
+                                    {% if osas_t_sanction.sanction_excuse_id == "" and osas_t_sanction.sanction_status == "PENDING" or osas_t_sanction.sanction_status == "ACTIVE"%}
                                     <button id="edit-btn" class="btn btn-success"  data-toggle="modal" href="#modal-dialog" onClick="addExcuse('{{ osas_t_sanction.sanction_id }}')"><i class="fas fa-edit mr-2"></i>Excuse</button>
         
                                     {% else%}
@@ -379,7 +379,7 @@ function viewExcuse(sanction_excuse_id) {
             if (data.excuse_val){
                 sample = data.excuse_val.proof.replace(/\"/g, "")
                 date2 = moment(data.excuse_val.date).endOf('day').fromNow();  
-                $("#form2").append('<div id="excuse_image" class="card"><button type="button" class="close" id="modal_close" data-dismiss="modal" aria-hidden="true" style="color: gray; margin: 6px;">×</button><input class="form-control" id="sanction_excuse_id" type="hidden" name="sanction_excuse_id"/><div class="card-body" style="font-family: Roboto;"><h5 class="card-title">'+data.excuse_val.sanction+'</h5><hr>Reason:<br><label class="card-text" style=" font-size: 12px;"><i>"'+data.excuse_val.reason+'"</i></label><br><a href="/media/'+sample+'" target="blank">'+sample+'</a><br><br><i><small class="card-text">Uploaded '+date2+'.</small></i></div></div>')
+                $("#form2").append('<div id="excuse_image" class="card"><button type="button" class="close" id="modal_close" data-dismiss="modal" aria-hidden="true" style="color: gray; margin: 6px;">×</button><input class="form-control" id="sanction_excuse_id" type="hidden" name="sanction_excuse_id"/><div class="card-body" style="font-family: Roboto;"><h5 class="card-title">'+data.excuse_val.sanction+'</h5><hr>Reason:<br><label class="card-text" style=" font-size: 12px;"><i>"'+data.excuse_val.reason+'"</i></label><br><a href="/media/'+sample+'" target="blank">'+sample+'</a><br><br><i></i></div></div>')
             }
             if(data.error){
                 console.log(data.error)

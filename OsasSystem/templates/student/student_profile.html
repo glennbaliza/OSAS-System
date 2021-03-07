@@ -889,6 +889,7 @@ $("#modal_view").on('click','#btn_update',function(){
                     swal("Success! Student profile has been updated.", {
                         icon: "success",
                     })
+                    window.location.reload()
 
                 }
                 if (data.error) {

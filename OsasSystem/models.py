@@ -81,7 +81,8 @@ class osas_t_id(models.Model):
     lost_stud_id = models.ForeignKey(osas_r_personal_info, on_delete=models.CASCADE)
     date_created = models.DateField(max_length=50)
     date_updated = models.DateField(max_length=50)
-   
+    lost_id_notif_stud = models.CharField(max_length=13, null = True)
+    lost_id_notif_head = models.CharField(max_length=13, null = True)
     def __str__(self):
         return str(self.lost_id)
         
@@ -207,6 +208,18 @@ class osas_t_complaint(models.Model):
     def __str__(self):
         return str(self.comp_id)
 
+
+class osas_notif(models.Model):
+    notif_id = models.AutoField(primary_key = True)
+    notif_stud_id = models.ForeignKey('osas_r_personal_info', on_delete = models.CASCADE, null = True)
+    notif_lost_id = models.ForeignKey('osas_t_id', on_delete = models.CASCADE, null = True)
+    notif_sanction_id = models.ForeignKey('osas_t_sanction', on_delete = models.CASCADE, null = True)
+    notif_excuse_id = models.ForeignKey('osas_t_excuse', on_delete = models.CASCADE, null = True)
+    notif_complaint_id = models.ForeignKey('osas_t_complaint', on_delete = models.CASCADE, null = True)
+    notif_stat = models.CharField(max_length=13, null = True)
+    notif_stud = models.CharField(max_length=13, null = True)
+    notif_head = models.CharField(max_length=13, null = True)
+    notif_datecreated = models.DateField(default = now)
 #---------------------------------------------ALUMNI-------------------------------------------------
 
 # class osas_r_referral(models.Model):

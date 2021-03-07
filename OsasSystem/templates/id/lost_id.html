@@ -553,19 +553,27 @@ function viewID(lost_id) {
                 else{
 				swal("Success! request has been completed", {
 		            icon: "success",
-		            }).then((willreload) => {
-		            	if(willreload){
-                            if (data){
-                                console.log(data.id)
-                                console.log(data.sanction)
-                                $('#modal_add').modal('hide');
-                                    window.location.reload()
- 
-                            }
-                            
-		            	}
-		            	
-                    });
+		            })
+                    lost_id = data.sanction
+                    sanction_id = data.sanction_id
+                    if (data){
+                        $.ajax({
+                            type: "POST",
+                            url: "{% url 'lost_id_notif_osas' %}",
+                            data:{
+                                lost_id: lost_id,
+                                sanction_id:sanction_id,
+                                stud:stud,
+                                csrfmiddlewaretoken: "{{ csrf_token }}",
+                            },
+                            success: function(data){
+                                console.log(lost_id,sanction_id)
+                            },
+                        });
+                        console.log(data.sanction)
+                        $('#modal_add').modal('hide');
+                            window.location.reload()
+                    }
                 }
 			},
 			error: function(error){
@@ -580,8 +588,9 @@ function viewID(lost_id) {
     
     $("#modal_view").on('click','#btn_submit',function(){
         var lost_id = $('input[name="lost_id_"]').val().trim();
+        var stud = $('#request_studno').text();
         status =  document.getElementById("request_status").innerText
-        console.log(status)
+        console.log(stud)
         if(lost_id){
             $.ajax({
                 type: "POST",
@@ -589,6 +598,7 @@ function viewID(lost_id) {
                 data:{
                     lost_id: lost_id,
                     status:status,
+                    stud:stud,
                     csrfmiddlewaretoken: "{{ csrf_token }}",
                 },
                 success: function(data){
@@ -608,7 +618,8 @@ function viewID(lost_id) {
                     }
                 },
                 error: function(data){
-                    console.log(data.id_request);
+                    console.log(data.error);
+                    // window.location.reload()
                 }
             });
         } 

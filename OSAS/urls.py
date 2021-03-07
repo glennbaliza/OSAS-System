@@ -110,4 +110,12 @@ urlpatterns = [
     path('lodge_complaint/', views.lodge_complaint, name="lodge_complaint"),
     path('lodge_complaint_approve/', views.lodge_complaint_approve, name="lodge_complaint_approve"),
 
+    path('lost_id_notif_stud/', views.lost_id_notif_stud, name="lost_id_notif_stud"),
+    path('lost_id_notif_osas/', views.lost_id_notif_osas, name="lost_id_notif_osas"),
+    path('sanction_notif_osas/', views.sanction_notif_osas, name="sanction_notif_osas"),
+    path('notif_seen/', views.notif_seen, name="notif_seen"),
+    path('notif_sanction/', views.notif_sanction, name="notif_sanction"),
+    path('notif_seen_stud/', views.notif_seen_stud, name="notif_seen_stud"),
+    path('notif_sanction_stud/', views.notif_sanction_stud, name="notif_sanction_stud"),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
