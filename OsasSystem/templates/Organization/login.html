@@ -1,0 +1,53 @@
+{% extends 'Organization/loginbase.html'%}
+{% load static %}
+
+{% block content %}
+
+        
+        <div class="login-cover">
+            <div class="login-cover-image" style="background-image: url({%static 'OsasSystem/assets/img/PUP.jpg' %})" data-id="login-cover-image"></div>
+            <div class="login-cover-bg"></div>
+        </div>
+        <!-- begin #page-container -->
+        <div id="page-container" class="fade">
+            <!-- begin login -->
+            <div class="container col-12 text-md-right" style="padding: 0px; padding-top: 10px; height: 10px;">
+                {% if messages %}
+                    <p class="alert" style="color: white; padding: 0px;">
+                        {% for message in messages %}
+                            {{ message }}
+                        {% endfor %}
+                    </p>
+                {% endif %} 
+            </div>
+            <div class="login login-v2" data-pageload-addclass="animated fadeIn">
+                <!-- begin brand -->
+                <div class="login-header">
+                    <div class="brand">
+                         <b>PUP</b> Quezon City Branch
+                        <small>Sign in to start your session</small>
+                    </div>
+                </div>
+                <!-- end brand -->
+                <!-- begin login-content -->
+                <div class="login-content">
+                    <form action="{% url 'organiation_login_process'  %}" method="POST" class="margin-bottom-0">
+                        {% csrf_token %}
+                        <div class="form-group m-b-20">
+                            <input type="text" class="form-control form-control-lg" placeholder="Email Address" required name="stud_no" id="stud_no" />
+                        </div>
+                        <div class="form-group m-b-20">
+                            <input type="password" class="form-control form-control-lg" placeholder="Password" required  name="pass" id="pass"/>
+                        </div>
+                        <div class="login-buttons">
+                            <button type="submit" class="btn btn-light btn-block btn-lg">Sign in</button>
+                        </div>
+                    </form>
+                </div>
+                <!-- end login-content -->
+            </div>
+
+        </div>
+        <!-- end page container -->
+{% endblock %}
+	

@@ -16,6 +16,22 @@ def image_path(instance, filename):
 
     return 'proof_pic/{year}-{month}-{day}-{basename}-{randomstring}{ext}'.format(basename = basefilename, randomstring=randomstr, ext=file_extension, year=_now.strftime('%Y'), month=_now.strftime('%m'), day=_now.strftime('%d')) 
 
+def file_path(instance, filename):
+    basefilename, file_extension = os.path.splitext(filename)
+    return '{basename}{ext}'.format(basename = basefilename, ext=file_extension)
+    
+def return_file_path(instance, filename):
+    basefilename, file_extension = os.path.splitext(filename)
+    return 'accreditation/{basename}{ext}'.format(basename = basefilename, ext=file_extension)
+
+def file_ext(instance, filename):
+    basefilename, file_extension = os.path.splitext(filename)
+    if file_extension == '.docx':
+        return '{ext}'.format(ext='.docx')
+    else:
+        return '{ext}'.format(ext=file_extension)
+    
+
 class osas_r_course(models.Model):
     
     course_id = models.AutoField(primary_key=True)
@@ -220,6 +236,43 @@ class osas_notif(models.Model):
     notif_stud = models.CharField(max_length=13, null = True)
     notif_head = models.CharField(max_length=13, null = True)
     notif_datecreated = models.DateField(default = now)
+
+#---------------------------------------------ORGANIZATION----------------------------------------------
+
+class organization(models.Model):
+    org_id = models.AutoField(primary_key = True)
+    org_name = models.CharField(unique=True, max_length = 50)
+    org_abbr = models.CharField(max_length = 50, null = True)
+    org_email = models.EmailField(max_length = 50)
+    org_pass = models.CharField(max_length = 16)
+    org_status = models.CharField(max_length = 10, default = 'INACTIVE')
+    org_notes = models.CharField(max_length = 500, null=True)
+    org_stud_id = models.ForeignKey('osas_r_personal_info', on_delete = models.CASCADE, null=True)
+    org_date_accredited = models.DateField(null = True)
+    org_datecreated = models.DateField(default = now)
+    org_dateupdated = models.DateField(default = now)
+    org_expiration = models.DateField(null=True)
+
+    def __str__(self):
+        return self.org_id
+
+class org_accreditation(models.Model):
+    acc_id = models.AutoField(primary_key = True)
+    acc_title = models.CharField(max_length = 200, null = True)
+    acc_file = models.FileField(upload_to=file_path, null=True, blank = True)
+    acc_return_file = models.FileField(upload_to=return_file_path, null=True, blank = True)
+    acc_org_id = models.ForeignKey('organization', on_delete = models.CASCADE, null=True)
+    acc_notes = models.CharField(max_length = 500, blank=True)
+    acc_doc_type = models.FileField(upload_to=file_ext, null=True, blank = True)
+    acc_status = models.CharField(max_length = 20, default = 'SAVED')
+    acc_datecreated = models.DateField(default = now)
+    acc_dateupdated = models.DateField(default = now)
+
+    def image_tag(self):
+        return mark_safe('<img src="/media/accreditation/" width = "50" height="50" />'%(self.acc_file))
+        
+    def __str__(self):
+        return self.acc_id
 #---------------------------------------------ALUMNI-------------------------------------------------
 
 # class osas_r_referral(models.Model):

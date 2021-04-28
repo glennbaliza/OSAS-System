@@ -44,6 +44,18 @@
                     <span>Lost ID</span>
                 </a>
             </li>
+            <li class="has-sub">
+                <a href="javascript:;">
+                    <b class="caret"></b>
+                    <i class="far fa-user"></i> 
+                    <span>Facilitation Student</span>
+                    <span style="margin-left: 25px;">Activities</span>
+                </a>
+                <ul class="sub-menu">
+                    <li><a href="{%url 'organization_osas' %}">Organization</a></li>
+                    <li><a href="{%url 'organization_accreditation' %}">Accreditation</a></li>
+                </ul>
+            </li>
             {% if request.session.session_user_role == 'HEAD OSAS'%}
             <li class="has-sub">
                 <a href="{% url 'auth_user' %}">

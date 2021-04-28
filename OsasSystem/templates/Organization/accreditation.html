@@ -1,0 +1,517 @@
+{% extends 'Organization/base.html'%}
+{% load static %}
+{% block title %}
+	Dashboard
+{% endblock %}
+{% block page-css %} 
+	<!-- ================== BEGIN PAGE LEVEL STYLE ================== -->
+	<link href="{%static 'OsasSystem/assets/plugins/dropzone/min/dropzone.min.css' %}" rel="stylesheet" />
+	<!-- ================== END PAGE LEVEL STYLE ================== -->
+{% endblock %}
+{% block content %}
+<div id="content" class="content">
+    <div class="row">
+        {% if messages %}
+        <p class="alert alert-danger">
+            {% for message in messages %}
+                <i><strong>{{ message }}</strong></i>
+            {% endfor %}
+        </p>
+        {% endif %}
+    </div>
+    <ol class="breadcrumb pull-right">
+        <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+        <li class="breadcrumb-item active">Accreditation</li>
+    </ol>
+    <h1 class="page-header mb-1"><i class="fas fa-upload mr-2" ></i>Accreditation</i></h1>
+    <p class="mb-5">Page Description</p>
+    <!-- end page-header -->
+    
+    <!-- begin row -->
+    <div class="row">
+        <div class="col-md-12">
+            <!-- begin panel -->
+            <div class="panel panel-inverse" data-sortable-id="form-dropzone-1">
+                <div class="panel-body text-inverse">
+                    <div id="dropzone">
+                        <form action="{%url 'accreditation_upload' %}" method="POST" class="dropzone needsclick" id="file-upload">
+                            {% csrf_token %}
+                            <div class="fallback">
+                                <input name="file" type="file" multiple id="document_file" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- end panel -->
+        </div>
+        <!-- end col-10 -->
+    </div>
+    <!-- end row -->
+
+    <div class="row">
+        <div class="col-lg-2">
+            <div class="panel" data-sortable-id="index-1">
+                <div class="panel-heading p-25">
+                    <h2 class="panel-title" style="font-size:16px;">Filter <i class="fas fa-filter mr-2" ></i></h2>
+                </div>
+                <div class="panel-body" style="padding: 0%; height: 200px;">
+                    <form id="validate_form" method="POST" action="{% url 'accreditation' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group" >
+                            <label style="text-align: left; margin-bottom: 7px; margin-top: 4px;" class="col-sm-12">Academic Year:</label> 
+                            <div class="col-sm-12">
+                                <select id="acad_year" name="acad_year" class="form-control">
+                                    <option selected disabled="true">--Select--</option>
+                                    <option  value="2016">2016 - 2017</option>
+                                    <option  value="2017">2017 - 2018</option>
+                                    <option  value="2018">2018 - 2019</option>
+                                    <option  value="2019">2019 - 2020</option>
+                                    <option  value="2020">2020 - 2021</option>
+                                    <option  value="2021">2021 - 2022</option>
+                                </select>
+                            </div>
+                            <label style="text-align: left; margin-bottom: 7px; margin-top: 4px;" class="col-sm-12">Status:</label> 
+                            <div class="col-sm-12">
+                                <select id="filter_status" name="filter_status" class="form-control">
+                                    <option selected disabled="true">--Select--</option>
+                                    <option  value="SAVED">Saved</option>
+                                    <option  value="SENT">Sent</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <button type="submit" class="btn btn-success col-sm-12">Filter <i class="fas fa-filter mr-2" ></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-10">
+            <div class="panel" id="refresh">
+                <div class="panel-heading p-25">
+                    <div class="btn-group btn-group-toggle pull-right" data-toggle="buttons">
+                        <button id="send-btn" style="visibility: hidden;" class="btn btn-success"><i class="fas fa-share mr-2"></i>Send File(s)</button>
+                        <button id="delete-btn" style="visibility: hidden;" class="btn btn-danger m-l-3"><i class="fas fa-share mr-2"></i>Remove File(s)</button>
+                        <!-- <button id="retrieve-btn" style="visibility: hidden;" class="btn btn-danger m-l-3"><i class="fas fa-share mr-2"></i>Retrieve File(s)</button> -->
+                        <button class="btn btn-white m-l-3" id="refresh_doc" >Refresh  <i class="fas fa-sync-alt  text-white-lighter f-s-16"></i></button>
+                    </div>
+                    <h2 class="panel-title" style="font-size:16px;"><i class="fas fa-users mr-2" ></i> Accreditation Document List</h2>
+                </div>
+                <div class="panel-body">
+                    {% if files %}
+                    <table id="data-table" class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th data-orderable="false" hidden></th>
+                                <th data-orderable="false"></th>
+                                <th data-orderable="false" class="text-nowrap">Document Name</th>
+                                <th data-orderable="false">Document Status</th>
+                                <th data-orderable="false">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="newdata">
+                            {% for org_accreditation in files %}
+                            <tr class="odd gradeA tr_  " id="{{ org_accreditation.acc_id }}">
+                                <td width="1%" hidden class="f-s-600 text-inverse" >{{ org_accreditation.acc_id }}</td>
+                                <td width="1%" class="f-s-600 text-inverse" >{{ forloop.counter }}</td>
+                                {% if org_accreditation.acc_doc_type == '.docx' %}
+                                <td width="50%"  class="text-nowrap align-middle " >
+                                    <div style=" display: inline-block; padding: 2px;">
+                                        <a id="{{ org_accreditation.acc_id  }}" href="/media/{{ org_accreditation.acc_file }}" target="blank"><i class="far fa-file-word fa-2x" > </i></a>
+                                    </div>
+                                    <div style="display: inline-block;">
+                                        <a id="{{ org_accreditation.acc_id  }}" href="/media/{{ org_accreditation.acc_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_accreditation.acc_file }}</a>
+                                    </div>
+                                </td>
+                                {% else %}
+                                <td width="50%"  class="text-nowrap align-middle " >
+                                    <div style=" display: inline-block; padding: 2px;">
+                                        <a id="{{ organization.org_id  }}" href="/media/{{ org_accreditation.acc_file }}" target="blank" style="color: red;"><i class="far fa-file-pdf fa-2x" > </i></a>
+                                    </div>
+                                    <div style="display: inline-block;">
+                                        <a id="{{ org_accreditation.acc_id  }}" href="/media/{{ org_accreditation.acc_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_accreditation.acc_file }}</a>
+                                    </div>
+                                </td>
+                                {% endif %}
+                                <td  width="29%" > 
+                                    <dl class="row mb-0 " style="line-height: .6rem; padding-top: 5px; " >
+                                        <dd class="col-sm-8 gritter-  {{org_accreditation.acc_id }}" >{{ org_accreditation.acc_datecreated|date:"Y-m-d"}}</dd>
+                                        {% if org_accreditation.acc_status == 'SAVED'%}
+                                        <dd class="col-sm-8 gritter-"><strong><span class="badge badge-info">{{org_accreditation.acc_status}}</span></strong></dd>
+                                        {% elif org_accreditation.acc_status == 'SENT'%}
+                                        <dd class="col-sm-8 gritter-"><strong><span class="badge badge-warning"> SENT</span></strong></dd>
+                                        {% else %}
+                                        <dd class="col-sm-8 gritter-"><strong><i class="far fa-undo" ></i><span class="badge badge-danger">RETURNED</span></strong></dd>
+                                        {% endif %}
+                                    </dl>
+                                </td>
+                              
+                                <td  class="align-middle text-nowrap"> 
+                                    {% if org_accreditation.acc_status == 'SAVED'%}
+                                    <div class="text-nowrap">
+                                        <div class="btn-group ">
+                                            <button id="delete-btn" class="btn btn-danger" onClick="deleteDoc('{{org_accreditation.acc_id}}')"><i class="fas fa-trash-alt mr-2"></i>Remove</button>
+                                        </div>
+                                    </div>
+                                    {% else %}
+                                    <div class="text-nowrap">
+                                        <div class="btn-group ">
+                                            <button id="delete-btn" class="btn btn-danger" onClick="returnDoc('{{org_accreditation.acc_id}}')"><i class="fas fa-undo mr-2"></i>Retrieve</button>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                </td>
+                            </tr>
+                            {% endfor %}  
+                        </tbody>
+                        </table>
+                       
+                        {% else %}
+                        <table id="data-table" class="table table-striped table-bordered tabless">
+                            <thead>
+                                <tr>
+                                    <th data-orderable="false"></th>
+                                    <th data-orderable="false" class="text-nowrap">Document Details</th>
+                                    <th data-orderable="false" class="text-nowrap">Notes</th>
+                                    <th data-orderable="false">Action</th>
+                                </tr>
+                            </thead>
+                        </table> 
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- <div class="row">
+        <div class="col-lg-12">
+            <div class="panel" data-sortable-id="index-1">
+                <div class="panel-heading p-25">
+                    <h2 class="panel-title" style="font-size:16px;">Send Files <i class="fas fa-share mr-2" ></i></h2>
+                </div>
+                <div class="panel-body">
+                    <form id="validate_form" method="POST" action="{% url 'auth_user' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {% if files %}
+                        <table id="data-table" class="table">
+                            <thead>
+                                <tr>
+                                    <th data-orderable="false"></th>
+                                    <th data-orderable="false"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="newdata">
+                                {% for org_accreditation in files %}
+                                <tr class="odd gradeA tr_ " id="{{ org_accreditation.acc_id }} ">
+                                    {% if org_accreditation.acc_doc_type == '.docx' %}
+                                    <td class="text-nowrap "><dl class="row mb-0" style="line-height: .6rem;">
+                                        <dd class="col-sm-8 gritter-  " ><strong class="sn{{org_accreditation.acc_id}}">{{ org_accreditation.acc_file }}</strong></dd>
+                                    </dl>
+                                    </td>
+                                    {% else %}
+                                    <td class="text-nowrap "><dl class="row mb-0" style="line-height: .6rem;">
+                                        <dd class="col-sm-8 gritter-  " ><strong class="sn{{org_accreditation.acc_id}}">{{ org_accreditation.acc_file }}</strong></dd>
+                                    </dl>
+                                    </td>
+                                    {% endif %}
+                                    <td class="text-nowrap "><dl class="row mb-0" style="line-height: .6rem;">
+                                        <dd class="col-sm-8 gritter-  " ><i class="fas fa-times" style="color:red;"> </i></dd>
+                                    </dl>
+                                </tr>
+                                {% endfor %}  
+                            </tbody>
+                            </table>
+                        {% endif %}
+                        <div class="col-sm-12">
+                            <button type="submit" class="btn btn-success col-sm-12">Finalize <i class="fas fa-filter mr-2" ></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div> -->
+</div>
+{% endblock %}
+{% block page-level %} 
+	<!-- ================== BEGIN PAGE LEVEL JS ================== -->
+    <script src="{%static 'OsasSystem/assets/plugins/bootstrap-sweetalert/sweetalert.min.js' %}"></script>
+    <script src="{%static 'OsasSystem/assets/plugins/dropzone/min/dropzone.min.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/plugins/highlight/highlight.common.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/js/demo/render.highlight.js' %}"></script>
+	<!-- ================== END PAGE LEVEL JS ================== -->
+{% endblock %}
+{% block page-js %}
+<!-- <script>
+    $(document).ready(function() {
+        document.getElementById("myImg").src = "/media/docx.png";
+			$('#data-table').DataTable({
+				ordering: false,
+			});
+		});
+</script> -->
+<script>
+
+var selected = [];
+var table = $('#data-table').DataTable({
+    
+    "rowCallback": function( row, data ) {
+        if ( $.inArray(data.DT_RowId, selected) !== -1 ) {
+            $(row).addClass('selected');
+        }   
+    }
+});
+
+ 
+$('#data-table tbody').on( 'click', 'tr', function () {
+    
+    var id = $(this).closest("tbody tr").find("td:eq(0)").html() 
+    var status = $(this).closest("tbody tr").find("td :eq(7)").text() 
+
+    var index = $.inArray(id, selected);
+    if ( index === -1 ) {
+            selected.push( id );
+    } else {
+        selected.splice( index, 1 );
+    }
+
+    $(this).toggleClass('selected');
+    console.log(selected)
+    
+    
+        if(table.rows('.selected').data().length > 0){
+            if (status == "SAVED"){
+                console.log(status)
+                document.getElementById("send-btn").style.visibility = "";
+                document.getElementById("delete-btn").style.visibility = "";
+            }
+            else{
+                document.getElementById("delete-btn").textContent = "Retrieve File(s)"
+                document.getElementById("delete-btn").style.visibility = "";
+            }
+        }
+        else{
+        
+            document.getElementById("delete-btn").style.visibility = "hidden";
+            document.getElementById("send-btn").style.visibility = "hidden"
+        }
+    
+   
+   
+    });
+ 
+    $('#delete-btn').click( function () {
+        btn_status = document.getElementById("delete-btn").textContent
+        if(btn_status == "Remove File(s)"){
+            sample = "remove"
+        }
+        else if (btn_status == "Retrieve File(s)"){
+            sample = "retrieve"
+        }
+        swal({
+            title: "Are you sure?",
+            text: "You want to" + " " +sample+ " " + "this file(s)?", 
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+            if (willDelete) {
+                selected.forEach(function(doc_id) {
+                    // doc_id = $(this).closest("tbody tr").find("td:eq(0)").html() 
+                    console.log(doc_id)
+                    if (doc_id){
+                        $.ajax({
+                            url: '{% url "accreditation_document_delete" %}',
+                            type: "POST",
+                            data: {
+                                doc_id: doc_id,
+                                btn_status: btn_status,
+                                csrfmiddlewaretoken: "{{ csrf_token }}",
+                            },
+                            dataType: 'json',
+                            success: function (data) {
+                            }
+                        });
+                    } 
+                });
+                if (btn_status == "Retrieve File(s)"){
+                    swal("Success! Files has been successfully retrieved.", {
+                        icon: "success",
+                    });      
+                }
+                else if (btn_status == "Remove File(s)"){
+                    swal("Success! Files has been successfully removed.", {
+                        icon: "success",
+                    });
+                }
+            } 
+        });
+       
+        // alert( table.rows('.selected').data().length +' row(s) selected' );
+    } );
+
+    $('#send-btn').click( function () {
+        swal({
+            title: "Are you sure?",
+            text: "You want to send this to OSAS?", 
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+            if (willDelete) {
+                selected.forEach(function(doc_id) {
+                    // doc_id = $(this).closest("tbody tr").find("td:eq(0)").html() 
+                    console.log(doc_id)
+                    if (doc_id){
+                        $.ajax({
+                            url: '{% url "accreditation_document_send" %}',
+                            type: "POST",
+                            data: {
+                                doc_id: doc_id,
+                                csrfmiddlewaretoken: "{{ csrf_token }}",
+                            },
+                            dataType: 'json',
+                            success: function (data) {
+                            }
+                        });
+                    } 
+                });
+                swal("Success! Document has been sent to OSAS.", {
+            icon: "success",
+        });
+            } 
+        });
+       
+        // alert( table.rows('.selected').data().length +' row(s) selected' );
+    } );
+
+    
+    Dropzone.autoDiscover = false;
+    
+    const myDropzone = new Dropzone("#file-upload", {
+        url: "{%url 'accreditation_upload' %}",
+        maxFiles: 3,
+        maxFilesize: 5,
+        acceptedFiles: '.docx, .pdf'
+    })
+
+    function refresh_div()
+    { 
+        $( "#refresh" ).load(window.location.href + " #refresh" );
+    }
+    $("#refresh").on('click','#refresh_doc',function(){
+        window.location.reload()
+    })
+
+    function deleteDoc(acc_id){
+        console.log(acc_id)
+        if (acc_id) {
+            swal({
+            title: "Are you sure?",
+            text: "you want this document to be removed?", 
+            icon: "warning",
+            buttons: {
+                cancel: {
+                    text: 'Cancel',
+                    value: null,
+                    visible: true,
+                    className: 'btn btn-default',
+                    closeModal: true,
+                },
+                confirm: {
+                    text: 'Yes',
+                    value: true,
+                    visible: true,
+                    className: 'btn btn-warning',
+                    closeModal: true
+                }
+            }
+            })
+            .then((willDelete) => {
+            if (willDelete) {
+                $.ajax({
+                    url: '{% url "accreditation_document_remove" %}',
+                    type: "POST",
+                    data: {
+                        acc_id:acc_id,
+                        csrfmiddlewaretoken: "{{ csrf_token }}",
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.error) {
+                        console.log(error)
+                        }
+                        if (data.success) {
+                            $("#data-table #" + acc_id).fadeOut("slow", function(){
+                                $("#data-table #" + acc_id).remove();
+                            })
+                            swal("Success!", {
+                            icon: "success",
+                            })
+                        }
+                    }
+                });
+            } 
+        });
+        }
+    }
+
+    function returnDoc(acc_id){
+        console.log(acc_id)
+        if (acc_id) {
+            swal({
+            title: "Are you sure?",
+            text: "you want this document to be removed?", 
+            icon: "warning",
+            buttons: {
+                cancel: {
+                    text: 'Cancel',
+                    value: null,
+                    visible: true,
+                    className: 'btn btn-default',
+                    closeModal: true,
+                },
+                confirm: {
+                    text: 'Yes',
+                    value: true,
+                    visible: true,
+                    className: 'btn btn-warning',
+                    closeModal: true
+                }
+            }
+            })
+            .then((willDelete) => {
+            if (willDelete) {
+                $.ajax({
+                    url: '{% url "accreditation_document_return" %}',
+                    type: "POST",
+                    data: {
+                        acc_id:acc_id,
+                        csrfmiddlewaretoken: "{{ csrf_token }}",
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.error) {
+                        console.log(error)
+                        }
+                        if (data.success) {
+                            $("#data-table #" + acc_id).fadeOut("slow", function(){
+                                $("#data-table #" + acc_id).remove();
+                            })
+                            swal("Success!", {
+                            icon: "success",
+                            })
+                        }
+                    }
+                });
+            } 
+        });
+        }
+    }
+</script>
+
+{% endblock %}
+		
+	

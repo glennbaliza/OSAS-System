@@ -118,4 +118,34 @@ urlpatterns = [
     path('notif_seen_stud/', views.notif_seen_stud, name="notif_seen_stud"),
     path('notif_sanction_stud/', views.notif_sanction_stud, name="notif_sanction_stud"),
 
+#---------------------------------------------------------ORGANIZATION---------------------------------------------------------
+    path('organization_osas/', views.organization_osas, name="organization_osas"),
+    path('organization_student_data/', views.organization_student_data, name="organization_student_data"),
+    path('organization_new_account/', views.organization_new_account, name="organization_new_account"),
+    path('organization_update_account/', views.organization_update_account, name="organization_update_account"),
+    path('organization_status_account/', views.organization_status_account, name="organization_status_account"),
+
+    path('organization_home/', views.organization_home, name="organization_home"),
+    path('organization_login/', views.organization_login, name="organization_login"),
+    path('organiation_login_process/', views.organiation_login_process, name="organiation_login_process"),
+    path('organization_logout/', views.organization_logout, name="organization_logout"),
+
+    path('organization_accreditation/', views.organization_accreditation, name="organization_accreditation"),
+    path('accreditation/', views.accreditation, name="accreditation"),
+    path('organization_addnnote/', views.organization_addnnote, name="organization_addnnote"),
+    path('organization_viewnote/', views.organization_viewnote, name="organization_viewnote"),
+    path('organization_upload_osas/', views.organization_upload_osas, name="organization_upload_osas"),
+    path('organization_view_certificate/', views.organization_view_certificate, name="organization_view_certificate"),
+    path('organization_approve/', views.organization_approve, name="organization_approve"),
+    path('organization_dismiss/', views.organization_dismiss, name="organization_dismiss"),
+    path('organization_view_document/', views.organization_view_document, name="organization_view_document"),
+    path('organization_accreditation_expired/', views.organization_accreditation_expired, name="organization_accreditation_expired"),
+    path('organization_accreditation_expired/', views.organization_accreditation_expired, name="organization_accreditation_expired"),
+    path('organization_expired/', views.organization_expired, name="organization_expired"),
+    path('accreditation_document_return/', views.accreditation_document_return, name="accreditation_document_return"),
+    path('accreditation_document_delete/', views.accreditation_document_delete, name="accreditation_document_delete"),
+    
+    path('accreditation_upload/', views.accreditation_upload, name="accreditation_upload"),
+    path('accreditation_document_remove/', views.accreditation_document_remove, name="accreditation_document_remove"),
+    path('accreditation_document_send/', views.accreditation_document_send, name="accreditation_document_send"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

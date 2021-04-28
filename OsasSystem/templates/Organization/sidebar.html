@@ -1,0 +1,61 @@
+{% load static %}
+
+<!-- begin #sidebar -->
+
+<div id="sidebar" class="sidebar bg-black-darker">
+    <!-- begin sidebar scrollbar -->
+    <div data-scrollbar="true" data-height="100%">
+        <!-- begin sidebar user -->
+        <ul class="nav">
+            <li class="nav-profile" hidden>
+                <a href="javascript:;" data-toggle="nav-profile">
+                    <div class="cover with-shadow"></div>
+                    <div class="image">
+                        <img src="{% static 'OsasSystem/assets/img/user/user-13.jpg'%}" alt="" />
+                    </div>
+                    <div class="info">
+                        <b class="caret pull-right"></b>
+                       
+                        <small id="session_id" name="session_id">{{request.session.session_user_role}}</small>
+                    </div>
+                </a>
+            </li>
+        </ul>
+        <!-- end sidebar user -->
+        <!-- begin sidebar nav -->
+        <ul class="nav">
+            <li class="nav-header">Navigation</li>
+            <li class="has-sub">
+                <a href="{% url 'home' %}">
+                    <i class="far fa-chart-bar"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="has-sub">
+                <a href="{% url 'accreditation' %}">
+                    <i class="far fa-comments"></i> 
+                    <span>Accreditation</span>
+                </a>
+            </li>
+            <li class="has-sub">
+                <a href="{% url 'lost_id' %}">
+                    <i class="far fa-address-card"></i> 
+                    <span>Funds</span>
+                </a>
+            </li>
+            <li class="has-sub">
+                <a href="{% url 'lost_id' %}">
+                    <i class="far fa-address-card"></i> 
+                    <span>Officers</span>
+                </a>
+            </li>
+            <li><a href="javascript:;" class="sidebar-minify-btn" data-click="sidebar-minify"><i class="fa fa-angle-double-left"></i></a></li>
+        </ul>
+      
+        <!-- end sidebar nav -->
+    </div>
+    <!-- end sidebar scrollbar -->
+</div>
+
+<div class="sidebar-bg"></div>
+<!-- end #sidebar -->
