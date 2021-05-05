@@ -127,7 +127,7 @@ class osas_r_userrole(models.Model):
     #     return mark_safe('<img src="/userrole/media/%s" width="25" height="25" />'%(self.s_image))
         
     def __str__(self):
-        return self.user_type
+        return str(self.user_id)
 
 class osas_r_auth_user(models.Model):
     auth_id = models.AutoField(primary_key=True)
@@ -140,7 +140,7 @@ class osas_r_auth_user(models.Model):
     date_updated = models.DateField(default=now)
     auth_status = models.CharField(max_length=10, default='ACTIVE')
     def __str__(self):
-        return self.auth_id
+        return str(self.auth_id)
 
 
 class osas_r_disciplinary_sanction(models.Model): # ex. 1st offense, sample_desc, 16hrs, 5days
@@ -245,16 +245,31 @@ class organization(models.Model):
     org_abbr = models.CharField(max_length = 50, null = True)
     org_email = models.EmailField(max_length = 50)
     org_pass = models.CharField(max_length = 16)
-    org_status = models.CharField(max_length = 10, default = 'INACTIVE')
+    org_status = models.CharField(max_length = 10, default = 'ACCREDITED')
     org_notes = models.CharField(max_length = 500, null=True)
     org_stud_id = models.ForeignKey('osas_r_personal_info', on_delete = models.CASCADE, null=True)
+    org_submit_date = models.DateField(null = True)
     org_date_accredited = models.DateField(null = True)
+    org_date_accredited_year = models.DateField(null = True)
     org_datecreated = models.DateField(default = now)
     org_dateupdated = models.DateField(default = now)
     org_expiration = models.DateField(null=True)
 
     def __str__(self):
-        return self.org_id
+        return str(self.org_id)
+
+class organization_chat(models.Model):
+    msg_id = models.AutoField(primary_key = True)
+    msg_message = models.CharField(max_length = 200)
+    msg_status = models.CharField(max_length = 10, default = 'Delivered')
+    msg_date = models.DateTimeField(default = now)
+    msg_send_to = models.CharField(max_length = 200, null = True)
+    msg_send_from = models.CharField(max_length = 200, null = True)
+    msg_org_id = models.ForeignKey('organization', on_delete = models.CASCADE, null=True)
+    msg_head_id = models.ForeignKey('osas_r_auth_user', on_delete = models.CASCADE, null=True)
+
+    def __str__(self):
+        return str(self.msg_id)
 
 class org_accreditation(models.Model):
     acc_id = models.AutoField(primary_key = True)

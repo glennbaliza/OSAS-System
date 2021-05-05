@@ -133,7 +133,7 @@ urlpatterns = [
     path('organization_accreditation/', views.organization_accreditation, name="organization_accreditation"),
     path('accreditation/', views.accreditation, name="accreditation"),
     path('organization_addnnote/', views.organization_addnnote, name="organization_addnnote"),
-    path('organization_viewnote/', views.organization_viewnote, name="organization_viewnote"),
+    path('organization_view_messages/', views.organization_view_messages, name="organization_view_messages"),
     path('organization_upload_osas/', views.organization_upload_osas, name="organization_upload_osas"),
     path('organization_view_certificate/', views.organization_view_certificate, name="organization_view_certificate"),
     path('organization_approve/', views.organization_approve, name="organization_approve"),
@@ -144,7 +144,12 @@ urlpatterns = [
     path('organization_expired/', views.organization_expired, name="organization_expired"),
     path('accreditation_document_return/', views.accreditation_document_return, name="accreditation_document_return"),
     path('accreditation_document_delete/', views.accreditation_document_delete, name="accreditation_document_delete"),
-    
+    path('organization_generate_report/', views.organization_generate_report, name="organization_generate_report"),
+    path('accreditation_osas_msg/', views.accreditation_osas_msg, name="accreditation_osas_msg"),
+    path('accreditation_org_msg/', views.accreditation_org_msg, name="accreditation_org_msg"),
+    path('organization_osas_msg_seen/', views.organization_osas_msg_seen, name="organization_osas_msg_seen"),
+    path('organization_msg_clear/', views.organization_msg_clear, name="organization_msg_clear"),
+
     path('accreditation_upload/', views.accreditation_upload, name="accreditation_upload"),
     path('accreditation_document_remove/', views.accreditation_document_remove, name="accreditation_document_remove"),
     path('accreditation_document_send/', views.accreditation_document_send, name="accreditation_document_send"),

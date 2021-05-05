@@ -49,7 +49,6 @@
                                 <select id="filter_status" name="filter_status" class="form-control">
                                     <option selected disabled="true">--Select--</option>
                                     <option  value="ACCREDITED">Accredited</option>
-                                    <option  value="EXPIRED">Expired</option>
                                     <option  value="DISMISSED">Dismissed</option>
                                     <option  value="INACTIVE">Inactive</option>
                                 </select>
@@ -104,9 +103,9 @@
                                 <td><div class="text-nowrap"><div class="btn-group ">
                                     {% if  organization.org_status == "ACCREDITED"%}
                                     <button id="edit-btn" class="btn btn-info" data-toggle="modal" href="#modal_view" onClick="editOrg('{{organization.org_id}}')"><i class="fas fa-edit mr-2"></i>Edit</button>
-                                    <button id="delete-btn" class="btn btn-danger" onClick="deleteOrg('{{organization.org_id}}')"><i class="fas fa-trash-alt mr-2"></i>Deactivate</button>
+                                    <button id="delete-btn" class="btn btn-danger" onClick="deleteOrg('{{organization.org_id}}')"><i class="fas fa-trash-alt mr-2"></i>Dismiss</button>
                                     {% else %}
-                                    <button id="delete-btn" class="btn btn-success" onClick="deleteOrg('{{organization.org_id}}')"><i class="fas fa-redo mr-2"></i>Activate</button>
+                                    <button id="delete-btn" class="btn btn-success" onClick="deleteOrg('{{organization.org_id}}')"><i class="fas fa-redo mr-2"></i>Accredit</button>
                                     {% endif %}
                                   </div>
                                 </td>

@@ -5,7 +5,7 @@ from django.views import View
 from django.shortcuts import render, redirect, get_object_or_404, reverse, HttpResponse
 from django.http import HttpResponseRedirect, Http404, JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
-from .models import osas_r_userrole, osas_r_course, osas_r_section_and_year, osas_r_personal_info, osas_r_auth_user, osas_t_id, osas_t_sanction, osas_r_code_title, osas_r_disciplinary_sanction, osas_r_designation_office, osas_t_excuse, osas_t_complaint, osas_notif, organization, org_accreditation
+from .models import osas_r_userrole, osas_r_course, osas_r_section_and_year, osas_r_personal_info, osas_r_auth_user, osas_t_id, osas_t_sanction, osas_r_code_title, osas_r_disciplinary_sanction, osas_r_designation_office, osas_t_excuse, osas_t_complaint, osas_notif, organization, org_accreditation, organization_chat
 from django.contrib import messages
 from django.views.decorators.cache import cache_control
 from datetime import datetime, date, timedelta
@@ -2203,7 +2203,7 @@ def organization_osas(request):
         org_list = organization.objects.all().filter(org_status = status ).order_by('org_datecreated')
         return render(request, 'Facilitation/organization.html', {'org_list':org_list, 'stud_list':stud_list})
     else:   
-        org_list = organization.objects.all().filter(org_status = 'ACCREDITED' ).order_by('org_datecreated')
+        org_list = organization.objects.all().order_by('org_datecreated')
         return render(request, 'Facilitation/organization.html', {'org_list':org_list, 'stud_list':stud_list})
         
 def organization_new_account(request):
@@ -2217,7 +2217,23 @@ def organization_new_account(request):
         data = {'error':True}
         return JsonResponse(data, safe=False)
     except ObjectDoesNotExist:
-        org = organization( org_name = org_name, org_abbr = org_abbr, org_email = org_email, org_pass = org_pass, org_stud_id = osas_r_personal_info.objects.get(stud_no = stud))
+        today = datetime.today()
+        year = timedelta(days=365)
+        org_date_accredited = today
+        org_date_accredited_year = today
+        org_expiration = today + year
+        org = organization( 
+            org_name = org_name,
+            org_abbr = org_abbr, 
+            org_email = org_email, 
+            org_pass = org_pass, 
+            org_stud_id = osas_r_personal_info.objects.get(stud_no = stud), 
+            org_status = 'ACCREDITED', 
+            org_date_accredited = org_date_accredited,
+            org_expiration = org_expiration,
+            org_date_accredited_year = org_date_accredited_year,
+            org_submit_date = today
+            )
         org.save()
         data = {'success':True}
         return JsonResponse(data, safe=False)
@@ -2249,15 +2265,27 @@ def organization_status_account(request):
     org_id = request.POST.get('org_id')
     org_status = request.POST.get('status')
     today = datetime.today()
+    year = timedelta(days=365)
+    org_date_accredited = today
+    org_date_accredited_year = today
+    org_expiration = today + year
     try:
         org = organization.objects.get(org_id = org_id)
-        if org_status == 'Deactivate':
-            org.org_status = 'INACTIVE'
+        if org_status == 'Dismiss':
+            org.org_status = 'DISMISSED'
+            org.org_date_accredited = None
+            org.org_expiration = None
+            org.org_date_accredited_year = None
+            org.org_submit_date = None
             org.save()
             data = {'success':True}
             return JsonResponse(data, safe=False)
         else:
-            org.org_status = 'ACTIVE'
+            org.org_status = 'ACCREDITED'
+            org.org_date_accredited = today
+            org.org_date_accredited_year = today
+            org.org_expiration = today + year
+            org.org_submit_date = today
             org.save()
             data = {'success':True}
             return JsonResponse(data, safe=False)
@@ -2272,18 +2300,20 @@ def organization_accreditation(request):
     acc_docu = org_accreditation.objects.all().order_by("acc_id")
     year = str(acad_year)
 
+    msg = organization_chat.objects.all().order_by('msg_date')
+
     if acad_year and status:
         acc_list = organization.objects.all().filter(org_status = status, org_date_accredited__contains = year).order_by("-org_date_accredited")
-        return render(request, 'Facilitation/accreditation.html', {'acc_list':acc_list, 'acc_docu':acc_docu, 'acc_docu_list':acc_docu_list})
+        return render(request, 'Facilitation/accreditation.html', {'acc_list':acc_list, 'acc_docu':acc_docu, 'acc_docu_list':acc_docu_list, 'msg':msg})
     elif acad_year:
         acc_list = organization.objects.all().filter(org_date_accredited__contains = year).order_by("-org_date_accredited")
-        return render(request, 'Facilitation/accreditation.html', {'acc_list':acc_list, 'acc_docu':acc_docu, 'acc_docu_list':acc_docu_list})
+        return render(request, 'Facilitation/accreditation.html', {'acc_list':acc_list, 'acc_docu':acc_docu, 'acc_docu_list':acc_docu_list, 'msg':msg})
     if status:
         acc_list = organization.objects.all().filter(org_status = status ).order_by("-org_date_accredited")
-        return render(request, 'Facilitation/accreditation.html', {'acc_list':acc_list, 'acc_docu':acc_docu, 'acc_docu_list':acc_docu_list})
+        return render(request, 'Facilitation/accreditation.html', {'acc_list':acc_list, 'acc_docu':acc_docu, 'acc_docu_list':acc_docu_list, 'msg':msg})
     else:
         acc_list = organization.objects.all().order_by("-org_date_accredited")   
-        return render(request, 'Facilitation/accreditation.html', {'acc_list':acc_list, 'acc_docu':acc_docu, 'acc_docu_list':acc_docu_list})
+        return render(request, 'Facilitation/accreditation.html', {'acc_list':acc_list, 'acc_docu':acc_docu, 'acc_docu_list':acc_docu_list, 'msg':msg})
    
 def organization_accreditation_expired(request):
     org_list = list(organization.objects.values())
@@ -2295,7 +2325,7 @@ def organization_expired(request):
     try: 
         o = organization.objects.get(org_id = org_id)
         if o.org_date_accredited == o.org_expiration:     
-            o.org_status = "EXPIRED"
+            o.org_status = "INACTIVE"
             o.save()
             data = {'success':True}
             return JsonResponse(data, safe=False)
@@ -2328,6 +2358,7 @@ def organization_approve(request):
         today = datetime.today()
         year = timedelta(days=365)
         d.org_date_accredited = today
+        d.org_date_accredited_year = today
         d.org_expiration = today + year
         d.save()
         data = {'success':True,
@@ -2345,6 +2376,7 @@ def organization_dismiss(request):
         d.org_status = 'DISMISSED'
         d.org_date_accredited = None
         d.org_expiration = None
+        d.org_date_accredited_year = None
         d.save()
         data = {'success':True,
         'id': d.org_id
@@ -2354,13 +2386,43 @@ def organization_dismiss(request):
         data = {'error':True}
         return JsonResponse(data, safe=False)
 
-def organization_viewnote(request):
+def organization_view_messages(request):
     org_id = request.POST.get('org_id')
+    messages_list = list(organization_chat.objects.all().values())
+    org_id = organization.objects.get(org_id = org_id)
+    osas_role = osas_r_auth_user.objects.get(auth_role = osas_r_userrole.objects.get(user_type = "HEAD OSAS"))
+    osas_id = osas_r_auth_user.objects.get(auth_id = osas_role.auth_id)
+   
+    # osas_role_id = osas_r_auth_user.objects.get(auth_id = osas_r_userrole.objects.get(user_type = "HEAD OSAS"))
+    return JsonResponse({
+        'data': messages_list,
+        'org_data':org_id.org_abbr,
+        'org_id':org_id.org_id,
+        'org_msg_status':org_id.org_abbr,
+        'osas_data':osas_id.auth_role.user_type,
+        'osas_role_id':osas_role.auth_id,
+        'osas_role':osas_role.auth_role.user_type,
+        # 'osas_id':osas_role.auth_id
+    })
+
+def organization_osas_msg_seen(request):
+    osas_message = request.POST.get('osas_message')
     try:
-        d = organization.objects.get(org_id = org_id)
-        data = { 'id': d.org_id,
-        'notes':d.org_notes
-        }
+        osas = organization_chat.objects.get(msg_id = osas_message)
+        osas.msg_status = "Seen"
+        osas.save()
+        data = {'osas_msg_status':osas.msg_status}
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        data = {'error':True}
+        return JsonResponse(data, safe=False)
+
+def organization_msg_clear(request):
+    msg_id = request.POST.get('msg_id')
+    try:
+        d = organization_chat.objects.get(msg_id = msg_id)
+        d.delete()
+        data = {'success':True}
         return JsonResponse(data, safe=False)
     except ObjectDoesNotExist:
         data = {'error':True}
@@ -2403,6 +2465,16 @@ def organization_view_certificate(request):
         data = {'error':"error"}
         return JsonResponse(data, safe=False)
 
+def organization_generate_report(request):
+    date_from = request.POST.get('from_2')
+    date_to = request.POST.get('to_2')
+    try:    
+        accredited_values = list(organization.objects.all().filter(org_date_accredited_year__range = [date_from, date_to], org_status = "ACCREDITED").values())
+        return JsonResponse({'data': accredited_values})
+    except ObjectDoesNotExist:
+        data = {'error':"error"}
+        return JsonResponse(data, safe=False)
+
 def organization_login(request):
     return render(request, 'Organization/login.html')
 
@@ -2420,6 +2492,7 @@ def organiation_login_process(request):
             request.session['session_user_id'] = c.org_id
             request.session['session_user_no'] = c.org_email
             request.session['session_user_role'] = c.org_name
+            request.session['session_org_abbr'] = c.org_abbr
             return HttpResponseRedirect('/organization_home')
         else:
             messages.error(request, 'Either email address or password are incorrect.')
@@ -2441,24 +2514,27 @@ def accreditation(request):
     status = request.POST.get('filter_status')
     acad_year = request.POST.get('acad_year')
     year = str(acad_year)
+    d = organization.objects.filter(org_id = request.session['session_user_id'])
     if acad_year and status:
         files = org_accreditation.objects.filter(acc_org_id = organization.objects.get(org_id = request.session['session_user_id']), acc_status = status, acc_datecreated__contains = year ).order_by('-acc_datecreated')
-        return render(request, 'Organization/accreditation.html', {'files':files})
+        return render(request, 'Organization/accreditation.html', {'files':files, 'd':d})
     elif status:
         files = org_accreditation.objects.filter(acc_org_id = organization.objects.get(org_id = request.session['session_user_id']), acc_status = status).order_by('-acc_datecreated')
-        return render(request, 'Organization/accreditation.html', {'files':files})
+        return render(request, 'Organization/accreditation.html', {'files':files, 'd':d})
     elif acad_year:
         files = org_accreditation.objects.filter(acc_org_id = organization.objects.get(org_id = request.session['session_user_id']), acc_datecreated__contains = year ).order_by('-acc_datecreated')
-        return render(request, 'Organization/accreditation.html', {'files':files})
+        return render(request, 'Organization/accreditation.html', {'files':files, 'd':d})
     else:
         files = org_accreditation.objects.filter(acc_org_id = organization.objects.get(org_id = request.session['session_user_id']),acc_status = "SAVED").order_by('-acc_datecreated')
-        return render(request, 'Organization/accreditation.html', {'files':files})
+        return render(request, 'Organization/accreditation.html', {'files':files, 'd':d})
 
 def accreditation_upload(request):
     docu = request.FILES.get('file')
     if request.method == 'POST':
-        org_accreditation.objects.create(acc_file = docu, acc_org_id = organization.objects.get(org_id = request.session['session_user_id']), acc_doc_type = docu)
-        return HttpResponse('')
+        p = org_accreditation.objects.filter(acc_org_id = organization.objects.get(org_id = request.session['session_user_id'])).count()
+        if p < 8:
+            org_accreditation.objects.create(acc_file = docu, acc_org_id = organization.objects.get(org_id = request.session['session_user_id']), acc_doc_type = docu)
+            return HttpResponse('')
     return JsonResponse({'error': True})
 
 def accreditation_document_remove(request):
@@ -2474,21 +2550,79 @@ def accreditation_document_remove(request):
 
 def accreditation_document_return(request):
     doc_id = request.POST.get('acc_id')
+    org_id = request.POST.get('org_id')
     try:
         d = org_accreditation.objects.get(acc_id = doc_id)
-        d.acc_status = "SAVED"
-        d.save()
-        data = {'success':True}
-        return JsonResponse(data, safe=False)
+        e = organization.objects.get(org_id = org_id)
+        if e.org_status == 'ACCREDITED':
+            data = {'error':True}
+            return JsonResponse(data, safe=False)
+        else:
+            d.acc_status = "SAVED"
+            d.save()
+            data = {'success':True}
+            return JsonResponse(data, safe=False)
     except ObjectDoesNotExist:
         data = {'error':True}
         return JsonResponse(data, safe=False)
 
 def accreditation_document_send(request):
     doc_id = request.POST.get('doc_id')
+    org_id = request.POST.get('org_id')
+    today = datetime.today()
     try:
         d = org_accreditation.objects.get(acc_id = doc_id)
-        d.acc_status = "SENT"
+        g = organization.objects.get(org_id = org_id)
+        if g.org_status == 'ACCREDITED':
+            data = {'error':True}
+            return JsonResponse(data, safe=False)
+        else:
+            d.acc_status = "SENT"
+            e = organization.objects.get(org_id = request.session['session_user_id'])
+            e.org_submit_date = today
+            e.save()
+            d.save()
+            data = {'success':True}
+            return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        data = {'error':True}
+        return JsonResponse(data, safe=False)
+
+def accreditation_document_delete(request):
+    doc_id = request.POST.get('doc_id')
+    org_id = request.POST.get('org_id')
+    btn_status = request.POST.get('btn_status')
+    try:
+        d = org_accreditation.objects.get(acc_id = doc_id)
+        e = organization.objects.get(org_id = org_id)
+        if e.org_status == 'ACCREDITED':
+            data = {'error':True}
+            return JsonResponse(data, safe=False)
+        else:
+            if btn_status == "Remove File(s)":
+                d.delete()
+            elif btn_status == "Retrieve File(s)":
+                d.acc_status = "SAVED"
+                d.save()
+            data = {'success':True}
+            return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        data = {'error':True}
+        return JsonResponse(data, safe=False)
+
+def accreditation_osas_msg(request):
+    organization_id = request.POST.get('organization_id')
+    osas_id = request.POST.get('osas_id')
+    btn_status = request.POST.get('msg')
+    date_today = request.POST.get('date_today')
+    try:
+        today = datetime.today()
+        d = organization_chat(
+            msg_message = btn_status, 
+            msg_date = date_today, 
+            msg_head_id = osas_r_auth_user.objects.get(auth_id = osas_id), 
+            msg_send_to = organization_id, 
+            msg_send_from = organization_id)
         d.save()
         data = {'success':True}
         return JsonResponse(data, safe=False)
@@ -2496,16 +2630,20 @@ def accreditation_document_send(request):
         data = {'error':True}
         return JsonResponse(data, safe=False)
 
-def accreditation_document_delete(request):
-    doc_id = request.POST.get('doc_id')
-    btn_status = request.POST.get('btn_status')
+def accreditation_org_msg(request):
+    org_id = request.POST.get('org_id')
+    osas_id = request.POST.get('osas_id')
+    btn_status = request.POST.get('msg')
+    date_today = request.POST.get('date_today')
     try:
-        d = org_accreditation.objects.get(acc_id = doc_id)
-        if btn_status == "Remove File(s)":
-            d.delete()
-        elif btn_status == "Retrieve File(s)":
-            d.acc_status = "SAVED"
-            d.save()
+        today = datetime.today()
+        d = organization_chat(
+            msg_message = btn_status, 
+            msg_date = date_today, 
+            msg_org_id = organization.objects.get(org_id = org_id), 
+            msg_send_to = osas_id,
+            msg_send_from = org_id)
+        d.save()
         data = {'success':True}
         return JsonResponse(data, safe=False)
     except ObjectDoesNotExist:

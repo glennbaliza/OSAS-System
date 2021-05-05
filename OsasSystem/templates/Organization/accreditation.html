@@ -31,10 +31,10 @@
     <div class="row">
         <div class="col-md-12">
             <!-- begin panel -->
-            <div class="panel panel-inverse" data-sortable-id="form-dropzone-1">
+            <div class="panel panel-inverse">
                 <div class="panel-body text-inverse">
                     <div id="dropzone">
-                        <form action="{%url 'accreditation_upload' %}" method="POST" class="dropzone needsclick" id="file-upload">
+                        <form action="{%url 'accreditation_upload' %}" method="POST" class="dropzone" id="file-upload">
                             {% csrf_token %}
                             <div class="fallback">
                                 <input name="file" type="file" multiple id="document_file" />
@@ -47,43 +47,20 @@
         </div>
         <!-- end col-10 -->
     </div>
+    
     <!-- end row -->
-
     <div class="row">
         <div class="col-lg-2">
             <div class="panel" data-sortable-id="index-1">
                 <div class="panel-heading p-25">
-                    <h2 class="panel-title" style="font-size:16px;">Filter <i class="fas fa-filter mr-2" ></i></h2>
+                    <h2 class="panel-title" style="font-size:16px;">Inbox <i class="fas fa-envelope mr-2" ></i></h2>
                 </div>
-                <div class="panel-body" style="padding: 0%; height: 200px;">
-                    <form id="validate_form" method="POST" action="{% url 'accreditation' %}" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        <div class="form-group" >
-                            <label style="text-align: left; margin-bottom: 7px; margin-top: 4px;" class="col-sm-12">Academic Year:</label> 
-                            <div class="col-sm-12">
-                                <select id="acad_year" name="acad_year" class="form-control">
-                                    <option selected disabled="true">--Select--</option>
-                                    <option  value="2016">2016 - 2017</option>
-                                    <option  value="2017">2017 - 2018</option>
-                                    <option  value="2018">2018 - 2019</option>
-                                    <option  value="2019">2019 - 2020</option>
-                                    <option  value="2020">2020 - 2021</option>
-                                    <option  value="2021">2021 - 2022</option>
-                                </select>
-                            </div>
-                            <label style="text-align: left; margin-bottom: 7px; margin-top: 4px;" class="col-sm-12">Status:</label> 
-                            <div class="col-sm-12">
-                                <select id="filter_status" name="filter_status" class="form-control">
-                                    <option selected disabled="true">--Select--</option>
-                                    <option  value="SAVED">Saved</option>
-                                    <option  value="SENT">Sent</option>
-                                </select>
-                            </div>
-                        </div>
+                <div class="panel-body" style="padding: 0%; height: 80px;">
+                    <div class="form-group" >
                         <div class="col-sm-12">
-                            <button type="submit" class="btn btn-success col-sm-12">Filter <i class="fas fa-filter mr-2" ></i></button>
+                            <button type="submit" class="btn btn-success col-sm-12" data-toggle="modal" href="#modal_message" onClick="viewMessage('{{organization.org_id}}')">Message <i class="fas fa-envelope ml-2" ></i></button>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -184,54 +161,79 @@
             </div>
         </div>
     </div>
-    <!-- <div class="row">
-        <div class="col-lg-12">
+    <div class="row">
+        <div class="col-lg-2">
             <div class="panel" data-sortable-id="index-1">
                 <div class="panel-heading p-25">
-                    <h2 class="panel-title" style="font-size:16px;">Send Files <i class="fas fa-share mr-2" ></i></h2>
+                    <h2 class="panel-title" style="font-size:16px;">Filter <i class="fas fa-filter mr-2" ></i></h2>
                 </div>
-                <div class="panel-body">
-                    <form id="validate_form" method="POST" action="{% url 'auth_user' %}" enctype="multipart/form-data">
+                <div class="panel-body" style="padding: 0%; height: 200px;">
+                    <form id="validate_form" method="POST" action="{% url 'accreditation' %}" enctype="multipart/form-data">
                         {% csrf_token %}
-                        {% if files %}
-                        <table id="data-table" class="table">
-                            <thead>
-                                <tr>
-                                    <th data-orderable="false"></th>
-                                    <th data-orderable="false"></th>
-                                </tr>
-                            </thead>
-                            <tbody id="newdata">
-                                {% for org_accreditation in files %}
-                                <tr class="odd gradeA tr_ " id="{{ org_accreditation.acc_id }} ">
-                                    {% if org_accreditation.acc_doc_type == '.docx' %}
-                                    <td class="text-nowrap "><dl class="row mb-0" style="line-height: .6rem;">
-                                        <dd class="col-sm-8 gritter-  " ><strong class="sn{{org_accreditation.acc_id}}">{{ org_accreditation.acc_file }}</strong></dd>
-                                    </dl>
-                                    </td>
-                                    {% else %}
-                                    <td class="text-nowrap "><dl class="row mb-0" style="line-height: .6rem;">
-                                        <dd class="col-sm-8 gritter-  " ><strong class="sn{{org_accreditation.acc_id}}">{{ org_accreditation.acc_file }}</strong></dd>
-                                    </dl>
-                                    </td>
-                                    {% endif %}
-                                    <td class="text-nowrap "><dl class="row mb-0" style="line-height: .6rem;">
-                                        <dd class="col-sm-8 gritter-  " ><i class="fas fa-times" style="color:red;"> </i></dd>
-                                    </dl>
-                                </tr>
-                                {% endfor %}  
-                            </tbody>
-                            </table>
-                        {% endif %}
+                        <div class="form-group" >
+                            <label style="text-align: left; margin-bottom: 7px; margin-top: 4px;" class="col-sm-12">Academic Year:</label> 
+                            <div class="col-sm-12">
+                                <select id="acad_year" name="acad_year" class="form-control">
+                                    <option selected disabled="true">--Select--</option>
+                                    <option  value="2016">2016 - 2017</option>
+                                    <option  value="2017">2017 - 2018</option>
+                                    <option  value="2018">2018 - 2019</option>
+                                    <option  value="2019">2019 - 2020</option>
+                                    <option  value="2020">2020 - 2021</option>
+                                    <option  value="2021">2021 - 2022</option>
+                                </select>
+                            </div>
+                            <label style="text-align: left; margin-bottom: 7px; margin-top: 4px;" class="col-sm-12">Status:</label> 
+                            <div class="col-sm-12">
+                                <select id="filter_status" name="filter_status" class="form-control">
+                                    <option selected disabled="true">--Select--</option>
+                                    <option  value="SAVED">Saved</option>
+                                    <option  value="SENT">Sent</option>
+                                </select>
+                            </div>
+                        </div>
                         <div class="col-sm-12">
-                            <button type="submit" class="btn btn-success col-sm-12">Finalize <i class="fas fa-filter mr-2" ></i></button>
+                            <button type="submit" class="btn btn-success col-sm-12">Filter <i class="fas fa-filter mr-2" ></i></button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
-    </div> -->
+    </div>
 </div>
+
+<div class="modal" id="modal_message" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block imp !important;"> 
+    <div class="modal-dialog" style="overflow-y: scroll; max-height:85%; overflow-y: initial !important; margin-top: 50px; margin-bottom:50px;" > 
+        <div class="modal-content"> 
+            <div class="modal-header"> 
+                <label hidden id="orgs_id"></label>
+                <h4 class="modal-title org_abbr"></h4> 
+                <button hidden type="submit" id="clear_msg" onclick="clear_msg()" class="btn btn-danger" style="height: 20px; width: 20px; padding: 0px; margin-left: -300px; margin-top: 4px; "><i  class="fas fa-trash-alt fa-sm" data-toggle="tooltip" data-placement="right" title="Clear Messages"  ></i></button>
+                <button type="button" onclick="clearMsg()" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div> 
+            <div class="modal-body" id="chatparent" style="height: 390px; overflow-y: auto; overflow-x: hidden; background-color: whitesmoke;">
+                <form id="validate_form1" autocomplete="off" style="margin-top: -30px; font-family: Roboto; font-weight: 350; font-size: 15px; color: black; letter-spacing: 1.5px; ">
+                    <br>
+                    {% csrf_token %}
+                    <section class="container refresh_chat" id="chatbox"  >
+                        <br>
+                
+
+                    </section>     
+                </form>
+                <section class="container refresh_chat" id="chatbox_date" hidden>
+                    <li id="initial_date"></li>
+                </section>
+            </div> 
+            <div class="modal-footer">
+                <input id="btn-input" name="btn-input" maxlength = "183" onfocus="this.placeholder = ''"
+                onblur="this.placeholder = 'Type your message here...'" autocomplete="off" type="text" style="border-radius: 10px; font-family: Roboto; font-weight: 350; font-size: 15px; color: black; letter-spacing: 1.5px; "  class="form-control input-md" placeholder="Type your message here..." />
+            </div> 
+        </div> 
+    </div> 
+</div> 
 {% endblock %}
 {% block page-level %} 
 	<!-- ================== BEGIN PAGE LEVEL JS ================== -->
@@ -251,6 +253,279 @@
 		});
 </script> -->
 <script>
+function clearMsg(){
+    $('#chatbox').empty()
+}
+
+function clear_msg(){
+    org_id = $('#auth_id').text();
+    // $('#chatbox').empty()
+    console.log(org_id, osas_id)
+    swal({
+        title: "Are you sure?",
+        text: "You want to clear all messages?", 
+        icon: "warning",
+        buttons: true,
+        dangerMode: true,
+    })
+    .then((willDelete) => {
+        if (willDelete) {
+            $.ajax({
+                url: '{% url "organization_view_messages" %}',
+                type: "POST",
+                data: {
+                    org_id: org_id,
+                    csrfmiddlewaretoken: "{{ csrf_token }}",
+                },
+                dataType: 'json',
+                success: function(response){
+                    const studData = response.data
+                    studData.map(item=>{
+                        msg_id = item.msg_id
+                        $.ajax({
+                            url: '{% url "organization_msg_clear" %}',
+                            type: "POST",
+                            data: {
+                                msg_id: msg_id,
+                                csrfmiddlewaretoken: "{{ csrf_token }}",
+                            },
+                            dataType: 'json',
+                            success: function (data) {
+                                console.log(data.success)
+                            }
+                        });
+                    })
+                }
+            });
+        } 
+    });
+}
+
+$('#btn-input').keyup(function (e) {
+    if (e.keyCode === 13) {
+        var msg = $('input[name="btn-input"]').val().trim();
+        var x = document.getElementById("chatbox").lastElementChild.className;
+       
+        var y = document.getElementById("chatbox_date").lastElementChild.textContent;
+       
+
+        const now = moment()
+        const msg_date = moment(y)
+
+       
+        // initiating new format needed for appending li tag used for comparing recent datetime to datime now
+        const date_today = moment(now, ['YYYY-MM-DD hh:mm A']).format();    
+        const msg_date2 = moment(msg_date, ['YYYY-MM-DD hh:mm A']).format();
+
+        // initiating ne format neede for appending li tag used for displaying datetime in chatbox
+        const msg_date3 = moment(msg_date).format("YYYY-MM-DD, ddd, hh:mm A");
+        const date_today2 = moment(now).format("YYYY-MM-DD, ddd, hh:mm A");
+
+       
+        if(msg){
+            if (x == "right"){
+                console.log('right')
+                if (msg_date3 == date_today2){
+                    console.log("lol")
+
+                    $.ajax({
+                        url: '{% url "accreditation_org_msg" %}',
+                        type: "POST",
+                        data: {
+                            org_id:org_id,
+                            osas_id: osas_id,
+                            date_today: date_today,
+                            msg: msg,
+                            csrfmiddlewaretoken: "{{ csrf_token }}",
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            $("#modal_message #chatbox").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><p data-toggle="tooltip" data-placement="right" title="Delivered" class="bg-info pull-right comments" style="margin-top: -15px; max-width: 300px; text-align: left; float: right; padding: 8px;border-radius: 10px; color: white; word-wrap: break-word; "  name="comment_stud">'+msg+'</p></div></li>'); 
+
+                            $("#modal_message #chatbox_date").append('<li>'+date_today+'</li>')
+                            // console.log(date_today)
+                            var objDiv = document.getElementById("chatparent");
+                            objDiv.scrollTop = objDiv.scrollHeight;
+                        }
+                    });
+                }
+                else{
+                    console.log("epal")
+                    
+                    $.ajax({
+                        url: '{% url "accreditation_org_msg" %}',
+                        type: "POST",
+                        data: {
+                            org_id:org_id,
+                            osas_id: osas_id,
+                            date_today: date_today,
+                            msg: msg,
+                            csrfmiddlewaretoken: "{{ csrf_token }}",
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            
+                            $("#modal_message #chatbox").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted"  id="date_" style="font-size: 10px">'+date_today2+'</small><strong class="primary-font pull-right" style="font-size: 10px">'+'{{request.session.session_org_abbr}}'+'</strong></div><p data-toggle="tooltip" data-placement="right" title="Delivered"  class="bg-info pull-right comments" style="max-width: 300px; text-align: left; float: right; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;"  name="comment_stud">'+msg+'</p></div></li>'); 
+
+                            $("#modal_message #chatbox_date").append('<li>'+date_today+'</li>')
+                            // console.log(date_today)
+                            var objDiv = document.getElementById("chatparent");
+                            objDiv.scrollTop = objDiv.scrollHeight;
+                        }
+                    });
+                }
+            }
+            else{
+                console.log(osas_id, 'epal talaga')
+                console.log(org_id, 'org')
+                $.ajax({
+                    url: '{% url "accreditation_org_msg" %}',
+                    type: "POST",
+                    data: {
+                        org_id: org_id,
+                        osas_id: osas_id,
+                        date_today: date_today,
+                        msg: msg,
+                        csrfmiddlewaretoken: "{{ csrf_token }}",
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        $("#modal_message #chatbox").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted"  id="date_" style="font-size: 10px">'+date_today2+'</small><strong class="primary-font pull-right" style="font-size: 10px">'+'{{request.session.session_org_abbr}}'+'</strong></div><p data-toggle="tooltip" data-placement="right" title="Delivered" class="bg-info pull-right comments" style="max-width: 300px; text-align: left; float: right; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;"  name="comment_stud">'+msg+'</p></div></li>'); 
+
+                        $("#modal_message #chatbox_date").append('<li>'+date_today+'</li>')
+
+                        var objDiv = document.getElementById("chatparent");
+                        objDiv.scrollTop = objDiv.scrollHeight;
+                    }
+                });
+            }
+        
+            document.getElementById('btn-input').value = "";
+        }
+    }
+
+
+});
+var osas_id;
+function viewMessage(){
+    org_id = $('#auth_id').text();
+    console
+    if (org_id) {
+        document.getElementById('btn-input').value = "";
+        // $('#org_id1').val(org_id);
+        $.ajax({
+            url: '{% url "organization_view_messages" %}',
+            type: "POST",
+            data: {
+                org_id: org_id,
+                csrfmiddlewaretoken: "{{ csrf_token }}",
+            },
+            dataType: 'json',
+            success: function(response){
+                $('.org_abbr').text(response.osas_role);
+                var temp_osas_date;
+                var temp_org_date;
+                osas_id = response.osas_role_id
+                // console.log(response.data.msg_status)
+                const studData = response.data
+                studData.map(item=>{
+                    const msg_date_new = moment(item.msg_date).format("YYYY-MM-DD, ddd, hh:mm A");
+
+                    if(item.msg_send_to == org_id){
+                        osas_message = item.msg_id
+                        console.log(osas_message)
+                        $.ajax({
+                            url: '{% url "organization_osas_msg_seen" %}',
+                            type: "POST",
+                            data: {
+                                osas_message: osas_message,
+                                csrfmiddlewaretoken: "{{ csrf_token }}",
+                            },
+                            dataType: 'json',
+                            success: function (data) {
+                                console.log(data.osas_msg_status)
+                            }
+                        });
+                        
+                        if(temp_org_date){
+
+                            if(temp_org_date == msg_date_new){
+                                // console.log('same')
+                                $("#modal_message #chatbox").append('<li class="left" style="list-style-type: none;"><div class="chat-body clearfix"><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" style=" max-width: 300px; background-color: white; float: left; padding: 8px; border-radius: 10px; color: black; word-wrap: break-word; margin-top: -15px;"  name="comment_stud">'+item.msg_message+'</p></div></li>'); 
+
+                                // $("#modal_message #chatbox_date").append('<li>'+item.msg_date+'</li>')
+                                var objDiv = document.getElementById("chatparent");
+                                objDiv.scrollTop = objDiv.scrollHeight;
+                            }   
+                            else{
+                                $("#chatbox").append('<li class="left"  style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-right text-muted" style="margin-left: 5px;"></i><small class="pull-right text-muted" id="date_stud" style="font-size: 10px"  >'+msg_date_new+'</small><strong class="pull-left primary-font" id="stud_name" name="stud_name" style="font-size: 10px">'+response.osas_role+'</strong></div><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" style=" max-width: 300px; background-color: white; float: left; padding: 8px; border-radius: 10px; color: black; word-wrap: break-word;" id="comment_stud" value="'+item.msg_message+'" name="comments">'+item.msg_message+'</p></div></li>')
+                                
+                                $("#modal_message #chatbox_date").append('<li>'+item.msg_date+'</li>')
+                                temp_org_date = msg_date_new
+                                // console.log('else lang' + temp_org_date)
+
+                                var objDiv = document.getElementById("chatparent");
+                                objDiv.scrollTop = objDiv.scrollHeight;
+                            }
+                        }
+                        else{
+                            $("#chatbox").append('<li class="left"  style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-right text-muted" style="margin-left: 5px;"></i><small class="pull-right text-muted" id="date_stud" style="font-size: 10px"  >'+msg_date_new+'</small><strong class="pull-left primary-font" id="stud_name" name="stud_name" style="font-size: 10px">'+response.osas_role+'</strong></div><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" style=" max-width: 300px; background-color: white; float: left; padding: 8px; border-radius: 10px; color: black; word-wrap: break-word;" id="comment_stud" value="'+item.msg_message+'" name="comments">'+item.msg_message+'</p></div></li>')
+                            
+                            
+                            temp_org_date = msg_date_new
+                            // console.log('else lang' + temp_org_date)
+                            $("#modal_message #chatbox_date").append('<li>'+item.msg_date+'</li>')
+                            var objDiv = document.getElementById("chatparent");
+                                objDiv.scrollTop = objDiv.scrollHeight;
+                        }
+                    }
+                    else if(item.msg_send_to == response.osas_role_id){
+                        if(temp_osas_date){
+                            // console.log('temp_date ' + temp_osas_date )
+                            // console.log('last date ' + msg_date_new )
+                            if(temp_osas_date == msg_date_new){
+                                console.log('same')
+                                $("#modal_message #chatbox").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" class="bg-info pull-right comments" style="margin-top: -15px; max-width: 300px; text-align: left; float: right; padding: 8px;border-radius: 10px; color: white; word-wrap: break-word;"  name="comment_stud">'+item.msg_message+'</p></div></li>'); 
+
+                                // $("#modal_message #chatbox_date").append('<li>'+item.msg_date+'</li>')
+                                var objDiv = document.getElementById("chatparent");
+                                objDiv.scrollTop = objDiv.scrollHeight;
+                            }   
+                            else{
+                                $('#chatbox').append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted sample_date"  id="date_" style="font-size: 10px">'+msg_date_new+'</small><strong class="primary-font pull-right" style="font-size: 10px" >'+response.org_data+'</strong></div><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" class="bg-info pull-right osas_msg comments" style="max-width: 300px; text-align: left; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;" name="comment_stud">'+item.msg_message+'</p></div></li>')
+                                
+                                $("#modal_message #chatbox_date").append('<li>'+item.msg_date+'</li>')
+                                temp_osas_date = msg_date_new
+                                console.log(temp_osas_date)
+                                // console.log('else lang' + temp_org_date)
+
+                                var objDiv = document.getElementById("chatparent");
+                                objDiv.scrollTop = objDiv.scrollHeight;
+                            }
+                        }
+                        else{
+                            $('#chatbox').append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted sample_date"  id="date_" style="font-size: 10px">'+msg_date_new+'</small><strong class="primary-font pull-right" style="font-size: 10px" >'+response.org_data+'</strong></div><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" class="bg-info pull-right osas_msg comments" style="max-width: 300px; text-align: left; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;" name="comment_stud">'+item.msg_message+'</p></div></li>')
+                        
+                            temp_osas_date = msg_date_new
+                            console.log(temp_osas_date)
+                            $("#modal_message #chatbox_date").append('<li>'+msg_date_new+'</li>')
+                            var objDiv = document.getElementById("chatparent");
+                                    objDiv.scrollTop = objDiv.scrollHeight;
+                        }
+                      
+
+                    }
+                })
+                // refresh_chat()
+            }
+        });
+    }    
+}
+
+function refresh_chat()
+    { 
+        $( ".refresh_chat" ).load(window.location.href + " .refresh_chat" );
+    }
 
 var selected = [];
 var table = $('#data-table').DataTable({
@@ -301,6 +576,8 @@ $('#data-table tbody').on( 'click', 'tr', function () {
     });
  
     $('#delete-btn').click( function () {
+        org_id = $('#auth_id').text();
+        console.log(org_id)
         btn_status = document.getElementById("delete-btn").textContent
         if(btn_status == "Remove File(s)"){
             sample = "remove"
@@ -326,25 +603,42 @@ $('#data-table tbody').on( 'click', 'tr', function () {
                             type: "POST",
                             data: {
                                 doc_id: doc_id,
+                                org_id:org_id,
                                 btn_status: btn_status,
                                 csrfmiddlewaretoken: "{{ csrf_token }}",
                             },
                             dataType: 'json',
                             success: function (data) {
+                                if (data.success){
+                                    if (btn_status == "Retrieve File(s)"){
+                                        swal("Success! Files has been successfully retrieved.", {
+                                            icon: "success",
+                                        });      
+                                    }
+                                    else if (btn_status == "Remove File(s)"){
+                                        swal("Success! Files has been successfully removed.", {
+                                            icon: "success",
+                                        });
+                                    }
+                                }
+                                if(data.error){
+                                    if (btn_status == "Retrieve File(s)"){
+                                        swal("Error! error retrieving files.", {
+                                        icon: "warning",
+                                        })   
+                                    }
+                                    else if (btn_status == "Remove File(s)"){
+                                        swal("Error! error removing files.", {
+                                        icon: "warning",
+                                        })
+                                    }
+                                }
+                                
                             }
                         });
                     } 
                 });
-                if (btn_status == "Retrieve File(s)"){
-                    swal("Success! Files has been successfully retrieved.", {
-                        icon: "success",
-                    });      
-                }
-                else if (btn_status == "Remove File(s)"){
-                    swal("Success! Files has been successfully removed.", {
-                        icon: "success",
-                    });
-                }
+                
             } 
         });
        
@@ -352,6 +646,8 @@ $('#data-table tbody').on( 'click', 'tr', function () {
     } );
 
     $('#send-btn').click( function () {
+        org_id = $('#auth_id').text();
+        console.log(org_id)
         swal({
             title: "Are you sure?",
             text: "You want to send this to OSAS?", 
@@ -370,29 +666,36 @@ $('#data-table tbody').on( 'click', 'tr', function () {
                             type: "POST",
                             data: {
                                 doc_id: doc_id,
+                                org_id:org_id,
                                 csrfmiddlewaretoken: "{{ csrf_token }}",
                             },
                             dataType: 'json',
                             success: function (data) {
+                                if (data.success){
+                                    swal("Success! file(s) has been sent to OSAS.", {
+                                    icon: "success",
+                                    });
+                                    window.location.reload()
+                                }
+                                else if (data.error){
+                                    swal("Error! error sending file(s) to OSAS.", {
+                                    icon: "warning",
+                                    });
+                                }
                             }
                         });
                     } 
                 });
-                swal("Success! Document has been sent to OSAS.", {
-            icon: "success",
-        });
+                
             } 
         });
-       
-        // alert( table.rows('.selected').data().length +' row(s) selected' );
     } );
 
     
     Dropzone.autoDiscover = false;
     
     const myDropzone = new Dropzone("#file-upload", {
-        url: "{%url 'accreditation_upload' %}",
-        maxFiles: 3,
+        maxFiles: 8,
         maxFilesize: 5,
         acceptedFiles: '.docx, .pdf'
     })
@@ -410,7 +713,7 @@ $('#data-table tbody').on( 'click', 'tr', function () {
         if (acc_id) {
             swal({
             title: "Are you sure?",
-            text: "you want this document to be removed?", 
+            text: "you want to remove this file?", 
             icon: "warning",
             buttons: {
                 cancel: {
@@ -459,11 +762,12 @@ $('#data-table tbody').on( 'click', 'tr', function () {
     }
 
     function returnDoc(acc_id){
-        console.log(acc_id)
+        org_id = $('#auth_id').text();
+        console.log(org_id)
         if (acc_id) {
             swal({
             title: "Are you sure?",
-            text: "you want this document to be removed?", 
+            text: "you want to retrive this file?", 
             icon: "warning",
             buttons: {
                 cancel: {
@@ -489,18 +793,21 @@ $('#data-table tbody').on( 'click', 'tr', function () {
                     type: "POST",
                     data: {
                         acc_id:acc_id,
+                        org_id:org_id,
                         csrfmiddlewaretoken: "{{ csrf_token }}",
                     },
                     dataType: 'json',
                     success: function (data) {
                         if (data.error) {
-                        console.log(error)
+                            swal("Error! error retrieving files.", {
+                            icon: "warning",
+                            })
                         }
                         if (data.success) {
                             $("#data-table #" + acc_id).fadeOut("slow", function(){
                                 $("#data-table #" + acc_id).remove();
                             })
-                            swal("Success!", {
+                            swal("Success! file(s) has been retrieved.", {
                             icon: "success",
                             })
                         }
