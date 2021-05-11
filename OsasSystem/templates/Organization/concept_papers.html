@@ -21,9 +21,9 @@
     </div>
     <ol class="breadcrumb pull-right">
         <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
-        <li class="breadcrumb-item active">Accreditation</li>
+        <li class="breadcrumb-item active">Concept Papers</li>
     </ol>
-    <h1 class="page-header mb-1"><i class="fas fa-upload mr-2 " ></i>Accreditation</i></h1>
+    <h1 class="page-header mb-1"><i class="fas fa-file mr-2" ></i>Concept Papers</i></h1>
     <p class="mb-5">Page Description</p>
     <!-- end page-header -->
     
@@ -34,7 +34,7 @@
             <div class="panel panel-inverse">
                 <div class="panel-body text-inverse">
                     <div id="dropzone">
-                        <form action="{%url 'accreditation_upload' %}" method="POST" class="dropzone" id="file-upload">
+                        <form action="{%url 'conceptpaper_upload' %}" method="POST" class="dropzone" id="file-upload">
                             {% csrf_token %}
                             <div class="fallback">
                                 <input name="file" type="file" multiple id="document_file" />
@@ -49,118 +49,6 @@
     </div>
     
     <!-- end row -->
-    <div class="row">
-        <div class="col-lg-2">
-            <div class="panel" data-sortable-id="index-1">
-                <div class="panel-heading p-25">
-                    <h2 class="panel-title" style="font-size:16px;">Inbox <i class="fas fa-envelope mr-2" ></i></h2>
-                </div>
-                <div class="panel-body" style="padding: 0%; height: 80px;">
-                    <div class="form-group" >
-                        <div class="col-sm-12">
-                            <button type="submit" class="btn btn-success col-sm-12" data-toggle="modal" href="#modal_message" onClick="viewMessage('{{organization.org_id}}')">Message <i class="fas fa-envelope ml-2" ></i></button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-10">
-            <div class="panel" id="refresh">
-                <div class="panel-heading p-25">
-                    <div class="btn-group btn-group-toggle pull-right" data-toggle="buttons">
-                        <button id="send-btn" style="visibility: hidden;" class="btn btn-success"><i class="fas fa-share mr-2"></i>Send File(s)</button>
-                        <button id="delete-btn" style="visibility: hidden;" class="btn btn-danger m-l-3"><i class="fas fa-share mr-2"></i>Remove File(s)</button>
-                        <!-- <button id="retrieve-btn" style="visibility: hidden;" class="btn btn-danger m-l-3"><i class="fas fa-share mr-2"></i>Retrieve File(s)</button> -->
-                        <button class="btn btn-white m-l-3" id="refresh_doc" >Refresh  <i class="fas fa-sync-alt  text-white-lighter f-s-16"></i></button>
-                    </div>
-                    <h2 class="panel-title" style="font-size:16px;"><i class="fas fa-users mr-2" ></i> Accreditation Document List</h2>
-                </div>
-                <div class="panel-body">
-                    {% if files %}
-                    <table id="data-table" class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th data-orderable="false" hidden></th>
-                                <th data-orderable="false"></th>
-                                <th data-orderable="false" class="text-nowrap">Document Name</th>
-                                <th data-orderable="false">Document Status</th>
-                                <th data-orderable="false">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="newdata">
-                            {% for org_accreditation in files %}
-                            <tr class="odd gradeA tr_  " id="{{ org_accreditation.acc_id }}">
-                                <td width="1%" hidden class="f-s-600 text-inverse" >{{ org_accreditation.acc_id }}</td>
-                                <td width="1%" class="f-s-600 text-inverse" >{{ forloop.counter }}</td>
-                                {% if org_accreditation.acc_doc_type == '.docx' %}
-                                <td width="50%"  class="text-nowrap align-middle " >
-                                    <div style=" display: inline-block; padding: 2px;">
-                                        <a id="{{ org_accreditation.acc_id  }}" href="/media/{{ org_accreditation.acc_file }}" target="blank"><i class="far fa-file-word fa-2x" > </i></a>
-                                    </div>
-                                    <div style="display: inline-block;">
-                                        <a id="{{ org_accreditation.acc_id  }}" href="/media/{{ org_accreditation.acc_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_accreditation.acc_file }}</a>
-                                    </div>
-                                </td>
-                                {% else %}
-                                <td width="50%"  class="text-nowrap align-middle " >
-                                    <div style=" display: inline-block; padding: 2px;">
-                                        <a id="{{ organization.org_id  }}" href="/media/{{ org_accreditation.acc_file }}" target="blank" style="color: red;"><i class="far fa-file-pdf fa-2x" > </i></a>
-                                    </div>
-                                    <div style="display: inline-block;">
-                                        <a id="{{ org_accreditation.acc_id  }}" href="/media/{{ org_accreditation.acc_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_accreditation.acc_file }}</a>
-                                    </div>
-                                </td>
-                                {% endif %}
-                                <td  width="29%" > 
-                                    <dl class="row mb-0 " style="line-height: .6rem; padding-top: 5px; " >
-                                        <dd class="col-sm-8 gritter-  {{org_accreditation.acc_id }}" >{{ org_accreditation.acc_datecreated|date:"Y-m-d"}}</dd>
-                                        {% if org_accreditation.acc_status == 'SAVED'%}
-                                        <dd class="col-sm-8 gritter-"><strong><span class="badge badge-info">{{org_accreditation.acc_status}}</span></strong></dd>
-                                        {% elif org_accreditation.acc_status == 'SENT'%}
-                                        <dd class="col-sm-8 gritter-"><strong><span class="badge badge-warning"> SENT</span></strong></dd>
-                                        {% else %}
-                                        <dd class="col-sm-8 gritter-"><strong><i class="far fa-undo" ></i><span class="badge badge-danger">RETURNED</span></strong></dd>
-                                        {% endif %}
-                                    </dl>
-                                </td>
-                              
-                                <td  class="align-middle text-nowrap"> 
-                                    {% if org_accreditation.acc_status == 'SAVED'%}
-                                    <div class="text-nowrap">
-                                        <div class="btn-group ">
-                                            <button id="delete-btn" class="btn btn-danger" onClick="deleteDoc('{{org_accreditation.acc_id}}')"><i class="fas fa-trash-alt mr-2"></i>Remove</button>
-                                        </div>
-                                    </div>
-                                    {% else %}
-                                    <div class="text-nowrap">
-                                        <div class="btn-group ">
-                                            <button id="delete-btn" class="btn btn-danger" onClick="returnDoc('{{org_accreditation.acc_id}}')"><i class="fas fa-undo mr-2"></i>Retrieve</button>
-                                        </div>
-                                    </div>
-                                    {% endif %}
-                                    
-                                </td>
-                            </tr>
-                            {% endfor %}  
-                        </tbody>
-                        </table>
-                       
-                        {% else %}
-                        <table id="data-table" class="table table-striped table-bordered tabless">
-                            <thead>
-                                <tr>
-                                    <th data-orderable="false"></th>
-                                    <th data-orderable="false" class="text-nowrap">Document Details</th>
-                                    <th data-orderable="false" class="text-nowrap">Notes</th>
-                                    <th data-orderable="false">Action</th>
-                                </tr>
-                            </thead>
-                        </table> 
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
     <div class="row">
         <div class="col-lg-2">
             <div class="panel" data-sortable-id="index-1">
@@ -199,6 +87,103 @@
                 </div>
             </div>
         </div>
+        <div class="col-lg-10">
+            <div class="panel" id="refresh">
+                <div class="panel-heading p-25">
+                    <div class="btn-group btn-group-toggle pull-right" data-toggle="buttons">
+                        <button id="send-btn" style="visibility: hidden;" class="btn btn-success"><i class="fas fa-share mr-2"></i>Send File(s)</button>
+                        <button id="delete-btn" style="visibility: hidden;" class="btn btn-danger m-l-3"><i class="fas fa-share mr-2"></i>Remove File(s)</button>
+                        <!-- <button id="retrieve-btn" style="visibility: hidden;" class="btn btn-danger m-l-3"><i class="fas fa-share mr-2"></i>Retrieve File(s)</button> -->
+                        <button class="btn btn-white m-l-3" id="refresh_doc" >Refresh  <i class="fas fa-sync-alt  text-white-lighter f-s-16"></i></button>
+                    </div>
+                    <h2 class="panel-title" style="font-size:16px;"><i class="fas fa-file mr-2" ></i> Concept Paper List</h2>
+                </div>
+                <div class="panel-body">
+                    {% if files %}
+                    <table id="data-table" class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th data-orderable="false" hidden></th>
+                                <th data-orderable="false"></th>
+                                <th data-orderable="false" class="text-nowrap">Document Name</th>
+                                <th data-orderable="false">Document Status</th>
+                                <th data-orderable="false">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="newdata">
+                            {% for org_concept_paper in files %}
+                            <tr class="odd gradeA tr_  " id="{{ org_concept_paper.con_id }}">
+                                <td width="1%" hidden class="f-s-600 text-inverse" >{{ org_concept_paper.con_id }}</td>
+                                <td width="1%" class="f-s-600 text-inverse" >{{ forloop.counter }}</td>
+                                {% if org_concept_paper.con_file_ext == 'docx' %}
+                                <td width="50%"  class="text-nowrap align-middle " >
+                                    <div style=" display: inline-block; padding: 2px;">
+                                        <a id="{{ org_concept_paper.con_id  }}" href="/media/concept_papers/{{ org_concept_paper.con_file }}" target="blank"><i class="far fa-file-word fa-2x" > </i></a>
+                                    </div>
+                                    <div style="display: inline-block;">
+                                        <a id="{{ org_concept_paper.con_id  }}" href="/media/concept_papers/{{ org_concept_paper.con_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_concept_paper.con_file }}</a>
+                                    </div>
+                                </td>
+                                {% else %}
+                                <td width="50%"  class="text-nowrap align-middle " >
+                                    <div style=" display: inline-block; padding: 2px;">
+                                        <a id="{{ org_concept_paper.con_id  }}" href="/media/concept_papers/{{ org_concept_paper.con_file }}" target="blank" style="color: red;"><i class="far fa-file-pdf fa-2x" > </i></a>
+                                    </div>
+                                    <div style="display: inline-block;">
+                                        <a id="{{ org_concept_paper.con_id  }}" href="/media/concept_papers/{{ org_concept_paper.con_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_concept_paper.con_file }}</a>
+                                    </div>
+                                </td>
+                                {% endif %}
+                                <td  width="29%" > 
+                                    <dl class="row mb-0 " style="line-height: .6rem; padding-top: 5px; " >
+                                        <dd class="col-sm-8 gritter-  {{org_concept_paper.con_id }}" >{{ org_concept_paper.con_datecreated|date:"Y-m-d"}}</dd>
+                                        {% if org_concept_paper.con_status == 'SAVED'%}
+                                        <dd class="col-sm-8 gritter-"><strong><span class="badge badge-info">{{org_concept_paper.con_status}}</span></strong></dd>
+                                        {% elif org_concept_paper.con_status == 'SENT'%}
+                                        <dd class="col-sm-8 gritter-"><strong><span class="badge badge-warning"> SENT</span></strong></dd>
+                                        {% else %}
+                                        <dd class="col-sm-8 gritter-"><strong><i class="far fa-undo" ></i><span class="badge badge-danger">RETURNED</span></strong></dd>
+                                        {% endif %}
+                                    </dl>
+                                </td>
+                              
+                                <td  class="align-middle text-nowrap"> 
+                                    {% if org_concept_paper.con_status == 'SAVED'%}
+                                    <div class="text-nowrap">
+                                        <div class="btn-group ">
+                                            <button id="delete-btn" class="btn btn-danger" onClick="deleteDoc('{{org_concept_paper.con_id}}')"><i class="fas fa-trash-alt mr-2"></i>Remove</button>
+                                        </div>
+                                    </div>
+                                    {% else %}
+                                    <div class="text-nowrap">
+                                        <div class="btn-group ">
+                                            <button id="delete-btn" class="btn btn-danger" onClick="returnDoc('{{org_concept_paper.con_id}}')"><i class="fas fa-undo mr-2"></i>Retrieve</button>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                </td>
+                            </tr>
+                            {% endfor %}  
+                        </tbody>
+                        </table>
+                       
+                        {% else %}
+                        <table id="data-table" class="table table-striped table-bordered tabless">
+                            <thead>
+                                <tr>
+                                    <th data-orderable="false" hidden></th>
+                                    <th data-orderable="false"></th>
+                                    <th data-orderable="false" class="text-nowrap">Document Name</th>
+                                    <th data-orderable="false">Document Status</th>
+                                    <th data-orderable="false">Action</th>
+                                </tr>
+                            </thead>
+                        </table> 
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -219,7 +204,7 @@
                     {% csrf_token %}
                     <section class="container refresh_chat" id="chatbox"  >
                         <br>
-                        <li class="initial_chat" hidden></li>
+                
 
                     </section>     
                 </form>
@@ -320,7 +305,7 @@ $('#btn-input').keyup(function (e) {
         // initiating ne format neede for appending li tag used for displaying datetime in chatbox
         const msg_date3 = moment(msg_date).format("YYYY-MM-DD, ddd, hh:mm A");
         const date_today2 = moment(now).format("YYYY-MM-DD, ddd, hh:mm A");
-        console.log(osas_id)
+
        
         if(msg){
             if (x == "right"){
@@ -377,6 +362,7 @@ $('#btn-input').keyup(function (e) {
             }
             else{
                 console.log(osas_id, 'epal talaga')
+                console.log(org_id, 'org')
                 $.ajax({
                     url: '{% url "accreditation_org_msg" %}',
                     type: "POST",
@@ -408,7 +394,7 @@ $('#btn-input').keyup(function (e) {
 var osas_id;
 function viewMessage(){
     org_id = $('#auth_id').text();
-
+    console
     if (org_id) {
         document.getElementById('btn-input').value = "";
         // $('#org_id1').val(org_id);
@@ -421,8 +407,7 @@ function viewMessage(){
             },
             dataType: 'json',
             success: function(response){
-                s = $('.org_abbr').text(response.osas_role);
-                console.log(s)
+                $('.org_abbr').text(response.osas_role);
                 var temp_osas_date;
                 var temp_org_date;
                 osas_id = response.osas_role_id
@@ -431,7 +416,7 @@ function viewMessage(){
                 studData.map(item=>{
                     const msg_date_new = moment(item.msg_date).format("YYYY-MM-DD, ddd, hh:mm A");
 
-                    if(item.msg_send_from == response.osas_role_id){
+                    if(item.msg_send_to == org_id){
                         osas_message = item.msg_id
                         console.log(osas_message)
                         $.ajax({
@@ -443,12 +428,12 @@ function viewMessage(){
                             },
                             dataType: 'json',
                             success: function (data) {
-                                
+                                console.log(data.osas_msg_status)
                             }
                         });
                         
                         if(temp_org_date){
-                            console.log('yes')
+
                             if(temp_org_date == msg_date_new){
                                 // console.log('same')
                                 $("#modal_message #chatbox").append('<li class="left" style="list-style-type: none;"><div class="chat-body clearfix"><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" style=" max-width: 300px; background-color: white; float: left; padding: 8px; border-radius: 10px; color: black; word-wrap: break-word; margin-top: -15px;"  name="comment_stud">'+item.msg_message+'</p></div></li>'); 
@@ -479,7 +464,7 @@ function viewMessage(){
                                 objDiv.scrollTop = objDiv.scrollHeight;
                         }
                     }
-                    else if(item.msg_send_from == response.org_id){
+                    else if(item.msg_send_to == response.osas_role_id){
                         if(temp_osas_date){
                             // console.log('temp_date ' + temp_osas_date )
                             // console.log('last date ' + msg_date_new )
@@ -708,9 +693,9 @@ $('#data-table tbody').on( 'click', 'tr', function () {
         window.location.reload()
     })
 
-    function deleteDoc(acc_id){
-        console.log(acc_id)
-        if (acc_id) {
+    function deleteDoc(con_id){
+        console.log(con_id)
+        if (con_id) {
             swal({
             title: "Are you sure?",
             text: "you want to remove this file?", 
@@ -735,10 +720,10 @@ $('#data-table tbody').on( 'click', 'tr', function () {
             .then((willDelete) => {
             if (willDelete) {
                 $.ajax({
-                    url: '{% url "accreditation_document_remove" %}',
+                    url: '{% url "concept_document_remove" %}',
                     type: "POST",
                     data: {
-                        acc_id:acc_id,
+                        con_id:con_id,
                         csrfmiddlewaretoken: "{{ csrf_token }}",
                     },
                     dataType: 'json',
@@ -747,11 +732,8 @@ $('#data-table tbody').on( 'click', 'tr', function () {
                         console.log(error)
                         }
                         if (data.success) {
-                            $("#data-table #" + acc_id).fadeOut("slow", function(){
-                                $("#data-table #" + acc_id).remove();
-                            })
-                            swal("Success!", {
-                            icon: "success",
+                            $("#data-table #" + con_id).fadeOut("slow", function(){
+                                $("#data-table #" + con_id).remove();
                             })
                         }
                     }

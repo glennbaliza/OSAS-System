@@ -150,6 +150,24 @@ urlpatterns = [
     path('organization_osas_msg_seen/', views.organization_osas_msg_seen, name="organization_osas_msg_seen"),
     path('organization_msg_clear/', views.organization_msg_clear, name="organization_msg_clear"),
 
+    path('organization_fund/', views.organization_fund, name="organization_fund"),
+
+    path('organization_concept_papers/', views.organization_concept_papers, name="organization_concept_papers"),
+    path('conceptpaper_upload/', views.conceptpaper_upload, name="conceptpaper_upload"),
+    path('concept_document_remove/', views.concept_document_remove, name="concept_document_remove"),
+
+    path('organization_inbox/', views.organization_inbox, name="organization_inbox"),
+
+    path('classroom_home/', views.classroom_home, name="classroom_home"),
+    path('organization_osas_classroom/', views.organization_osas_classroom, name="organization_osas_classroom"),
+    path('organization_osas_new_class_account/', views.organization_osas_new_class_account, name="organization_osas_new_class_account"),
+    path('class_concept_papers/', views.class_concept_papers, name="class_concept_papers"),
+    path('classroom_conceptpaper_upload/', views.classroom_conceptpaper_upload, name="classroom_conceptpaper_upload"),
+    path('class_concept_paper_send/', views.class_concept_paper_send, name="class_concept_paper_send"),
+    path('class_concept_paper_document_delete/', views.class_concept_paper_document_delete, name="class_concept_paper_document_delete"),
+    path('class_concept_paper_document_return/', views.class_concept_paper_document_return, name="class_concept_paper_document_return"),
+    path('classroom_update_account/', views.classroom_update_account, name="classroom_update_account"),
+
     path('accreditation_upload/', views.accreditation_upload, name="accreditation_upload"),
     path('accreditation_document_remove/', views.accreditation_document_remove, name="accreditation_document_remove"),
     path('accreditation_document_send/', views.accreditation_document_send, name="accreditation_document_send"),

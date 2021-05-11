@@ -19,7 +19,11 @@ def image_path(instance, filename):
 def file_path(instance, filename):
     basefilename, file_extension = os.path.splitext(filename)
     return '{basename}{ext}'.format(basename = basefilename, ext=file_extension)
-    
+
+def file_path_concept(instance, filename):
+    basefilename, file_extension = os.path.splitext(filename)
+    return '{basename}{ext}'.format(basename = basefilename, ext=file_extension)
+
 def return_file_path(instance, filename):
     basefilename, file_extension = os.path.splitext(filename)
     return 'accreditation/{basename}{ext}'.format(basename = basefilename, ext=file_extension)
@@ -238,6 +242,21 @@ class osas_notif(models.Model):
     notif_datecreated = models.DateField(default = now)
 
 #---------------------------------------------ORGANIZATION----------------------------------------------
+class classroom(models.Model):
+    room_id = models.AutoField(primary_key = True)
+    room_year = models.CharField(unique=True, max_length = 50)
+    room_sec = models.CharField(max_length = 50, null = True)
+    room_email = models.EmailField(max_length = 50)
+    room_pass = models.CharField(max_length = 16)
+    room_status = models.CharField(max_length = 10, default = 'ACTIVE')
+    room_stud_id = models.ForeignKey('osas_r_personal_info', on_delete = models.CASCADE, null=True)
+    room_submit_date = models.DateField(null = True)
+    room_datecreated = models.DateField(default = now)
+    room_dateupdated = models.DateField(default = now)
+    room_expiration = models.DateField(null=True)
+
+    def __str__(self):
+        return str(self.org_id)
 
 class organization(models.Model):
     org_id = models.AutoField(primary_key = True)
@@ -277,7 +296,7 @@ class org_accreditation(models.Model):
     acc_file = models.FileField(upload_to=file_path, null=True, blank = True)
     acc_return_file = models.FileField(upload_to=return_file_path, null=True, blank = True)
     acc_org_id = models.ForeignKey('organization', on_delete = models.CASCADE, null=True)
-    acc_notes = models.CharField(max_length = 500, blank=True)
+    acc_room_id = models.ForeignKey('classroom', on_delete = models.CASCADE, null=True)
     acc_doc_type = models.FileField(upload_to=file_ext, null=True, blank = True)
     acc_status = models.CharField(max_length = 20, default = 'SAVED')
     acc_datecreated = models.DateField(default = now)
@@ -288,6 +307,27 @@ class org_accreditation(models.Model):
         
     def __str__(self):
         return self.acc_id
+
+class org_concept_paper(models.Model):
+    con_id = models.AutoField(primary_key = True)
+    con_file = models.FileField(upload_to='', null=True, blank = True)
+    con_org_id = models.ForeignKey('organization', on_delete = models.CASCADE, null=True)
+    con_room_id = models.ForeignKey('classroom', on_delete = models.CASCADE, null=True)
+    con_file_ext = models.CharField(max_length = 20, null=True)
+    con_status = models.CharField(max_length = 20, default = 'SAVED')
+    con_datecreated = models.DateField(default = now)
+    con_dateupdated = models.DateField(default = now)
+        
+    def __str__(self):
+        return self.con_id
+    
+    def delete(self, *args, **kwargs):
+        self.con_file.delete()
+        super().delete(*args, **kwargs)
+
+    # def save(self, *args, **kwargs):
+    #     self.con_file.save()
+    #     super().save(*args, **kwargs)
 #---------------------------------------------ALUMNI-------------------------------------------------
 
 # class osas_r_referral(models.Model):

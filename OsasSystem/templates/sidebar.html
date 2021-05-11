@@ -35,7 +35,7 @@
             <li class="has-sub">
                 <a href="{% url 'lodge_complaint' %}">
                     <i class="far fa-comments"></i> 
-                    <span>Grievances</span>
+                    <span>Grievances</span>   
                 </a>
             </li>
             <li class="has-sub">
@@ -52,8 +52,11 @@
                     <span style="margin-left: 25px;">Activities</span>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="{%url 'organization_osas' %}">Organization</a></li>
                     <li><a href="{%url 'organization_accreditation' %}">Accreditation</a></li>
+                    <li><a href="{%url 'organization_osas' %}">Concept Papers</a></li>
+                    <li><a href="{%url 'organization_osas' %}">Organization</a></li>
+                    <li><a href="{%url 'organization_osas_classroom' %}">Student Classroom</a></li>
+                    
                 </ul>
             </li>
             {% if request.session.session_user_role == 'HEAD OSAS'%}

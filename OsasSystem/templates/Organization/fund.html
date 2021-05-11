@@ -1,0 +1,224 @@
+{% extends 'Organization/base.html'%}
+{% load static %}
+{% block title %}
+    Organizational Funds
+{% endblock %}
+{% block page-css %} 
+	<!-- ================== BEGIN PAGE LEVEL STYLE ================== -->
+	<link href="{%static 'OsasSystem/assets/plugins/dropzone/min/dropzone.min.css' %}" rel="stylesheet" />
+	<!-- ================== END PAGE LEVEL STYLE ================== -->
+{% endblock %}
+{% block content %}
+<div id="content" class="content">
+    <div class="row">
+        {% if messages %}
+        <p class="alert alert-danger">
+            {% for message in messages %}
+                <i><strong>{{ message }}</strong></i>
+            {% endfor %}
+        </p>
+        {% endif %}
+    </div>
+    <ol class="breadcrumb pull-right">
+        <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+        <li class="breadcrumb-item active">Funds</li>
+    </ol>
+    <h1 class="page-header mb-1"><i class="fas fa-upload mr-2" ></i>Organizational Funds</i></h1>
+    <p class="mb-5">Page Description</p>
+
+    <div class="row">
+        <div class="col-lg-2">
+            <div class="panel" data-sortable-id="index-1">
+                <div class="panel-heading p-25">
+                    <h2 class="panel-title" style="font-size:16px;">Inbox <i class="fas fa-envelope mr-2" ></i></h2>
+                </div>
+                <div class="panel-body" style="padding: 0%; height: 80px;">
+                    <div class="form-group" >
+                        <div class="col-sm-12">
+                            <button type="submit" class="btn btn-success col-sm-12" data-toggle="modal" href="#modal_message" onClick="viewMessage('{{organization.org_id}}')">Message <i class="fas fa-envelope ml-2" ></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-10">
+            <div class="panel" id="refresh">
+                <div class="panel-heading p-25">
+                    <div class="btn-group btn-group-toggle pull-right" data-toggle="buttons">
+                        <button id="send-btn" style="visibility: hidden;" class="btn btn-success"><i class="fas fa-share mr-2"></i>Send File(s)</button>
+                        <button id="delete-btn" style="visibility: hidden;" class="btn btn-danger m-l-3"><i class="fas fa-share mr-2"></i>Remove File(s)</button>
+                        <!-- <button id="retrieve-btn" style="visibility: hidden;" class="btn btn-danger m-l-3"><i class="fas fa-share mr-2"></i>Retrieve File(s)</button> -->
+                        <button class="btn btn-white m-l-3" id="refresh_doc" >Refresh  <i class="fas fa-sync-alt  text-white-lighter f-s-16"></i></button>
+                    </div>
+                    <h2 class="panel-title" style="font-size:16px;"><i class="fas fa-users mr-2" ></i> Accreditation Document List</h2>
+                </div>
+                <div class="panel-body">
+                    {% if files %}
+                    <table id="data-table" class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th data-orderable="false" hidden></th>
+                                <th data-orderable="false"></th>
+                                <th data-orderable="false" class="text-nowrap">Document Name</th>
+                                <th data-orderable="false">Document Status</th>
+                                <th data-orderable="false">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="newdata">
+                            {% for org_accreditation in files %}
+                            <tr class="odd gradeA tr_  " id="{{ org_accreditation.acc_id }}">
+                                <td width="1%" hidden class="f-s-600 text-inverse" >{{ org_accreditation.acc_id }}</td>
+                                <td width="1%" class="f-s-600 text-inverse" >{{ forloop.counter }}</td>
+                                {% if org_accreditation.acc_doc_type == '.docx' %}
+                                <td width="50%"  class="text-nowrap align-middle " >
+                                    <div style=" display: inline-block; padding: 2px;">
+                                        <a id="{{ org_accreditation.acc_id  }}" href="/media/{{ org_accreditation.acc_file }}" target="blank"><i class="far fa-file-word fa-2x" > </i></a>
+                                    </div>
+                                    <div style="display: inline-block;">
+                                        <a id="{{ org_accreditation.acc_id  }}" href="/media/{{ org_accreditation.acc_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_accreditation.acc_file }}</a>
+                                    </div>
+                                </td>
+                                {% else %}
+                                <td width="50%"  class="text-nowrap align-middle " >
+                                    <div style=" display: inline-block; padding: 2px;">
+                                        <a id="{{ organization.org_id  }}" href="/media/{{ org_accreditation.acc_file }}" target="blank" style="color: red;"><i class="far fa-file-pdf fa-2x" > </i></a>
+                                    </div>
+                                    <div style="display: inline-block;">
+                                        <a id="{{ org_accreditation.acc_id  }}" href="/media/{{ org_accreditation.acc_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_accreditation.acc_file }}</a>
+                                    </div>
+                                </td>
+                                {% endif %}
+                                <td  width="29%" > 
+                                    <dl class="row mb-0 " style="line-height: .6rem; padding-top: 5px; " >
+                                        <dd class="col-sm-8 gritter-  {{org_accreditation.acc_id }}" >{{ org_accreditation.acc_datecreated|date:"Y-m-d"}}</dd>
+                                        {% if org_accreditation.acc_status == 'SAVED'%}
+                                        <dd class="col-sm-8 gritter-"><strong><span class="badge badge-info">{{org_accreditation.acc_status}}</span></strong></dd>
+                                        {% elif org_accreditation.acc_status == 'SENT'%}
+                                        <dd class="col-sm-8 gritter-"><strong><span class="badge badge-warning"> SENT</span></strong></dd>
+                                        {% else %}
+                                        <dd class="col-sm-8 gritter-"><strong><i class="far fa-undo" ></i><span class="badge badge-danger">RETURNED</span></strong></dd>
+                                        {% endif %}
+                                    </dl>
+                                </td>
+                              
+                                <td  class="align-middle text-nowrap"> 
+                                    {% if org_accreditation.acc_status == 'SAVED'%}
+                                    <div class="text-nowrap">
+                                        <div class="btn-group ">
+                                            <button id="delete-btn" class="btn btn-danger" onClick="deleteDoc('{{org_accreditation.acc_id}}')"><i class="fas fa-trash-alt mr-2"></i>Remove</button>
+                                        </div>
+                                    </div>
+                                    {% else %}
+                                    <div class="text-nowrap">
+                                        <div class="btn-group ">
+                                            <button id="delete-btn" class="btn btn-danger" onClick="returnDoc('{{org_accreditation.acc_id}}')"><i class="fas fa-undo mr-2"></i>Retrieve</button>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                </td>
+                            </tr>
+                            {% endfor %}  
+                        </tbody>
+                        </table>
+                       
+                        {% else %}
+                        <table id="data-table" class="table table-striped table-bordered tabless">
+                            <thead>
+                                <tr>
+                                    <th data-orderable="false"></th>
+                                    <th data-orderable="false" class="text-nowrap">Document Details</th>
+                                    <th data-orderable="false" class="text-nowrap">Notes</th>
+                                    <th data-orderable="false">Action</th>
+                                </tr>
+                            </thead>
+                        </table> 
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-2">
+            <div class="panel" data-sortable-id="index-1">
+                <div class="panel-heading p-25">
+                    <h2 class="panel-title" style="font-size:16px;">Filter <i class="fas fa-filter mr-2" ></i></h2>
+                </div>
+                <div class="panel-body" style="padding: 0%; height: 200px;">
+                    <form id="validate_form" method="POST" action="{% url 'accreditation' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group" >
+                            <label style="text-align: left; margin-bottom: 7px; margin-top: 4px;" class="col-sm-12">Academic Year:</label> 
+                            <div class="col-sm-12">
+                                <select id="acad_year" name="acad_year" class="form-control">
+                                    <option selected disabled="true">--Select--</option>
+                                    <option  value="2016">2016 - 2017</option>
+                                    <option  value="2017">2017 - 2018</option>
+                                    <option  value="2018">2018 - 2019</option>
+                                    <option  value="2019">2019 - 2020</option>
+                                    <option  value="2020">2020 - 2021</option>
+                                    <option  value="2021">2021 - 2022</option>
+                                </select>
+                            </div>
+                            <label style="text-align: left; margin-bottom: 7px; margin-top: 4px;" class="col-sm-12">Status:</label> 
+                            <div class="col-sm-12">
+                                <select id="filter_status" name="filter_status" class="form-control">
+                                    <option selected disabled="true">--Select--</option>
+                                    <option  value="SAVED">Saved</option>
+                                    <option  value="SENT">Sent</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <button type="submit" class="btn btn-success col-sm-12">Filter <i class="fas fa-filter mr-2" ></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="modal_message" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block imp !important;"> 
+    <div class="modal-dialog" style="overflow-y: scroll; max-height:85%; overflow-y: initial !important; margin-top: 50px; margin-bottom:50px;" > 
+        <div class="modal-content"> 
+            <div class="modal-header"> 
+                <label hidden id="orgs_id"></label>
+                <h4 class="modal-title org_abbr"></h4> 
+                <button hidden type="submit" id="clear_msg" onclick="clear_msg()" class="btn btn-danger" style="height: 20px; width: 20px; padding: 0px; margin-left: -300px; margin-top: 4px; "><i  class="fas fa-trash-alt fa-sm" data-toggle="tooltip" data-placement="right" title="Clear Messages"  ></i></button>
+                <button type="button" onclick="clearMsg()" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div> 
+            <div class="modal-body" id="chatparent" style="height: 390px; overflow-y: auto; overflow-x: hidden; background-color: whitesmoke;">
+                <form id="validate_form1" autocomplete="off" style="margin-top: -30px; font-family: Roboto; font-weight: 350; font-size: 15px; color: black; letter-spacing: 1.5px; ">
+                    <br>
+                    {% csrf_token %}
+                    <section class="container refresh_chat" id="chatbox"  >
+                        <br>
+                
+
+                    </section>     
+                </form>
+                <section class="container refresh_chat" id="chatbox_date" hidden>
+                    <li id="initial_date"></li>
+                </section>
+            </div> 
+            <div class="modal-footer">
+                <input id="btn-input" name="btn-input" maxlength = "183" onfocus="this.placeholder = ''"
+                onblur="this.placeholder = 'Type your message here...'" autocomplete="off" type="text" style="border-radius: 10px; font-family: Roboto; font-weight: 350; font-size: 15px; color: black; letter-spacing: 1.5px; "  class="form-control input-md" placeholder="Type your message here..." />
+            </div> 
+        </div> 
+    </div> 
+</div> 
+{% endblock %}
+{% block page-level %} 
+	<!-- ================== BEGIN PAGE LEVEL JS ================== -->
+    <script src="{%static 'OsasSystem/assets/plugins/bootstrap-sweetalert/sweetalert.min.js' %}"></script>
+    <script src="{%static 'OsasSystem/assets/plugins/dropzone/min/dropzone.min.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/plugins/highlight/highlight.common.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/js/demo/render.highlight.js' %}"></script>
+	<!-- ================== END PAGE LEVEL JS ================== -->
+{% endblock %}
+{% block page-js %}
+{% endblock %}

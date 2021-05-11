@@ -804,9 +804,10 @@ function viewNote(org_id){
                 studData.map(item=>{
                     const msg_date_new = moment(item.msg_date).format("YYYY-MM-DD, ddd, hh:mm A");
                     // console.log(msg_date_new, 'orig')
-                    if(item.msg_send_to == org_id){
-                        // console.log('goods')
+                    if(item.msg_send_from == response.osas_role_id){
+                      
                         if(temp_org_date){
+                            console.log('bad')
                             // console.log('temp_date ' + temp_org_date )
                             // console.log('last date ' + msg_date_new )
                             if(temp_org_date == msg_date_new){
@@ -837,9 +838,9 @@ function viewNote(org_id){
                                 objDiv.scrollTop = objDiv.scrollHeight;
                         }
                     }
-                    else if (item.msg_send_from == org_id){
+                    else if (item.msg_send_from == response.org_id){
                         osas_message = item.msg_id
-                        console.log(osas_message)
+                        console.log('goods')
                         $.ajax({
                             url: '{% url "organization_osas_msg_seen" %}',
                             type: "POST",
