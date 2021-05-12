@@ -154,6 +154,7 @@ urlpatterns = [
 
     path('organization_concept_papers/', views.organization_concept_papers, name="organization_concept_papers"),
     path('conceptpaper_upload/', views.conceptpaper_upload, name="conceptpaper_upload"),
+    path('org_concept_paper_send/', views.org_concept_paper_send, name="org_concept_paper_send"),
     path('concept_document_remove/', views.concept_document_remove, name="concept_document_remove"),
 
     path('organization_inbox/', views.organization_inbox, name="organization_inbox"),
@@ -167,6 +168,7 @@ urlpatterns = [
     path('class_concept_paper_document_delete/', views.class_concept_paper_document_delete, name="class_concept_paper_document_delete"),
     path('class_concept_paper_document_return/', views.class_concept_paper_document_return, name="class_concept_paper_document_return"),
     path('classroom_update_account/', views.classroom_update_account, name="classroom_update_account"),
+    path('concept_papers/', views.concept_papers, name="concept_papers"),
 
     path('accreditation_upload/', views.accreditation_upload, name="accreditation_upload"),
     path('accreditation_document_remove/', views.accreditation_document_remove, name="accreditation_document_remove"),

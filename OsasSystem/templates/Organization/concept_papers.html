@@ -647,7 +647,7 @@ $('#data-table tbody').on( 'click', 'tr', function () {
                     console.log(doc_id)
                     if (doc_id){
                         $.ajax({
-                            url: '{% url "accreditation_document_send" %}',
+                            url: '{% url "org_concept_paper_send" %}',
                             type: "POST",
                             data: {
                                 doc_id: doc_id,

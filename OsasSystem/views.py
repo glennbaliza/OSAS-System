@@ -2407,6 +2407,7 @@ def organization_accreditation(request):
     else:
         acc_list = organization.objects.all().order_by("-org_date_accredited")   
         return render(request, 'Facilitation/accreditation.html', {'acc_list':acc_list, 'acc_docu':acc_docu, 'acc_docu_list':acc_docu_list, 'msg':msg})
+        
    
 def organization_accreditation_expired(request):
     org_list = list(organization.objects.values())
@@ -2533,11 +2534,19 @@ def organization_view_document(request):
         return JsonResponse(data, safe=False)
 
 def organization_upload_osas(request):
-    org_id = request.POST.get('org_id')
+    pk_id = request.POST.get('pk_id')
+    ident = request.POST.get('identity')
     docu = request.FILES.get('file')
+    auth_id = request.session['session_user_id']
+    filename = str(docu)
+    extension = filename.split(".")[1]
     if request.method == 'POST':
-        org_accreditation.objects.create(acc_return_file = docu, acc_org_id = organization.objects.get(org_id = org_id, acc_doc_type = docu))
-        return HttpResponse('')
+        if ident == 'org':
+            org_concept_paper.objects.create(con_file = docu, con_org_id = organization.objects.get(org_id = pk_id), con_file_ext = extension, con_status = "APPROVED", con_auth_id = osas_r_auth_user.objects.get(auth_id = auth_id))
+            return HttpResponse('')
+        elif ident == 'class':
+            org_concept_paper.objects.create(con_file = docu, con_room_id = classroom.objects.get(room_id = pk_id), con_file_ext = extension, con_status = "APPROVED" , con_auth_id = osas_r_auth_user.objects.get(auth_id = auth_id))
+            return HttpResponse('')
     return JsonResponse({'error': True})
 
 def organization_view_certificate(request):
@@ -2716,6 +2725,20 @@ def class_concept_paper_send(request):
         data = {'error':True}
         return JsonResponse(data, safe=False)
 
+def org_concept_paper_send(request):
+    doc_id = request.POST.get('doc_id')
+    org_id = request.POST.get('org_id')
+    try:
+        d = org_concept_paper.objects.get(con_id = doc_id)
+        g = organization.objects.get(org_id = org_id)
+        d.con_status = "SENT"
+        d.con_org_id = organization.objects.get(org_id = request.session['session_user_id'])
+        d.save()
+        data = {'success':True}
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        data = {'error':True}
+        return JsonResponse(data, safe=False)
 
 def accreditation_document_delete(request):
     doc_id = request.POST.get('doc_id')
@@ -2864,6 +2887,33 @@ def class_concept_papers(request):
         files = org_concept_paper.objects.filter(con_room_id = classroom.objects.get(room_id = request.session['session_user_id']),con_status = "SAVED").order_by('-con_datecreated')
         return render(request, 'classroom/concept_paper.html', {'files':files, 'd':d})
 
+
+def concept_papers(request):
+    status = request.POST.get('filter_status')
+    acad_year = request.POST.get('acad_year')
+    acc_docu_list = org_concept_paper.objects.all().filter(con_status = 'SENT')
+    osas_docu_list = org_concept_paper.objects.all().filter(con_status = 'APPROVED')
+    acc_docu = org_concept_paper.objects.all().order_by("con_id")
+    year = str(acad_year)
+
+    msg = organization_chat.objects.all().order_by('msg_date')
+
+    if acad_year and status:
+        acc_list = organization.objects.all().filter(org_status = status, org_date_accredited__contains = year).order_by("-org_date_accredited")
+        class_list = classroom.objects.all().filter( room_datecreated__contains = year).order_by("-room_datecreated")
+        return render(request, 'Facilitation/concept_papers.html', {'acc_list':acc_list, 'acc_docu':acc_docu, 'acc_docu_list':acc_docu_list, 'msg':msg, 'class_list':class_list, 'osas_docu_list':osas_docu_list})
+    elif acad_year:
+        acc_list = organization.objects.all().filter(org_date_accredited__contains = year).order_by("-org_date_accredited")
+        class_list = classroom.objects.all().filter( room_datecreated__contains = year).order_by("-room_datecreated")
+        return render(request, 'Facilitation/concept_papers.html', {'acc_list':acc_list, 'acc_docu':acc_docu, 'acc_docu_list':acc_docu_list, 'msg':msg, 'class_list':class_list, 'osas_docu_list':osas_docu_list})
+    if status:
+        acc_list = organization.objects.all().filter(org_status = status ).order_by("-org_date_accredited")
+        class_list = classroom.objects.all().filter( room_datecreated__contains = year).order_by("-room_datecreated")
+        return render(request, 'Facilitation/concept_papers.html', {'acc_list':acc_list, 'acc_docu':acc_docu, 'acc_docu_list':acc_docu_list, 'msg':msg, 'class_list':class_list, 'osas_docu_list':osas_docu_list})
+    else:
+        acc_list = organization.objects.all().order_by("-org_date_accredited")   
+        class_list = classroom.objects.all().order_by("-room_datecreated")
+        return render(request, 'Facilitation/concept_papers.html', {'acc_list':acc_list, 'acc_docu':acc_docu, 'acc_docu_list':acc_docu_list, 'msg':msg, 'class_list':class_list, 'osas_docu_list':osas_docu_list})
 
 def concept_document_remove(request):
     doc_id = request.POST.get('con_id')

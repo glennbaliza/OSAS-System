@@ -51,7 +51,7 @@
 	
 	<!-- begin #page-loader -->
 	
-	<div id="page-container" class="page-container page-sidebar-fixed page-header-fixed">
+	<div id="page-container" class="page-container page-sidebar-fixed page-header-fixed page-sidebar-minified">
 		<!-- begin #header -->
 		{% if request.session.session_user_role%}
 		{% include 'header.html'%}
@@ -162,6 +162,7 @@
 				}
 			})
 		}
+		
 	</script>
 </body>
 </html>
