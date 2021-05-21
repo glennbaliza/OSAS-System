@@ -431,7 +431,7 @@ function viewMessage(){
                 studData.map(item=>{
                     const msg_date_new = moment(item.msg_date).format("YYYY-MM-DD, ddd, hh:mm A");
 
-                    if(item.msg_send_from == response.osas_role_id){
+                    if(item.msg_send_from == response.osas_role_id && item.msg_send_to == response.org_id){
                         osas_message = item.msg_id
                         console.log(osas_message)
                         $.ajax({

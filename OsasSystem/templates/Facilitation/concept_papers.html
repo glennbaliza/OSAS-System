@@ -59,8 +59,8 @@
                             <div class="col-sm-12">
                                 <select id="filter_status" name="filter_status" class="form-control">
                                     <option selected disabled="true">--Select--</option>
-                                    <option  value="ORGANIZATION">Organization</option>
-                                    <option  value="CLASSROOM">Student Class</option>
+                                    <option  value="VALIDATED">Validated</option>
+                                    <option  value="PENDING">Pending</option>
                                 </select>
                             </div>
                         </div>
@@ -91,53 +91,56 @@
                             </tr>
                         </thead>
                         <tbody>
-                        {% if acc_list %}
-                            {% for organization in acc_list %}
-                                <tr class="odd gradeA tr_  align-middle" id="{{ organization.org_id }}">
+                        {% if file_list %}
+                            {% for org in file_list %}
+                                {% if org.title_org_id.org_id %}
+                                <tr class="odd gradeA tr_  align-middle" id="{{ org.title_org_id.org_id }}">
                                     <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
-                                    <td width="25%" ><dl class="row mb-0 p-2" style="line-height: .6rem;">
-                                        <dd class="col-sm-8 gritter-  ysd{{ organization.org_id  }}" style=" font-size: 11px; "><strong>{{ organization.org_name }}</strong></dd>
-                                        <dd class="col-sm-8 gritter-  ysd{{ organization.org_id  }} " style=" font-size: 11px; ">{{ organization.org_stud_id.stud_lname }}, {{ organization.org_stud_id.stud_fname }} {{ organization.org_stud_id.stud_mname }}</dd>
-                                       
-                                        <dd class="col-sm-8 gritter-  ysd{{ organization.org_id  }}" >{{ organization.org_date_accredited|date:"Y-m-d" }} -</dd>
-                                        <dd class="col-sm-8 gritter-  ysd{{ organization.org_id  }}" >{{ organization.org_expiration|date:"Y-m-d" }}</dd>
-                                        <!-- {% if organization.org_status == "ACCREDITED" %}
-                                        <dd class="col-sm-8 gritter- "><strong><span class="badge badge-success  yss{{ organization.org_id }}">{{ organization.org_status }}</span></strong></dd>
-                                        {% endif %} -->
+                                    <td width="28%" ><dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                        <dd class="col-sm-8 gritter-  ysd{{ org.title_org_id.org_id  }}" style=" font-size: 11px; "><strong>{{ org.title_org_id.org_name }}</strong></dd>
+                                        <dd class="col-sm-8 gritter-  ysd{{ org.title_org_id.org_id  }} " style=" font-size: 11px; ">{{ org.title_name }}</dd>
+                                        <dd class="col-sm-8 gritter-  ysd{{ org.title_org_id.org_id  }}" >{{ org.title_datecreated|date:"Y-m-d" }}</dd>
+                                        {% if org.title_status == "VALIDATED" %}
+                                        <dd class="col-sm-8 gritter- "><strong><span class="badge badge-info  yss{{ org.title_org_id.org_id  }}">{{ org.title_status }}</span></strong></dd>
+                                        {% elif org.title_status == "PENDING" %}
+                                        <dd class="col-sm-8 gritter- "><strong><span class="badge badge-warning  yss{{ org.title_org_id.org_id  }}">{{ org.title_status }}</span></strong></dd>
+                                        {% else %}  
+                                        <dd class="col-sm-8 gritter- "><strong><span class="badge badge-success  yss{{ org.title_org_id.org_id  }}">{{ org.title_status }}</span></strong></dd>
+                                        {% endif %}
                                     </dl>
                                     </td>
-                                    <td width="34%">
+                                    <td width="32%">
                                         {% if acc_docu_list %}
                                             {% for org_concept_paper in acc_docu_list %}
-                                                {% if org_concept_paper.con_file_ext == 'docx' and org_concept_paper.con_org_id.org_id == organization.org_id%}
+                                                {% if org_concept_paper.con_file_ext == 'docx' and org_concept_paper.con_title_id.title_id == org.title_id %}
                                                     <div style=" display: inline-block; padding: 2px;">
-                                                        <a id="{{ organization.org_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank"><i class="far fa-file-word fa-2x" > </i></a>
+                                                        <a id="{{ org.title_org_id.org_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank"><i class="far fa-file-word fa-2x" > </i></a>
                                                     </div>
                                                     <div style="display: inline-block;">
-                                                        <a id="{{ organization.org_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_concept_paper.con_file }}</a>
+                                                        <a id="{{ org.title_org_id.org_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_concept_paper.con_file }}</a>
                                                     </div></br>
-                                                {% elif org_concept_paper.con_org_id.org_id == organization.org_id %}
+                                                {% elif org_concept_paper.con_title_id.title_id == org.title_id %}
                                                     <div style="display: inline-block; padding: 2px;">
-                                                        <a id="{{ organization.org_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: red;"><i class="far fa-file-pdf fa-2x" > </i></a>
+                                                        <a id="{{ org.title_org_id.org_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: red;"><i class="far fa-file-pdf fa-2x" > </i></a>
                                                     </div>
                                                     <div style="display: inline;">
-                                                        <a id="{{ organization.org_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_concept_paper.con_file }}</a>
+                                                        <a id="{{ org.title_org_id.org_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_concept_paper.con_file }}</a>
                                                     </div><br>
                                                 {% endif %}
                                             {% endfor %}
                                         {% endif %}
                                     </td>
-                                    {% if osas_docu_list %}
-                                    <td width="34%">
+                                    <td width="32%">
+                                        {% if osas_docu_list %}
                                         {% for org_concept_paper in osas_docu_list %}
-                                            {% if org_concept_paper.con_file_ext == 'docx' and org_concept_paper.con_auth_id and org_concept_paper.con_org_id %}
+                                            {% if org_concept_paper.con_file_ext == 'docx' and org_concept_paper.con_auth_id and org_concept_paper.con_org_id and org_concept_paper.con_title_id.title_id == org.title_id %}
                                                 <div style=" display: inline-block; padding: 2px;">
                                                     <a id="{{ organization.org_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank"><i class="far fa-file-word fa-2x" > </i></a>
                                                 </div>
                                                 <div style="display: inline-block;">
                                                     <a id="{{ organization.org_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_concept_paper.con_file }}</a>
                                                 </div></br>
-                                            {% elif org_concept_paper.con_auth_id and org_concept_paper.con_org_id %}
+                                            {% elif org_concept_paper.con_auth_id and org_concept_paper.con_org_id and org_concept_paper.con_title_id.title_id == org.title_id%}
                                                 <div style="display: inline-block; padding: 2px;">
                                                     <a id="{{ organization.org_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: red;"><i class="far fa-file-pdf fa-2x" > </i></a>
                                                 </div>
@@ -146,62 +149,76 @@
                                                 </div><br>
                                             {% endif %}
                                         {% endfor %}
+                                        {% endif %}
                                     </td>
-                                    {% endif %}
                                     <td width="1%" class="text-nowrap">
                                         <dl class="row mb-0 p-2" style="line-height: .6rem;">
                                             <div class="col-sm-12">
-                                                <button id="add_note" class="btn btn-success" data-toggle="modal" href="#modal_message" onClick="viewNote('{{organization.org_id}}')" ><i class="fas fa-envelope" data-toggle="tooltip" data-placement="right" title="Message"  ></i></button>
+                                                <button id="add_note" class="btn btn-info" data-toggle="modal" href="#modal_message" onClick="viewNote('{{org.title_org_id.org_id}}')" ><i class="fas fa-envelope" data-toggle="tooltip" data-placement="right" title="Message"  ></i></button>
                                             </div>
                                         </dl>
-                                        <dl class="row mb-0 p-2" style="line-height: .6rem;">
-                                            <div class="col-sm-12">
-                                                <button id="edit-btn" class="btn btn-info" onClick="dismissOrg('{{organization.org_id}}')"><i data-toggle="tooltip" data-placement="right" title="Validate" class="fas fa-check"></i></button>
-                                            </div>
-                                        </dl>
-                                         <dl class="row mb-0 p-2" style="line-height: .6rem;">
-                                            <div class="col-sm-12">
-                                                <button id="edit-btn" class="btn btn-danger" data-toggle="modal" href="#modal_upload" onClick="uploadDocu('{{organization.org_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Upload" class="fas fa-upload"></i></button>
-                                            </div>
-                                        </dl>
+                                        {% if org.title_status == "VALIDATED" %}
+                                            <dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                                <div class="col-sm-12">
+                                                    <button id="edit-btn" class="btn btn-success" onClick="ValidateDocu2('{{org.title_id}}')"><i data-toggle="tooltip" data-placement="right" title="Approve" class="far fa-check-circle"></i></button>
+                                                </div>
+                                            </dl>
+                                            <dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                                <div class="col-sm-12">
+                                                    <button id="edit-btn" class="btn btn-warning" data-toggle="modal" href="#modal_upload" onClick="uploadDocu('{{ org.title_org_id.org_id }}', '{{org.title_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Upload" class="fas fa-upload"></i></button>
+                                                </div>
+                                            </dl>
+                                        {% elif org.title_status == "PENDING" %}
+                                            <dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                                <div class="col-sm-12">
+                                                    <button id="edit-btn" class="btn btn-success" onClick="ValidateDocu('{{org.title_id}}')"><i data-toggle="tooltip" data-placement="right" title="Validate" class="fas fa-check"></i></button>
+                                                </div>
+                                            </dl>
+                                        {% else %}
+                                        {% endif %}
+                                       
                                     </td>
                                 </tr>
-                            {% endfor %}
-                        {% endif %}
-                        {% if class_list %}
-                            {% for classroom in class_list %}
-                                <tr class="odd gradeA tr_  align-middle" id="{{ classroom.room_id }}">
+                                {% elif org.title_room_id.room_id%}
+                                <tr class="odd gradeA tr_  align-middle" id="{{ org.title_room_id.room_id }}">
                                     <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
                                     <td width="28%" ><dl class="row mb-0 p-2" style="line-height: .6rem;">
-                                        <dd class="col-sm-8 gritter-  ysd{{classroom.room_id  }}" style=" font-size: 11px; "><strong>{{ classroom.room_stud_id.stud_course_id.course_code }} {{ classroom.room_year }} - {{ classroom.room_sec }}</strong></dd>
-                                        <dd class="col-sm-8 gritter-  ysd{{ classroom.room_id  }} " style=" font-size: 11px; ">{{ classroom.room_stud_id.stud_lname }}, {{ classroom.room_stud_id.stud_fname }} {{ classroom.room_stud_id.stud_mname }}</dd>
-                                        <dd class="col-sm-8 gritter-  ysd{{ classroom.room_id  }}" >{{ classroom.room_dateupdated|date:"Y-m-d" }} -</dd>
-                                        <dd class="col-sm-8 gritter-  ysd{{ classroom.room_id  }}" >{{ classroom.room_expiration|date:"Y-m-d" }}</dd>
+                                        <dd class="col-sm-8 gritter-  ysd{{ org.title_room_id.room_id  }}" style=" font-size: 11px; "><strong>{{ org.title_room_id.room_stud_id.stud_course_id.course_code }} {{ org.title_room_id.room_year }} - {{ org.title_room_id.room_sec }}</strong></dd>
+                                        <dd class="col-sm-8 gritter-  ysd{{ org.title_room_id.room_id  }} " style=" font-size: 11px; ">{{ org.title_name }}</dd>
+                                        <dd class="col-sm-8 gritter-  ysd{{ org.title_room_id.room_id  }}" >{{ org.title_datecreated|date:"Y-m-d" }}</dd>
+                                        {% if org.title_status == "VALIDATED" %}
+                                        <dd class="col-sm-8 gritter- "><strong><span class="badge badge-info  yss{{ org.title_room_id.room_id  }}">{{ org.title_status }}</span></strong></dd>
+                                        {% elif org.title_status == "PENDING" %}
+                                        <dd class="col-sm-8 gritter- "><strong><span class="badge badge-warning  yss{{ org.title_room_id.room_id  }}">{{ org.title_status }}</span></strong></dd>
+                                        {% else %}  
+                                        <dd class="col-sm-8 gritter- "><strong><span class="badge badge-success  yss{{ org.title_room_id.room_id  }}">{{ org.title_status }}</span></strong></dd>
+                                        {% endif %}
                                     </dl>
+                                    </td>    
+                                    <td width="32%">
+                                        {% if acc_docu_list %}
+                                            {% for class_concept_paper in acc_docu_list %}
+                                                {% if class_concept_paper.con_file_ext == 'docx' and class_concept_paper.con_title_id.title_id == org.title_id %}
+                                                    <div style=" display: inline-block; padding: 2px;">
+                                                        <a id="{{ org.title_room_id.room_id  }}" href="/media/{{ class_concept_paper.con_file }}" target="blank"><i class="far fa-file-word fa-2x" > </i></a>
+                                                    </div>
+                                                    <div style="display: inline-block;">
+                                                        <a id="{{ org.title_room_id.room_id  }}" href="/media/{{ class_concept_paper.con_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ class_concept_paper.con_file }}</a>
+                                                    </div></br>
+                                                {% elif class_concept_paper.con_title_id.title_id == org.title_id %}
+                                                    <div style="display: inline-block; padding: 2px;">
+                                                        <a id="{{ org.title_room_id.room_id  }}" href="/media/{{ class_concept_paper.con_file }}" target="blank" style="color: red;"><i class="far fa-file-pdf fa-2x" > </i></a>
+                                                    </div>
+                                                    <div style="display: inline;">
+                                                        <a id="{{org.title_room_id.room_id  }}" href="/media/{{ class_concept_paper.con_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ class_concept_paper.con_file }}</a>
+                                                    </div><br>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
                                     </td>
-                                    {% if acc_docu_list %}
-                                    <td width="34%">
-                                        {% for org_concept_paper in acc_docu_list %}
-                                            {% if org_concept_paper.con_file_ext == 'docx' and org_concept_paper.con_room_id.room_id == classroom.room_id %}
-                                                <div style=" display: inline-block; padding: 2px;">
-                                                    <a id="{{ classroom.room_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank"><i class="far fa-file-word fa-2x" > </i></a>
-                                                </div>
-                                                <div style="display: inline-block;">
-                                                    <a id="{{ classroom.room_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_concept_paper.con_file }}</a>
-                                                </div></br>
-                                            {% elif org_concept_paper.con_room_id.room_id == classroom.room_id %}
-                                                <div style="display: inline-block; padding: 2px;">
-                                                    <a id="{{ classroom.room_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: red;"><i class="far fa-file-pdf fa-2x" > </i></a>
-                                                </div>
-                                                <div style="display: inline;">
-                                                    <a id="{{ classroom.room_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_concept_paper.con_file }}</a>
-                                                </div><br>
-                                            {% endif %}
-                                        {% endfor %}
-                                    {% endif %}
-                                    </td>
-                                    {% if osas_docu_list %}
-                                    <td width="34%">
+                                   
+                                    <td width="32%">
+                                        {% if osas_docu_list %}
                                         {% for org_concept_paper in osas_docu_list %}
                                             {% if org_concept_paper.con_file_ext == 'docx' and org_concept_paper.con_auth_id and org_concept_paper.con_room_id %}
                                                 <div style=" display: inline-block; padding: 2px;">
@@ -219,26 +236,42 @@
                                                 </div><br>
                                             {% endif %}
                                         {% endfor %}
+                                        {% endif %}
                                     </td>
-                                    {% endif %}
                                     <td width="1%" class="text-nowrap">
                                         <dl class="row mb-0 p-2" style="line-height: .6rem;">
                                             <div class="col-sm-12">
-                                                <button id="add_note"  class="btn btn-success" data-toggle="modal" href="#modal_message" onClick="viewNote('{{organization.org_id}}')" ><i data-toggle="tooltip" data-placement="right" title="Message" class="fas fa-envelope" ></i></button>
+                                                <button id="add_note"  class="btn btn-info" data-toggle="modal" href="#modal_message2" onClick="viewNote2('{{org.title_room_id.room_id}}')" ><i data-toggle="tooltip" data-placement="right" title="Message" class="fas fa-envelope" ></i></button>
                                             </div>
                                         </dl>
-                                        <dl class="row mb-0 p-2" style="line-height: .6rem;">
-                                            <div class="col-sm-12">
-                                                <button id="edit-btn" class="btn btn-info" onClick="dismissOrg('{{organization.org_id}}')"><i data-toggle="tooltip" data-placement="right" title="Validate" class="fas fa-check"></i></button>
-                                            </div>
-                                        </dl>
-                                         <dl class="row mb-0 p-2" style="line-height: .6rem;">
-                                            <div class="col-sm-12">
-                                                <button id="edit-btn" data-toggle="modal" href="#modal_upload" class="btn btn-danger" onClick="uploadDocu2('{{classroom.room_id}}')"><i data-toggle="tooltip" data-placement="left" title="Upload" class="fas fa-upload"></i></button>
-                                            </div>
-                                        </dl>
+                                        {% if org.title_status == "VALIDATED" %}
+                                            <dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                                <div class="col-sm-12">
+                                                    <button id="edit-btn" class="btn btn-success" onClick="ValidateDocu2('{{org.title_id}}')"><i data-toggle="tooltip" data-placement="right" title="Approve" class="far fa-check-circle"></i></button>
+                                                </div>
+                                            </dl>
+                                            <dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                                <div class="col-sm-12">
+                                                    <button id="edit-btn" data-toggle="modal" href="#modal_upload" class="btn btn-warning" onClick="uploadDocu2('{{ org.title_room_id.room_id }}', '{{org.title_id}}')"><i data-toggle="tooltip" data-placement="left" title="Upload" class="fas fa-upload"></i></button>
+                                                </div>
+                                            </dl>
+                                        {% elif org.title_status == "PENDING" %}
+                                            <dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                                <div class="col-sm-12">
+                                                    <button id="edit-btn" class="btn btn-success" onClick="ValidateDocu('{{org.title_id}}')"><i data-toggle="tooltip" data-placement="right" title="Validate" class="fas fa-check"></i></button>
+                                                </div>
+                                            </dl>
+                                        {% else %}
+                                        {% endif %}
                                     </td>
                                 </tr>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                                
+                        {% if file_list %}
+                            {% for classroom in file_list %}
+                                
                             {% endfor %}
                             
                         {% endif %}
@@ -291,6 +324,37 @@
             </div> 
             <div class="modal-footer">
                 <input id="btn-input" name="btn-input" maxlength = "183" onfocus="this.placeholder = ''"
+                onblur="this.placeholder = 'Type your message here...'" autocomplete="off" type="text" style="border-radius: 10px; font-family: Roboto; font-weight: 350; font-size: 15px; color: black; letter-spacing: 1.5px; "  class="form-control input-md" placeholder="Type your message here..." />
+            </div> 
+        </div> 
+    </div> 
+</div> 
+
+<div class="modal" id="modal_message2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block imp !important;"> 
+    <div class="modal-dialog" style="overflow-y: scroll; max-height:85%; overflow-y: initial !important; margin-top: 50px; margin-bottom:50px;" > 
+        <div class="modal-content"> 
+            <div class="modal-header"> 
+                <h4 class="modal-title org_abbr"></h4> 
+                <button type="submit" id="clear_msg" hidden class="btn btn-danger" style="height: 20px; width: 20px; padding: 0px; margin-left: -300px; margin-top: 4px; "><i  class="fas fa-trash-alt fa-sm" data-toggle="tooltip" data-placement="right" title="Clear Messages"  ></i></button>
+                <button type="button" onclick="clearMsg2()" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div> 
+            <div class="modal-body" id="chatparent2" style="height: 390px; overflow-y: auto; overflow-x: hidden; background-color: whitesmoke;">
+                <form id="validate_form2" autocomplete="off" style="margin-top: -30px; font-family: Roboto; font-weight: 350; font-size: 15px; color: black; letter-spacing: 1.5px; ">
+                    <br>
+                    {% csrf_token %}
+                    <section class="container refresh_chat mt-2" id="chatbox2" >
+                        <br>
+                        <li class="x" hidden></li>
+                    </section>     
+                </form>
+                <section class="container" id="chatbox_date2" hidden>
+                    <li id="initial_date2"></li>
+                </section>
+            </div> 
+            <div class="modal-footer">
+                <input id="btn-input2" name="btn-input2" maxlength = "183" onfocus="this.placeholder = ''"
                 onblur="this.placeholder = 'Type your message here...'" autocomplete="off" type="text" style="border-radius: 10px; font-family: Roboto; font-weight: 350; font-size: 15px; color: black; letter-spacing: 1.5px; "  class="form-control input-md" placeholder="Type your message here..." />
             </div> 
         </div> 
@@ -355,6 +419,7 @@
                             <form action="{%url 'organization_upload_osas' %}" method="POST" class="dropzone needsclick" id="file-upload">
                                 {% csrf_token %}
                                 <input class="form-control" id="pk_id" type="hidden" name="pk_id"/>
+                                <input class="form-control" id="title_id" type="hidden" name="title_id"/>
                                 <input class="form-control" id="identity" type="hidden" name="identity"/>
                                 <div class="fallback">
                                     <input name="file" type="file" multiple id="document_file" />
@@ -363,7 +428,7 @@
                         </div>
                         <br>
                         
-                        <a id="note_btn" class="btn btn-white pull-right" style="margin-top: 20px;" data-dismiss="modal">Back <i class="fas fa-reply m-l-3 zoom"></i></a>
+                        <a id="note_btn" class="btn btn-white pull-right" style="margin-top: 20px;" data-dismiss="modal" onclick="refresh_upload()">Back <i class="fas fa-reply m-l-3 zoom"></i></a>
                     </div>
                 </div>
             </div>
@@ -474,12 +539,19 @@
 </script>
 <script>
 
-
+function refresh_upload(){
+    window.location.reload()
+}
 function clearMsg(){
     $('#chatbox').empty()
 }
 
+function clearMsg2(){
+    $('#chatbox2').empty()
+}
+
 $('#btn-input').keyup(function (e) {
+    console.log('org')
     if (e.keyCode === 13) {
         var msg = $('input[name="btn-input"]').val().trim();
         var osas_id = $('#auth_id').text();
@@ -581,14 +653,117 @@ $('#btn-input').keyup(function (e) {
 
 });
 
+$('#btn-input2').keyup(function (e) {
+    console.log('class')
+    if (e.keyCode === 13) {
+        var msg = $('input[name="btn-input2"]').val().trim();
+        var osas_id = $('#auth_id').text();
+        var x = document.getElementById("chatbox2").lastElementChild.className;
+        var y = document.getElementById("chatbox_date2").lastElementChild.textContent;
 
-function dismissOrg(org_id){
-    if (org_id) {
-        tr_id = org_id;
-        console.log(org_id)
+        const now = moment()
+        const msg_date = moment(y)
+
+       
+        // initiating new format needed for appending li tag used for comparing recent datetime to datime now
+        const date_today = moment(now, ['YYYY-MM-DD hh:mm A']).format();    
+        const msg_date2 = moment(msg_date, ['YYYY-MM-DD hh:mm A']).format();
+
+        // initiating ne format neede for appending li tag used for displaying datetime in chatbox
+        const msg_date3 = moment(msg_date).format("YYYY-MM-DD, ddd, hh:mm A");
+        const date_today2 = moment(now).format("YYYY-MM-DD, ddd, hh:mm A");
+
+       
+        if(msg){
+            if (x == "right"){
+                if (msg_date3 == date_today2){
+                    console.log("lol")
+
+                    $.ajax({
+                        url: '{% url "concept_paper_osas_msg" %}',
+                        type: "POST",
+                        data: {
+                            class_id:class_id,
+                            osas_id: osas_id,
+                            date_today: date_today,
+                            msg: msg,
+                            csrfmiddlewaretoken: "{{ csrf_token }}",
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            $("#modal_message2 #chatbox2").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><p data-toggle="tooltip" data-placement="right" title="Delivered"  class="bg-info pull-right comments" style="margin-top: -15px; max-width: 300px; text-align: left; float: right; padding: 8px;border-radius: 10px; color: white; word-wrap: break-word; "  name="comment_stud">'+msg+'</p></div></li>'); 
+
+                            $("#modal_message2 #chatbox_date2").append('<li>'+date_today+'</li>')
+                            // console.log(date_today)
+                            var objDiv = document.getElementById("chatparent2");
+                            objDiv.scrollTop = objDiv.scrollHeight;
+                        }
+                    });
+                }
+                else{
+                    console.log("epal")
+                    
+                    $.ajax({
+                        url: '{% url "concept_paper_osas_msg" %}',
+                        type: "POST",
+                        data: {
+                            class_id:class_id,
+                            osas_id: osas_id,
+                            date_today: date_today,
+                            msg: msg,
+                            csrfmiddlewaretoken: "{{ csrf_token }}",
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            
+                            $("#modal_message2 #chatbox2").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted"  id="date_" style="font-size: 10px">'+date_today2+'</small><strong class="primary-font pull-right" style="font-size: 10px">'+'{{request.session.session_user_role}}'+'</strong></div><p data-toggle="tooltip" data-placement="right" title="Delivered"  class="bg-info pull-right comments" style="max-width: 300px; text-align: left; float: right; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;"  name="comment_stud">'+msg+'</p></div></li>'); 
+
+                            $("#modal_message2 #chatbox_date2").append('<li>'+date_today+'</li>')
+                            // console.log(date_today)
+                            var objDiv = document.getElementById("chatparent2");
+                            objDiv.scrollTop = objDiv.scrollHeight;
+                        }
+                    });
+                }
+            }
+            else{
+                $.ajax({
+                    url: '{% url "concept_paper_osas_msg" %}',
+                    type: "POST",
+                    data: {
+                        class_id:class_id,
+                        osas_id: osas_id,
+                        date_today: date_today,
+                        msg: msg,
+                        csrfmiddlewaretoken: "{{ csrf_token }}",
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        $("#modal_message2 #chatbox2").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted"  id="date_" style="font-size: 10px">'+date_today2+'</small><strong class="primary-font pull-right" style="font-size: 10px">'+'{{request.session.session_user_role}}'+'</strong></div><p data-toggle="tooltip" data-placement="right" title="Delivered"  class="bg-info pull-right comments" style="max-width: 300px; text-align: left; float: right; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;" name="comment_stud">'+msg+'</p></div></li>'); 
+
+                        $("#modal_message #chatbox_date").append('<li>'+date_today+'</li>')
+
+                        var objDiv = document.getElementById("chatparent2");
+                        objDiv.scrollTop = objDiv.scrollHeight;
+                    }
+                });
+            }
+        
+            document.getElementById('btn-input2').value = "";
+        }
+    }
+
+
+});
+
+function ValidateDocu(title_id){
+    stats = 'PENDING'
+    if (title_id) {
+        tr_id = title_id;
+        console.log(title_id)
         swal({
             title: "Are you sure?",
-            text: "You want to dismiss this organization?", 
+            text: "You want to validate this event?", 
             icon: "warning",
             buttons: true,
             dangerMode: true,
@@ -596,27 +771,58 @@ function dismissOrg(org_id){
         .then((willDelete) => {
             if (willDelete) {
                 $.ajax({
-                    url: '{% url "organization_dismiss" %}',
+                    url: '{% url "concept_paper_validate" %}',
                     type: "POST",
                     data: {
-                        org_id: org_id,
+                        title_id: title_id,
+                        stats:stats,
                         csrfmiddlewaretoken: "{{ csrf_token }}",
                     },
                     dataType: 'json',
                     success: function (data) {
                         if (data.success) {
-                            swal("Success! Ogranization has been successfully dismissed.", {
+                            swal("Success! event has been successfully validated.", {
                                 icon: "success",
                             });
                             window.location.reload()
-                        // $("#data-table #" + auth_id).remove();
-                        // const data_table = document.querySelector('#data-table tbody')
-                        // if (data_table.rows.length == 0){
-                        //     window.location.reload()
-                        //     }
-                        // swal("Success! User has been accredited.", {
-                        //     icon: "success",
-                        // });
+                        }
+                    }
+                    
+                });
+            } 
+        });
+    }
+} 
+
+function ValidateDocu2(title_id){
+    stats = 'VALIDATED'
+    if (title_id) {
+        tr_id = title_id;
+        console.log(title_id)
+        swal({
+            title: "Are you sure?",
+            text: "You want to approve this event?", 
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+            if (willDelete) {
+                $.ajax({
+                    url: '{% url "concept_paper_validate" %}',
+                    type: "POST",
+                    data: {
+                        title_id: title_id,
+                        stats:stats,
+                        csrfmiddlewaretoken: "{{ csrf_token }}",
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.success) {
+                            swal("Success! event has been approved successfully.", {
+                                icon: "success",
+                            });
+                            window.location.reload()
                         }
                     }
                     
@@ -844,22 +1050,25 @@ const input = document.getElementById('document_file')
 
 const csrf = document.getElementsByName('csrfmiddlewaretoken') 
 
-function uploadDocu(org_id){
+function uploadDocu(org_id, title_id){
     if (org_id) {
         tr_id = org_id;
+        
         identity = "org"
         $('#pk_id').val(org_id);
+        $('#title_id').val(title_id);
         $('#identity').val(identity);
-        console.log(org_id, identity)
+        console.log(org_id, identity, title_id)
     }
 } 
-function uploadDocu2(room_id){
+function uploadDocu2(room_id, title_id){
     if (room_id) {
         tr_id = room_id;
         identity = 'class'
         $('#pk_id').val(room_id);
+        $('#title_id').val(title_id);
         $('#identity').val(identity);
-        console.log(room_id, identity)
+        console.log(room_id, identity, title_id)
     }
 } 
 CKEDITOR.replace('essay_text',{
@@ -893,7 +1102,7 @@ function viewNote(org_id){
                 studData.map(item=>{
                     const msg_date_new = moment(item.msg_date).format("YYYY-MM-DD, ddd, hh:mm A");
                     // console.log(msg_date_new, 'orig')
-                    if(item.msg_send_from == response.osas_role_id){
+                    if(item.msg_send_to == response.org_data){
                       
                         if(temp_org_date){
                             console.log('bad')
@@ -984,6 +1193,117 @@ function viewNote(org_id){
     }    
 }
 
+var class_id;
+function viewNote2(room_id){
+    auth_id = $('#auth_id').text();
+    if (room_id) {
+        document.getElementById('btn-input2').value = "";
+        tr_id = room_id;
+        class_id = room_id
+        console.log(auth_id)
+        $.ajax({
+            url: '{% url "class_view_messages" %}',
+            type: "POST",
+            data: {
+                room_id: room_id,
+                csrfmiddlewaretoken: "{{ csrf_token }}",
+            },
+            dataType: 'json',
+            success: function(response){
+                $('.org_abbr').text(response.room_course + ' ' + response.room_year + ' - ' + response.room_sec);
+                var temp_osas_date;
+                var temp_org_date;
+                const studData = response.data
+                studData.map(item=>{
+                    const msg_date_new = moment(item.msg_date).format("YYYY-MM-DD, ddd, hh:mm A");
+                    // console.log(msg_date_new, 'orig')
+                    if(item.msg_send_to == response.room_course + ' ' + response.room_year + ' - ' + response.room_sec){
+                        if(temp_org_date){
+                            console.log('bad')
+                            if(temp_org_date == msg_date_new){
+                                $("#modal_message2 #chatbox2").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" class="bg-info pull-right comments" style="margin-top: -15px; max-width: 300px; text-align: left; float: right; padding: 8px;border-radius: 10px; color: white; word-wrap: break-word;"  name="comment_stud">'+item.msg_message+'</p></div></li>'); 
+
+                                // $("#modal_message #chatbox_date").append('<li>'+date_today+'</li>')
+                                var objDiv = document.getElementById("chatparent2");
+                                objDiv.scrollTop = objDiv.scrollHeight;
+                            }   
+                            else{
+                                $('#chatbox2').append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted sample_date"  id="date_" style="font-size: 10px">'+msg_date_new+'</small><strong class="primary-font pull-right" style="font-size: 10px" >'+response.osas_data+'</strong></div><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" class="bg-info pull-right osas_msg comments" style="max-width: 300px; text-align: left; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;" name="comment_stud">'+item.msg_message+'</p></div></li>')
+                                
+                                $("#modal_message2 #chatbox_date2").append('<li>'+item.msg_date+'</li>')
+                                temp_org_date = msg_date_new
+                                // console.log('else lang' + temp_org_date)
+
+                                var objDiv = document.getElementById("chatparent2");
+                                objDiv.scrollTop = objDiv.scrollHeight;
+                            }
+                        }
+                        else{
+                            $('#chatbox2').append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted sample_date"  id="date_" style="font-size: 10px">'+msg_date_new+'</small><strong class="primary-font pull-right" style="font-size: 10px" >'+response.osas_data+'</strong></div><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" class="bg-info pull-right osas_msg" style="max-width: 300px; text-align: left; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;" id="comments"  name="comment_stud">'+item.msg_message+'</p></div></li>')
+                            
+                            temp_org_date = msg_date_new
+                            // console.log('else lang' + temp_org_date)
+                            $("#modal_message2 #chatbox_date2").append('<li>'+item.msg_date+'</li>')
+                            var objDiv = document.getElementById("chatparent2");
+                                objDiv.scrollTop = objDiv.scrollHeight;
+                        }
+                    }
+                    else if (item.msg_send_from == response.room_course + ' ' + response.room_year + ' - ' + response.room_sec){
+                        osas_message = item.msg_id
+                        console.log('goods')
+                        $.ajax({
+                            url: '{% url "organization_osas_msg_seen" %}',
+                            type: "POST",
+                            data: {
+                                osas_message: osas_message,
+                                csrfmiddlewaretoken: "{{ csrf_token }}",
+                            },
+                            dataType: 'json',
+                            success: function (data) {
+                                console.log(data.osas_msg_status)
+                                }
+                        });
+                        if(temp_osas_date){
+                            if(temp_osas_date == msg_date_new){
+                                $("#modal_message2 #chatbox2").append('<li class="left" style="list-style-type: none;"><div class="chat-body clearfix"><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" style=" max-width: 300px; background-color: white; float: left; padding: 8px; border-radius: 10px; color: black; word-wrap: break-word; margin-top: -15px;"  name="comment_stud">'+item.msg_message+'</p></div></li>'); 
+
+                                var objDiv = document.getElementById("chatparent2");
+                                objDiv.scrollTop = objDiv.scrollHeight;
+                            }
+                            else{
+                                $("#chatbox2").append('<li class="left"  style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-right text-muted" style="margin-left: 5px;"></i><small class="pull-right text-muted" id="date_stud" style="font-size: 10px"  >'+msg_date_new+'</small><strong class="pull-left primary-font" id="stud_name" name="stud_name" style="font-size: 10px">'+response.org_data+'</strong></div><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" style=" max-width: 300px; background-color: white; float: left; padding: 8px; border-radius: 10px; color: black; word-wrap: break-word;" id="comment_stud" value="'+item.msg_message+'" name="comments">'+item.msg_message+'</p></div></li>')
+                                
+                                $("#modal_message2 #chatbox_date2").append('<li>'+item.msg_date+'</li>')
+                                temp_osas_date = msg_date_new
+                                // console.log('else lang' + temp_org_date)
+
+                                var objDiv = document.getElementById("chatparent2");
+                                objDiv.scrollTop = objDiv.scrollHeight;
+                            }
+                        }
+                        else{
+                            $("#chatbox2").append('<li class="left"  style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-right text-muted" style="margin-left: 5px;"></i><small class="pull-right text-muted" id="date_stud" style="font-size: 10px"  >'+msg_date_new+'</small><strong class="pull-left primary-font" id="stud_name" name="stud_name" style="font-size: 10px">'+response.room_course + ' ' + response.room_year + ' - ' + response.room_sec+'</strong></div><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" style=" max-width: 300px; background-color: white; float: left; padding: 8px; border-radius: 10px; color: black; word-wrap: break-word;" id="comment_stud" value="'+item.msg_message+'" name="comments">'+item.msg_message+'</p></div></li>')
+                            
+                            
+                            temp_osas_date = msg_date_new
+                            // console.log('else lang' + temp_org_date)
+                            $("#modal_message2 #chatbox_date2").append('<li>'+item.msg_date+'</li>')
+                            var objDiv = document.getElementById("chatparent2");
+                                objDiv.scrollTop = objDiv.scrollHeight;
+                        }
+                        
+                        // temp_osas_date = msg_date_new
+                        // // console.log(temp_osas_date)
+                        // $("#modal_message #chatbox_date").append('<li>'+msg_date_new+'</li>')
+                        // var objDiv = document.getElementById("chatparent");
+                        //         objDiv.scrollTop = objDiv.scrollHeight;
+
+                    }
+                })
+            }
+        });
+    }    
+}
 
 function addNote(org_id){
     if (org_id) {

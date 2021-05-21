@@ -32,7 +32,7 @@
         <div class="col-md-12">
             <!-- begin panel -->
             <div class="panel panel-inverse">
-                <div class="panel-body text-inverse">
+                <div class="panel-body text-inverse"> 
                     <div id="dropzone">
                         <form action="{%url 'conceptpaper_upload' %}" method="POST" class="dropzone" id="file-upload">
                             {% csrf_token %}
@@ -56,7 +56,7 @@
                     <h2 class="panel-title" style="font-size:16px;">Filter <i class="fas fa-filter mr-2" ></i></h2>
                 </div>
                 <div class="panel-body" style="padding: 0%; height: 200px;">
-                    <form id="validate_form" method="POST" action="{% url 'accreditation' %}" enctype="multipart/form-data">
+                    <form id="validate_form" method="POST" action="{% url 'organization_concept_papers' %}" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="form-group" >
                             <label style="text-align: left; margin-bottom: 7px; margin-top: 4px;" class="col-sm-12">Academic Year:</label> 
@@ -77,6 +77,7 @@
                                     <option selected disabled="true">--Select--</option>
                                     <option  value="SAVED">Saved</option>
                                     <option  value="SENT">Sent</option>
+                                    <option  value="APPROVED">Approved</option>
                                 </select>
                             </div>
                         </div>
@@ -91,7 +92,7 @@
             <div class="panel" id="refresh">
                 <div class="panel-heading p-25">
                     <div class="btn-group btn-group-toggle pull-right" data-toggle="buttons">
-                        <button id="send-btn" style="visibility: hidden;" class="btn btn-success"><i class="fas fa-share mr-2"></i>Send File(s)</button>
+                        <button id="send-btn" style="visibility: hidden;" class="btn btn-success" data-toggle="modal" href="#modal_addtitle"><i class="fas fa-share mr-2"></i>Send File(s)</button>
                         <button id="delete-btn" style="visibility: hidden;" class="btn btn-danger m-l-3"><i class="fas fa-share mr-2"></i>Remove File(s)</button>
                         <!-- <button id="retrieve-btn" style="visibility: hidden;" class="btn btn-danger m-l-3"><i class="fas fa-share mr-2"></i>Retrieve File(s)</button> -->
                         <button class="btn btn-white m-l-3" id="refresh_doc" >Refresh  <i class="fas fa-sync-alt  text-white-lighter f-s-16"></i></button>
@@ -142,7 +143,7 @@
                                         {% elif org_concept_paper.con_status == 'SENT'%}
                                         <dd class="col-sm-8 gritter-"><strong><span class="badge badge-warning"> SENT</span></strong></dd>
                                         {% else %}
-                                        <dd class="col-sm-8 gritter-"><strong><i class="far fa-undo" ></i><span class="badge badge-danger">RETURNED</span></strong></dd>
+                                        <dd class="col-sm-8 gritter-"><strong><i class="far fa-undo" ></i><span class="badge badge-success">APPROVED</span></strong></dd>
                                         {% endif %}
                                     </dl>
                                 </td>
@@ -154,12 +155,13 @@
                                             <button id="delete-btn" class="btn btn-danger" onClick="deleteDoc('{{org_concept_paper.con_id}}')"><i class="fas fa-trash-alt mr-2"></i>Remove</button>
                                         </div>
                                     </div>
-                                    {% else %}
+                                    {% elif org_concept_paper.con_status == 'SENT' %}
                                     <div class="text-nowrap">
                                         <div class="btn-group ">
                                             <button id="delete-btn" class="btn btn-danger" onClick="returnDoc('{{org_concept_paper.con_id}}')"><i class="fas fa-undo mr-2"></i>Retrieve</button>
                                         </div>
                                     </div>
+                                    {% else %}
                                     {% endif %}
                                     
                                 </td>
@@ -182,6 +184,34 @@
                         </table> 
                     {% endif %}
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_addtitle" role="dialog"  data-backdrop="static">
+    <div class="modal-dialog modal-md" role="document" id="myModal">
+        <div class="modal-content">
+            <input class="form-control" id="excuse_id" type="hidden" name="excuse_id"/>
+            <div class="panel panel-inverse" >
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="color: gray; margin: 6px;">×</button>  
+                <div class="panel-body">
+                    <div class="col">
+                        <h1 class="page-header mb-1">Add Title</h1>
+                        <p class="mb-5">Page Description</p>
+                        <div class="col-lg-12" id="error">
+                        </div>
+                        <div class="col-lg-12 col-md-6">
+                            <input class="form-control" id="org_id" type="hidden" name="sanction_id"/>
+                            <textarea class="form-control essay_text" id="con_title"  name="con_title" placeholder="Write your title here..."></textarea><br>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <button class="btn btn_success col-md-3 pull-right m-l-10 " id="btn_submit" style="height: 33px; padding: 5px; background: linear-gradient(to right, #66ccff -1%, #3366ff 98%); border:none; color: white;" >Submit<i class="far fa-paper-plane m-l-3 zoom" ></i></button>
+                    <a class="btn btn-white pull-right m-l-10" data-dismiss="modal">Back<i class="fas fa-reply m-l-3 zoom"></i></a>
+                </div>
+                <br>
             </div>
         </div>
     </div>
@@ -570,6 +600,9 @@ $('#data-table tbody').on( 'click', 'tr', function () {
         else if (btn_status == "Retrieve File(s)"){
             sample = "retrieve"
         }
+        else{
+            sample = "retrieve"
+        }
         swal({
             title: "Are you sure?",
             text: "You want to" + " " +sample+ " " + "this file(s)?", 
@@ -584,7 +617,7 @@ $('#data-table tbody').on( 'click', 'tr', function () {
                     console.log(doc_id)
                     if (doc_id){
                         $.ajax({
-                            url: '{% url "accreditation_document_delete" %}',
+                            url: '{% url "org_concept_paper_document_delete" %}',
                             type: "POST",
                             data: {
                                 doc_id: doc_id,
@@ -599,11 +632,17 @@ $('#data-table tbody').on( 'click', 'tr', function () {
                                         swal("Success! Files has been successfully retrieved.", {
                                             icon: "success",
                                         });      
+                                        $("#data-table #" + doc_id).fadeOut("slow", function(){
+                                            $("#data-table #" + doc_id).remove();
+                                        })
                                     }
                                     else if (btn_status == "Remove File(s)"){
                                         swal("Success! Files has been successfully removed.", {
                                             icon: "success",
                                         });
+                                        $("#data-table #" + doc_id).fadeOut("slow", function(){
+                                            $("#data-table #" + doc_id).remove();
+                                        })
                                     }
                                 }
                                 if(data.error){
@@ -630,50 +669,118 @@ $('#data-table tbody').on( 'click', 'tr', function () {
         // alert( table.rows('.selected').data().length +' row(s) selected' );
     } );
 
-    $('#send-btn').click( function () {
+    $('#modal_addtitle').on('click','#btn_submit', function () {
         org_id = $('#auth_id').text();
-        console.log(org_id)
-        swal({
-            title: "Are you sure?",
-            text: "You want to send this to OSAS?", 
-            icon: "warning",
-            buttons: true,
-            dangerMode: true,
-        })
-        .then((willDelete) => {
-            if (willDelete) {
-                selected.forEach(function(doc_id) {
-                    // doc_id = $(this).closest("tbody tr").find("td:eq(0)").html() 
-                    console.log(doc_id)
-                    if (doc_id){
-                        $.ajax({
-                            url: '{% url "org_concept_paper_send" %}',
-                            type: "POST",
-                            data: {
-                                doc_id: doc_id,
-                                org_id:org_id,
-                                csrfmiddlewaretoken: "{{ csrf_token }}",
-                            },
-                            dataType: 'json',
-                            success: function (data) {
-                                if (data.success){
-                                    swal("Success! file(s) has been sent to OSAS.", {
-                                    icon: "success",
-                                    });
-                                    window.location.reload()
-                                }
-                                else if (data.error){
-                                    swal("Error! error sending file(s) to OSAS.", {
-                                    icon: "warning",
-                                    });
-                                }
-                            }
+        var con_title = $('#con_title').val();
+        console.log(con_title)
+        if (con_title){
+            $.ajax({
+                url: '{% url "org_concept_paper_title" %}',
+                type: "POST",
+                data: {
+                    con_title: con_title,
+                    org_id:org_id,
+                    csrfmiddlewaretoken: "{{ csrf_token }}",
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.success){
+                        swal({
+                            title: "Are you sure?",
+                            text: "You want to send this to OSAS?", 
+                            icon: "warning",
+                            buttons: true,
+                            dangerMode: true,
+                        })
+                        .then((willDelete) => {
+                            if (willDelete) {
+                                selected.forEach(function(doc_id) {
+                                    // doc_id = $(this).closest("tbody tr").find("td:eq(0)").html() 
+                                    console.log(doc_id)
+                                    if (doc_id){
+                                        $.ajax({
+                                            url: '{% url "org_concept_paper_send" %}',
+                                            type: "POST",
+                                            data: {
+                                                con_title: con_title,
+                                                doc_id: doc_id,
+                                                org_id:org_id,
+                                                csrfmiddlewaretoken: "{{ csrf_token }}",
+                                            },
+                                            dataType: 'json',
+                                            success: function (data) {
+                                                if (data.success){
+                                                    $("#data-table #" + doc_id).fadeOut("slow", function(){
+                                                        $("#data-table #" + doc_id).remove();
+                                                    })
+                                                    swal("Success! file(s) has been sent to OSAS.", {
+                                                    icon: "success",
+                                                    });
+                                                    $('#modal_addtitle').modal('toggle');
+                                                    document.getElementById("delete_btn").style.visibility = "hidden";
+                                                }
+                                                else if (data.error){
+                                                    swal("Error! error sending file(s) to OSAS.", {
+                                                    icon: "warning",
+                                                    });
+                                                }
+                                            }
+                                        });
+                                    } 
+                                });
+                            } 
                         });
-                    } 
-                });
-                
-            } 
-        });
+                    }
+                    else if (data.error){
+                        swal({
+                            title: "Are you sure?",
+                            text: "You want to send this to OSAS?", 
+                            icon: "warning",
+                            buttons: true,
+                            dangerMode: true,
+                        })
+                        .then((willDelete) => {
+                            if (willDelete) {
+                                selected.forEach(function(doc_id) {
+                                    // doc_id = $(this).closest("tbody tr").find("td:eq(0)").html() 
+                                    console.log(doc_id)
+                                    if (doc_id){
+                                        $.ajax({
+                                            url: '{% url "org_concept_paper_send" %}',
+                                            type: "POST",
+                                            data: {
+                                                con_title: con_title,
+                                                doc_id: doc_id,
+                                                org_id:org_id,
+                                                csrfmiddlewaretoken: "{{ csrf_token }}",
+                                            },
+                                            dataType: 'json',
+                                            success: function (data) {
+                                                if (data.success){
+                                                    swal("Success! file(s) has been sent to OSAS.", {
+                                                    icon: "success",
+                                                    });
+                                                    $("#data-table #" + doc_id).fadeOut("slow", function(){
+                                                        $("#data-table #" + doc_id).remove();
+                                                    })
+                                                    $('#modal_addtitle').modal('toggle');
+                                                    document.getElementById("delete_btn").style.visibility = "hidden";
+                                                }
+                                                else if (data.error){
+                                                    swal("Error! error sending file(s) to OSAS.", {
+                                                    icon: "warning",
+                                                    });
+                                                }
+                                            }
+                                        });
+                                    } 
+                                });
+                            } 
+                        });
+                    }
+                }
+            });
+        } 
     } );
 
     
@@ -743,10 +850,10 @@ $('#data-table tbody').on( 'click', 'tr', function () {
         }
     }
 
-    function returnDoc(acc_id){
+    function returnDoc(con_id){
         org_id = $('#auth_id').text();
         console.log(org_id)
-        if (acc_id) {
+        if (con_id) {
             swal({
             title: "Are you sure?",
             text: "you want to retrive this file?", 
@@ -771,10 +878,10 @@ $('#data-table tbody').on( 'click', 'tr', function () {
             .then((willDelete) => {
             if (willDelete) {
                 $.ajax({
-                    url: '{% url "accreditation_document_return" %}',
+                    url: '{% url "org_concept_paper_document_return" %}',
                     type: "POST",
                     data: {
-                        acc_id:acc_id,
+                        con_id:con_id,
                         org_id:org_id,
                         csrfmiddlewaretoken: "{{ csrf_token }}",
                     },
@@ -786,8 +893,8 @@ $('#data-table tbody').on( 'click', 'tr', function () {
                             })
                         }
                         if (data.success) {
-                            $("#data-table #" + acc_id).fadeOut("slow", function(){
-                                $("#data-table #" + acc_id).remove();
+                            $("#data-table #" + con_id).fadeOut("slow", function(){
+                                $("#data-table #" + con_id).remove();
                             })
                             swal("Success! file(s) has been retrieved.", {
                             icon: "success",

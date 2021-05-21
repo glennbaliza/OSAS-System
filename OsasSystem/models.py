@@ -285,6 +285,7 @@ class organization_chat(models.Model):
     msg_send_to = models.CharField(max_length = 200, null = True)
     msg_send_from = models.CharField(max_length = 200, null = True)
     msg_org_id = models.ForeignKey('organization', on_delete = models.CASCADE, null=True)
+    msg_room_id = models.ForeignKey('classroom', on_delete = models.CASCADE, null=True)
     msg_head_id = models.ForeignKey('osas_r_auth_user', on_delete = models.CASCADE, null=True)
 
     def __str__(self):
@@ -308,8 +309,21 @@ class org_accreditation(models.Model):
     def __str__(self):
         return self.acc_id
 
+class concept_paper_title(models.Model):
+    title_id = models.AutoField(primary_key = True)
+    title_name = models.CharField(unique=True, max_length = 200)
+    title_status = models.CharField(max_length = 20, null = True)
+    title_datecreated = models.DateField(default = now)
+    title_org_id = models.ForeignKey('organization', on_delete = models.CASCADE, null=True)
+    title_room_id = models.ForeignKey('classroom', on_delete = models.CASCADE, null=True)
+    title_auth_id = models.ForeignKey('osas_r_auth_user', on_delete = models.CASCADE, null=True)
+
+    def __str__(self):
+        return str(self.title_id)
+
 class org_concept_paper(models.Model):
     con_id = models.AutoField(primary_key = True)
+    con_title_id = models.ForeignKey('concept_paper_title', on_delete = models.CASCADE, null=True)
     con_file = models.FileField(upload_to='', null=True, blank = True)
     con_org_id = models.ForeignKey('organization', on_delete = models.CASCADE, null=True)
     con_room_id = models.ForeignKey('classroom', on_delete = models.CASCADE, null=True)
@@ -320,12 +334,14 @@ class org_concept_paper(models.Model):
     con_dateupdated = models.DateField(default = now)
         
     def __str__(self):
-        return self.con_id
+        return str(self.con_id)
+
+    # def save(self, *args, **kwargs):
+    #     self.con_file.save()
+    #     super().save(*args, **kwargs)
     
     def delete(self, *args, **kwargs):
         self.con_file.delete()
         super().delete(*args, **kwargs)
 
-    # def save(self, *args, **kwargs):
-    #     self.con_file.save()
-    #     super().save(*args, **kwargs)
+    

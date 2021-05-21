@@ -38,10 +38,15 @@
                 </a>
             </li>
             <li class="has-sub">
-                <a href="{% url 'organization_concept_papers' %}">
-                    <i class="far fa-comments"></i> 
+                <a href="javascript:;">
+                    <b class="caret"></b>
+                    <i class="far fa-file"></i> 
                     <span>Concept Papers</span>
                 </a>
+                <ul class="sub-menu">
+                    <li><a href="{%url 'organization_concept_papers' %}">Uploaded Concept Papers</a></li>
+                    <li><a href="{%url 'organization_events' %}">Organization Events</a></li>
+                </ul>
             </li>
             <!-- <li class="has-sub">
                 <a href="{% url 'organization_inbox' %}">

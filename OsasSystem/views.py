@@ -6,7 +6,7 @@ from django.views import View
 from django.shortcuts import render, redirect, get_object_or_404, reverse, HttpResponse
 from django.http import HttpResponseRedirect, Http404, JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
-from .models import osas_r_userrole, osas_r_course, osas_r_section_and_year, osas_r_personal_info, osas_r_auth_user, osas_t_id, osas_t_sanction, osas_r_code_title, osas_r_disciplinary_sanction, osas_r_designation_office, osas_t_excuse, osas_t_complaint, osas_notif, organization, org_accreditation, organization_chat, org_concept_paper,classroom
+from .models import osas_r_userrole, osas_r_course, osas_r_section_and_year, osas_r_personal_info, osas_r_auth_user, osas_t_id, osas_t_sanction, osas_r_code_title, osas_r_disciplinary_sanction, osas_r_designation_office, osas_t_excuse, osas_t_complaint, osas_notif, organization, org_accreditation, organization_chat, org_concept_paper,classroom, concept_paper_title
 from django.contrib import messages
 from django.views.decorators.cache import cache_control
 from datetime import datetime, date, timedelta
@@ -124,7 +124,7 @@ def activate_account(request):
     s_no = request.POST.get('stud_no')
     password = request.POST.get('pass')
     try:
-        stud = osas_r_personal_info.objects.get (stud_no=s_no)
+        stud = osas_r_personal_info.objects.get(stud_no=s_no)
         c = osas_r_personal_info.objects.filter(stud_no=s_no, s_password= password )
         # s = osas_r_userrole.objects.get(user_id= stud.stud_role)
         if c:
@@ -144,7 +144,7 @@ def activate_account(request):
             return HttpResponseRedirect('/login')
     except ObjectDoesNotExist:
         u = osas_r_auth_user.objects.filter(auth_username=s_no).count()
-        c = organization.objects.filter(org_email=s_no, org_pass= password).count()
+        c = organization.objects.filter(org_email=s_no)
         if u:
             r = osas_r_auth_user.objects.get(auth_username = s_no)
             # userrole = r.auth_id
@@ -174,8 +174,9 @@ def activate_account(request):
                 messages.error(request, 'Your account is deactivated, failed to login.')
                 return HttpResponseRedirect('/login')
         elif c:
-            c = organization.objects.get(org_email=s_no, org_pass= password)
-            if c:
+            r = organization.objects.filter(org_email=s_no, org_pass= password)
+            if r:
+                c = organization.objects.get(org_email=s_no, org_pass= password)
                 request.session['session_user_id'] = c.org_id
                 request.session['session_user_no'] = c.org_email
                 request.session['session_user_role'] = c.org_name
@@ -186,19 +187,24 @@ def activate_account(request):
                 messages.error(request, 'Incorrect password, please try again.')
                 return HttpResponseRedirect('/login')
         else:
-            room = classroom.objects.get(room_email = s_no, room_pass = password)
+            room = classroom.objects.filter(room_email = s_no)
             if room:
-                request.session['session_user_id'] = room.room_id
-                request.session['session_user_lname'] = room.room_year + ' - ' + room.room_sec
-                request.session['session_class_year'] = room.room_year
-                request.session['session_class_section'] = room.room_sec
-                request.session['session_user_username'] = room.room_email
-                return HttpResponseRedirect('/classroom_home')
+                room2 = classroom.objects.filter(room_email = s_no, room_pass = password)
+                if room2:
+                    room3 = classroom.objects.get(room_email = s_no, room_pass = password)
+                    request.session['session_user_id'] = room3.room_id
+                    request.session['session_user_lname'] = room3.room_stud_id.stud_course_id.course_name + ' ' + room3.room_year + ' - ' + room3.room_sec
+                    request.session['session_class_year'] = room3.room_year
+                    request.session['session_class_section'] = room3.room_sec
+                    request.session['session_user_username'] = room3.room_email
+                    return HttpResponseRedirect('/classroom_home')
+                else:
+                    messages.error(request,  'Incorrect password, please try again.')
+                    return HttpResponseRedirect('/login')
             else:
                 messages.error(request,  'Invalid username, please try again.')
                 return HttpResponseRedirect('/login')
-
-        messages.error(request, 'asdadas username, please try again.')
+        messages.error(request, 'Invalid username, please try again.')
         return HttpResponseRedirect('/login')
 
 def account_process(request):
@@ -2463,17 +2469,19 @@ def organization_approve(request):
         data = {'error':True}
         return JsonResponse(data, safe=False)
 
-def organization_dismiss(request):
-    org_id = request.POST.get('org_id')
+def concept_paper_validate(request):
+    title_id = request.POST.get('title_id')
+    stats = request.POST.get('stats')
     try:
-        d = organization.objects.get(org_id = org_id)
-        d.org_status = 'DISMISSED'
-        d.org_date_accredited = None
-        d.org_expiration = None
-        d.org_date_accredited_year = None
-        d.save()
+        d = concept_paper_title.objects.get(title_id = title_id)
+        if stats == "PENDING":
+            d.title_status = 'VALIDATED'
+            d.save()
+        else:
+            d.title_status = 'APPROVED'
+            d.save()
         data = {'success':True,
-        'id': d.org_id
+        'id': d.title_id
         }
         return JsonResponse(data, safe=False)
     except ObjectDoesNotExist:
@@ -2493,6 +2501,26 @@ def organization_view_messages(request):
         'org_data':org_id.org_abbr,
         'org_id':org_id.org_abbr,
         'org_msg_status':org_id.org_abbr,
+        'osas_data':osas_id.auth_role.user_type,
+        'osas_role_id':osas_role.auth_id,
+        'osas_role':osas_role.auth_role.user_type,
+        # 'osas_id':osas_role.auth_id
+    })
+
+def class_view_messages(request):
+    room_id = request.POST.get('room_id')
+    messages_list = list(organization_chat.objects.all().values())
+    room_id = classroom.objects.get(room_id = room_id)
+    osas_role = osas_r_auth_user.objects.get(auth_role = osas_r_userrole.objects.get(user_type = "HEAD OSAS"))
+    osas_id = osas_r_auth_user.objects.get(auth_id = osas_role.auth_id)
+   
+    # osas_role_id = osas_r_auth_user.objects.get(auth_id = osas_r_userrole.objects.get(user_type = "HEAD OSAS"))
+    return JsonResponse({
+        'data': messages_list,
+        'room_id':room_id.room_id,
+        'room_year':room_id.room_year,
+        'room_sec':room_id.room_sec,
+        'room_course':room_id.room_stud_id.stud_course_id.course_name,
         'osas_data':osas_id.auth_role.user_type,
         'osas_role_id':osas_role.auth_id,
         'osas_role':osas_role.auth_role.user_type,
@@ -2537,15 +2565,20 @@ def organization_upload_osas(request):
     pk_id = request.POST.get('pk_id')
     ident = request.POST.get('identity')
     docu = request.FILES.get('file')
+    title_id = request.POST.get('title_id')
     auth_id = request.session['session_user_id']
     filename = str(docu)
     extension = filename.split(".")[1]
     if request.method == 'POST':
         if ident == 'org':
-            org_concept_paper.objects.create(con_file = docu, con_org_id = organization.objects.get(org_id = pk_id), con_file_ext = extension, con_status = "APPROVED", con_auth_id = osas_r_auth_user.objects.get(auth_id = auth_id))
+            o = org_concept_paper.objects.get(con_title_id = concept_paper_title.objects.get(title_id = title_id), con_file = docu, con_org_id = organization.objects.get(org_id = pk_id))
+            o.delete()
+            org_concept_paper.objects.create(con_file = docu, con_org_id = organization.objects.get(org_id = pk_id), con_file_ext = extension, con_status = "APPROVED", con_auth_id = osas_r_auth_user.objects.get(auth_id = auth_id), con_title_id = concept_paper_title.objects.get(title_id = title_id))
             return HttpResponse('')
         elif ident == 'class':
-            org_concept_paper.objects.create(con_file = docu, con_room_id = classroom.objects.get(room_id = pk_id), con_file_ext = extension, con_status = "APPROVED" , con_auth_id = osas_r_auth_user.objects.get(auth_id = auth_id))
+            o = org_concept_paper.objects.get(con_title_id = concept_paper_title.objects.get(title_id = title_id), con_file = docu, con_room_id = classroom.objects.get(room_id = pk_id))
+            o.delete()
+            org_concept_paper.objects.create(con_file = docu, con_room_id = classroom.objects.get(room_id = pk_id), con_file_ext = extension, con_status = "APPROVED" , con_auth_id = osas_r_auth_user.objects.get(auth_id = auth_id), con_title_id = concept_paper_title.objects.get(title_id = title_id))
             return HttpResponse('')
     return JsonResponse({'error': True})
 
@@ -2575,6 +2608,23 @@ def organization_generate_report(request):
         return JsonResponse({'data': accredited_values})
     except ObjectDoesNotExist:
         data = {'error':"error"}
+        return JsonResponse(data, safe=False)
+
+def organization_dismiss(request):
+    org_id = request.POST.get('org_id')
+    try:
+        d = organization.objects.get(org_id = org_id)
+        d.org_status = 'DISMISSED'
+        d.org_date_accredited = None
+        d.org_expiration = None
+        d.org_date_accredited_year = None
+        d.save()
+        data = {'success':True,
+        'id': d.org_id
+        }
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        data = {'error':True}
         return JsonResponse(data, safe=False)
 
 def organization_login(request):
@@ -2673,16 +2723,39 @@ def accreditation_document_return(request):
         data = {'error':True}
         return JsonResponse(data, safe=False)
 
+def org_concept_paper_document_return(request):
+    con_id = request.POST.get('con_id')
+    org_id = request.POST.get('org_id')
+    try:
+        d = org_concept_paper.objects.get(con_id = con_id)
+        if d.con_title_id.title_status == "VALIDATED":
+            data = {'error':True}
+            return JsonResponse(data, safe=False)
+        else:
+            d.con_status = "SAVED"
+            d.con_title_id = None
+            d.save()
+            data = {'success':True}
+            return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        data = {'error':True}
+        return JsonResponse(data, safe=False)
+
 def class_concept_paper_document_return(request):
     con_id = request.POST.get('con_id')
     room_id = request.POST.get('room_id')
     try:
         d = org_concept_paper.objects.get(con_id = con_id)
         e = classroom.objects.get(room_id = room_id)
-        d.con_status = "SAVED"
-        d.save()
-        data = {'success':True}
-        return JsonResponse(data, safe=False)
+        if d.con_title_id.title_status == "VALIDATED":
+            data = {'error':True}
+            return JsonResponse(data, safe=False)
+        else:
+            d.con_status = "SAVED"
+            d.con_title_id = None
+            d.save()
+            data = {'success':True}
+            return JsonResponse(data, safe=False)
     except ObjectDoesNotExist:
         data = {'error':True}
         return JsonResponse(data, safe=False)
@@ -2712,32 +2785,89 @@ def accreditation_document_send(request):
 
 def class_concept_paper_send(request):
     doc_id = request.POST.get('doc_id')
+    title_name = request.POST.get('con_title')
     room_id = request.POST.get('room_id')
     try:
-        d = org_concept_paper.objects.get(con_id = doc_id)
-        g = classroom.objects.get(room_id = room_id)
-        d.con_status = "SENT"
-        d.con_room_id = classroom.objects.get(room_id = request.session['session_user_id'])
-        d.save()
-        data = {'success':True}
-        return JsonResponse(data, safe=False)
+        t = concept_paper_title.objects.get(title_name = title_name)
+        if t.title_status == "VALIDATED" or t.title_status == "APPROVED" :
+            data = {'error':True}
+            return JsonResponse(data, safe=False)
+        else:
+            d = org_concept_paper.objects.get(con_id = doc_id)
+            g = classroom.objects.get(room_id = room_id)
+            d.con_status = "SENT"
+            d.con_title_id = concept_paper_title.objects.get(title_name = title_name)
+            d.save()
+            data = {'success':True}
+            return JsonResponse(data, safe=False)
     except ObjectDoesNotExist:
+        concept_paper_title.objects.create(title_name = title_name, title_status = "PENDING", title_room_id = classroom.objects.get(room_id = request.session['session_user_id']))
+        d = org_concept_paper.objects.get(con_id = doc_id)
+        d.con_title_id = concept_paper_title.objects.get(title_name = title_name)
+        d.con_status = "SENT"
+        d.save()
         data = {'error':True}
         return JsonResponse(data, safe=False)
 
-def org_concept_paper_send(request):
-    doc_id = request.POST.get('doc_id')
-    org_id = request.POST.get('org_id')
+def class_concept_paper_title(request):
+    title_name = request.POST.get('con_title')
+    room_id = request.POST.get('room_id')
     try:
-        d = org_concept_paper.objects.get(con_id = doc_id)
-        g = organization.objects.get(org_id = org_id)
-        d.con_status = "SENT"
-        d.con_org_id = organization.objects.get(org_id = request.session['session_user_id'])
-        d.save()
-        data = {'success':True}
+        t = concept_paper_title.objects.get(title_name = title_name)
+        data = {'error':True}
         return JsonResponse(data, safe=False)
     except ObjectDoesNotExist:
+        concept_paper_title.objects.create(title_name = title_name, title_status = "PENDING", title_room_id = classroom.objects.get(room_id = room_id))
+        data = {'success':True}
+        return JsonResponse(data, safe=False)
+
+def org_concept_paper_title(request):
+    title_name = request.POST.get('con_title')
+    org_id = request.POST.get('org_id')
+    try:
+        t = concept_paper_title.objects.get(title_name = title_name)
         data = {'error':True}
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        concept_paper_title.objects.create(title_name = title_name, title_status = "PENDING", title_org_id = organization.objects.get(org_id = room_id))
+        data = {'success':True}
+        return JsonResponse(data, safe=False)
+        
+def org_concept_paper_send(request):
+    doc_id = request.POST.get('doc_id')
+    title_name = request.POST.get('con_title')
+    org_id = request.POST.get('org_id')
+    try:
+        t = concept_paper_title.objects.get(title_name = title_name)
+        if t.title_status == "VALIDATED" or t.title_status == "APPROVED" :
+            data = {'error':True}
+            return JsonResponse(data, safe=False)
+        else:
+            d = org_concept_paper.objects.get(con_id = doc_id)
+            d.con_status = "SENT"
+            d.con_title_id = concept_paper_title.objects.get(title_name = title_name)
+            d.save()
+            data = {'success':True}
+            return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        concept_paper_title.objects.create(title_name = title_name, title_status = "PENDING", title_org_id = organization.objects.get(org_id = request.session['session_user_id']))
+        d = org_concept_paper.objects.get(con_id = doc_id)
+        d.con_title_id = concept_paper_title.objects.get(title_name = title_name)
+        d.con_status = "SENT"
+        d.save()
+        data = {'error':True}
+        return JsonResponse(data, safe=False)
+
+def org_concept_paper_title(request):
+    title_name = request.POST.get('con_title')
+    org_id = request.POST.get('org_id')
+    try:
+        t = concept_paper_title.objects.get(title_name = title_name)
+        data = {'error':True}
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        concept_paper_title.objects.create(title_name = title_name, title_status = "PENDING", title_org_id = organization.objects.get(org_id = org_id))
+        data = {'success':True}
         return JsonResponse(data, safe=False)
 
 def accreditation_document_delete(request):
@@ -2762,6 +2892,31 @@ def accreditation_document_delete(request):
         data = {'error':True}
         return JsonResponse(data, safe=False)
 
+def org_concept_paper_document_delete(request):
+    doc_id = request.POST.get('doc_id')
+    org_id = request.POST.get('org_id')
+    btn_status = request.POST.get('btn_status')
+    try:
+        d = org_concept_paper.objects.get(con_id = doc_id)
+        if btn_status == "Remove File(s)":
+            d.delete()
+        elif btn_status == "Retrieve File(s)":
+            if d.con_title_id.title_status == "VALIDATED":
+                data = {'error':True}
+                return JsonResponse(data, safe=False)
+            elif d.con_title_id.title_status == "APPROVED":
+                data = {'error':True}
+                return JsonResponse(data, safe=False)
+            else:
+                d.con_status = "SAVED"
+                d.con_title_id = None
+                d.save()
+                data = {'success':True}
+                return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        data = {'error':True}
+        return JsonResponse(data, safe=False)
+
 def class_concept_paper_document_delete(request):
     doc_id = request.POST.get('doc_id')
     room_id = request.POST.get('room_id')
@@ -2771,10 +2926,18 @@ def class_concept_paper_document_delete(request):
         if btn_status == "Remove File(s)":
             d.delete()
         elif btn_status == "Retrieve File(s)":
-            d.con_status = "SAVED"
-            d.save()
-        data = {'success':True}
-        return JsonResponse(data, safe=False)
+            if d.con_title_id.title_status == "VALIDATED":
+                data = {'error':True}
+                return JsonResponse(data, safe=False)
+            elif d.con_title_id.title_status == "APPROVED":
+                data = {'error':True}
+                return JsonResponse(data, safe=False)
+            else:
+                d.con_status = "SAVED"
+                d.con_title_id = None
+                d.save()
+                data = {'success':True}
+                return JsonResponse(data, safe=False)
     except ObjectDoesNotExist:
         data = {'error':True}
         return JsonResponse(data, safe=False)
@@ -2794,6 +2957,58 @@ def accreditation_osas_msg(request):
             msg_head_id = osas_r_auth_user.objects.get(auth_id = osas_id), 
             msg_send_to = s.org_abbr, 
             msg_send_from = osas_id)
+        d.save()
+        data = {'success':True}
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        data = {'error':True}
+        return JsonResponse(data, safe=False)
+
+def concept_paper_osas_msg(request):
+    class_id = request.POST.get('class_id')
+    osas_id = request.POST.get('osas_id')
+    btn_status = request.POST.get('msg')
+    date_today = request.POST.get('date_today')
+    s = classroom.objects.get(room_id = class_id)
+    course_name = s.room_stud_id.stud_course_id.course_name
+    class_year = s.room_year
+    class_sec = s.room_sec
+    class_name = course_name + ' ' + class_year + ' - ' + class_sec
+    try:
+        today = datetime.today()
+        d = organization_chat(
+            msg_message = btn_status, 
+            msg_date = date_today, 
+            msg_head_id = osas_r_auth_user.objects.get(auth_id = osas_id), 
+            msg_send_to = class_name, 
+            msg_send_from = osas_id)
+        d.save()
+        data = {'success':True}
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        data = {'error':True}
+        return JsonResponse(data, safe=False)
+
+def concept_paper_class_msg(request):
+    class_id = request.POST.get('class_id')
+    osas_id = request.POST.get('osas_id')
+    osas_role_ = request.POST.get('osas_role_')
+    btn_status = request.POST.get('msg')
+    date_today = request.POST.get('date_today')
+    s = classroom.objects.get(room_id = class_id)
+    course_name = s.room_stud_id.stud_course_id.course_name
+    class_year = s.room_year
+    class_sec = s.room_sec
+    class_name = course_name + ' ' + class_year + ' - ' + class_sec
+    try:
+        today = datetime.today()
+        d = organization_chat(
+            msg_message = btn_status, 
+            msg_date = date_today, 
+            msg_room_id = classroom.objects.get(room_id = class_id),
+            msg_head_id = osas_r_auth_user.objects.get(auth_id = osas_id), 
+            msg_send_to = osas_role_, 
+            msg_send_from = class_name)
         d.save()
         data = {'success':True}
         return JsonResponse(data, safe=False)
@@ -2892,6 +3107,7 @@ def concept_papers(request):
     status = request.POST.get('filter_status')
     acad_year = request.POST.get('acad_year')
     acc_docu_list = org_concept_paper.objects.all().filter(con_status = 'SENT')
+    file_list = concept_paper_title.objects.all()
     osas_docu_list = org_concept_paper.objects.all().filter(con_status = 'APPROVED')
     acc_docu = org_concept_paper.objects.all().order_by("con_id")
     year = str(acad_year)
@@ -2901,19 +3117,19 @@ def concept_papers(request):
     if acad_year and status:
         acc_list = organization.objects.all().filter(org_status = status, org_date_accredited__contains = year).order_by("-org_date_accredited")
         class_list = classroom.objects.all().filter( room_datecreated__contains = year).order_by("-room_datecreated")
-        return render(request, 'Facilitation/concept_papers.html', {'acc_list':acc_list, 'acc_docu':acc_docu, 'acc_docu_list':acc_docu_list, 'msg':msg, 'class_list':class_list, 'osas_docu_list':osas_docu_list})
+        return render(request, 'Facilitation/concept_papers.html', {'acc_list':acc_list, 'acc_docu':acc_docu, 'acc_docu_list':acc_docu_list, 'msg':msg, 'class_list':class_list, 'osas_docu_list':osas_docu_list, 'file_list':file_list})
     elif acad_year:
         acc_list = organization.objects.all().filter(org_date_accredited__contains = year).order_by("-org_date_accredited")
         class_list = classroom.objects.all().filter( room_datecreated__contains = year).order_by("-room_datecreated")
-        return render(request, 'Facilitation/concept_papers.html', {'acc_list':acc_list, 'acc_docu':acc_docu, 'acc_docu_list':acc_docu_list, 'msg':msg, 'class_list':class_list, 'osas_docu_list':osas_docu_list})
+        return render(request, 'Facilitation/concept_papers.html', {'acc_list':acc_list, 'acc_docu':acc_docu, 'acc_docu_list':acc_docu_list, 'msg':msg, 'class_list':class_list, 'osas_docu_list':osas_docu_list, 'file_list':file_list})
     if status:
         acc_list = organization.objects.all().filter(org_status = status ).order_by("-org_date_accredited")
         class_list = classroom.objects.all().filter( room_datecreated__contains = year).order_by("-room_datecreated")
-        return render(request, 'Facilitation/concept_papers.html', {'acc_list':acc_list, 'acc_docu':acc_docu, 'acc_docu_list':acc_docu_list, 'msg':msg, 'class_list':class_list, 'osas_docu_list':osas_docu_list})
+        return render(request, 'Facilitation/concept_papers.html', {'acc_list':acc_list, 'acc_docu':acc_docu, 'acc_docu_list':acc_docu_list, 'msg':msg, 'class_list':class_list, 'osas_docu_list':osas_docu_list, 'file_list':file_list})
     else:
         acc_list = organization.objects.all().order_by("-org_date_accredited")   
         class_list = classroom.objects.all().order_by("-room_datecreated")
-        return render(request, 'Facilitation/concept_papers.html', {'acc_list':acc_list, 'acc_docu':acc_docu, 'acc_docu_list':acc_docu_list, 'msg':msg, 'class_list':class_list, 'osas_docu_list':osas_docu_list})
+        return render(request, 'Facilitation/concept_papers.html', {'acc_list':acc_list, 'acc_docu':acc_docu, 'acc_docu_list':acc_docu_list, 'msg':msg, 'class_list':class_list, 'osas_docu_list':osas_docu_list, 'file_list':file_list})
 
 def concept_document_remove(request):
     doc_id = request.POST.get('con_id')
@@ -2928,3 +3144,59 @@ def concept_document_remove(request):
 
 def organization_inbox(request): 
     return render(request, 'Organization/inbox.html')
+
+def student_events(request):
+    status = request.POST.get('filter_status')
+    acad_year = request.POST.get('acad_year')
+    acc_docu_list = org_concept_paper.objects.all().filter(con_status = 'SENT')
+    file_list_room = concept_paper_title.objects.all().filter(title_room_id = classroom.objects.get(room_id = request.session['session_user_id']))
+    osas_docu_list = org_concept_paper.objects.all().filter(con_status = 'APPROVED')
+    acc_docu = org_concept_paper.objects.all().order_by("con_id")
+    year = str(acad_year)
+
+    msg = organization_chat.objects.all().order_by('msg_date')
+
+    if acad_year and status:
+        file_list = concept_paper_title.objects.all().filter(title_status = status, title_datecreated__contains = year).order_by("-title_datecreated")
+        class_list = classroom.objects.all().filter( room_datecreated__contains = year).order_by("-room_datecreated")
+        return render(request, 'classroom/student_events.html', {'acc_docu':acc_docu, 'acc_docu_list':acc_docu_list, 'msg':msg, 'class_list':class_list, 'osas_docu_list':osas_docu_list, 'file_list_room':file_list_room})
+    elif acad_year:
+        file_list = concept_paper_title.objects.all().filter( title_datecreated__contains = year).order_by("-title_datecreated")
+        class_list = classroom.objects.all().filter( room_datecreated__contains = year).order_by("-room_datecreated")
+        return render(request, 'classroom/student_events.html', { 'acc_docu':acc_docu, 'acc_docu_list':acc_docu_list, 'msg':msg, 'class_list':class_list, 'osas_docu_list':osas_docu_list, 'file_list_room':file_list_room})
+    if status:
+        file_list = concept_paper_title.objects.all().filter(title_status = status).order_by("-title_datecreated")
+        class_list = classroom.objects.all().filter( room_datecreated__contains = year).order_by("-room_datecreated")
+        return render(request, 'classroom/student_events.html', {'acc_docu':acc_docu, 'acc_docu_list':acc_docu_list, 'msg':msg, 'class_list':class_list, 'osas_docu_list':osas_docu_list, 'file_list_room':file_list_room})
+    else:
+        file_list = concept_paper_title.objects.all().order_by("-title_datecreated")
+        class_list = classroom.objects.all().order_by("-room_datecreated")
+        return render(request, 'classroom/student_events.html', {'acc_docu':acc_docu, 'acc_docu_list':acc_docu_list, 'msg':msg, 'class_list':class_list, 'osas_docu_list':osas_docu_list, 'file_list_room':file_list_room})
+
+def organization_events(request):
+    status = request.POST.get('filter_status')
+    acad_year = request.POST.get('acad_year')
+    acc_docu_list = org_concept_paper.objects.all().filter(con_status = 'SENT')
+    file_list_org = concept_paper_title.objects.all().filter(title_org_id = organization.objects.get(org_id = request.session['session_user_id']))
+    osas_docu_list = org_concept_paper.objects.all().filter(con_status = 'APPROVED')
+    acc_docu = org_concept_paper.objects.all().order_by("con_id")
+    year = str(acad_year)
+
+    msg = organization_chat.objects.all().order_by('msg_date')
+
+    if acad_year and status:
+        file_list = concept_paper_title.objects.all().filter(title_status = status, title_datecreated__contains = year).order_by("-title_datecreated")
+        class_list = classroom.objects.all().filter( room_datecreated__contains = year).order_by("-room_datecreated")
+        return render(request, 'Organization/organization_event.html', {'acc_docu':acc_docu, 'acc_docu_list':acc_docu_list, 'msg':msg, 'class_list':class_list, 'osas_docu_list':osas_docu_list, 'file_list_org':file_list_org})
+    elif acad_year:
+        file_list = concept_paper_title.objects.all().filter( title_datecreated__contains = year).order_by("-title_datecreated")
+        class_list = classroom.objects.all().filter( room_datecreated__contains = year).order_by("-room_datecreated")
+        return render(request, 'Organization/organization_event.html', { 'acc_docu':acc_docu, 'acc_docu_list':acc_docu_list, 'msg':msg, 'class_list':class_list, 'osas_docu_list':osas_docu_list, 'file_list_org':file_list_org})
+    if status:
+        file_list = concept_paper_title.objects.all().filter(title_status = status).order_by("-title_datecreated")
+        class_list = classroom.objects.all().filter( room_datecreated__contains = year).order_by("-room_datecreated")
+        return render(request, 'Organization/organization_event.html', {'acc_docu':acc_docu, 'acc_docu_list':acc_docu_list, 'msg':msg, 'class_list':class_list, 'osas_docu_list':osas_docu_list, 'file_list_org':file_list_org})
+    else:
+        file_list = concept_paper_title.objects.all().order_by("-title_datecreated")
+        class_list = classroom.objects.all().order_by("-room_datecreated")
+        return render(request, 'Organization/organization_event.html', {'acc_docu':acc_docu, 'acc_docu_list':acc_docu_list, 'msg':msg, 'class_list':class_list, 'osas_docu_list':osas_docu_list, 'file_list_org':file_list_org})
