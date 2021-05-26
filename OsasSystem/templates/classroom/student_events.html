@@ -35,7 +35,7 @@
     
     <div class="row">
         <div class="col-lg-2">
-            <div class="panel" data-sortable-id="index-1">
+            <div class="panel">
                 <div class="panel-heading p-25">
                     <h2 class="panel-title" style="font-size:16px;">Inbox <i class="fas fa-envelope mr-2" ></i></h2>
                 </div>
@@ -45,6 +45,42 @@
                             <button type="submit" class="btn btn-success col-sm-12" data-toggle="modal" href="#modal_message" onClick="viewNote('{{org.title_room_id.room_id}}')">Message <i class="fas fa-envelope ml-2" ></i></button>
                         </div>
                     </div>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-heading p-25">
+                    <h2 class="panel-title" style="font-size:16px;">Filter <i class="fas fa-filter mr-2" ></i></h2>
+                </div>
+                <div class="panel-body" style="padding: 0%; height: 200px;">
+                    <form id="validate_form" method="POST" action="{% url 'student_events' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group" >
+                            <label style="text-align: left; margin-bottom: 7px; margin-top: 4px;" class="col-sm-12">Academic Year:</label> 
+                            <div class="col-sm-12">
+                                <select id="acad_year" name="acad_year" class="form-control">
+                                    <option selected disabled="true">--Select--</option>
+                                    <option  value="2016">2016 - 2017</option>
+                                    <option  value="2017">2017 - 2018</option>
+                                    <option  value="2018">2018 - 2019</option>
+                                    <option  value="2019">2019 - 2020</option>
+                                    <option  value="2020">2020 - 2021</option>
+                                    <option  value="2021">2021 - 2022</option>
+                                </select>
+                            </div>
+                            <label style="text-align: left; margin-bottom: 7px; margin-top: 4px;" class="col-sm-12">Status:</label> 
+                            <div class="col-sm-12">
+                                <select id="filter_status" name="filter_status" class="form-control">
+                                    <option selected disabled="true">--Select--</option>
+                                    <option  value="VALIDATED">Validated</option>
+                                    <option  value="PENDING">Pending</option>
+                                    <option  value="APPROVED">Approved</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <button type="submit" class="btn btn-success col-sm-12">Filter <i class="fas fa-filter mr-2" ></i></button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -71,80 +107,80 @@
                         {% if file_list_room %}
                             {% for org in file_list_room %}  
                                 {% if org.title_room_id.room_id%}
-                                <tr class="odd gradeA tr_  align-middle" id="{{ org.title_room_id.room_id }}">
-                                    <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
-                                    <td width="28%" ><dl class="row mb-0 p-2" style="line-height: .6rem;">
-                                        <dd class="col-sm-8 gritter-  ysd{{ org.title_room_id.room_id  }}" style=" font-size: 11px; "><strong>{{ org.title_room_id.room_stud_id.stud_course_id.course_code }} {{ org.title_room_id.room_year }} - {{ org.title_room_id.room_sec }}</strong></dd>
-                                        <dd class="col-sm-8 gritter-  ysd{{ org.title_room_id.room_id  }} " style=" font-size: 11px; ">{{ org.title_name }}</dd>
-                                        <dd class="col-sm-8 gritter-  ysd{{ org.title_room_id.room_id  }}" >{{ org.title_datecreated|date:"Y-m-d" }}</dd>
-                                        {% if org.title_status == "VALIDATED" %}
-                                        <dd class="col-sm-8 gritter- "><strong><span class="badge badge-info  yss{{ org.title_room_id.room_id  }}">{{ org.title_status }}</span></strong></dd>
-                                        {% elif org.title_status == "PENDING" %}
-                                        <dd class="col-sm-8 gritter- "><strong><span class="badge badge-warning  yss{{ org.title_room_id.room_id  }}">{{ org.title_status }}</span></strong></dd>
-                                        {% else %}  
-                                        <dd class="col-sm-8 gritter- "><strong><span class="badge badge-success  yss{{ org.title_room_id.room_id  }}">{{ org.title_status }}</span></strong></dd>
-                                        {% endif %}
-                                    </dl>
-                                    </td>    
-                                    <td width="32%">
-                                        {% if acc_docu_list %}
-                                            {% for class_concept_paper in acc_docu_list %}
-                                                {% if class_concept_paper.con_file_ext == 'docx' and class_concept_paper.con_title_id.title_id == org.title_id %}
+                                    <tr class="odd gradeA tr_  align-middle" id="{{ org.title_room_id.room_id }}">
+                                        <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
+                                        <td width="28%" ><dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                            <dd class="col-sm-8 gritter-  ysd{{ org.title_room_id.room_id  }}" style=" font-size: 11px; "><strong>{{ org.title_room_id.room_stud_id.stud_course_id.course_code }} {{ org.title_room_id.room_year }} - {{ org.title_room_id.room_sec }}</strong></dd>
+                                            <dd class="col-sm-8 gritter-  ysd{{ org.title_room_id.room_id  }} " style=" font-size: 11px; ">{{ org.title_name }}</dd>
+                                            <dd class="col-sm-8 gritter-  ysd{{ org.title_room_id.room_id  }}" >{{ org.title_datecreated|date:"Y-m-d" }}</dd>
+                                            {% if org.title_status == "VALIDATED" %}
+                                            <dd class="col-sm-8 gritter- "><strong><span class="badge badge-info  yss{{ org.title_room_id.room_id  }}">{{ org.title_status }}</span></strong></dd>
+                                            {% elif org.title_status == "PENDING" %}
+                                            <dd class="col-sm-8 gritter- "><strong><span class="badge badge-warning  yss{{ org.title_room_id.room_id  }}">{{ org.title_status }}</span></strong></dd>
+                                            {% else %}  
+                                            <dd class="col-sm-8 gritter- "><strong><span class="badge badge-success  yss{{ org.title_room_id.room_id  }}">{{ org.title_status }}</span></strong></dd>
+                                            {% endif %}
+                                        </dl>
+                                        </td>    
+                                        <td width="32%">
+                                            {% if acc_docu_list %}
+                                                {% for class_concept_paper in acc_docu_list %}
+                                                    {% if class_concept_paper.con_file_ext == 'docx' and class_concept_paper.con_title_id.title_id == org.title_id %}
+                                                        <div style=" display: inline-block; padding: 2px;">
+                                                            <a id="{{ org.title_room_id.room_id  }}" href="/media/{{ class_concept_paper.con_file }}" target="blank"><i class="far fa-file-word fa-2x" ></i></a>
+                                                        </div>
+                                                        <div style="display: inline-block;">
+                                                            <a id="{{ org.title_room_id.room_id  }}" href="/media/{{ class_concept_paper.con_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ class_concept_paper.con_file }} </a>
+                                                        </div></br>
+                                                    {% elif class_concept_paper.con_title_id.title_id == org.title_id %}
+                                                        <div style="display: inline-block; padding: 2px;">
+                                                            <a id="{{ org.title_room_id.room_id  }}" href="/media/{{ class_concept_paper.con_file }}" target="blank" style="color: red;"><i class="far fa-file-pdf fa-2x" > </i></a>
+                                                        </div>
+                                                        <div style="display: inline;">
+                                                            <a id="{{org.title_room_id.room_id  }}" href="/media/{{ class_concept_paper.con_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ class_concept_paper.con_file }} </a>
+                                                        </div><br>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        </td>
+                                    
+                                        <td width="32%">
+                                        {% if osas_docu_list %}
+                                            {% for org_concept_paper in osas_docu_list %}
+                                                {% if org_concept_paper.con_file_ext == 'docx' and org_concept_paper.con_auth_id and org_concept_paper.con_room_id and org_concept_paper.con_title_id.title_name == org.title_name %}
+                                                    {% if org.title_status == "APPROVED" %}
                                                     <div style=" display: inline-block; padding: 2px;">
-                                                        <a id="{{ org.title_room_id.room_id  }}" href="/media/{{ class_concept_paper.con_file }}" target="blank"><i class="far fa-file-word fa-2x" > </i></a>
+                                                        <a id="{{ classroom.room_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: blue;"><i class="far fa-file-word fa-2x" > </i></a>
                                                     </div>
                                                     <div style="display: inline-block;">
-                                                        <a id="{{ org.title_room_id.room_id  }}" href="/media/{{ class_concept_paper.con_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ class_concept_paper.con_file }} </a>
+                                                        <a id="{{ classroom.room_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_concept_paper.con_file }}</a>
                                                     </div></br>
-                                                {% elif class_concept_paper.con_title_id.title_id == org.title_id %}
+                                                    {% else %}
+                                                    <div style=" display: inline-block; padding: 2px;">
+                                                        <a id="{{ classroom.room_id  }}" target="blank"  style="color: blue;"><i class="far fa-file-word fa-2x" > </i></a>
+                                                    </div>
+                                                    <div style="display: inline-block;">
+                                                        <a id="{{ classroom.room_id  }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_concept_paper.con_file }}</a>
+                                                    </div></br>
+                                                    {% endif %}
+                                                {% elif org_concept_paper.con_auth_id and org_concept_paper.con_room_id and org_concept_paper.con_title_id.title_name == org.title_name %}
+                                                    {% if org.title_status == "APPROVED" %}
                                                     <div style="display: inline-block; padding: 2px;">
-                                                        <a id="{{ org.title_room_id.room_id  }}" href="/media/{{ class_concept_paper.con_file }}" target="blank" style="color: red;"><i class="far fa-file-pdf fa-2x" > </i></a>
+                                                        <a id="{{ classroom.room_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: red;"><i class="far fa-file-pdf fa-2x" > </i></a>
                                                     </div>
                                                     <div style="display: inline;">
-                                                        <a id="{{org.title_room_id.room_id  }}" href="/media/{{ class_concept_paper.con_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ class_concept_paper.con_file }} </a>
+                                                        <a id="{{ classroom.room_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_concept_paper.con_file }}</a>
                                                     </div><br>
+                                                    {% else %}
+                                                    <div style="display: inline-block; padding: 2px;">
+                                                        <a id="{{ classroom.room_id  }}" target="blank" style="color: red;"><i class="far fa-file-pdf fa-2x" > </i></a>
+                                                    </div>
+                                                    <div style="display: inline;">
+                                                        <a id="{{ classroom.room_id  }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_concept_paper.con_file }}</a>
+                                                    </div><br>
+                                                    {% endif %}
                                                 {% endif %}
                                             {% endfor %}
-                                        {% endif %}
-                                    </td>
-                                   
-                                    <td width="32%">
-                                        {% if osas_docu_list %}
-                                        {% for org_concept_paper in osas_docu_list %}
-                                            {% if org_concept_paper.con_file_ext == 'docx' and org_concept_paper.con_auth_id and org_concept_paper.con_room_id %}
-                                                {% if org.title_status == "APPROVED" %}
-                                                <div style=" display: inline-block; padding: 2px;">
-                                                    <a id="{{ classroom.room_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: blue;"><i class="far fa-file-word fa-2x" > </i></a>
-                                                </div>
-                                                <div style="display: inline-block;">
-                                                    <a id="{{ classroom.room_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_concept_paper.con_file }}</a>
-                                                </div></br>
-                                                {% else %}
-                                                <div style=" display: inline-block; padding: 2px;">
-                                                    <a id="{{ classroom.room_id  }}" target="blank"  style="color: blue;"><i class="far fa-file-word fa-2x" > </i></a>
-                                                </div>
-                                                <div style="display: inline-block;">
-                                                    <a id="{{ classroom.room_id  }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_concept_paper.con_file }}</a>
-                                                </div></br>
-                                                {% endif %}
-                                            {% elif org_concept_paper.con_auth_id and org_concept_paper.con_room_id %}
-                                                {% if org.title_status == "APPROVED" %}
-                                                <div style="display: inline-block; padding: 2px;">
-                                                    <a id="{{ classroom.room_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: red;"><i class="far fa-file-pdf fa-2x" > </i></a>
-                                                </div>
-                                                <div style="display: inline;">
-                                                    <a id="{{ classroom.room_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_concept_paper.con_file }}</a>
-                                                </div><br>
-                                                {% else %}
-                                                <div style="display: inline-block; padding: 2px;">
-                                                    <a id="{{ classroom.room_id  }}" target="blank" style="color: red;"><i class="far fa-file-pdf fa-2x" > </i></a>
-                                                </div>
-                                                <div style="display: inline;">
-                                                    <a id="{{ classroom.room_id  }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_concept_paper.con_file }}</a>
-                                                </div><br>
-                                                {% endif %}
-                                            {% endif %}
-                                        {% endfor %}
                                         {% endif %}
                                     </td>
                                     <td width="1%" class="text-nowrap">
@@ -162,17 +198,17 @@
                                         {% elif org.title_status == "PENDING" %}
                                             <dl class="row mb-0 p-2" style="line-height: .6rem;">
                                                 <div class="col-sm-12">
-                                                    <button id="edit-btn" class="btn btn-info" data-toggle="modal" href="#modal_upload" onClick="uploadDocu('{{ org.title_org_id.org_id }}', '{{org.title_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Edit" class="fas fa-edit"></i></button>
+                                                    <button id="edit-btn" class="btn btn-info" data-toggle="modal" href="#modal_edit" onClick="editDocu('{{ org.title_room_id.room_id }}', '{{org.title_id}}', '{{org.title_name}}')" ><i data-toggle="tooltip" data-placement="left" title="Edit" class="fas fa-edit"></i></button>
                                                 </div>
                                             </dl>
                                             <dl class="row mb-0 p-2" style="line-height: .6rem;">
                                                 <div class="col-sm-12">
-                                                    <button id="edit-btn" class="btn btn-warning" data-toggle="modal" href="#modal_upload" onClick="uploadDocu('{{ org.title_org_id.org_id }}', '{{org.title_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Upload" class="fas fa-upload"></i></button>
+                                                    <button id="edit-btn" class="btn btn-warning" data-toggle="modal" href="#modal_upload" onClick="uploadDocu('{{ org.title_room_id.room_id }}', '{{org.title_id}}', '{{org.title_name}}')" ><i data-toggle="tooltip" data-placement="left" title="Upload" class="fas fa-upload"></i></button>
                                                 </div>
                                             </dl>
                                             <dl class="row mb-0 p-2" style="line-height: .6rem;">
                                                 <div class="col-sm-12">
-                                                    <button id="edit-btn" class="btn btn-danger" data-toggle="modal" href="#modal_upload" onClick="uploadDocu('{{ org.title_org_id.org_id }}', '{{org.title_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Remove" class="fas fa-trash"></i></button>
+                                                    <button id="edit-btn" class="btn btn-danger" onClick="removeEvent('{{ org.title_room_id.room_id }}', '{{org.title_id}}', '{{org.title_name}}')" ><i data-toggle="tooltip" data-placement="left" title="Remove" class="fas fa-trash"></i></button>
                                                 </div>
                                             </dl>
                                         {% else %}
@@ -216,46 +252,6 @@
             </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-lg-2">
-            <div class="panel" data-sortable-id="index-1">
-                <div class="panel-heading p-25">
-                    <h2 class="panel-title" style="font-size:16px;">Filter <i class="fas fa-filter mr-2" ></i></h2>
-                </div>
-                <div class="panel-body" style="padding: 0%; height: 200px;">
-                    <form id="validate_form" method="POST" action="{% url 'student_events' %}" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        <div class="form-group" >
-                            <label style="text-align: left; margin-bottom: 7px; margin-top: 4px;" class="col-sm-12">Academic Year:</label> 
-                            <div class="col-sm-12">
-                                <select id="acad_year" name="acad_year" class="form-control">
-                                    <option selected disabled="true">--Select--</option>
-                                    <option  value="2016">2016 - 2017</option>
-                                    <option  value="2017">2017 - 2018</option>
-                                    <option  value="2018">2018 - 2019</option>
-                                    <option  value="2019">2019 - 2020</option>
-                                    <option  value="2020">2020 - 2021</option>
-                                    <option  value="2021">2021 - 2022</option>
-                                </select>
-                            </div>
-                            <label style="text-align: left; margin-bottom: 7px; margin-top: 4px;" class="col-sm-12">Status:</label> 
-                            <div class="col-sm-12">
-                                <select id="filter_status" name="filter_status" class="form-control">
-                                    <option selected disabled="true">--Select--</option>
-                                    <option  value="VALIDATED">Validated</option>
-                                    <option  value="PENDING">Pending</option>
-                                    <option  value="APPROVED">Approved</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-sm-12">
-                            <button type="submit" class="btn btn-success col-sm-12">Filter <i class="fas fa-filter mr-2" ></i></button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
 <div class="modal" id="modal_message" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block imp !important;"> 
@@ -289,6 +285,48 @@
     </div> 
 </div> 
 
+
+<div class="modal fade" id="modal_edit" role="dialog"  data-backdrop="static">
+    <div class="modal-dialog modal-md" role="document" id="myModal">
+        <div class="modal-content">
+            <input class="form-control" id="excuse_id" type="hidden" name="excuse_id"/>
+            <div class="panel panel-inverse" >
+                <button type="button" class="close" id="close" data-dismiss="modal" aria-hidden="true" style="color: gray; margin: 6px;">×</button>  
+                <div class="panel-body">
+                    <div class="col-lg-12 col-md-6">
+                        <h1 class="page-header mb-1">Add New Event</h1>
+                        <p class="mb-5">Page Description</p>
+                        <div class="col-lg-12" id="error">
+                        </div>
+                        <label>Event Title Name:</label>
+                        <input class="form-control" id="room_id" type="hidden" name="room_id"/>
+                        <input class="form-control" id="title_id" type="hidden" name="title_id"/>
+                        <input class="form-control" id="title_name2" type="hidden" name="title_name2"/>
+                        <input class="form-control essay_text" id="title_name"  name="title_name" placeholder="Write your title here..."></input><br>
+                        <table id="data-table2" class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th width="1%"></th>
+                                    <th data-orderable="false">Document Name</th>
+                                    <th data-orderable="false">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="docu-table">
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <button class="btn btn_success col-md-3 pull-right m-l-10 " id="btn_submit" style="height: 33px; padding: 5px; background: linear-gradient(to right, #66ccff -1%, #3366ff 98%); border:none; color: white;" >Done<i class="fas fa-check m-l-3 zoom" ></i></button>
+                    <a class="btn btn-white pull-right m-l-10" id="back" data-dismiss="modal">Back<i class="fas fa-reply m-l-3 zoom"></i></a>
+                </div>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="modal_addtitle" role="dialog"  data-backdrop="static">
     <div class="modal-dialog modal-md" role="document" id="myModal">
         <div class="modal-content">
@@ -313,6 +351,29 @@
                     <a class="btn btn-white pull-right m-l-10" data-dismiss="modal">Back<i class="fas fa-reply m-l-3 zoom"></i></a>
                 </div>
                 <br>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_upload" role="dialog"  data-backdrop="static">
+    <div class="modal-dialog modal-md" role="document" id="myModal">
+        <div class="modal-content">
+            <input class="form-control" id="excuse_id" type="hidden" name="excuse_id"/>
+            <div class="panel panel-inverse" >
+                <button type="button" class="close" data-dismiss="modal" id="close_upload" aria-hidden="true" style="color: gray; margin: 6px;">×</button>  
+                <div class="panel-body">
+                    <div id="dropzone">
+                        <form action="{%url 'classroom_concept_paper_upload' %}" method="POST" class="dropzone" id="file-upload">
+                            {% csrf_token %}
+                            <input class="form-control" id="room_id2" type="hidden" name="room_id2"/>
+                            <input class="form-control" id="title_id2" type="hidden" name="title_id2"/>
+                            <div class="fallback">
+                                <input name="file" type="file" multiple id="document_file" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -378,32 +439,264 @@
 </script>
 <script>
 
-$('#modal_addtitle').on('click','#btn_submit', function () {
-        room_id = $('#auth_id').text();
-        var con_title = $('#con_title').val().trim();
-        console.log(room_id, con_title)
-        if (con_title){
-            $.ajax({
-                url: '{% url "class_concept_paper_title" %}',
-                type: "POST",
-                data: {
-                    con_title: con_title,
-                    room_id:room_id,
-                    csrfmiddlewaretoken: "{{ csrf_token }}",
+$('#modal_edit').on('click','#back', function () {
+    $('#docu-table').empty()
+});
+
+$('#modal_edit').on('click','#close', function () {
+    $('#docu-table').empty()
+});
+
+$('#modal_upload').on('click','#close_upload', function () {
+    window.location.reload()
+});
+
+var con_id_; 
+$('#data-table2 tbody').on( 'click', 'tr', function () {
+    var id = $(this).closest("tbody tr").find("td:eq(0)").html() 
+    con_id_ = id
+});
+
+$('#modal_edit').on('click','#remove-btn', function () {
+    console.log(con_id_)
+    if (con_id_) {
+        swal({
+            title: "Are you sure?",
+            text: "you want to remove this file?", 
+            icon: "warning",
+            buttons: {
+                cancel: {
+                    text: 'Cancel',
+                    value: null,
+                    visible: true,
+                    className: 'btn btn-default',
+                    closeModal: true,
                 },
-                dataType: 'json',
-                success: function (data) {
-                    if (data.success){
-                        
-                    }
-                    else if (data.error){
-                       
-                    }
+                confirm: {
+                    text: 'Yes',
+                    value: true,
+                    visible: true,
+                    className: 'btn btn-warning',
+                    closeModal: true
                 }
+            }
+            })
+            .then((willDelete) => {
+            if (willDelete) {
+                $.ajax({
+                    url: '{% url "concept_document_remove" %}',
+                    type: "POST",
+                    data: {
+                        con_id_:con_id_,
+                        csrfmiddlewaretoken: "{{ csrf_token }}",
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.error) {
+                        console.log(error)
+                        }
+                        if (data.success) {
+                            console.log(data.success)
+                            $("#docu-table #" + con_id_).fadeOut("slow", function(){
+                                $("#data-table2 #" + con_id_).remove();
+                            })
+                        }
+                    }
+                });
+                
+            } 
+        });
+    }
+    
+});
+
+function uploadDocu(room_id, title_id, title_name){
+    $('#title_id2').val(title_id)
+    $('#room_id2').val(room_id)
+}
+
+function removeEvent(room_id, title_id, title_name){
+    console.log(room_id, title_id, title_name)
+    if (room_id, title_id, title_name) {
+        swal({
+            title: "Are you sure?",
+            text: "you want to remove this cancel this event?", 
+            icon: "warning",
+            buttons: {
+                cancel: {
+                    text: 'Cancel',
+                    value: null,
+                    visible: true,
+                    className: 'btn btn-default',
+                    closeModal: true,
+                },
+                confirm: {
+                    text: 'Yes',
+                    value: true,
+                    visible: true,
+                    className: 'btn btn-warning',
+                    closeModal: true
+                }
+            }
+            })
+            .then((willDelete) => {
+            if (willDelete) {
+                $.ajax({
+                    url: '{% url "classroom_event_remove" %}',
+                    type: "POST",
+                    data: {
+                        title_id:title_id,
+                        csrfmiddlewaretoken: "{{ csrf_token }}",
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.error) {
+                        console.log(error)
+                        }
+                        if (data.success) {
+                            window.location.reload()
+                        }
+                    }
+                });
+                
+            } 
+        });
+    }
+}
+
+function editDocu(room_id, title_id, title_name){
+    $('#title_name2').val(title_name)
+    $('#title_name').val(title_name)
+    $('#title_id').val(title_id)
+    $('#room_id').val(room_id)
+    $.ajax({
+        url: '{% url "classroom_event_populate" %}',
+        type: "POST",
+        data: {
+            title_id: title_id,
+            room_id:room_id,
+            title_name:title_name,
+            csrfmiddlewaretoken: "{{ csrf_token }}",
+        },
+        dataType: 'json',
+        success: function (response) {
+            i = 0;
+            console.log(response.data)
+            const studData = response.data
+            studData.map(item=>{
+                i ++
+                if (item.con_file_ext == 'docx'){
+                    $("#docu-table").append('<tr class="odd gradeA tr_  align-middle" id="'+item.con_id+'"><td width="1%" class="f-s-600 text-inverse" hidden id="'+item.con_id+'">'+item.con_id+'<td width="1%" class="f-s-600 text-inverse">'+i+'</td><td width="32%"><div style=" display: inline-block; padding: 2px;"><a id="'+room_id+'" href="/media/'+item.con_file+'" target="blank" style="color: blue;"><i class="far fa-file-word fa-2x" > </i></a></div><div style="display: inline-block;"><a id="'+room_id+'" href="/media/'+item.con_file+'" target="blank" style="color: rgb(95, 94, 94);">'+item.con_file+'</a></div></br></td><td width="1%" class="text-nowrap"><dl class="row mb-0 p-2" style="line-height: .6rem;"><div class="col-sm-12"><button id="remove-btn" class="btn btn-danger '+item.con_id+'" data-value="'+item.con_id+'"  ><i data-toggle="tooltip" data-placement="left" title="Remove" class="fas fa-trash"></i></button></div></dl></td></tr>')
+                }
+                else {
+                    $("#docu-table").append('<tr class="odd gradeA tr_  align-middle" id="'+item.con_id+'"><td width="1%" class="f-s-600 text-inverse" hidden id="'+item.con_id+'">'+item.con_id+'<td width="1%" class="f-s-600 text-inverse">'+i+'</td><td width="32%"><div style=" display: inline-block; padding: 2px;"><a id="'+room_id+'" href="/media/'+item.con_file+'" target="blank" style="color: red;"><i class="far fa-file-pdf fa-2x" > </i></a></div><div style="display: inline-block;"><a id="'+room_id+'" href="/media/'+item.con_file+'" target="blank" style="color: rgb(95, 94, 94);">'+item.con_file+'</a></div></br></td><td width="1%" class="text-nowrap"><dl class="row mb-0 p-2" style="line-height: .6rem;"><div class="col-sm-12"><button id="remove-btn" class="btn btn-danger '+item.con_id+'" data-value="'+item.con_id+'"><i data-toggle="tooltip" data-placement="left" title="Remove" class="fas fa-trash"></i></button></div></dl></td></tr>')
+                }
+
+            // else if (data.error){
+            //     $("#error").append('<div class="container col-lg-12" id="error_msg"><p class="alert alert-danger text-center" >Warning! invalid.' + '</p></div>')
+            //     setTimeout(function(){
+            //         if (document.getElementById("error_msg")){
+            //             var myobj = document.getElementById("error_msg");
+            //             myobj.remove();
+            //         }
+            //     }, 2000);
+            // }
             });
-        } 
-        
-    } );
+        }
+    });
+}
+
+$('#modal_edit').on('click','#btn_submit', function () {
+    var title_name2 = $('#title_name2').val();
+    room_id = $('#room_id').val();
+    title_id = $('#title_id').val();
+    var title_name = $('#title_name').val().trim();
+    console.log(title_name)
+    if (title_name2 != title_name){
+        swal({
+            title: "Are you sure?",
+            text: "you want to edit the event title?", 
+            icon: "warning",
+            buttons: {
+                cancel: {
+                    text: 'Cancel',
+                    value: null,
+                    visible: true,
+                    className: 'btn btn-default',
+                    closeModal: true,
+                },
+                confirm: {
+                    text: 'Yes',
+                    value: true,
+                    visible: true,
+                    className: 'btn btn-warning',
+                    closeModal: true
+                }
+            }
+            })
+            .then((willDelete) => {
+            if (willDelete) {
+                $.ajax({
+                    url: '{% url "classroom_event_change_title" %}',
+                    type: "POST",
+                    data: {
+                        title_id: title_id,
+                        room_id:room_id,
+                        title_name:title_name,
+                        csrfmiddlewaretoken: "{{ csrf_token }}",
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.error) {
+                            $("#error").append('<div class="container col-lg-12" id="error_msg"><p class="alert alert-danger text-center" >Duplicated event title are not allowed.' + '</p></div>')
+                            setTimeout(function(){
+                                if (document.getElementById("error_msg")){
+                                    var myobj = document.getElementById("error_msg");
+                                    myobj.remove();
+                                }
+                            }, 2000);
+                        }
+                        if (data.success) {
+                            swal("Success! event title successfully changed.", {
+                            icon: "success",
+                            })
+                            window.location.reload()
+                        }
+                    }
+                });
+                
+            } 
+        });
+    }  
+    $('#modal_edit').modal('toggle');
+    $('#docu-table').empty()
+});
+
+$('#modal_addtitle').on('click','#btn_submit', function () {
+    room_id = $('#auth_id').text();
+    var con_title = $('#con_title').val().trim();
+    console.log(room_id, con_title)
+    if (con_title){
+        $.ajax({
+            url: '{% url "class_concept_paper_title" %}',
+            type: "POST",
+            data: {
+                con_title: con_title,
+                room_id:room_id,
+                csrfmiddlewaretoken: "{{ csrf_token }}",
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.success){
+                    window.location.reload()
+                }
+                else if (data.error){
+                    
+                }
+            }
+        });
+    }  
+});
 
 function refresh_upload(){
     window.location.reload()

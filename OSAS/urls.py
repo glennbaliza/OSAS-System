@@ -171,13 +171,18 @@ urlpatterns = [
     path('organization_osas_new_class_account/', views.organization_osas_new_class_account, name="organization_osas_new_class_account"),
     path('class_concept_papers/', views.class_concept_papers, name="class_concept_papers"),
     path('classroom_conceptpaper_upload/', views.classroom_conceptpaper_upload, name="classroom_conceptpaper_upload"),
+    path('classroom_concept_paper_upload/', views.classroom_concept_paper_upload, name="classroom_concept_paper_upload"),
     path('class_concept_paper_send/', views.class_concept_paper_send, name="class_concept_paper_send"),
     path('class_concept_paper_title/', views.class_concept_paper_title, name="class_concept_paper_title"),
     path('class_concept_paper_document_delete/', views.class_concept_paper_document_delete, name="class_concept_paper_document_delete"),
     path('class_concept_paper_document_return/', views.class_concept_paper_document_return, name="class_concept_paper_document_return"),
     path('classroom_update_account/', views.classroom_update_account, name="classroom_update_account"),
     path('concept_papers/', views.concept_papers, name="concept_papers"),
+    path('classroom_event_populate/', views.classroom_event_populate, name="classroom_event_populate"),
+    path('classroom_event_change_title/', views.classroom_event_change_title, name="classroom_event_change_title"),
     path('student_events/', views.student_events, name="student_events"),
+    path('classroom_event_remove/', views.classroom_event_remove, name="classroom_event_remove"),
+    
 
     path('accreditation_upload/', views.accreditation_upload, name="accreditation_upload"),
     path('accreditation_document_remove/', views.accreditation_document_remove, name="accreditation_document_remove"),

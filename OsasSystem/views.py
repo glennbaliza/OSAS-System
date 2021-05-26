@@ -2938,6 +2938,8 @@ def class_concept_paper_document_delete(request):
                 d.save()
                 data = {'success':True}
                 return JsonResponse(data, safe=False)
+        data = {'success':True}
+        return JsonResponse(data, safe=False)
     except ObjectDoesNotExist:
         data = {'error':True}
         return JsonResponse(data, safe=False)
@@ -3066,6 +3068,20 @@ def classroom_conceptpaper_upload(request):
             return HttpResponse('')
     return JsonResponse({'error': True})
 
+def classroom_concept_paper_upload(request):
+    docu = request.FILES.get('file')
+    room_id2 = request.POST.get('room_id2')
+    title_id2 = request.POST.get('title_id2')
+    filename = str(docu)
+    extension = filename.split(".")[1]
+    print (extension)
+    if request.method == 'POST':
+        p = org_concept_paper.objects.filter(con_room_id = classroom.objects.get(room_id = request.session['session_user_id'])).count()
+        if p < 8:
+            org_concept_paper.objects.create(con_file = docu, con_room_id = classroom.objects.get(room_id = request.session['session_user_id']), con_file_ext = extension, con_status = 'SENT', con_title_id = concept_paper_title.objects.get(title_id = title_id2))
+            return HttpResponse('')
+    return JsonResponse({'error': True})
+
 def organization_concept_papers(request):
     status = request.POST.get('filter_status')
     acad_year = request.POST.get('acad_year')
@@ -3132,10 +3148,24 @@ def concept_papers(request):
         return render(request, 'Facilitation/concept_papers.html', {'acc_list':acc_list, 'acc_docu':acc_docu, 'acc_docu_list':acc_docu_list, 'msg':msg, 'class_list':class_list, 'osas_docu_list':osas_docu_list, 'file_list':file_list})
 
 def concept_document_remove(request):
-    doc_id = request.POST.get('con_id')
+    doc_id = request.POST.get('con_id_')
     try:
         d = org_concept_paper.objects.get(con_id = doc_id)
         d.delete()
+        data = {'success':True}
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        data = {'error':True}
+        return JsonResponse(data, safe=False)
+
+def classroom_event_remove(request):
+    title_id = request.POST.get('title_id')
+    try:
+        c = concept_paper_title.objects.get(title_id = title_id)
+        d_list = org_concept_paper.objects.filter(con_title_id = concept_paper_title.objects.get(title_id = title_id))
+        for x in d_list:
+            x.delete()
+        c.delete()
         data = {'success':True}
         return JsonResponse(data, safe=False)
     except ObjectDoesNotExist:
@@ -3200,3 +3230,31 @@ def organization_events(request):
         file_list = concept_paper_title.objects.all().order_by("-title_datecreated")
         class_list = classroom.objects.all().order_by("-room_datecreated")
         return render(request, 'Organization/organization_event.html', {'acc_docu':acc_docu, 'acc_docu_list':acc_docu_list, 'msg':msg, 'class_list':class_list, 'osas_docu_list':osas_docu_list, 'file_list_org':file_list_org})
+
+def classroom_event_populate(request):
+    room_id = request.POST.get('room_id')
+    title_id = request.POST.get('title_id')
+    title_name = request.POST.get('title_name')
+    
+    doc_list = list(org_concept_paper.objects.filter(con_title_id = concept_paper_title.objects.get(title_id = title_id), con_room_id = classroom.objects.get(room_id = room_id)).values())
+    room_id = classroom.objects.get(room_id = room_id)
+
+    return JsonResponse({
+        'data': doc_list,
+        'room_id':room_id.room_id
+    })
+
+def classroom_event_change_title(request):
+    title_id = request.POST.get('title_id')
+    title_name = request.POST.get('title_name')
+    try:
+        concept_paper_title.objects.get(title_name = title_name)
+        data = {'error':True}
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        d = concept_paper_title.objects.get(title_id = title_id)
+        d.title_name = title_name
+        d.save()
+        data = {'success':True}
+        return JsonResponse(data, safe=False)
+        

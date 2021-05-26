@@ -133,14 +133,14 @@
                                     <td width="32%">
                                         {% if osas_docu_list %}
                                         {% for org_concept_paper in osas_docu_list %}
-                                            {% if org_concept_paper.con_file_ext == 'docx' and org_concept_paper.con_auth_id and org_concept_paper.con_org_id and org_concept_paper.con_title_id.title_id == org.title_id %}
+                                            {% if org_concept_paper.con_file_ext == 'docx' and org_concept_paper.con_auth_id and org_concept_paper.con_org_id and org_concept_paper.con_title_id.title_id == org.title_id and org_concept_paper.con_title_id.title_name == org.title_name %}
                                                 <div style=" display: inline-block; padding: 2px;">
                                                     <a id="{{ organization.org_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank"><i class="far fa-file-word fa-2x" > </i></a>
                                                 </div>
                                                 <div style="display: inline-block;">
                                                     <a id="{{ organization.org_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_concept_paper.con_file }}</a>
                                                 </div></br>
-                                            {% elif org_concept_paper.con_auth_id and org_concept_paper.con_org_id and org_concept_paper.con_title_id.title_id == org.title_id%}
+                                            {% elif org_concept_paper.con_auth_id and org_concept_paper.con_org_id and org_concept_paper.con_title_id.title_id == org.title_id and org_concept_paper.con_title_id.title_name == org.title_name %}
                                                 <div style="display: inline-block; padding: 2px;">
                                                     <a id="{{ organization.org_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: red;"><i class="far fa-file-pdf fa-2x" > </i></a>
                                                 </div>
@@ -220,14 +220,14 @@
                                     <td width="32%">
                                         {% if osas_docu_list %}
                                         {% for org_concept_paper in osas_docu_list %}
-                                            {% if org_concept_paper.con_file_ext == 'docx' and org_concept_paper.con_auth_id and org_concept_paper.con_room_id %}
+                                            {% if org_concept_paper.con_file_ext == 'docx' and org_concept_paper.con_auth_id and org_concept_paper.con_room_id and org_concept_paper.con_title_id.title_name == org.title_name%}
                                                 <div style=" display: inline-block; padding: 2px;">
                                                     <a id="{{ classroom.room_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank"><i class="far fa-file-word fa-2x" > </i></a>
                                                 </div>
                                                 <div style="display: inline-block;">
                                                     <a id="{{ classroom.room_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_concept_paper.con_file }}</a>
                                                 </div></br>
-                                            {% elif org_concept_paper.con_auth_id and org_concept_paper.con_room_id %}
+                                            {% elif org_concept_paper.con_auth_id and org_concept_paper.con_room_id and org_concept_paper.con_title_id.title_name == org.title_name %}
                                                 <div style="display: inline-block; padding: 2px;">
                                                     <a id="{{ classroom.room_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: red;"><i class="far fa-file-pdf fa-2x" > </i></a>
                                                 </div>

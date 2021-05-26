@@ -803,55 +803,7 @@ $('#data-table tbody').on( 'click', 'tr', function () {
     })
 
     function deleteDoc(con_id){
-        console.log(con_id)
-        if (con_id) {
-            swal({
-            title: "Are you sure?",
-            text: "you want to remove this file?", 
-            icon: "warning",
-            buttons: {
-                cancel: {
-                    text: 'Cancel',
-                    value: null,
-                    visible: true,
-                    className: 'btn btn-default',
-                    closeModal: true,
-                },
-                confirm: {
-                    text: 'Yes',
-                    value: true,
-                    visible: true,
-                    className: 'btn btn-warning',
-                    closeModal: true
-                }
-            }
-            })
-            .then((willDelete) => {
-            if (willDelete) {
-                $.ajax({
-                    url: '{% url "concept_document_remove" %}',
-                    type: "POST",
-                    data: {
-                        con_id:con_id,
-                        csrfmiddlewaretoken: "{{ csrf_token }}",
-                    },
-                    dataType: 'json',
-                    success: function (data) {
-                        if (data.error) {
-                        console.log(error)
-                        }
-                        if (data.success) {
-                            $("#data-table #" + con_id).fadeOut("slow", function(){
-                                $("#data-table #" + con_id).remove();
-                            })
-                            window.location.reload()
-                        }
-                    }
-                });
-                
-            } 
-        });
-        }
+        
     }
 
     function returnDoc(con_id){
