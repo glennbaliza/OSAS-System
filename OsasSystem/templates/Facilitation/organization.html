@@ -519,6 +519,11 @@ $('#modal_add').on('click','#btn_submit', function(event){
                     }, 2000);
                     
                 }
+                if(data.error1){
+                    swal("Error!  " + "Student is already an officer in another organization.", {
+                    icon: "error",
+                    })
+                }
                 else {
                     swal("Success!  " + "New Organization is successfully added.", {
                     icon: "success",

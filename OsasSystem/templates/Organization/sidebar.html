@@ -38,6 +38,12 @@
                 </a>
             </li>
             <li class="has-sub">
+                <a href="{% url 'organization_events' %}">
+                    <i class="fas fa-calendar-check"></i> 
+                    <span>Accreditation</span>
+                </a>
+            </li>
+            <!-- <li class="has-sub">
                 <a href="javascript:;">
                     <b class="caret"></b>
                     <i class="far fa-file"></i> 
@@ -47,7 +53,7 @@
                     <li><a href="{%url 'organization_concept_papers' %}">Uploaded Concept Papers</a></li>
                     <li><a href="{%url 'organization_events' %}">Organization Events</a></li>
                 </ul>
-            </li>
+            </li> -->
             <!-- <li class="has-sub">
                 <a href="{% url 'organization_inbox' %}">
                     <i class="far fa-envelope"></i> 
@@ -58,14 +64,19 @@
                 </a>
             </li> -->
             <li class="has-sub">
-                <a href="{% url 'organization_fund' %}">
-                    <i class="far fa-address-card"></i> 
-                    <span>Organizational Funds</span>
+                <a href="javascript:;">
+                    <b class="caret"></b>
+                    <i class="fas fa-dollar-sign"></i> 
+                    <span>Fund</span>
                 </a>
+                <ul class="sub-menu">
+                    <li><a href="{%url 'organization_fund' %}">Deposit Fund</a></li>
+                    <li><a href="{%url 'organization_fund' %}">Request Fund</a></li>
+                </ul>
             </li>
             <li class="has-sub">
-                <a href="{% url 'lost_id' %}">
-                    <i class="far fa-address-card"></i> 
+                <a href="{% url 'organization_officer' %}">
+                    <i class="fas fa-users"></i> 
                     <span>Officers</span>
                 </a>
             </li>

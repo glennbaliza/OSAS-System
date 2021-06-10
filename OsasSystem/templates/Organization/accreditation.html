@@ -116,7 +116,7 @@
                                         <dd class="col-sm-8 gritter-  {{org_accreditation.acc_id }}" >{{ org_accreditation.acc_datecreated|date:"Y-m-d"}}</dd>
                                         {% if org_accreditation.acc_status == 'SAVED'%}
                                         <dd class="col-sm-8 gritter-"><strong><span class="badge badge-info">{{org_accreditation.acc_status}}</span></strong></dd>
-                                        {% elif org_accreditation.acc_status == 'SENT'%}
+                                        {% elif org_accreditation.acc_status == 'SENT'%} 
                                         <dd class="col-sm-8 gritter-"><strong><span class="badge badge-warning"> SENT</span></strong></dd>
                                         {% else %}
                                         <dd class="col-sm-8 gritter-"><strong><i class="far fa-undo" ></i><span class="badge badge-danger">RETURNED</span></strong></dd>

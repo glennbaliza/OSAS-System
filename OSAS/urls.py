@@ -162,6 +162,23 @@ urlpatterns = [
     path('org_concept_paper_title/', views.org_concept_paper_title, name="org_concept_paper_title"),
     path('organization_inbox/', views.organization_inbox, name="organization_inbox"),
     path('organization_events/', views.organization_events, name="organization_events"),
+    path('org_concept_paper_title/', views.org_concept_paper_title, name="org_concept_paper_title"),
+    path('organization_event_populate/', views.organization_event_populate, name="organization_event_populate"),
+    path('organization_concept_paper_upload/', views.organization_concept_paper_upload, name="organization_concept_paper_upload"),
+    path('gen_report_get_info_organization/', views.gen_report_get_info_organization, name="gen_report_get_info_organization"),
+    path('orgnaization_request_fund/', views.orgnaization_request_fund, name="orgnaization_request_fund"),
+    path('organization_fund_reciept_upload/', views.organization_fund_reciept_upload, name="organization_fund_reciept_upload"),
+    path('organization_fund_populate/', views.organization_fund_populate, name="organization_fund_populate"),
+    path('organization_fund_voucher_gen/', views.organization_fund_voucher_gen, name="organization_fund_voucher_gen"),
+
+    path('organization_officer/', views.organization_officer, name="organization_officer"),
+    path('orgnaization_add_officer/', views.orgnaization_add_officer, name="orgnaization_add_officer"),
+    path('organization_signature_upload/', views.organization_signature_upload, name="organization_signature_upload"),
+    path('officer_remove/', views.officer_remove, name="officer_remove"),
+
+    path('fund_request_remove/', views.fund_request_remove, name="fund_request_remove"),
+
+    path('event_generate_report/', views.event_generate_report, name="event_generate_report"),
 
     path('classroom_home/', views.classroom_home, name="classroom_home"),
     path('concept_paper_class_msg/', views.concept_paper_class_msg, name="concept_paper_class_msg"),
@@ -182,8 +199,8 @@ urlpatterns = [
     path('classroom_event_change_title/', views.classroom_event_change_title, name="classroom_event_change_title"),
     path('student_events/', views.student_events, name="student_events"),
     path('classroom_event_remove/', views.classroom_event_remove, name="classroom_event_remove"),
+    path('gen_report_get_info_classroom/', views.gen_report_get_info_classroom, name="gen_report_get_info_classroom"),
     
-
     path('accreditation_upload/', views.accreditation_upload, name="accreditation_upload"),
     path('accreditation_document_remove/', views.accreditation_document_remove, name="accreditation_document_remove"),
     path('accreditation_document_send/', views.accreditation_document_send, name="accreditation_document_send"),

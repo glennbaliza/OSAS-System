@@ -1,0 +1,493 @@
+{% extends 'Organization/base.html'%}
+{% load static %}
+
+{% block page-css %}
+    <link href="{% static 'OsasSystem/assets/plugins/DataTables/media/css/dataTables.bootstrap.min.css' %}" rel="stylesheet" />
+    <link href="{% static 'OsasSystem/assets/plugins/bootstrap-eonasdan-datetimepicker/build/css/bootstrap-datetimepicker.min.css' %}" rel="stylesheet" />
+    <link href="{% static 'OsasSystem/assets/plugins/DataTables/extensions/Responsive/css/responsive.bootstrap.min.css' %}" rel="stylesheet" />
+
+    <link href="{% static 'OsasSystem/assets/plugins/isotope/isotope.css' %}" rel="stylesheet" />
+    <link href="{% static 'OsasSystem/assets/plugins/lightbox/css/lightbox.css' %}" rel="stylesheet" />
+
+    <link href="{%static 'OsasSystem/assets/plugins/dropzone/min/dropzone.min.css' %}" rel="stylesheet" />
+{% endblock%}
+
+{% block title %}
+    Year and Section
+{% endblock %}
+
+
+{% block content%}
+<div id="content" class="content">
+    <ol class="breadcrumb pull-right">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Dashboard</a></li>
+        <li class="breadcrumb-item">Officers</li>
+    </ol>
+    <h1 class="page-header mb-1"><i class="fas fa-users mr-2" ></i>Officers</h1>
+    <p class="mb-5">Page Description</p>
+    <img hidden id="myImg" style="width: auto; height: auto;"/>
+    <img hidden id="myImg2" style="width: auto; height: auto;"/>
+    <img hidden id="myImg3" style="width: auto; height: auto;"/>
+    <img hidden id="myImg4" style="width: auto; height: auto;"/>
+    <img hidden id="myImg5" style="width: auto; height: auto;"/>
+    <img hidden id="signature" style="width: auto; height: auto;"/>
+    
+    <div class="row">
+        <div class="col-lg-2">
+            <div class="panel" data-sortable-id="index-1">
+                <div class="panel-heading p-25">
+                    <h2 class="panel-title" style="font-size:16px;">Filter <i class="fas fa-filter mr-2" ></i></h2>
+                </div>
+                <div class="panel-body" style="padding: 0%; height: 200px;">
+                    <form id="validate_form" method="POST" action="{% url 'organization_events' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group" >
+                            <label style="text-align: left; margin-bottom: 7px; margin-top: 4px;" class="col-sm-12">Academic Year:</label> 
+                            <div class="col-sm-12">
+                                <select id="acad_year" name="acad_year" class="form-control">
+                                    <option selected disabled="true">--Select--</option>
+                                    <option  value="2016">2016 - 2017</option>
+                                    <option  value="2017">2017 - 2018</option>
+                                    <option  value="2018">2018 - 2019</option>
+                                    <option  value="2019">2019 - 2020</option>
+                                    <option  value="2020">2020 - 2021</option>
+                                    <option  value="2021">2021 - 2022</option>
+                                </select>
+                            </div>
+                            <label style="text-align: left; margin-bottom: 7px; margin-top: 4px;" class="col-sm-12">Status:</label> 
+                            <div class="col-sm-12">
+                                <select id="filter_status" name="filter_status" class="form-control">
+                                    <option selected disabled="true">--Select--</option>
+                                    <option  value="ACTIVE">Active</option>
+                                    <option  value="INACTIVE">Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <button type="submit" class="btn btn-success col-sm-12">Filter <i class="fas fa-filter mr-2" ></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-10">
+            <div class="panel">
+                <div class="panel-heading p-25">
+                    <div class="btn-group btn-group-toggle pull-right" data-toggle="buttons" style="margin-right: -10px; margin-bottom: -10px;">
+                        <button class="btn btn-success" data-toggle="modal" href="#modal_add" id="donwload" ><i class="fas fa-plus mr-2"></i> Add Officer</button>
+                    </div>
+                    <h2 class="panel-title" style="font-size:16px;"><i class="fas fa-calendar-alt mr-2" ></i>Officer List</h2>  
+                </div>
+                <div class="panel-body">
+                    <table id="data-table" class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th width="1%"></th>
+                                <th data-orderable="false">Student Information</th>
+                                <th data-orderable="false">Position</th>
+                                <th data-orderable="false">Signature</th>
+                                <th data-orderable="false">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% if officer_list %}
+                            {% for officer in officer_list %}  
+                                <tr class="odd gradeA tr_  align-middle" id="{{ officer.off_id }}">
+                                    <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
+                                    <td width="28%" >
+                                        <dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                            <dd class="col-sm-8 gritter-  ysd{{ officer.off_id  }}" ><strong>{{ officer.off_stud_id.stud_no }}</strong></dd>
+                                            <dd class="col-sm-8 gritter-  ysd{{ officer.off_id  }}">{{ officer.off_stud_id.stud_lname }}, {{ officer.off_stud_id.stud_fname }} {{ officer.off_stud_id.stud_mname }}</dd>
+                                            <dd class="col-sm-8 gritter-  ysd{{ officer.off_id  }}"><strong>{{ officer.off_stud_id.stud_course_id.course_name }} {{ officer.off_stud_id.stud_yas_id.yas_descriptions }}</strong></dd>
+                                        </dl>
+                                    </td>
+                                    <td width="28%" >
+                                        <dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                            <dd class="col-sm-8 gritter-  ysd{{ officer.off_id  }}" ><strong>{{ officer.off_position }}</strong></dd>
+                                            <dd class="col-sm-8 gritter-  ysd{{ officer.off_id  }}">{{ officer.off_date_added|date:"Y-m-d" }}</dd>
+                                            {% if officer.off_status == 'ACTIVE'%}
+                                            <dd class="col-sm-8 gritter- "><strong><span class="badge badge-success  yss{{ organization.org_id }}">{{ officer.off_status }}</span></strong></dd>
+                                            {% endif %}
+                                        </dl>
+                                    </td>
+                                    <td width="28%" >
+                                        {% if officer.off_signature%}
+                                            <dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                                <dd class="col-sm-8 gritter-  ysd{{ officer.off_id  }}" ><img src="/media/{{officer.off_signature}}" style="width: auto; height: 80px; "/></dd>
+                                            </dl>
+                                        {% else %}
+                                        {% endif %}
+                                    </td>
+                                    <td width="1%" class="text-nowrap">
+                                        <div class="text-nowrap">
+                                            <div class="btn-group ">
+                                                <button id="edit-btn" class="btn btn-info" data-toggle="modal" href="#modal_edit"  onClick="editPosition('{{officer.off_id}}', '{{officer.off_org_id.org_id}}')" ><i class="fas fa-edit"></i> Edit</button>
+                                                <button id="edit-btn" class="btn btn-warning" data-toggle="modal" href="#modal_upload" onClick="uploadDocu('{{officer.off_id}}', '{{officer.off_org_id.org_id}}')" ><i  class="fas fa-upload"></i> Upload</button>
+                                                <button id="edit-btn" class="btn btn-danger" onClick="removeOfficer('{{officer.off_id}}', '{{officer.off_org_id.org_id}}')" ><i class="fas fa-trash"></i> Remove</button>                                            
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_add" role="dialog"  data-backdrop="static">
+    <div class="modal-dialog modal-md" role="document" id="myModal">
+        <div class="modal-content">
+            <input class="form-control" id="excuse_id" type="hidden" name="excuse_id"/>
+            <div class="panel panel-inverse" >
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="color: gray; margin: 6px;">×</button>  
+                <div class="panel-body">
+                    <div class="col">
+                        <h1 class="page-header mb-1">Add New Officer</h1>
+                        <p class="mb-5">Page Description</p>
+                        <div class="col-lg-12" id="error">
+                        </div>
+                        <div class="col-lg-12 col-md-6">
+                            <label>Student Number: <span class="text-danger">*</span></label>
+                            <select style="margin-top: -3px; " id="stud2" name="stud2" class="form-control">
+                                <option  value="--select--" selected hidden >--select--</option>
+                                    {% if stud_list2 %}
+                                        {% for osas_r_personal_info in stud_list2 %}
+                                            <option value="{{osas_r_personal_info.stud_no}}">{{osas_r_personal_info.stud_no}}</option>  
+                                        {% endfor %}
+                                    {% endif %}
+                            </select> 
+                        </div>
+                        <div class="col-lg-12 form-check-inline">
+                            <div class="col">
+                                <label style="font-size: 12px;" class="col-form-label text-md-left">Last Name: <span class="text-danger">*</span></label>
+                                <input readonly id="stud_lname" name="stud_lname" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="number" data-parsley-trigger="keyup">
+                            </div>
+                            <div class="col">
+                                <label style="font-size: 12px;" class="col-form-label text-md-left">First Name: <span class="text-danger">*</span></label>
+                                <input readonly id="stud_fname" name="stud_fname" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="number" data-parsley-trigger="keyup">
+                            </div>
+                            <div class="col">
+                                <label style="font-size: 12px;" class="col-form-label text-md-left">Middle Name: <span class="text-danger">*</span></label>
+                                <input readonly id="stud_mname" name="stud_mname" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="number" data-parsley-trigger="keyup">
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-6">
+                            <label>Position:  <span class="text-danger">*</span></label>
+                            <input class="form-control" id="org_id" type="hidden" name="sanction_id"/>
+                            <select id="position" name="position" class="form-control">
+                                <option selected disabled="true">--Select--</option>
+                                <option  value="Vice President">Vice President</option>
+                                <option  value="Treasurer">Treasurer</option>
+                                <option  value="Auditor">Auditor</option>
+                                <option  value="Secretary">Secretary</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <button class="btn btn_success col-md-3 pull-right m-l-10 " id="btn_submit" style="height: 33px; padding: 5px; background: linear-gradient(to right, #66ccff -1%, #3366ff 98%); border:none; color: white;" >Submit<i class="far fa-paper-plane m-l-3 zoom" ></i></button>
+                    <a class="btn btn-white pull-right m-l-10" data-dismiss="modal">Back<i class="fas fa-reply m-l-3 zoom"></i></a>
+                </div>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_edit" role="dialog"  data-backdrop="static">
+    <div class="modal-dialog modal-md" role="document" id="myModal">
+        <div class="modal-content">
+            <input class="form-control" id="excuse_id" type="hidden" name="excuse_id"/>
+            <div class="panel panel-inverse" >
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="color: gray; margin: 6px;">×</button>  
+                <div class="panel-body">
+                    <div class="col">
+                        <h1 class="page-header mb-1">Edit Position</h1>
+                        <p class="mb-5">Page Description</p>
+                        <div class="col-lg-12" id="error">
+                        </div>
+                        <div class="col-lg-12 col-md-6">
+                            <label>Position:  <span class="text-danger">*</span></label>
+                            <input class="form-control" id="org_id" type="hidden" name="sanction_id"/>
+                            <select id="position1" name="position1" class="form-control">
+                                <option selected disabled="true">--Select--</option>
+                                <option  value="Vice President">Vice President</option>
+                                <option  value="Treasurer">Treasurer</option>
+                                <option  value="Auditor">Auditor</option>
+                                <option  value="Secretary">Secretary</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-12 col-md-6">
+                            <input class="form-control" id="org_id1" type="hidden" name="org_id1"/>
+                            <input class="form-control" id="fund_id" type="hidden" name="fund_id"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <button class="btn btn_success col-md-3 pull-right m-l-10 " id="btn_submit" style="height: 33px; padding: 5px; background: linear-gradient(to right, #66ccff -1%, #3366ff 98%); border:none; color: white;">Submit<i class="far fa-paper-plane m-l-3 zoom" ></i></button>
+                    <a class="btn btn-white pull-right m-l-10" data-dismiss="modal">Back<i class="fas fa-reply m-l-3 zoom"></i></a>
+                </div>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="modal_upload" role="dialog"  data-backdrop="static">
+    <div class="modal-dialog modal-md" role="document" id="myModal">
+        <div class="modal-content">
+            <input class="form-control" id="excuse_id" type="hidden" name="excuse_id"/>
+            <div class="panel panel-inverse" >
+                <button type="button" class="close" data-dismiss="modal" id="close_upload" aria-hidden="true" style="color: gray; margin: 6px;">×</button>  
+                <div class="panel-body">
+                    <h1 class="page-header mb-1"><i class="fas fa-calendar-alt mr-2" ></i> Upload Officer's Signature</h1>
+                    <p class="mb-5">Page Descriptions</p>
+                    <div id="dropzone">
+                        <form action="{%url 'organization_signature_upload' %}" method="POST" class="dropzone" id="file-upload">
+                            {% csrf_token %}
+                            <input class="form-control" id="org_id2" type="hidden" name="org_id2"/>
+                            <input class="form-control" id="officer_id2" type="hidden" name="officer_id2"/>
+                            <div class="fallback">
+                                <input name="file" type="file" multiple id="document_file" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block page-level %}
+    <!-- <script src="{% static 'OsasSystem/assets/plugins/bootstrap-eonasdan-datetimepicker/build/js/bootstrap-datetimepicker.min.js' %}"></script> -->
+	<script src="{%static 'OsasSystem/assets/plugins/bootstrap-sweetalert/sweetalert.min.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/js/demo/ui-modal-notification.demo.min.js' %}"></script>
+    <script src="{%static 'OsasSystem/assets/index.js' %}"></script>
+
+    <script src="{%static 'OsasSystem/assets/plugins/isotope/jquery.isotope.min.js' %}"></script>
+  	<script src="{%static 'OsasSystem/assets/plugins/lightbox/js/lightbox.min.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/js/demo/gallery.demo.min.js' %}"></script>
+
+    <script src="{%static 'OsasSystem/assets/plugins/dropzone/min/dropzone.min.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/plugins/highlight/highlight.common.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/js/demo/render.highlight.js' %}"></script>
+
+    <script src="https://cdn.ckeditor.com/4.16.0/standard-all/ckeditor.js"></script>
+
+    <script src="{%static 'OsasSystem/assets/js/demo/render.highlight.js' %}"></script>
+    <script src="{%static 'OsasSystem/assets/plugins/highlight/highlight.common.js' %}"></script>
+{% endblock %}
+{% block page-js %}
+<script>
+    $(document).ready(function() {
+
+
+    });
+    // $(document).on('contextmenu', 'img', function() {
+    //   return false;
+    // })
+    // function copyToClipboard() {
+    // // Create a "hidden" input
+    // var aux = document.createElement("input");
+    // // Assign it the value of the specified element
+    // aux.setAttribute("value", "Print Screen is disable in this web page.");
+    // // Append it to the body
+    // document.body.appendChild(aux);
+    // // Highlight its content
+    // aux.select();
+    // // Copy the highlighted text
+    // document.execCommand("copy");
+    // // Remove it from the body
+    // document.body.removeChild(aux);
+    // alert("Print screen is disable, this web page contains personal information.");
+    // }
+
+    // $(window).keyup(function(e){
+    // if(e.keyCode == 44){
+    //     copyToClipboard();
+    // }
+    // }); 
+
+    // $(window).focus(function() {
+    // $("body").show();
+    // }).blur(function() {
+    // $("body").hide();
+    // });
+</script>
+<script>
+function removeOfficer(off_id, org_id){
+    console.log(off_id, org_id)
+    if (off_id, org_id) {
+        swal({
+            title: "Are you sure?",
+            text: "you want to remove this officer?", 
+            icon: "warning",
+            buttons: {
+                cancel: {
+                    text: 'Cancel',
+                    value: null,
+                    visible: true,
+                    className: 'btn btn-default',
+                    closeModal: true,
+                },
+                confirm: {
+                    text: 'Yes',
+                    value: true,
+                    visible: true,
+                    className: 'btn btn-warning',
+                    closeModal: true
+                }
+            }
+            })
+            .then((willDelete) => {
+            if (willDelete) {
+                $.ajax({
+                    url: '{% url "officer_remove" %}',
+                    type: "POST",
+                    data: {
+                        off_id:off_id,
+                        org_id:org_id,
+                        csrfmiddlewaretoken: "{{ csrf_token }}",
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.error) {
+                        console.log(error)
+                        }
+                        if (data.success) {
+                            $("#data-table #" + off_id).fadeOut("slow", function(){
+                                $("#data-table #" + off_id).remove();
+                            })
+                        }
+                    }
+                });
+                
+            } 
+        });
+    }
+}
+
+function editPosition(off_id, org_id){
+    console.log(off_id,org_id)
+    $('#org_id1').val(org_id)
+    $('#fund_id').val(off_id)
+}
+
+$('#data-table tbody').on( 'click', 'tr', function () {  
+    var position = $(this).closest("tbody tr").find("td :eq(8)").html() 
+    $('#position1').val(position);
+});
+
+$('#modal_edit').on('click','#btn_submit', function () {
+    // org_id = $('#auth_id').text();
+    var position = $('#position1').val();
+    var org_id =  $('#org_id1').val()
+    var off_id = $('#fund_id').val()
+    var foredit = 'foredit'
+    console.log(position, org_id, off_id)
+    if (org_id,off_id,position){
+        $.ajax({
+            url: '{% url "orgnaization_add_officer" %}',
+            type: "POST",
+            data: {
+                position: position,
+                off_id:off_id,
+                org_id:org_id,
+                foredit:foredit,
+                csrfmiddlewaretoken: "{{ csrf_token }}",
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.success){
+                    swal("Successfully updated!", {
+                        icon: "success",
+                    });     
+                    window.location.reload()
+                }
+                else if (data.error){
+                    swal("Error occurred, try again.", {
+                        icon: "error",
+                    });      
+                }
+            }
+        });
+    }  
+});
+
+$('#modal_upload').on('click','#close_upload', function () {
+    window.location.reload()
+});
+
+function uploadDocu(fund_id, org_id){
+    $('#officer_id2').val(fund_id)
+    $('#org_id2').val(org_id)
+}
+
+$('#modal_add').on('click','#btn_submit', function () {
+    // org_id = $('#auth_id').text();
+    var position = $('#position').val().trim();
+    var stud_no = $('#stud2').val().trim();
+    if (position,stud_no){
+        $.ajax({
+            url: '{% url "orgnaization_add_officer" %}',
+            type: "POST",
+            data: {
+                position: position,
+                stud_no:stud_no,
+                csrfmiddlewaretoken: "{{ csrf_token }}",
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.success){
+                    window.location.reload()
+                }
+                else if (data.error){
+                    swal("Error! " +stud_no+ " is already an officer.", {
+                        icon: "error",
+                    });      
+                }
+                else if (data.error1){
+                    swal("Error! " +position+ " is already assigned.", {
+                        icon: "error",
+                    });      
+                }
+            }
+        });
+    }  
+});
+
+const student2 = document.getElementById('stud2')
+student2.addEventListener('change', e=>{
+    
+    const selected_student = e.target.value
+    // document.getElementById("office_name").value = selected_office
+    // console.log(selected_student)
+    
+    $.ajax({
+        type:'POST',
+        url : "{% url 'organization_student_data' %}",
+        data : {
+            selected_student:selected_student,
+            csrfmiddlewaretoken: "{{ csrf_token }}",
+        },
+        success: function(data){
+            $("#stud_lname").val(data.lname);
+            $("#stud_fname").val(data.fname);
+            $("#stud_mname").val(data.mname);
+            
+        },
+        error: function(error){
+            console.log(error)
+        }
+    })
+})
+
+</script>
+{% endblock %}
+

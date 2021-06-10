@@ -490,7 +490,7 @@ $('#modal_add').on('click','#btn_submit', function(event){
     var class_pass = $('input[name="org_pass"]').val().trim();
     var class_pass1 = $('input[name="org_pass1"]').val().trim();
     stud = document.getElementById("stud").value
-    console.log(class_year, class_sec)
+    console.log('epaaal')
     if (class_year,class_sec, class_email, class_pass == class_pass1){
         $.ajax({
             url : "{% url 'organization_osas_new_class_account' %}",
@@ -514,6 +514,11 @@ $('#modal_add').on('click','#btn_submit', function(event){
                         }
                     }, 2000);
                     
+                }
+                else if(data.error1){
+                    swal("Error!  " + "Student is already an officer in another organization.", {
+                    icon: "success",
+                    })
                 }
                 else {
                     swal("Success!  " + "New Organization is successfully added.", {

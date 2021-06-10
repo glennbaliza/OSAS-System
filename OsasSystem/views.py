@@ -6,7 +6,7 @@ from django.views import View
 from django.shortcuts import render, redirect, get_object_or_404, reverse, HttpResponse
 from django.http import HttpResponseRedirect, Http404, JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
-from .models import osas_r_userrole, osas_r_course, osas_r_section_and_year, osas_r_personal_info, osas_r_auth_user, osas_t_id, osas_t_sanction, osas_r_code_title, osas_r_disciplinary_sanction, osas_r_designation_office, osas_t_excuse, osas_t_complaint, osas_notif, organization, org_accreditation, organization_chat, org_concept_paper,classroom, concept_paper_title
+from .models import osas_r_userrole, osas_r_course, osas_r_section_and_year, osas_r_personal_info, osas_r_auth_user, osas_t_id, osas_t_sanction, osas_r_code_title, osas_r_disciplinary_sanction, osas_r_designation_office, osas_t_excuse, osas_t_complaint, osas_notif, organization, org_accreditation, organization_chat, org_concept_paper,classroom, concept_paper_title, fund, officer, fund_file
 from django.contrib import messages
 from django.views.decorators.cache import cache_control
 from datetime import datetime, date, timedelta
@@ -2296,26 +2296,33 @@ def organization_new_account(request):
         data = {'error':True}
         return JsonResponse(data, safe=False)
     except ObjectDoesNotExist:
-        today = datetime.today()
-        year = timedelta(days=365)
-        org_date_accredited = today
-        org_date_accredited_year = today
-        org_expiration = today + year
-        org = organization( 
-            org_name = org_name,
-            org_abbr = org_abbr, 
-            org_email = org_email, 
-            org_pass = org_pass, 
-            org_stud_id = osas_r_personal_info.objects.get(stud_no = stud), 
-            org_status = 'ACCREDITED', 
-            org_date_accredited = org_date_accredited,
-            org_expiration = org_expiration,
-            org_date_accredited_year = org_date_accredited_year,
-            org_submit_date = today
-            )
-        org.save()
-        data = {'success':True}
-        return JsonResponse(data, safe=False)
+        try:
+            o = officer.objects.get(off_stud_id = osas_r_personal_info.objects.get(stud_no = stud))
+            data = {'error1':True}
+            return JsonResponse(data, safe=False)
+        except ObjectDoesNotExist:
+            today = datetime.today()
+            year = timedelta(days=365)
+            org_date_accredited = today
+            org_date_accredited_year = today
+            org_expiration = today + year
+            org = organization( 
+                org_name = org_name,
+                org_abbr = org_abbr, 
+                org_email = org_email, 
+                org_pass = org_pass, 
+                org_stud_id = osas_r_personal_info.objects.get(stud_no = stud), 
+                org_status = 'INACTIVE', 
+                org_date_accredited = org_date_accredited,
+                org_expiration = org_expiration,
+                org_date_accredited_year = org_date_accredited_year,
+                org_submit_date = today
+                )
+            org.save()
+            officer.objects.create(off_stud_id = osas_r_personal_info.objects.get(stud_no = stud), off_org_id = organization.objects.get(org_name = org_name, org_abbr = org_abbr, org_email = org_email), off_position = 'President')
+            officer
+            data = {'success':True}
+            return JsonResponse(data, safe=False)
 
 def organization_update_account(request):
     stud = request.POST.get('stud')
@@ -2472,6 +2479,7 @@ def organization_approve(request):
 def concept_paper_validate(request):
     title_id = request.POST.get('title_id')
     stats = request.POST.get('stats')
+    today = datetime.today()
     try:
         d = concept_paper_title.objects.get(title_id = title_id)
         if stats == "PENDING":
@@ -2479,6 +2487,7 @@ def concept_paper_validate(request):
             d.save()
         else:
             d.title_status = 'APPROVED'
+            d.title_dateapproved = today
             d.save()
         data = {'success':True,
         'id': d.title_id
@@ -2606,6 +2615,18 @@ def organization_generate_report(request):
     try:    
         accredited_values = list(organization.objects.all().filter(org_date_accredited_year__range = [date_from, date_to], org_status = "ACCREDITED").values())
         return JsonResponse({'data': accredited_values})
+    except ObjectDoesNotExist:
+        data = {'error':"error"}
+        return JsonResponse(data, safe=False)
+
+def event_generate_report(request):
+    date_from = request.POST.get('from_2')
+    date_to = request.POST.get('to_2')
+    try:    
+        accredited_values = list(concept_paper_title.objects.all().filter(title_datecreated__range = [date_from, date_to], title_status = "APPROVED").values())
+        return JsonResponse({
+            'data': accredited_values,
+        })
     except ObjectDoesNotExist:
         data = {'error':"error"}
         return JsonResponse(data, safe=False)
@@ -2829,6 +2850,18 @@ def org_concept_paper_title(request):
         data = {'error':True}
         return JsonResponse(data, safe=False)
     except ObjectDoesNotExist:
+        concept_paper_title.objects.create(title_name = title_name, title_status = "PENDING", title_org_id = organization.objects.get(org_id = org_id))
+        data = {'success':True}
+        return JsonResponse(data, safe=False)
+
+def org_concept_paper_title(request):
+    title_name = request.POST.get('con_title')
+    org_id = request.POST.get('org_id')
+    try:
+        t = concept_paper_title.objects.get(title_name = title_name)
+        data = {'error':True}
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
         concept_paper_title.objects.create(title_name = title_name, title_status = "PENDING", title_org_id = organization.objects.get(org_id = room_id))
         data = {'success':True}
         return JsonResponse(data, safe=False)
@@ -3041,9 +3074,6 @@ def accreditation_org_msg(request):
         data = {'error':True}
         return JsonResponse(data, safe=False)
 
-def organization_fund(request):
-    return render(request, 'Organization/fund.html')
-
 def conceptpaper_upload(request):
     docu = request.FILES.get('file')
     filename = str(docu)
@@ -3079,6 +3109,20 @@ def classroom_concept_paper_upload(request):
         p = org_concept_paper.objects.filter(con_room_id = classroom.objects.get(room_id = request.session['session_user_id'])).count()
         if p < 8:
             org_concept_paper.objects.create(con_file = docu, con_room_id = classroom.objects.get(room_id = request.session['session_user_id']), con_file_ext = extension, con_status = 'SENT', con_title_id = concept_paper_title.objects.get(title_id = title_id2))
+            return HttpResponse('')
+    return JsonResponse({'error': True})
+
+def organization_concept_paper_upload(request):
+    docu = request.FILES.get('file')
+    org_id2 = request.POST.get('org_id2')
+    title_id2 = request.POST.get('title_id2')
+    filename = str(docu)
+    extension = filename.split(".")[1]
+    print (extension)
+    if request.method == 'POST':
+        p = org_concept_paper.objects.filter(con_org_id = organization.objects.get(org_id = request.session['session_user_id'])).count()
+        if p < 8:
+            org_concept_paper.objects.create(con_file = docu, con_org_id = organization.objects.get(org_id = request.session['session_user_id']), con_file_ext = extension, con_status = 'SENT', con_title_id = concept_paper_title.objects.get(title_id = title_id2))
             return HttpResponse('')
     return JsonResponse({'error': True})
 
@@ -3235,14 +3279,37 @@ def classroom_event_populate(request):
     room_id = request.POST.get('room_id')
     title_id = request.POST.get('title_id')
     title_name = request.POST.get('title_name')
-    
     doc_list = list(org_concept_paper.objects.filter(con_title_id = concept_paper_title.objects.get(title_id = title_id), con_room_id = classroom.objects.get(room_id = room_id)).values())
     room_id = classroom.objects.get(room_id = room_id)
-
     return JsonResponse({
         'data': doc_list,
         'room_id':room_id.room_id
     })
+
+def organization_event_populate(request):
+    org_id = request.POST.get('org_id')
+    title_id = request.POST.get('title_id')
+    title_name = request.POST.get('title_name')
+    doc_list = list(org_concept_paper.objects.filter(con_title_id = concept_paper_title.objects.get(title_id = title_id), con_org_id = organization.objects.get(org_id = org_id)).values())
+    org_id = organization.objects.get(org_id = org_id)
+    return JsonResponse({
+        'data': doc_list,
+        'org_id':org_id.org_id
+    })
+
+# def organization_event_change_title(request):
+#     title_id = request.POST.get('title_id')
+#     title_name = request.POST.get('title_name')
+#     try:
+#         concept_paper_title.objects.get(title_name = title_name)
+#         data = {'error':True}
+#         return JsonResponse(data, safe=False)
+#     except ObjectDoesNotExist:
+#         d = concept_paper_title.objects.get(title_id = title_id)
+#         d.title_name = title_name
+#         d.save()
+#         data = {'success':True}
+#         return JsonResponse(data, safe=False)
 
 def classroom_event_change_title(request):
     title_id = request.POST.get('title_id')
@@ -3257,4 +3324,209 @@ def classroom_event_change_title(request):
         d.save()
         data = {'success':True}
         return JsonResponse(data, safe=False)
+
+def gen_report_get_info_classroom(request):
+    model_id = request.POST.get('model_id')
+    mode = request.POST.get('type')
+    try:
+        if mode == 'classroom':
+            c = classroom.objects.get(room_id = model_id)
+            data = {'success':c.room_stud_id.stud_course_id.course_name + ' ' + c.room_year + ' - ' + c.room_sec}
+        if mode == 'organization':
+            c = organization.objects.get(org_id = model_id)
+            data = {'success':c.org_name}
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        data = {'error':True}
+        return JsonResponse(data, safe=False)
         
+def gen_report_get_info_organization(request):
+    org_id = request.POST.get('org_id')
+    try:
+        c = organization.objects.get(org_id = org_id)
+        data = {'success':c.org_name}
+        print(data)
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        data = {'error':True}
+        return JsonResponse(data, safe=False)
+        
+def orgnaization_request_fund(request):
+    fund_desc = request.POST.get('fund_desc')
+    fund_amount = request.POST.get('fund_amount')
+    fund_word = request.POST.get('fund_word')
+    org_id = request.POST.get('org_id')
+    status = request.POST.get('foredit')
+    if status:
+        fund_id = request.POST.get('fund_id')
+        f = fund.objects.get(fund_id = fund_id,fund_org_id = organization.objects.get(org_id = org_id))
+        f.fund_desc = fund_desc
+        f.fund_amount = fund_amount
+        f.fund_word = fund_word
+        f.save()
+    else:
+        fund.objects.create(fund_desc = fund_desc, fund_amount = fund_amount, fund_word = fund_word, fund_org_id = organization.objects.get(org_id = org_id))
+    data = {'success':True}
+    return JsonResponse(data, safe=False)
+
+def organization_fund(request):
+    status = request.POST.get('filter_status')
+    acad_year = request.POST.get('acad_year')
+    year = str(acad_year)
+    file_list = fund_file.objects.all().filter(fund_f_org_id = organization.objects.get(org_id = request.session['session_user_id']) )
+    if acad_year and status:
+        fund_org_list = fund.objects.all().filter(fund_org_id = organization.objects.get(org_id = request.session['session_user_id']), fund_date_requested__contains = year, fund_status = status)
+        return render(request, 'Organization/fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list})
+    elif acad_year:
+        fund_org_list = fund.objects.all().filter(fund_org_id = organization.objects.get(org_id = request.session['session_user_id']), fund_date_requested__contains = year)
+        return render(request, 'Organization/fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list})
+    if status:
+        fund_org_list = fund.objects.all().filter(fund_org_id = organization.objects.get(org_id = request.session['session_user_id']), fund_status = status)
+        return render(request, 'Organization/fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list})
+    else:
+        fund_org_list = fund.objects.all().filter(fund_org_id = organization.objects.get(org_id = request.session['session_user_id']))
+        return render(request, 'Organization/fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list})
+
+def organization_fund_reciept_upload(request):
+    docu = request.FILES.get('file')
+    org_id2 = request.POST.get('org_id2')
+    fund_id = request.POST.get('fund_id2')
+    receipt = request.POST.get('receipt')
+    fund_f_id = request.POST.get('fund_f_id')
+    filename = str(docu)
+    extension = filename.split(".")[1]
+    try:
+        f = fund_file.objects.get(fund_f_id = fund_f_id, fund_fund_id = fund.objects.get(fund_id = fund_id), fund_f_org_id = organization.objects.get(org_id = request.session['session_user_id']),  fund_f_status =  receipt)
+        f.delete()
+        fund_file.objects.create(fund_fund_id = fund.objects.get(fund_id = fund_id), fund_f_org_id = organization.objects.get(org_id = request.session['session_user_id']), fund_f_file = docu, fund_f_file_ext = extension, fund_f_status =  receipt)
+        return HttpResponse('')
+    except ObjectDoesNotExist:
+        fund_file.objects.create(fund_fund_id = fund.objects.get(fund_id = fund_id), fund_f_org_id = organization.objects.get(org_id = request.session['session_user_id']), fund_f_file = docu, fund_f_file_ext = extension, fund_f_status =  receipt)
+        return HttpResponse('')
+
+def organization_fund_populate(request):
+    org_id = request.POST.get('org_id')
+    fund_id = request.POST.get('fund_id')
+    fund_list = list(fund.objects.filter(fund_id = fund_id, fund_org_id = organization.objects.get(org_id = org_id)).values())
+    org_id = organization.objects.get(org_id = org_id)
+    return JsonResponse({
+        'data': fund_list,
+        'org_id':org_id.org_id
+    })
+
+def fund_request_remove(request):
+    fund_id = request.POST.get('fund_id')
+    try:
+        c = fund.objects.get(fund_id = fund_id)
+        f_list = fund_file.objects.filter(fund_fund_id = fund.objects.get(fund_id = fund_id), fund_f_org_id = organization.objects.get(org_id = request.session['session_user_id']))
+        for x in f_list:
+            x.delete()
+        c.delete()
+        data = {'success':True}
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        data = {'error':True}
+        return JsonResponse(data, safe=False)
+
+def organization_officer(request):
+    status = request.POST.get('filter_status')
+    acad_year = request.POST.get('acad_year')
+    year = str(acad_year)
+    try:
+        o = organization.objects.get(org_id = request.session['session_user_id'])
+        course = o.org_stud_id.stud_course_id.course_name
+        stud_list2 = osas_r_personal_info.objects.filter(stud_course_id = osas_r_course.objects.get(course_name = course))
+        if acad_year and status:
+            officer_list = officer.objects.all().filter(off_org_id = organization.objects.get(org_id = request.session['session_user_id']), off_date_added__contains = year, off_status = status)
+            return render(request, 'Organization/officers.html', {'officer_list':officer_list, 'stud_list2':stud_list2})
+        elif acad_year:
+            officer_list = officer.objects.all().filter(off_org_id = organization.objects.get(org_id = request.session['session_user_id']), off_date_added__contains = year)
+            return render(request, 'Organization/officers.html', {'officer_list':officer_list, 'stud_list2':stud_list2})
+        if status:
+            officer_list = officer.objects.all().filter(off_org_id = organization.objects.get(org_id = request.session['session_user_id']), off_status = status)
+            return render(request, 'Organization/officers.html', {'officer_list':officer_list, 'stud_list2':stud_list2})
+        else:
+            officer_list = officer.objects.all().filter(off_org_id = organization.objects.get(org_id = request.session['session_user_id']), off_status = 'ACTIVE')
+            return render(request, 'Organization/officers.html', {'officer_list':officer_list, 'stud_list2':stud_list2})
+    except ObjectDoesNotExist:
+        print('error')
+   
+def orgnaization_add_officer(request):
+    position = request.POST.get('position')
+    stud_no = request.POST.get('stud_no')
+    status = request.POST.get('foredit')
+    if status:
+        off_id = request.POST.get('off_id')
+        org_id = request.POST.get('org_id')
+        try:
+            f = officer.objects.get(off_org_id = organization.objects.get(org_id = org_id), off_position = position)
+            if f:
+                data = {'error':True}
+                return JsonResponse(data, safe=False)
+        except ObjectDoesNotExist:
+            f = officer.objects.get(off_id = off_id, off_org_id = organization.objects.get(org_id = org_id))
+            f.off_position = position
+            f.save()
+            data = {'success':True}
+            return JsonResponse(data, safe=False)
+    else:
+        try:
+            f = officer.objects.get(off_org_id = organization.objects.get(org_id = request.session['session_user_id']), off_position = position)
+            data = {'error1':True}
+            return JsonResponse(data, safe=False)
+        except ObjectDoesNotExist:
+            try:
+                o = officer.objects.get(off_org_id = organization.objects.get(org_id = request.session['session_user_id']), off_stud_id = osas_r_personal_info.objects.get(stud_no = stud_no))
+                data = {'error':True}
+                return JsonResponse(data, safe=False)
+            except ObjectDoesNotExist:
+                officer.objects.create(off_position = position, off_stud_id = osas_r_personal_info.objects.get(stud_no = stud_no), off_org_id = organization.objects.get(org_id = request.session['session_user_id']))
+    data = {'success':True}
+    return JsonResponse(data, safe=False)
+
+def organization_fund_voucher_gen(request):
+    org_id = request.POST.get('org_id')
+    fund_id = request.POST.get('fund_id')
+    fund_list = list(fund.objects.filter(fund_id = fund_id, fund_org_id = organization.objects.get(org_id = org_id)).values())
+    off_list = list(officer.objects.all().filter(off_org_id = organization.objects.get(org_id = org_id)).values())
+    org_id = organization.objects.get(org_id = org_id)
+    return JsonResponse({
+        'data': fund_list,
+        'data2':off_list,
+        'org_id':org_id.org_id
+    })
+
+def organization_signature_upload(request):
+    docu = request.FILES.get('file')
+    org_id2 = request.POST.get('org_id2')
+    off_id = request.POST.get('officer_id2')
+    filename = str(docu)
+    extension = filename.split(".")[1]
+    try:
+        f = officer.objects.get(off_id = off_id, off_org_id = organization.objects.get(org_id = request.session['session_user_id']))
+        if f.off_signature == None:
+            f.off_signature = docu
+            f.off_signature_ext = extension
+            f.save()
+        else:
+            off_position = f.off_position
+            off_stud_id = f.off_stud_id.stud_id
+            off_status = f.off_status
+            f.delete()
+            officer.objects.create(off_position = off_position, off_stud_id = osas_r_personal_info.objects.get(stud_id = off_stud_id), off_status = off_status, off_org_id =  organization.objects.get(org_id = request.session['session_user_id']), off_signature = docu, off_signature_ext = extension )
+        return HttpResponse('')
+    except ObjectDoesNotExist:
+        return HttpResponse('')
+        
+def officer_remove(request):
+    off_id = request.POST.get('off_id')
+    org_id = request.POST.get('org_id')
+    print(off_id,org_id)
+    try:
+        c = officer.objects.get(off_id = off_id, off_org_id = organization.objects.get(org_id = org_id))
+        c.delete()
+        data = {'success':True}
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        data = {'error':True}
+        return JsonResponse(data, safe=False)

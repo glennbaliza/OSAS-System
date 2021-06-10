@@ -258,6 +258,56 @@ class classroom(models.Model):
     def __str__(self):
         return str(self.org_id)
 
+class fund(models.Model):
+    fund_id = models.AutoField(primary_key = True)
+    fund_desc = models.CharField(max_length = 500)
+    fund_amount = models.IntegerField()
+    fund_word = models.CharField(max_length = 500)
+    fund_status = models.CharField(max_length = 20, default = 'PENDING')
+    fund_date_requested = models.DateField(default = now)
+    fund_date_approved = models.DateField(null = True)
+    fund_org_id = models.ForeignKey('organization', on_delete = models.CASCADE, null=True)
+    fund_room_id = models.ForeignKey('classroom', on_delete = models.CASCADE, null=True)
+    fund_head_id = models.ForeignKey('osas_r_auth_user', on_delete = models.CASCADE, null=True)
+    
+    def __str__(self):
+        return str(self.fund_id)
+
+class fund_file(models.Model):
+    fund_f_id = models.AutoField(primary_key = True)
+    fund_fund_id = models.ForeignKey('fund', on_delete = models.CASCADE, null=True)
+    fund_f_org_id = models.ForeignKey('organization', on_delete = models.CASCADE, null=True)
+    fund_f_room_id = models.ForeignKey('classroom', on_delete = models.CASCADE, null=True)
+    fund_f_head_id = models.ForeignKey('osas_r_auth_user', on_delete = models.CASCADE, null=True)
+    fund_f_file = models.FileField(upload_to='', null=True, blank = True)
+    fund_f_file_ext = models.CharField(max_length = 20, null=True)
+    fund_f_status = models.CharField(max_length = 20)
+
+    def __str__(self):
+        return str(self.fund_f_id)
+
+    def delete(self, *args, **kwargs):
+        self.fund_f_file.delete()
+        super().delete(*args, **kwargs)
+
+class officer(models.Model):
+    off_id = models.AutoField(primary_key = True)
+    off_position = models.CharField(max_length = 200)
+    off_stud_id = models.ForeignKey('osas_r_personal_info', on_delete = models.CASCADE, null=True)
+    off_org_id = models.ForeignKey('organization', on_delete = models.CASCADE, null=True)
+    off_room_id = models.ForeignKey('classroom', on_delete = models.CASCADE, null=True)
+    off_status = models.CharField(max_length = 20, default = 'ACTIVE')
+    off_date_added = models.DateField(default = now)
+    off_signature = models.FileField(upload_to='', null=True, blank = True)
+    off_signature_ext = models.CharField(max_length = 20, null=True)
+
+    def __str__(self):
+        return str(self.off_id)
+    
+    def delete(self, *args, **kwargs):
+        self.off_signature.delete()
+        super().delete(*args, **kwargs)
+
 class organization(models.Model):
     org_id = models.AutoField(primary_key = True)
     org_name = models.CharField(unique=True, max_length = 50)
@@ -273,7 +323,7 @@ class organization(models.Model):
     org_datecreated = models.DateField(default = now)
     org_dateupdated = models.DateField(default = now)
     org_expiration = models.DateField(null=True)
-
+    org_fund = models.IntegerField(default = 0)
     def __str__(self):
         return str(self.org_id)
 
@@ -314,6 +364,7 @@ class concept_paper_title(models.Model):
     title_name = models.CharField(unique=True, max_length = 200)
     title_status = models.CharField(max_length = 20, null = True)
     title_datecreated = models.DateField(default = now)
+    title_dateapproved = models.DateField(null = True)
     title_org_id = models.ForeignKey('organization', on_delete = models.CASCADE, null=True)
     title_room_id = models.ForeignKey('classroom', on_delete = models.CASCADE, null=True)
     title_auth_id = models.ForeignKey('osas_r_auth_user', on_delete = models.CASCADE, null=True)
