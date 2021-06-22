@@ -1,4 +1,4 @@
-{% extends 'Organization/base.html'%}
+{% extends 'classroom/base.html'%}
 {% load static %}
 
 {% block page-css %}
@@ -39,7 +39,7 @@
                     <h2 class="panel-title" style="font-size:16px;">Filter <i class="fas fa-filter mr-2" ></i></h2>
                 </div>
                 <div class="panel-body" style="padding: 0%; height: 200px;">
-                    <form id="validate_form" method="POST" action="{% url 'organization_events' %}" enctype="multipart/form-data">
+                    <form id="validate_form" method="POST" action="{% url 'classroom_officer' %}" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="form-group" >
                             <label style="text-align: left; margin-bottom: 7px; margin-top: 4px;" class="col-sm-12">Academic Year:</label> 
@@ -121,9 +121,13 @@
                                     <td width="1%" class="text-nowrap">
                                         <div class="text-nowrap">
                                             <div class="btn-group ">
-                                                <button id="edit-btn" class="btn btn-info" data-toggle="modal" href="#modal_edit"  onClick="editPosition('{{officer.off_id}}', '{{officer.off_org_id.org_id}}')" ><i class="fas fa-edit"></i> Edit</button>
-                                                <button id="edit-btn" class="btn btn-warning" data-toggle="modal" href="#modal_upload" onClick="uploadDocu('{{officer.off_id}}', '{{officer.off_org_id.org_id}}')" ><i  class="fas fa-upload"></i> Upload</button>
-                                                <button id="edit-btn" class="btn btn-danger" onClick="removeOfficer('{{officer.off_id}}', '{{officer.off_org_id.org_id}}')" ><i class="fas fa-trash"></i> Remove</button>                                            
+                                                {% if officer.off_position == 'President'%}
+                                                <button id="edit-btn" class="btn btn-warning" data-toggle="modal" href="#modal_upload" onClick="uploadDocu('{{officer.off_id}}', '{{officer.off_room_id.room_id}}')" ><i  class="fas fa-upload"></i> Upload</button>
+                                                {% else %}
+                                                <button id="edit-btn" class="btn btn-info" data-toggle="modal" href="#modal_edit"  onClick="editPosition('{{officer.off_id}}', '{{officer.off_room_id.room_id}}')" ><i class="fas fa-edit"></i> Edit</button>
+                                                <button id="edit-btn" class="btn btn-warning" data-toggle="modal" href="#modal_upload" onClick="uploadDocu('{{officer.off_id}}', '{{officer.off_room_id.room_id}}')" ><i  class="fas fa-upload"></i> Upload</button>
+                                                <button id="edit-btn" class="btn btn-danger" onClick="removeOfficer('{{officer.off_id}}', '{{officer.off_room_id.room_id}}')" ><i class="fas fa-trash"></i> Remove</button>       
+                                                {% endif %}                                     
                                             </div>
                                         </div>
                                     </td>
@@ -323,6 +327,7 @@
 <script>
 function removeOfficer(off_id, org_id){
     console.log(off_id, org_id)
+    category_ = 'classroom'
     if (off_id, org_id) {
         swal({
             title: "Are you sure?",
@@ -353,6 +358,7 @@ function removeOfficer(off_id, org_id){
                     data: {
                         off_id:off_id,
                         org_id:org_id,
+                        category_:category_,
                         csrfmiddlewaretoken: "{{ csrf_token }}",
                     },
                     dataType: 'json',
@@ -393,7 +399,7 @@ $('#modal_edit').on('click','#btn_submit', function () {
     console.log(position, org_id, off_id)
     if (org_id,off_id,position){
         $.ajax({
-            url: '{% url "orgnaization_add_officer" %}',
+            url: '{% url "classroom_add_officer" %}',
             type: "POST",
             data: {
                 position: position,
@@ -435,7 +441,7 @@ $('#modal_add').on('click','#btn_submit', function () {
     var stud_no = $('#stud2').val().trim();
     if (position,stud_no){
         $.ajax({
-            url: '{% url "orgnaization_add_officer" %}',
+            url: '{% url "classroom_add_officer" %}',
             type: "POST",
             data: {
                 position: position,

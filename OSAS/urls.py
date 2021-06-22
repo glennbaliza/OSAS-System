@@ -151,6 +151,20 @@ urlpatterns = [
     path('organization_msg_clear/', views.organization_msg_clear, name="organization_msg_clear"),
 
     path('organization_fund/', views.organization_fund, name="organization_fund"),
+    path('organization_deposit_fund/', views.organization_deposit_fund, name="organization_deposit_fund"),
+
+    path('classroom_fund/', views.classroom_fund, name="classroom_fund"),
+    path('class_request_fund/', views.class_request_fund, name="class_request_fund"),
+
+    path('osas_fund/', views.osas_fund, name="osas_fund"),
+
+    path('class_fund_voucher_gen/', views.class_fund_voucher_gen, name="class_fund_voucher_gen"),
+    path('class_fund_populate/', views.class_fund_populate, name="class_fund_populate"),
+    path('classroom_fund_request_remove/', views.classroom_fund_request_remove, name="classroom_fund_request_remove"),
+    path('class_fund_reciept_upload/', views.class_fund_reciept_upload, name="class_fund_reciept_upload"),
+
+    path('classroom_officer/', views.classroom_officer, name="classroom_officer"),
+    path('classroom_add_officer/', views.classroom_add_officer, name="classroom_add_officer"),
 
     path('organization_concept_papers/', views.organization_concept_papers, name="organization_concept_papers"),
     path('conceptpaper_upload/', views.conceptpaper_upload, name="conceptpaper_upload"),
@@ -199,6 +213,7 @@ urlpatterns = [
     path('classroom_event_change_title/', views.classroom_event_change_title, name="classroom_event_change_title"),
     path('student_events/', views.student_events, name="student_events"),
     path('classroom_event_remove/', views.classroom_event_remove, name="classroom_event_remove"),
+    path('classroom_student_data/', views.classroom_student_data, name="classroom_student_data"),
     path('gen_report_get_info_classroom/', views.gen_report_get_info_classroom, name="gen_report_get_info_classroom"),
     
     path('accreditation_upload/', views.accreditation_upload, name="accreditation_upload"),

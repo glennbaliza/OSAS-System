@@ -84,14 +84,14 @@
                             {% for classroom in org_list %}
                             <tr class="odd gradeA tr_" id="{{ classroom.room_id }}">
                                 <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
-                                <td width="30%"><dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                <td width="30%"><dl class="row mb-0 p-2" style="line-height: .9rem;">
                                     <dd class="col-sm-8 gritter-  ysd{{ classroom.room_id  }}" ><strong>{{ classroom.room_stud_id.stud_no }}</strong></dd>
                                     <dd class="col-sm-8 gritter-  ysd{{ classroom.room_id  }}" >{{ classroom.room_stud_id.stud_lname }}, {{ classroom.room_stud_id.stud_fname }} {{ classroom.room_stud_id.stud_mname }}</dd>
-                                    <dd class="col-sm-8 gritter-  ysd{{ classroom.room_id  }}" >{{ classroom.room_stud_id.stud_course_id.course_name }}</dd>
+                                    <dd class="col-sm-8 gritter-  ysd{{ classroom.room_id  }}" >{{ classroom.room_email }}</dd>
                                 </dl>
                                 </td>
                                 <td width="50%"><dl class="row mb-0 p-2" style="line-height: .6rem;">
-                                    <dd class="col-sm-8 gritter-  ysd{{ classroom.room_id  }}" style=" font-size: 11px; "><strong>{{ classroom.room_year }} - {{ classroom.room_sec }}</strong></dd>
+                                    <dd class="col-sm-8 gritter-  ysd{{ classroom.room_id  }}" style=" font-size: 11px; "><strong>{{ classroom.room_course }} {{ classroom.room_year }}</strong></dd>
                                     <dd class="col-sm-8 gritter-  ysd{{ classroom.room_id  }}" >{{ classroom.room_dateupdated|date:"Y-m-d" }}</dd>
                                     {% if classroom.room_status == "ACTIVE" %}
                                     <dd class="col-sm-8 gritter- "><strong><span class="badge badge-success  yss{{ classroom.room_id }}">{{ classroom.room_status }}</span></strong></dd>
@@ -145,44 +145,41 @@
                             <p class="mb-5">Page Description</p>
                             <div class="col-lg-12 form-check-inline" id="error">
                             </div>
-                            <div class="col-lg-12 form-check-inline">
+                            <div class="col-lg-12 form-check-inline" id="courses">
                                 <div class="col">
-                                    <label style="font-size: 12px;" class="col-form-label text-md-right">Class Year: <span class="text-danger">*</span></label>
-                                    <select id="class_year" name="class_year" class="form-control">
-                                        <option selected disabled="true">--Select--</option>
-                                        <option  value="1">1</option>
-                                        <option  value="2">2</option>
-                                        <option  value="3">3</option>
-                                        <option  value="4">4</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-lg-12 form-check-inline">
-                                <div class="col">
-                                    <label style="font-size: 12px;" class="col-form-label text-md-right">Class Section: <span class="text-danger">*</span></label>
-                                    <select id="class_sec" name="class_sec" class="form-control">
-                                        <option selected disabled="true">--Select--</option>
-                                        <option  value="1">1</option>
-                                        <option  value="2">2</option>
-                                        <option  value="3">3</option>
-                                        <option  value="4">4</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-lg-12 form-check-inline">
-                                <div class="col">
-                                    <label style="font-size: 12px;" class="col-form-label text-md-right">Class President Student Number: <span class="text-danger">*</span></label>
-                                    <select style="margin-top: -3px; " id="stud" name="stud" class="form-control">
+                                    <label style="font-size: 12px;" class="col-form-label text-md-right">Select Course: <span class="text-danger">*</span></label>
+                                    <select style="margin-top: -3px; " id="stud_course" name="stud_course" class="form-control">
                                         <option  value="--select--" selected hidden >--select--</option>
-                                            {% if stud_list %}
-                                                {% for osas_r_personal_info in stud_list %}
-                                                    <option value="{{osas_r_personal_info.stud_no}}">{{osas_r_personal_info.stud_no}}</option>  
+                                            {% if course_list %}
+                                                {% for osas_r_course in course_list %}
+                                                    <option value="{{osas_r_course.course_name}}">{{osas_r_course.course_name}}</option>  
                                                 {% endfor %}
                                             {% endif %}   
                                     </select> 
                                 </div>
                             </div>
-                            <div class="col-lg-12 form-check-inline">
+                            <div class="col-lg-12 form-check-inline" type="hidden" id="class_year">
+                                <div class="col">
+                                    <label style="font-size: 12px;" class="col-form-label text-md-right">Select Class Year & Section: <span class="text-danger">*</span></label>
+                                    <select id="class_year_" name="class_year" class="form-control">
+                                        <option selected disabled="true">--Select--</option>
+                                        {% if year_sec_list %}
+                                            {% for osas_r_section_and_year in year_sec_list %}
+                                                <option value="{{osas_r_section_and_year.yas_descriptions}}">{{osas_r_section_and_year.yas_descriptions}}</option>  
+                                            {% endfor %}
+                                        {% endif %}   
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 form-check-inline" type="hidden" id="stud_no">
+                                <div class="col">
+                                    <label style="font-size: 12px;" class="col-form-label text-md-right">Class President Student Number: <span class="text-danger">*</span></label>
+                                    <select style="margin-top: -3px; " id="stud" name="stud" class="form-control">
+                                      
+                                    </select> 
+                                </div>
+                            </div>
+                            <div class="col-lg-12 form-check-inline" type="hidden" id="stud_info">
                                 <div class="col">
                                     <label style="font-size: 12px;" class="col-form-label text-md-left">Last Name: <span class="text-danger">*</span></label>
                                     <input readonly id="stud_lname" name="stud_lname" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="number" data-parsley-trigger="keyup">
@@ -196,18 +193,18 @@
                                     <input readonly id="stud_mname" name="stud_mname" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="number" data-parsley-trigger="keyup">
                                 </div>
                             </div>
-                            <div class="col-lg-12 form-check-inline">
-                                <div class="col">
+                            <div class="col-lg-12 form-check-inline" type="hidden" id="stud_email">
+                                <div class="col-lg-12">
                                     <label style="font-size: 12px;" class="col-form-label text-md-right">Email Address: <span class="text-danger">*</span></label>
-                                    <input id="org_email" name="org_email" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="text" data-parsley-trigger="keyup">
+                                    <input id="org_email" name="org_email" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="text" data-parsley-trigger="keyup" placeholder="sample@email.com">
                                 </div>
                             </div>
-                            <div class="col-lg-12 form-check-inline">
+                            <div class="col-lg-12 form-check-inline" type="hidden" id="stud_pass">
                                 <div class="col">
                                     <label style="font-size: 12px;" class="col-form-label text-md-right">Password: <span class="text-danger">*</span></label>
                                     <input id="org_pass" name="org_pass" type="password" class="form-control"  data-parsley-trigger="keyup">
                                 </div>
-                                <div class="col">
+                                <div class="col" >
                                     <label style="font-size: 12px;" class="col-form-label text-md-right">Confirm Password: <span class="text-danger">*</span></label>
                                     <input id="org_pass1" name="org_pass1" type="password" class="form-control"  data-parsley-trigger="keyup">
                                 </div>
@@ -315,9 +312,9 @@ const student = document.getElementById('stud')
 student.addEventListener('change', e=>{
     
     const selected_student = e.target.value
-    // document.getElementById("office_name").value = selected_office
-    // console.log(selected_student)
     
+    $("#stud_info").show(1000);
+    $('#stud_email').show(1000);
     $.ajax({
         type:'POST',
         url : "{% url 'organization_student_data' %}",
@@ -336,6 +333,71 @@ student.addEventListener('change', e=>{
         }
     })
 })
+
+$('#btn_rem').click(function(){
+    $("#class_year").hide();
+    $('#class_sec').hide();
+    $('#stud_no').hide(1000);
+    $('#stud_info').hide(1000);
+    $('#stud_email').hide(1000);
+    $('#stud_pass').hide(1000);
+    count_ = 0
+})
+
+var stud_course_;
+var stud_year_sec;
+const courses = document.getElementById('courses')
+courses.addEventListener('change', e=>{
+    
+    const selected_courses = e.target.value
+    $("#class_year").show(1000);
+    $("#class_sec").show(1000);
+    stud_course_ = selected_courses
+    console.log(selected_courses)
+})
+
+const year_ = document.getElementById('class_year')
+year_.addEventListener('change', e=>{
+    const selected_year = e.target.value
+    stud_year_sec = selected_year
+    $("#stud_no").show(1000);
+    console.log(count_, stud_course_, stud_year_sec)
+    $('#stud')
+        .find('option')
+        .remove()
+        .end()
+    ;
+    $.ajax({
+        type:'POST',
+        url : "{% url 'classroom_student_data' %}",
+        data : {
+            stud_course:stud_course_,
+            stud_year_sec: stud_year_sec,
+            csrfmiddlewaretoken: "{{ csrf_token }}",
+        },
+        success: function(response){
+            $('#stud').append($('<option>', {
+                value: '',
+                text: '--select--'
+            }));
+            const studData = response.data
+            studData.map(item=>{
+                $('#stud').append($('<option>', {
+                    value: item.stud_no,
+                    text: item.stud_no
+                }));
+                console.log(item.stud_no)
+            })
+        },
+        error: function(error){
+            console.log(error)
+        }
+    })
+})
+
+$('#modal_add').on('click','#stud_email', function(event){
+    $("#stud_pass").show(1000);
+});
 
 const student2 = document.getElementById('stud2')
 student2.addEventListener('change', e=>{
@@ -484,29 +546,29 @@ function deleteYr(yas_id) {
 }
 
 $('#modal_add').on('click','#btn_submit', function(event){
-    var class_year = $('#class_year').val();
-    var class_sec = $('#class_sec').val();
     var class_email = $('input[name="org_email"]').val().trim();
     var class_pass = $('input[name="org_pass"]').val().trim();
     var class_pass1 = $('input[name="org_pass1"]').val().trim();
     stud = document.getElementById("stud").value
-    console.log('epaaal')
-    if (class_year,class_sec, class_email, class_pass == class_pass1){
+    class_course = document.getElementById("stud_course").value
+    class_year = document.getElementById("class_year_").value
+    console.log(stud, class_course, class_year,)
+    if (class_year, class_email, class_course, stud,  class_pass == class_pass1){
         $.ajax({
             url : "{% url 'organization_osas_new_class_account' %}",
             type : "POST",
             dataType: 'json',
             data : {
                 stud:stud,
+                class_course:class_course,
                 class_year: class_year,
-                class_sec: class_sec,
                 class_email:class_email,
                 class_pass:class_pass,
                 csrfmiddlewaretoken: "{{ csrf_token }}",
             },
             success : function(data){
                 if (data.error) {
-                    $("#error").append('<div class="container col-12" id="error_msg"><p class="alert alert-danger text-center" style="font-size:11px;" >'+ class_year + " - " +class_sec+  " " +' is already in record' + '</p></div>')
+                    $("#error").append('<div class="container col-12" id="error_msg"><p class="alert alert-danger text-center" style="font-size:11px;" >'+ class_course + " - " +class_year+  " " +' is already in record' + '</p></div>')
                     setTimeout(function(){
                         if (document.getElementById("error_msg")){
                             var myobj = document.getElementById("error_msg");
@@ -516,8 +578,13 @@ $('#modal_add').on('click','#btn_submit', function(event){
                     
                 }
                 else if(data.error1){
-                    swal("Error!  " + "Student is already an officer in another organization.", {
-                    icon: "success",
+                    swal("Error!  " + "Student is already an officer.", {
+                    icon: "error",
+                    })
+                }
+                else if(data.error2){
+                    swal("Error!  " + "Email address is already taken.", {
+                    icon: "error",
                     })
                 }
                 else {
@@ -535,7 +602,16 @@ $('#modal_add').on('click','#btn_submit', function(event){
             }
         });
     }
-    else {
+    else if(class_pass != class_pass1){
+          $("#error").append('<div class="container col-12" id="error_msg"><p class="alert alert-danger text-center" style="font-size:11px;" >'+'Password does not match' + '</p></div>')
+                    setTimeout(function(){
+                        if (document.getElementById("error_msg")){
+                            var myobj = document.getElementById("error_msg");
+                            myobj.remove();
+                        }
+                    }, 2000);
+    }
+    else{
     alert("All fields must have a valid value.");}
     return false;
 });

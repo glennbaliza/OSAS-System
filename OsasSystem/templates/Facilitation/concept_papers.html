@@ -664,7 +664,6 @@ $('#btn-input2').keyup(function (e) {
         const now = moment()
         const msg_date = moment(y)
 
-       
         // initiating new format needed for appending li tag used for comparing recent datetime to datime now
         const date_today = moment(now, ['YYYY-MM-DD hh:mm A']).format();    
         const msg_date2 = moment(msg_date, ['YYYY-MM-DD hh:mm A']).format();
@@ -672,7 +671,6 @@ $('#btn-input2').keyup(function (e) {
         // initiating ne format neede for appending li tag used for displaying datetime in chatbox
         const msg_date3 = moment(msg_date).format("YYYY-MM-DD, ddd, hh:mm A");
         const date_today2 = moment(now).format("YYYY-MM-DD, ddd, hh:mm A");
-
        
         if(msg){
             if (x == "right"){
@@ -748,12 +746,9 @@ $('#btn-input2').keyup(function (e) {
                     }
                 });
             }
-        
             document.getElementById('btn-input2').value = "";
         }
     }
-
-
 });
 
 function ValidateDocu(title_id){
@@ -1258,14 +1253,14 @@ function viewNote2(room_id){
             },
             dataType: 'json',
             success: function(response){
-                $('.org_abbr').text(response.room_course + ' ' + response.room_year + ' - ' + response.room_sec);
+                $('.org_abbr').text(response.room_course + ' ' + response.room_year);
                 var temp_osas_date;
                 var temp_org_date;
                 const studData = response.data
                 studData.map(item=>{
                     const msg_date_new = moment(item.msg_date).format("YYYY-MM-DD, ddd, hh:mm A");
                     // console.log(msg_date_new, 'orig')
-                    if(item.msg_send_to == response.room_course + ' ' + response.room_year + ' - ' + response.room_sec){
+                    if(item.msg_send_to == response.room_course + ' ' + response.room_year){
                         if(temp_org_date){
                             console.log('bad')
                             if(temp_org_date == msg_date_new){
@@ -1296,7 +1291,7 @@ function viewNote2(room_id){
                                 objDiv.scrollTop = objDiv.scrollHeight;
                         }
                     }
-                    else if (item.msg_send_from == response.room_course + ' ' + response.room_year + ' - ' + response.room_sec){
+                    else if (item.msg_send_from == response.room_course + ' ' + response.room_year){
                         osas_message = item.msg_id
                         console.log('goods')
                         $.ajax({
@@ -1319,7 +1314,7 @@ function viewNote2(room_id){
                                 objDiv.scrollTop = objDiv.scrollHeight;
                             }
                             else{
-                                $("#chatbox2").append('<li class="left"  style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-right text-muted" style="margin-left: 5px;"></i><small class="pull-right text-muted" id="date_stud" style="font-size: 10px"  >'+msg_date_new+'</small><strong class="pull-left primary-font" id="stud_name" name="stud_name" style="font-size: 10px">'+response.org_data+'</strong></div><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" style=" max-width: 300px; background-color: white; float: left; padding: 8px; border-radius: 10px; color: black; word-wrap: break-word;" id="comment_stud" value="'+item.msg_message+'" name="comments">'+item.msg_message+'</p></div></li>')
+                                $("#chatbox2").append('<li class="left"  style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-right text-muted" style="margin-left: 5px;"></i><small class="pull-right text-muted" id="date_stud" style="font-size: 10px"  >'+msg_date_new+'</small><strong class="pull-left primary-font" id="stud_name" name="stud_name" style="font-size: 10px">'+response.room_course + ' ' + response.room_year+'</strong></div><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" style=" max-width: 300px; background-color: white; float: left; padding: 8px; border-radius: 10px; color: black; word-wrap: break-word;" id="comment_stud" value="'+item.msg_message+'" name="comments">'+item.msg_message+'</p></div></li>')
                                 
                                 $("#modal_message2 #chatbox_date2").append('<li>'+item.msg_date+'</li>')
                                 temp_osas_date = msg_date_new
@@ -1330,8 +1325,7 @@ function viewNote2(room_id){
                             }
                         }
                         else{
-                            $("#chatbox2").append('<li class="left"  style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-right text-muted" style="margin-left: 5px;"></i><small class="pull-right text-muted" id="date_stud" style="font-size: 10px"  >'+msg_date_new+'</small><strong class="pull-left primary-font" id="stud_name" name="stud_name" style="font-size: 10px">'+response.room_course + ' ' + response.room_year + ' - ' + response.room_sec+'</strong></div><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" style=" max-width: 300px; background-color: white; float: left; padding: 8px; border-radius: 10px; color: black; word-wrap: break-word;" id="comment_stud" value="'+item.msg_message+'" name="comments">'+item.msg_message+'</p></div></li>')
-                            
+                            $("#chatbox2").append('<li class="left"  style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-right text-muted" style="margin-left: 5px;"></i><small class="pull-right text-muted" id="date_stud" style="font-size: 10px"  >'+msg_date_new+'</small><strong class="pull-left primary-font" id="stud_name" name="stud_name" style="font-size: 10px">'+response.room_course + ' ' + response.room_year + '</strong></div><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" style=" max-width: 300px; background-color: white; float: left; padding: 8px; border-radius: 10px; color: black; word-wrap: break-word;" id="comment_stud" value="'+item.msg_message+'" name="comments">'+item.msg_message+'</p></div></li>')
                             
                             temp_osas_date = msg_date_new
                             // console.log('else lang' + temp_org_date)
@@ -1339,13 +1333,6 @@ function viewNote2(room_id){
                             var objDiv = document.getElementById("chatparent2");
                                 objDiv.scrollTop = objDiv.scrollHeight;
                         }
-                        
-                        // temp_osas_date = msg_date_new
-                        // // console.log(temp_osas_date)
-                        // $("#modal_message #chatbox_date").append('<li>'+msg_date_new+'</li>')
-                        // var objDiv = document.getElementById("chatparent");
-                        //         objDiv.scrollTop = objDiv.scrollHeight;
-
                     }
                 })
             }

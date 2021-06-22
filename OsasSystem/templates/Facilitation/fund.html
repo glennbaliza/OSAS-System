@@ -1,4 +1,4 @@
-{% extends 'Organization/base.html'%}
+{% extends 'base.html'%}
 {% load static %}
 
 {% block page-css %}
@@ -21,7 +21,7 @@
 <div id="content" class="content">
     <ol class="breadcrumb pull-right">
         <li class="breadcrumb-item"><a href="{% url 'home' %}">Dashboard</a></li>
-        <li class="breadcrumb-item">Funds</li>
+        <li class="breadcrumb-item">Fund</li>
     </ol>
     <h1 class="page-header mb-1"><i class="fas fa-dollar-sign mr-2" ></i>Fund</h1>
     <p class="mb-5">Page Description</p>
@@ -35,30 +35,21 @@
         <div class="col-lg-12 col-md-12">
             <div class="panel">
                 <div class="panel-heading p-25">
-                    {% if tot_bal %}
-                    <div class="container col-lg-4 col-md-3" style=" display: inline-block;">
-                        <h2 class="panel-title" style="font-size:15px; display: inline-block">Remaining Balance: <span class="badge badge-info" style="font-family: Roboto; font-size: 16px;">₱ {{tot_bal}}</span></h2>
-                    </div>     
-                    {% else %}
-                    <div class="container col-lg-4 col-md-3" style=" display: inline-block;">
-                        <h2 class="panel-title" style="font-size:15px; display: inline-block">Remaining Balance: <span class="badge badge-info" style="font-family: Roboto; font-size: 16px;">₱ 0</span></h2>
-                    </div>
-                    {% endif %}
                     {% if j %}
-                    <div class="container col-lg-4 col-md-3" style="display: inline-block;">
+                    <div class="container col-lg-6 col-md-3" style="display: inline-block;">
                         <h2 class="panel-title" style="font-size:15px; display: inline-block; ">Pending Deposited amount: <span class="badge badge-warning" style="font-family: Roboto; font-size: 16px;">₱ {{j}}</span></h2>
                     </div>     
                     {% else %}
-                    <div class="container col-lg-4 col-md-3" style=" display: inline-block;">
+                    <div class="container col-lg-6 col-md-3" style=" display: inline-block;">
                         <h2 class="panel-title" style="font-size:15px; display: inline-block">Pending deposited amount: <span class="badge badge-warning" style="font-family: Roboto; font-size: 16px;">₱ 0</span></h2>
                     </div>     
                     {% endif %}
                     {% if i %}
-                    <div class="container col-lg-3 col-md-4 pull-right" style=" display: inline-block;">
+                    <div class="container col-lg-6 col-md-4 pull-right" style=" display: inline-block;">
                         <h2 class="panel-title" style="font-size:15px; display: inline-block;  ">Pending amount requested: <span class="badge badge-warning" style="font-family: Roboto; font-size: 16px;">₱ {{i}}</span></h2>
                     </div> 
                     {% else %}
-                    <div class="container col-lg-3 col-md-4 pull-right" style=" display: inline-block;">
+                    <div class="container col-lg-6 col-md-4 pull-right" style=" display: inline-block;">
                         <h2 class="panel-title" style="font-size:15px; display: inline-block; ">Pending amount requested: <span class="badge badge-warning" style="font-family: Roboto; font-size: 16px;">₱ 0</span></h2>
                     </div> 
                     {% endif %}
@@ -70,24 +61,12 @@
     </div>
     <div class="row">
         <div class="col-lg-2">
-            <div class="panel">
-                <div class="panel-heading p-25">
-                    <h2 class="panel-title" style="font-size:16px;">Inbox <i class="fas fa-envelope mr-2" ></i></h2>
-                </div>
-                <div class="panel-body" style="padding: 0%; height: 76px;">
-                    <div class="form-group" >
-                        <div class="col-sm-12">
-                            <button type="submit" class="btn btn-success col-sm-12" data-toggle="modal" href="#modal_message" onClick="viewNote()" >Message <i class="fas fa-envelope ml-2" ></i></button>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <div class="panel" data-sortable-id="index-1">
                 <div class="panel-heading p-25">
                     <h2 class="panel-title" style="font-size:16px;">Filter <i class="fas fa-filter mr-2" ></i></h2>
                 </div>
                 <div class="panel-body" style="padding: 0%; height: 250px;">
-                    <form id="validate_form" method="POST" action="{% url 'organization_fund' %}" enctype="multipart/form-data">
+                    <form id="validate_form" method="POST" action="{% url 'osas_fund' %}" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="form-group" >
                             <label style="text-align: left; margin-bottom: 7px; margin-top: 4px;" class="col-sm-12">Fund Type:</label> 
@@ -148,91 +127,160 @@
                         </thead>
                         <tbody>
                         {% if fund_org_list %}
-                            {% for fund in fund_org_list %}  
-                                <tr class="odd gradeA tr_  align-middle" id="{{ fund.fund_id }}">
-                                    <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
-                                    <td width="28%" >
-                                        <dl class="row mb-0 p-2" style="line-height: .6rem;">
-                                            <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id  }}" ><strong>{{ fund.fund_desc }}</strong></dd>
-                                            <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id }}" ><strong>₱ {{ fund.fund_amount }}</strong> <span class="label label-info  yss{{ fund.fund_id  }}">{{ fund.fund_type }}</span></dd>
-                                            <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id  }}">{{ fund.fund_word }}</dd>
-                                            <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id  }}"><strong>{{ fund.fund_date_requested }}</strong></dd>
-                                            {% if fund.fund_status == 'PENDING'%}
-                                            <dd class="col-sm-8 gritter- "><strong><span class="badge badge-warning  yss{{ fund.fund_id  }}">{{ fund.fund_status }}</span></strong></dd>
-                                            {% else %}
-                                            <dd class="col-sm-8 gritter- "><strong><span class="badge badge-success  yss{{ fund.fund_id  }}">{{ fund.fund_status }}</span></strong></dd>
-                                            {% endif %}
-                                        </dl>
-                                    </td>
-                                    <td width="28%" >
-                                        {% if file_list %}
-                                            {% for file in file_list %}
-                                                {% if fund.fund_id == file.fund_fund_id.fund_id %}  
-                                                    {% if file.fund_f_status == 'Voucher' %}
-                                                        {% if file.fund_f_file_ext == 'docx' %}
-                                                            <dd class="col-sm-8 gritter- file_id{{fund.fund_id}}" id="file_id{{fund.fund_id}}" hidden >{{ file.fund_f_id }}</dd>
-                                                            <div style=" display: inline-block; padding: 2px;">
-                                                                <a id="{{ file.fund_f_id  }}" href="/media/{{ file.fund_f_file }}" target="blank" style="color: blue;"><i class="far fa-file-word fa-2x" > </i></a> 
-                                                            </div>
-                                                            <div style="display: inline-block;">
-                                                                <a id="{{ file.fund_f_id  }}" href="/media/{{ file.fund_f_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ file.fund_f_file }}</a>
-                                                            </div>
-                                                        {% elif file.fund_f_file_ext == 'pdf' %}
-                                                            <dd class="col-sm-8 gritter- file_id{{fund.fund_id}}" id="file_id{{fund.fund_id}}" hidden>{{ file.fund_f_id }}</dd>
-                                                            <div style=" display: inline-block; padding: 2px;">
-                                                                <a id="{{ file.fund_f_id }}"  href="/media/{{ file.fund_f_file }}" target="blank"  style="color: red;"><i class="far fa-file-pdf fa-2x" > </i></a>
-                                                            </div>
-                                                            <div style="display: inline-block;">
-                                                                <a id="{{ file.fund_f_id }}" href="/media/{{ file.fund_f_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ file.fund_f_file }}</a>
-                                                            </div>
-                                                       
+                            {% for fund in fund_org_list %}
+                                {% if fund.fund_org_id %}  
+                                    <tr class="odd gradeA tr_  align-middle" id="{{ fund.fund_id }}">
+                                        <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
+                                        <td width="28%" >
+                                            <dl class="row mb-0 p-2" style="line-height: .9rem;">
+                                                <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id  }}" ><strong>{{ fund.fund_org_id.org_name }} ({{fund.fund_org_id.org_abbr}})</strong></dd>
+                                                <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id  }}" >{{ fund.fund_desc }}</dd>
+                                                <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id }}" ><strong>₱ {{ fund.fund_amount }}</strong> <span class="label label-info  yss{{ fund.fund_id  }}">{{ fund.fund_type }}</span></dd>
+                                                <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id  }}">{{ fund.fund_word }}</dd>
+                                                <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id  }}"><strong>{{ fund.fund_date_requested }}</strong></dd>
+                                                {% if fund.fund_status == 'PENDING'%}
+                                                <dd class="col-sm-8 gritter- "><strong><span class="badge badge-warning  yss{{ fund.fund_id  }}">{{ fund.fund_status }}</span></strong></dd>
+                                                {% else %}
+                                                <dd class="col-sm-8 gritter- "><strong><span class="badge badge-success  yss{{ fund.fund_id  }}">{{ fund.fund_status }}</span></strong></dd>
+                                                {% endif %}
+                                            </dl>
+                                        </td>
+                                        <td width="28%" >
+                                            {% if file_list %}
+                                                {% for file in file_list %}
+                                                    {% if fund.fund_id == file.fund_fund_id.fund_id %}  
+                                                        {% if file.fund_f_status == 'Voucher' %}
+                                                            {% if file.fund_f_file_ext == 'docx' %}
+                                                                <dd class="col-sm-8 gritter- file_id{{fund.fund_id}}" id="file_id{{fund.fund_id}}" hidden >{{ file.fund_f_id }}</dd>
+                                                                <div style=" display: inline-block; padding: 2px;">
+                                                                    <a id="{{ file.fund_f_id  }}" href="/media/{{ file.fund_f_file }}" target="blank" style="color: blue;"><i class="far fa-file-word fa-2x" > </i></a> 
+                                                                </div>
+                                                                <div style="display: inline-block;">
+                                                                    <a id="{{ file.fund_f_id  }}" href="/media/{{ file.fund_f_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ file.fund_f_file }}</a>
+                                                                </div>
+                                                            {% elif file.fund_f_file_ext == 'pdf' %}
+                                                                <dd class="col-sm-8 gritter- file_id{{fund.fund_id}}" id="file_id{{fund.fund_id}}" hidden>{{ file.fund_f_id }}</dd>
+                                                                <div style=" display: inline-block; padding: 2px;">
+                                                                    <a id="{{ file.fund_f_id }}"  href="/media/{{ file.fund_f_file }}" target="blank"  style="color: red;"><i class="far fa-file-pdf fa-2x" > </i></a>
+                                                                </div>
+                                                                <div style="display: inline-block;">
+                                                                    <a id="{{ file.fund_f_id }}" href="/media/{{ file.fund_f_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ file.fund_f_file }}</a>
+                                                                </div>
+                                                        
+                                                            {% endif %}
                                                         {% endif %}
                                                     {% endif %}
-                                                {% endif %}
-                                            {% endfor %}
-                                        {% endif %}
-                                    </td>                                 
-                                    <td width="28%" >
-                                        {% if file_list %}
-                                            {% for file in file_list %}
-                                                {% if fund.fund_id == file.fund_fund_id.fund_id %}  
-                                                    {% if file.fund_f_status == 'Reciept' %}
-                                                    <dd class="col-sm-8 gritter- " id="receipt{{fund.fund_id}}" hidden>{{ file.fund_f_id }}</dd>
-                                                    <dl class="row mb-0 p-2" style="line-height: .6rem;">
-                                                        <dd class="col-sm-8 gritter-  ysd{{ file.fund_f_id  }}" ><a id="{{ file.fund_f_id }}" href="/media/{{ file.fund_f_file }}" target="blank" style="color: rgb(95, 94, 94);"><img src="/media/{{file.fund_f_file}}" style="width: auto; height: 80px; "/></a></dd>
-                                                    </dl>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </td>                                 
+                                        <td width="28%" >
+                                            {% if file_list %}
+                                                {% for file in file_list %}
+                                                    {% if fund.fund_id == file.fund_fund_id.fund_id %}  
+                                                        {% if file.fund_f_status == 'Reciept' %}
+                                                        <dd class="col-sm-8 gritter- " id="receipt{{fund.fund_id}}" hidden>{{ file.fund_f_id }}</dd>
+                                                        <dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                                            <dd class="col-sm-8 gritter-  ysd{{ file.fund_f_id  }}" ><a id="{{ file.fund_f_id }}" href="/media/{{ file.fund_f_file }}" target="blank" style="color: rgb(95, 94, 94);"><img src="/media/{{file.fund_f_file}}" style="width: auto; height: 80px; "/></a></dd>
+                                                        </dl>
+                                                        {% endif %}
                                                     {% endif %}
-                                                {% endif %}
-                                            {% endfor %}
-                                        {% endif %}
-                                    </td>
-                                    <td width="1%" class="text-nowrap">
-                                        {% if fund.fund_status == 'PENDING' and fund.fund_type == 'REQUEST'%}
-                                        <div class="text-nowrap">
-                                            <div class="btn-group ">
-                                                <button id="upload-btn" class="btn btn-warning" data-toggle="modal" href="#modal_choices" onClick="uploadDocu('{{fund.fund_id }}', '{{fund.fund_org_id.org_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Upload" class="fas fa-upload"></i></button>
-                                                <button id="edit-btn" class="btn btn-success" onClick="genVoucher('{{fund.fund_id }}', '{{fund.fund_org_id.org_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Download Voucher" class="fas fa-download"></i></button>
-                                                <button id="edit-btn" class="btn btn-info" data-toggle="modal" href="#modal_editfund" onClick="editDocu('{{fund.fund_id }}', '{{fund.fund_org_id.org_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Edit" class="fas fa-edit"></i></button>
-                                                <button id="edit-btn" class="btn btn-danger" onClick="removeEvent('{{fund.fund_id }}', '{{fund.fund_org_id.org_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Remove" class="fas fa-trash"></i></button>    
-                                            </div>
-                                        </div>
-                                        {% elif fund.fund_status == 'PENDING' and fund.fund_type == 'DEPOSIT'%}
-                                        <div class="text-nowrap">
-                                            <div class="btn-group ">
-                                                <button id="upload-btn" class="btn btn-warning" data-toggle="modal" href="#modal_choices" onClick="uploadDocu('{{fund.fund_id }}', '{{fund.fund_org_id.org_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Upload" class="fas fa-upload"></i></button>
-                                                <button id="edit-btn" class="btn btn-info" data-toggle="modal" href="#modal_editfund" onClick="editDocu1('{{fund.fund_id }}', '{{fund.fund_org_id.org_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Edit" class="fas fa-edit"></i></button>
-                                                <button id="edit-btn" class="btn btn-danger" onClick="removeEvent('{{fund.fund_id }}', '{{fund.fund_org_id.org_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Remove" class="fas fa-trash"></i></button>    
-                                            </div>
-                                        </div>
-                                        {% else %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        </td>
+                                        <td width="1%" class="text-nowrap">
+                                            {% if fund.fund_status == 'PENDING' and fund.fund_type == 'REQUEST'%}
                                             <div class="text-nowrap">
                                                 <div class="btn-group ">
-                                                    <button id="upload-btn" class="btn btn-warning" data-toggle="modal" href="#modal_choices" onClick="uploadDocu('{{fund.fund_id }}', '{{fund.fund_org_id.org_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Upload" class="fas fa-upload"></i></button>
+                                                    <button id="add_note" class="btn btn-info" data-toggle="modal" href="#modal_message" onClick="viewNote('{{fund.fund_org_id.org_id}}')" ><i class="fas fa-envelope" data-toggle="tooltip" data-placement="right" title="Message"  ></i></button>
                                                 </div>
                                             </div>
-                                        {% endif %}
-                                    </td>
-                                </tr>
+                                            {% elif fund.fund_status == 'PENDING' and fund.fund_type == 'DEPOSIT'%}
+                                            <div class="text-nowrap">
+                                                <div class="btn-group ">
+                                                    <button id="upload-btn" class="btn btn-warning" data-toggle="modal" href="#modal_choices" onClick="uploadDocu('{{fund.fund_id }}', '{{fund.fund_org_id.org_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Upload" class="fas fa-upload"></i></button>  
+                                                    <button id="add_note" class="btn btn-info" data-toggle="modal" href="#modal_message" onClick="viewNote('{{fund.fund_org_id.org_id}}')" ><i class="fas fa-envelope" data-toggle="tooltip" data-placement="right" title="Message"  ></i></button>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% elif fund.fund_room_id %}    
+                                    <tr class="odd gradeA tr_  align-middle" id="{{ fund.fund_id }}">
+                                        <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
+                                        <td width="28%" >
+                                            <dl class="row mb-0 p-2" style="line-height: .9rem;">
+                                                <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id  }}" ><strong>{{ fund.fund_room_id.room_stud_id.stud_course_id.course_name }} {{ fund.fund_room_id.room_stud_id.stud_yas_id.yas_descriptions }}</strong></dd>
+                                                <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id  }}" >{{ fund.fund_desc }}</dd>
+                                                <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id }}" ><strong>₱ {{ fund.fund_amount }}</strong> <span class="label label-info  yss{{ fund.fund_id  }}">{{ fund.fund_type }}</span></dd>
+                                                <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id  }}">{{ fund.fund_word }}</dd>
+                                                <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id  }}"><strong>{{ fund.fund_date_requested }}</strong></dd>
+                                                {% if fund.fund_status == 'PENDING'%}
+                                                <dd class="col-sm-8 gritter- "><strong><span class="badge badge-warning  yss{{ fund.fund_id  }}">{{ fund.fund_status }}</span></strong></dd>
+                                                {% else %}
+                                                <dd class="col-sm-8 gritter- "><strong><span class="badge badge-success  yss{{ fund.fund_id  }}">{{ fund.fund_status }}</span></strong></dd>
+                                                {% endif %}
+                                            </dl>
+                                        </td>
+                                        <td width="28%" >
+                                            {% if file_list %}
+                                                {% for file in file_list %}
+                                                    {% if fund.fund_id == file.fund_fund_id.fund_id %}  
+                                                        {% if file.fund_f_status == 'Voucher' %}
+                                                            {% if file.fund_f_file_ext == 'docx' %}
+                                                                <dd class="col-sm-8 gritter- file_id{{fund.fund_id}}" id="file_id{{fund.fund_id}}" hidden >{{ file.fund_f_id }}</dd>
+                                                                <div style=" display: inline-block; padding: 2px;">
+                                                                    <a id="{{ file.fund_f_id  }}" href="/media/{{ file.fund_f_file }}" target="blank" style="color: blue;"><i class="far fa-file-word fa-2x" > </i></a> 
+                                                                </div>
+                                                                <div style="display: inline-block;">
+                                                                    <a id="{{ file.fund_f_id  }}" href="/media/{{ file.fund_f_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ file.fund_f_file }}</a>
+                                                                </div>
+                                                            {% elif file.fund_f_file_ext == 'pdf' %}
+                                                                <dd class="col-sm-8 gritter- file_id{{fund.fund_id}}" id="file_id{{fund.fund_id}}" hidden>{{ file.fund_f_id }}</dd>
+                                                                <div style=" display: inline-block; padding: 2px;">
+                                                                    <a id="{{ file.fund_f_id }}"  href="/media/{{ file.fund_f_file }}" target="blank"  style="color: red;"><i class="far fa-file-pdf fa-2x" > </i></a>
+                                                                </div>
+                                                                <div style="display: inline-block;">
+                                                                    <a id="{{ file.fund_f_id }}" href="/media/{{ file.fund_f_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ file.fund_f_file }}</a>
+                                                                </div>
+                                                        
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        </td>                                 
+                                        <td width="28%" >
+                                            {% if file_list %}
+                                                {% for file in file_list %}
+                                                    {% if fund.fund_id == file.fund_fund_id.fund_id %}  
+                                                        {% if file.fund_f_status == 'Reciept' %}
+                                                        <dd class="col-sm-8 gritter- " id="receipt{{fund.fund_id}}" hidden>{{ file.fund_f_id }}</dd>
+                                                        <dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                                            <dd class="col-sm-8 gritter-  ysd{{ file.fund_f_id  }}" ><a id="{{ file.fund_f_id }}" href="/media/{{ file.fund_f_file }}" target="blank" style="color: rgb(95, 94, 94);"><img src="/media/{{file.fund_f_file}}" style="width: auto; height: 80px; "/></a></dd>
+                                                        </dl>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        </td>
+                                        <td width="1%" class="text-nowrap">
+                                            {% if fund.fund_status == 'PENDING' and fund.fund_type == 'REQUEST'%}
+                                            <div class="text-nowrap">
+                                                <div class="btn-group ">
+                                                    <button id="add_note"  class="btn btn-info" data-toggle="modal" href="#modal_message2" onClick="viewNote2('{{fund.fund_room_id.room_id}}')" ><i data-toggle="tooltip" data-placement="right" title="Message" class="fas fa-envelope" ></i></button>  
+                                                </div>
+                                            </div>
+                                            {% elif fund.fund_status == 'PENDING' and fund.fund_type == 'DEPOSIT'%}
+                                            <div class="text-nowrap">
+                                                <div class="btn-group ">
+                                                    <button id="upload-btn" class="btn btn-warning" data-toggle="modal" href="#modal_choices" onClick="uploadDocu('{{fund.fund_id }}', '{{fund.fund_room_id.room_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Upload" class="fas fa-upload"></i></button> 
+                                                    <button id="add_note"  class="btn btn-info" data-toggle="modal" href="#modal_message2" onClick="viewNote2('{{fund.fund_room_id.room_id}}')" ><i data-toggle="tooltip" data-placement="right" title="Message" class="fas fa-envelope" ></i></button>  
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endif %}
                             {% endfor %}
                         {% endif %}
                         </tbody>
@@ -485,6 +533,39 @@
         </div>
     </div>
 </div>
+
+
+
+<div class="modal" id="modal_message2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block imp !important;"> 
+    <div class="modal-dialog" style="overflow-y: scroll; max-height:85%; overflow-y: initial !important; margin-top: 50px; margin-bottom:50px;" > 
+        <div class="modal-content"> 
+            <div class="modal-header"> 
+                <h4 class="modal-title org_abbr"></h4> 
+                <button type="submit" id="clear_msg" hidden class="btn btn-danger" style="height: 20px; width: 20px; padding: 0px; margin-left: -300px; margin-top: 4px; "><i  class="fas fa-trash-alt fa-sm" data-toggle="tooltip" data-placement="right" title="Clear Messages"  ></i></button>
+                <button type="button" onclick="clearMsg2()" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div> 
+            <div class="modal-body" id="chatparent2" style="height: 390px; overflow-y: auto; overflow-x: hidden; background-color: whitesmoke;">
+                <form id="validate_form2" autocomplete="off" style="margin-top: -30px; font-family: Roboto; font-weight: 350; font-size: 15px; color: black; letter-spacing: 1.5px; ">
+                    <br>
+                    {% csrf_token %}
+                    <section class="container refresh_chat mt-2" id="chatbox2" >
+                        <br>
+                        <li class="x" hidden></li>
+                    </section>     
+                </form>
+                <section class="container" id="chatbox_date2" hidden>
+                    <li id="initial_date2"></li>
+                </section>
+            </div> 
+            <div class="modal-footer">
+                <input id="btn-input2" name="btn-input2" maxlength = "183" onfocus="this.placeholder = ''"
+                onblur="this.placeholder = 'Type your message here...'" autocomplete="off" type="text" style="border-radius: 10px; font-family: Roboto; font-weight: 350; font-size: 15px; color: black; letter-spacing: 1.5px; "  class="form-control input-md" placeholder="Type your message here..." />
+            </div> 
+        </div> 
+    </div> 
+</div> 
 {% endblock %}
 
 {% block page-level %}
@@ -546,6 +627,215 @@
     });
 </script>
 <script>
+
+function clearMsg(){
+    $('#chatbox').empty()
+}
+function clearMsg2(){
+    $('#chatbox2').empty()
+}
+$('#btn-input2').keyup(function (e) {
+    console.log('class')
+    if (e.keyCode === 13) {
+        var msg = $('input[name="btn-input2"]').val().trim();
+        var osas_id = $('#auth_id').text();
+        var x = document.getElementById("chatbox2").lastElementChild.className;
+        var y = document.getElementById("chatbox_date2").lastElementChild.textContent;
+
+        const now = moment()
+        const msg_date = moment(y)
+
+        // initiating new format needed for appending li tag used for comparing recent datetime to datime now
+        const date_today = moment(now, ['YYYY-MM-DD hh:mm A']).format();    
+        const msg_date2 = moment(msg_date, ['YYYY-MM-DD hh:mm A']).format();
+
+        // initiating ne format neede for appending li tag used for displaying datetime in chatbox
+        const msg_date3 = moment(msg_date).format("YYYY-MM-DD, ddd, hh:mm A");
+        const date_today2 = moment(now).format("YYYY-MM-DD, ddd, hh:mm A");
+       
+        if(msg){
+            if (x == "right"){
+                if (msg_date3 == date_today2){
+                    console.log("lol")
+
+                    $.ajax({
+                        url: '{% url "concept_paper_osas_msg" %}',
+                        type: "POST",
+                        data: {
+                            class_id:class_id,
+                            osas_id: osas_id,
+                            date_today: date_today,
+                            msg: msg,
+                            csrfmiddlewaretoken: "{{ csrf_token }}",
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            $("#modal_message2 #chatbox2").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><p data-toggle="tooltip" data-placement="right" title="Delivered"  class="bg-info pull-right comments" style="margin-top: -15px; max-width: 300px; text-align: left; float: right; padding: 8px;border-radius: 10px; color: white; word-wrap: break-word; "  name="comment_stud">'+msg+'</p></div></li>'); 
+
+                            $("#modal_message2 #chatbox_date2").append('<li>'+date_today+'</li>')
+                            // console.log(date_today)
+                            var objDiv = document.getElementById("chatparent2");
+                            objDiv.scrollTop = objDiv.scrollHeight;
+                        }
+                    });
+                }
+                else{
+                    console.log("epal")
+                    
+                    $.ajax({
+                        url: '{% url "concept_paper_osas_msg" %}',
+                        type: "POST",
+                        data: {
+                            class_id:class_id,
+                            osas_id: osas_id,
+                            date_today: date_today,
+                            msg: msg,
+                            csrfmiddlewaretoken: "{{ csrf_token }}",
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            
+                            $("#modal_message2 #chatbox2").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted"  id="date_" style="font-size: 10px">'+date_today2+'</small><strong class="primary-font pull-right" style="font-size: 10px">'+'{{request.session.session_user_role}}'+'</strong></div><p data-toggle="tooltip" data-placement="right" title="Delivered"  class="bg-info pull-right comments" style="max-width: 300px; text-align: left; float: right; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;"  name="comment_stud">'+msg+'</p></div></li>'); 
+
+                            $("#modal_message2 #chatbox_date2").append('<li>'+date_today+'</li>')
+                            // console.log(date_today)
+                            var objDiv = document.getElementById("chatparent2");
+                            objDiv.scrollTop = objDiv.scrollHeight;
+                        }
+                    });
+                }
+            }
+            else{
+                $.ajax({
+                    url: '{% url "concept_paper_osas_msg" %}',
+                    type: "POST",
+                    data: {
+                        class_id:class_id,
+                        osas_id: osas_id,
+                        date_today: date_today,
+                        msg: msg,
+                        csrfmiddlewaretoken: "{{ csrf_token }}",
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        $("#modal_message2 #chatbox2").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted"  id="date_" style="font-size: 10px">'+date_today2+'</small><strong class="primary-font pull-right" style="font-size: 10px">'+'{{request.session.session_user_role}}'+'</strong></div><p data-toggle="tooltip" data-placement="right" title="Delivered"  class="bg-info pull-right comments" style="max-width: 300px; text-align: left; float: right; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;" name="comment_stud">'+msg+'</p></div></li>'); 
+
+                        $("#modal_message #chatbox_date").append('<li>'+date_today+'</li>')
+
+                        var objDiv = document.getElementById("chatparent2");
+                        objDiv.scrollTop = objDiv.scrollHeight;
+                    }
+                });
+            }
+            document.getElementById('btn-input2').value = "";
+        }
+    }
+});
+var class_id;
+function viewNote2(room_id){
+    auth_id = $('#auth_id').text();
+    if (room_id) {
+        document.getElementById('btn-input2').value = "";
+        tr_id = room_id;
+        class_id = room_id
+        console.log(auth_id)
+        $.ajax({
+            url: '{% url "class_view_messages" %}',
+            type: "POST",
+            data: {
+                room_id: room_id,
+                csrfmiddlewaretoken: "{{ csrf_token }}",
+            },
+            dataType: 'json',
+            success: function(response){
+                $('.org_abbr').text(response.room_course + ' ' + response.room_year );
+                var temp_osas_date;
+                var temp_org_date;
+                const studData = response.data
+                studData.map(item=>{
+                    const msg_date_new = moment(item.msg_date).format("YYYY-MM-DD, ddd, hh:mm A");
+                    // console.log(msg_date_new, 'orig')
+                    if(item.msg_send_to == response.room_course + ' ' + response.room_year ){
+                        if(temp_org_date){
+                            console.log('bad')
+                            if(temp_org_date == msg_date_new){
+                                $("#modal_message2 #chatbox2").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" class="bg-info pull-right comments" style="margin-top: -15px; max-width: 300px; text-align: left; float: right; padding: 8px;border-radius: 10px; color: white; word-wrap: break-word;"  name="comment_stud">'+item.msg_message+'</p></div></li>'); 
+
+                                // $("#modal_message #chatbox_date").append('<li>'+date_today+'</li>')
+                                var objDiv = document.getElementById("chatparent2");
+                                objDiv.scrollTop = objDiv.scrollHeight;
+                            }   
+                            else{
+                                $('#chatbox2').append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted sample_date"  id="date_" style="font-size: 10px">'+msg_date_new+'</small><strong class="primary-font pull-right" style="font-size: 10px" >'+response.osas_data+'</strong></div><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" class="bg-info pull-right osas_msg comments" style="max-width: 300px; text-align: left; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;" name="comment_stud">'+item.msg_message+'</p></div></li>')
+                                
+                                $("#modal_message2 #chatbox_date2").append('<li>'+item.msg_date+'</li>')
+                                temp_org_date = msg_date_new
+                                // console.log('else lang' + temp_org_date)
+
+                                var objDiv = document.getElementById("chatparent2");
+                                objDiv.scrollTop = objDiv.scrollHeight;
+                            }
+                        }
+                        else{
+                            $('#chatbox2').append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted sample_date"  id="date_" style="font-size: 10px">'+msg_date_new+'</small><strong class="primary-font pull-right" style="font-size: 10px" >'+response.osas_data+'</strong></div><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" class="bg-info pull-right osas_msg" style="max-width: 300px; text-align: left; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;" id="comments"  name="comment_stud">'+item.msg_message+'</p></div></li>')
+                            
+                            temp_org_date = msg_date_new
+                            // console.log('else lang' + temp_org_date)
+                            $("#modal_message2 #chatbox_date2").append('<li>'+item.msg_date+'</li>')
+                            var objDiv = document.getElementById("chatparent2");
+                                objDiv.scrollTop = objDiv.scrollHeight;
+                        }
+                    }
+                    else if (item.msg_send_from == response.room_course + ' ' + response.room_year){
+                        osas_message = item.msg_id
+                        console.log('goods')
+                        $.ajax({
+                            url: '{% url "organization_osas_msg_seen" %}',
+                            type: "POST",
+                            data: {
+                                osas_message: osas_message,
+                                csrfmiddlewaretoken: "{{ csrf_token }}",
+                            },
+                            dataType: 'json',
+                            success: function (data) {
+                                console.log(data.osas_msg_status)
+                                }
+                        });
+                        if(temp_osas_date){
+                            if(temp_osas_date == msg_date_new){
+                                $("#modal_message2 #chatbox2").append('<li class="left" style="list-style-type: none;"><div class="chat-body clearfix"><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" style=" max-width: 300px; background-color: white; float: left; padding: 8px; border-radius: 10px; color: black; word-wrap: break-word; margin-top: -15px;"  name="comment_stud">'+item.msg_message+'</p></div></li>'); 
+
+                                var objDiv = document.getElementById("chatparent2");
+                                objDiv.scrollTop = objDiv.scrollHeight;
+                            }
+                            else{
+                                $("#chatbox2").append('<li class="left"  style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-right text-muted" style="margin-left: 5px;"></i><small class="pull-right text-muted" id="date_stud" style="font-size: 10px"  >'+msg_date_new+'</small><strong class="pull-left primary-font" id="stud_name" name="stud_name" style="font-size: 10px">'+response.room_course + ' ' + response.room_year+'</strong></div><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" style=" max-width: 300px; background-color: white; float: left; padding: 8px; border-radius: 10px; color: black; word-wrap: break-word;" id="comment_stud" value="'+item.msg_message+'" name="comments">'+item.msg_message+'</p></div></li>')
+                                
+                                $("#modal_message2 #chatbox_date2").append('<li>'+item.msg_date+'</li>')
+                                temp_osas_date = msg_date_new
+                                // console.log('else lang' + temp_org_date)
+
+                                var objDiv = document.getElementById("chatparent2");
+                                objDiv.scrollTop = objDiv.scrollHeight;
+                            }
+                        }
+                        else{
+                            $("#chatbox2").append('<li class="left"  style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-right text-muted" style="margin-left: 5px;"></i><small class="pull-right text-muted" id="date_stud" style="font-size: 10px"  >'+msg_date_new+'</small><strong class="pull-left primary-font" id="stud_name" name="stud_name" style="font-size: 10px">'+response.room_course + ' ' + response.room_year + '</strong></div><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" style=" max-width: 300px; background-color: white; float: left; padding: 8px; border-radius: 10px; color: black; word-wrap: break-word;" id="comment_stud" value="'+item.msg_message+'" name="comments">'+item.msg_message+'</p></div></li>')
+                            
+                            temp_osas_date = msg_date_new
+                            // console.log('else lang' + temp_org_date)
+                            $("#modal_message2 #chatbox_date2").append('<li>'+item.msg_date+'</li>')
+                            var objDiv = document.getElementById("chatparent2");
+                                objDiv.scrollTop = objDiv.scrollHeight;
+                        }
+                    }
+                })
+            }
+        });
+    }    
+}
+
+
 
 function genVoucher(fund_id, org_id){
     var wme = window.open("","", "width = 816px, height = 1344px");
@@ -852,9 +1142,10 @@ $('#modal_newfund').on('click','#btn_submit', function () {
 });
 
 $('#btn-input').keyup(function (e) {
+    console.log('org')
     if (e.keyCode === 13) {
         var msg = $('input[name="btn-input"]').val().trim();
-     
+        var osas_id = $('#auth_id').text();
         var x = document.getElementById("chatbox").lastElementChild.className;
         var y = document.getElementById("chatbox_date").lastElementChild.textContent;
 
@@ -877,12 +1168,11 @@ $('#btn-input').keyup(function (e) {
                     console.log("lol")
 
                     $.ajax({
-                        url: '{% url "accreditation_org_msg" %}',
+                        url: '{% url "accreditation_osas_msg" %}',
                         type: "POST",
                         data: {
-                            org_id:organization_id,
+                            organization_id:organization_id,
                             osas_id: osas_id,
-                            osas_role_: osas_role_,
                             date_today: date_today,
                             msg: msg,
                             csrfmiddlewaretoken: "{{ csrf_token }}",
@@ -902,12 +1192,11 @@ $('#btn-input').keyup(function (e) {
                     console.log("epal")
                     
                     $.ajax({
-                        url: '{% url "accreditation_org_msg" %}',
+                        url: '{% url "accreditation_osas_msg" %}',
                         type: "POST",
                         data: {
-                            org_id:organization_id,
+                            organization_id:organization_id,
                             osas_id: osas_id,
-                            osas_role_: osas_role_,
                             date_today: date_today,
                             msg: msg,
                             csrfmiddlewaretoken: "{{ csrf_token }}",
@@ -915,7 +1204,7 @@ $('#btn-input').keyup(function (e) {
                         dataType: 'json',
                         success: function (data) {
                             
-                            $("#modal_message #chatbox").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted"  id="date_" style="font-size: 10px">'+date_today2+'</small><strong class="primary-font pull-right" style="font-size: 10px">'+'{{request.session.session_org_abbr}}'+'</strong></div><p data-toggle="tooltip" data-placement="right" title="Delivered"  class="bg-info pull-right comments" style="max-width: 300px; text-align: left; float: right; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;"  name="comment_stud">'+msg+'</p></div></li>'); 
+                            $("#modal_message #chatbox").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted"  id="date_" style="font-size: 10px">'+date_today2+'</small><strong class="primary-font pull-right" style="font-size: 10px">'+'{{request.session.session_user_role}}'+'</strong></div><p data-toggle="tooltip" data-placement="right" title="Delivered"  class="bg-info pull-right comments" style="max-width: 300px; text-align: left; float: right; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;"  name="comment_stud">'+msg+'</p></div></li>'); 
 
                             $("#modal_message #chatbox_date").append('<li>'+date_today+'</li>')
                             // console.log(date_today)
@@ -927,19 +1216,18 @@ $('#btn-input').keyup(function (e) {
             }
             else{
                 $.ajax({
-                    url: '{% url "accreditation_org_msg" %}',
+                    url: '{% url "accreditation_osas_msg" %}',
                     type: "POST",
                     data: {
-                        org_id:organization_id,
+                        organization_id:organization_id,
                         osas_id: osas_id,
-                        osas_role_ :osas_role_,
                         date_today: date_today,
                         msg: msg,
                         csrfmiddlewaretoken: "{{ csrf_token }}",
                     },
                     dataType: 'json',
                     success: function (data) {
-                        $("#modal_message #chatbox").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted"  id="date_" style="font-size: 10px">'+date_today2+'</small><strong class="primary-font pull-right" style="font-size: 10px">'+'{{request.session.session_org_abbr}}'+'</strong></div><p data-toggle="tooltip" data-placement="right" title="Delivered"  class="bg-info pull-right comments" style="max-width: 300px; text-align: left; float: right; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;" name="comment_stud">'+msg+'</p></div></li>'); 
+                        $("#modal_message #chatbox").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted"  id="date_" style="font-size: 10px">'+date_today2+'</small><strong class="primary-font pull-right" style="font-size: 10px">'+'{{request.session.session_user_role}}'+'</strong></div><p data-toggle="tooltip" data-placement="right" title="Delivered"  class="bg-info pull-right comments" style="max-width: 300px; text-align: left; float: right; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;" name="comment_stud">'+msg+'</p></div></li>'); 
 
                         $("#modal_message #chatbox_date").append('<li>'+date_today+'</li>')
 
@@ -948,12 +1236,9 @@ $('#btn-input').keyup(function (e) {
                     }
                 });
             }
-        
             document.getElementById('btn-input').value = "";
         }
     }
-
-
 });
 
 function genReport(){
@@ -1013,17 +1298,17 @@ function genReport(){
     }
 }
 
+
 var organization_id;
-var osas_id;
-var osas_role_;
-function viewNote(){
-    org_id = $('#auth_id').text();
-    console.log(org_id)
+function viewNote(org_id){
+    auth_id = $('#auth_id').text();
     if (org_id) {
         document.getElementById('btn-input').value = "";
         tr_id = org_id;
+        
         organization_id = org_id
-        console.log(org_id, "org")
+        // $('#org_id1').val(org_id);
+        console.log(auth_id)
         $.ajax({
             url: '{% url "organization_view_messages" %}',
             type: "POST",
@@ -1033,19 +1318,19 @@ function viewNote(){
             },
             dataType: 'json',
             success: function(response){
-                $('.org_abbr').text(response.osas_role);
+                $('.org_abbr').text(response.org_data);
                 var temp_osas_date;
                 var temp_org_date;
-                osas_id = response.osas_role_id
-                osas_role_ = response.osas_role
-                console.log(osas_id)
                 const studData = response.data
                 studData.map(item=>{
                     const msg_date_new = moment(item.msg_date).format("YYYY-MM-DD, ddd, hh:mm A");
                     // console.log(msg_date_new, 'orig')
-                    if(item.msg_send_from == response.org_id){
+                    if(item.msg_send_to == response.org_data){
+                      
                         if(temp_org_date){
-                            console.log(response.org_id, 'bad')
+                            console.log('bad')
+                            // console.log('temp_date ' + temp_org_date )
+                            // console.log('last date ' + msg_date_new )
                             if(temp_org_date == msg_date_new){
                                 $("#modal_message #chatbox").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" class="bg-info pull-right comments" style="margin-top: -15px; max-width: 300px; text-align: left; float: right; padding: 8px;border-radius: 10px; color: white; word-wrap: break-word;"  name="comment_stud">'+item.msg_message+'</p></div></li>'); 
 
@@ -1054,7 +1339,7 @@ function viewNote(){
                                 objDiv.scrollTop = objDiv.scrollHeight;
                             }   
                             else{
-                                $('#chatbox').append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted sample_date"  id="date_" style="font-size: 10px">'+msg_date_new+'</small><strong class="primary-font pull-right" style="font-size: 10px" >'+response.org_id+'</strong></div><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" class="bg-info pull-right osas_msg comments" style="max-width: 300px; text-align: left; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;" name="comment_stud">'+item.msg_message+'</p></div></li>')
+                                $('#chatbox').append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted sample_date"  id="date_" style="font-size: 10px">'+msg_date_new+'</small><strong class="primary-font pull-right" style="font-size: 10px" >'+response.osas_data+'</strong></div><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" class="bg-info pull-right osas_msg comments" style="max-width: 300px; text-align: left; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;" name="comment_stud">'+item.msg_message+'</p></div></li>')
                                 
                                 $("#modal_message #chatbox_date").append('<li>'+item.msg_date+'</li>')
                                 temp_org_date = msg_date_new
@@ -1065,7 +1350,7 @@ function viewNote(){
                             }
                         }
                         else{
-                            $('#chatbox').append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted sample_date"  id="date_" style="font-size: 10px">'+msg_date_new+'</small><strong class="primary-font pull-right" style="font-size: 10px" >'+response.org_id+'</strong></div><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" class="bg-info pull-right osas_msg" style="max-width: 300px; text-align: left; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;" id="comments"  name="comment_stud">'+item.msg_message+'</p></div></li>')
+                            $('#chatbox').append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted sample_date"  id="date_" style="font-size: 10px">'+msg_date_new+'</small><strong class="primary-font pull-right" style="font-size: 10px" >'+response.osas_data+'</strong></div><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" class="bg-info pull-right osas_msg" style="max-width: 300px; text-align: left; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;" id="comments"  name="comment_stud">'+item.msg_message+'</p></div></li>')
                             
                             temp_org_date = msg_date_new
                             // console.log('else lang' + temp_org_date)
@@ -1074,7 +1359,7 @@ function viewNote(){
                                 objDiv.scrollTop = objDiv.scrollHeight;
                         }
                     }
-                    else if (item.msg_send_to == response.org_id && item.msg_send_from == response.osas_role_id){
+                    else if (item.msg_send_from == response.org_id){
                         osas_message = item.msg_id
                         console.log('goods')
                         $.ajax({
@@ -1097,7 +1382,7 @@ function viewNote(){
                                 objDiv.scrollTop = objDiv.scrollHeight;
                             }
                             else{
-                                $("#chatbox").append('<li class="left"  style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-right text-muted" style="margin-left: 5px;"></i><small class="pull-right text-muted" id="date_stud" style="font-size: 10px"  >'+msg_date_new+'</small><strong class="pull-left primary-font" id="stud_name" name="stud_name" style="font-size: 10px">'+response.osas_role+'</strong></div><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" style=" max-width: 300px; background-color: white; float: left; padding: 8px; border-radius: 10px; color: black; word-wrap: break-word;" id="comment_stud" value="'+item.msg_message+'" name="comments">'+item.msg_message+'</p></div></li>')
+                                $("#chatbox").append('<li class="left"  style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-right text-muted" style="margin-left: 5px;"></i><small class="pull-right text-muted" id="date_stud" style="font-size: 10px"  >'+msg_date_new+'</small><strong class="pull-left primary-font" id="stud_name" name="stud_name" style="font-size: 10px">'+response.org_data+'</strong></div><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" style=" max-width: 300px; background-color: white; float: left; padding: 8px; border-radius: 10px; color: black; word-wrap: break-word;" id="comment_stud" value="'+item.msg_message+'" name="comments">'+item.msg_message+'</p></div></li>')
                                 
                                 $("#modal_message #chatbox_date").append('<li>'+item.msg_date+'</li>')
                                 temp_osas_date = msg_date_new
@@ -1108,7 +1393,7 @@ function viewNote(){
                             }
                         }
                         else{
-                            $("#chatbox").append('<li class="left"  style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-right text-muted" style="margin-left: 5px;"></i><small class="pull-right text-muted" id="date_stud" style="font-size: 10px"  >'+msg_date_new+'</small><strong class="pull-left primary-font" id="stud_name" name="stud_name" style="font-size: 10px">'+response.osas_role+'</strong></div><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" style=" max-width: 300px; background-color: white; float: left; padding: 8px; border-radius: 10px; color: black; word-wrap: break-word;" id="comment_stud" value="'+item.msg_message+'" name="comments">'+item.msg_message+'</p></div></li>')
+                            $("#chatbox").append('<li class="left"  style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-right text-muted" style="margin-left: 5px;"></i><small class="pull-right text-muted" id="date_stud" style="font-size: 10px"  >'+msg_date_new+'</small><strong class="pull-left primary-font" id="stud_name" name="stud_name" style="font-size: 10px">'+response.org_data+'</strong></div><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" style=" max-width: 300px; background-color: white; float: left; padding: 8px; border-radius: 10px; color: black; word-wrap: break-word;" id="comment_stud" value="'+item.msg_message+'" name="comments">'+item.msg_message+'</p></div></li>')
                             
                             
                             temp_osas_date = msg_date_new
@@ -1118,12 +1403,6 @@ function viewNote(){
                                 objDiv.scrollTop = objDiv.scrollHeight;
                         }
                         
-                        // temp_osas_date = msg_date_new
-                        // // console.log(temp_osas_date)
-                        // $("#modal_message #chatbox_date").append('<li>'+msg_date_new+'</li>')
-                        // var objDiv = document.getElementById("chatparent");
-                        //         objDiv.scrollTop = objDiv.scrollHeight;
-
                     }
                 })
             }

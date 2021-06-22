@@ -124,7 +124,7 @@ def activate_account(request):
     s_no = request.POST.get('stud_no')
     password = request.POST.get('pass')
     try:
-        stud = osas_r_personal_info.objects.get(stud_no=s_no)
+        stud = osas_r_personal_info.objects.get(stud_no = s_no)
         c = osas_r_personal_info.objects.filter(stud_no=s_no, s_password= password )
         # s = osas_r_userrole.objects.get(user_id= stud.stud_role)
         if c:
@@ -193,9 +193,8 @@ def activate_account(request):
                 if room2:
                     room3 = classroom.objects.get(room_email = s_no, room_pass = password)
                     request.session['session_user_id'] = room3.room_id
-                    request.session['session_user_lname'] = room3.room_stud_id.stud_course_id.course_name + ' ' + room3.room_year + ' - ' + room3.room_sec
+                    request.session['session_user_lname'] = room3.room_stud_id.stud_course_id.course_name + ' ' + room3.room_year
                     request.session['session_class_year'] = room3.room_year
-                    request.session['session_class_section'] = room3.room_sec
                     request.session['session_user_username'] = room3.room_email
                     return HttpResponseRedirect('/classroom_home')
                 else:
@@ -2220,6 +2219,14 @@ def organization_student_data(request):
     except ObjectDoesNotExist:
         return render(request, 'Facilitation/organization.html')
 
+def classroom_student_data(request):
+    stud_course = request.POST.get('stud_course')
+    stud_year_sec = request.POST.get('stud_year_sec')
+    stud_list = list(osas_r_personal_info.objects.all().filter(stud_course_id = osas_r_course.objects.get(course_name = stud_course), stud_yas_id = osas_r_section_and_year.objects.get(yas_descriptions = stud_year_sec)).values())
+    return JsonResponse({
+        'data': stud_list,
+    })
+
 def organization_osas(request):
     status = request.POST.get('filter_status')
     acad_year = request.POST.get('acad_year')
@@ -2243,47 +2250,70 @@ def organization_osas_classroom(request):
     acad_year = request.POST.get('acad_year')
     stud_list = osas_r_personal_info.objects.all().order_by("stud_no")
     year = str(acad_year)
+
+    course_list =  osas_r_course.objects.all().order_by("course_name")
+    year_sec_list = osas_r_section_and_year.objects.all().order_by("-yas_descriptions")
     if acad_year and status:
         org_list = classroom.objects.all().filter(room_status = status, room_datecreated__contains =  year).order_by('room_datecreated')
-        return render(request, 'Facilitation/classroom.html', {'org_list':org_list, 'stud_list':stud_list})
+        return render(request, 'Facilitation/classroom.html', {'org_list':org_list, 'stud_list':stud_list, 'course_list':course_list, 'year_sec_list':year_sec_list})
     elif acad_year:
         org_list = classroom.objects.all().filter(room_datecreated__contains =  year).order_by('room_datecreated')
-        return render(request, 'Facilitation/classroom.html', {'org_list':org_list, 'stud_list':stud_list})
+        return render(request, 'Facilitation/classroom.html', {'org_list':org_list, 'stud_list':stud_list, 'course_list':course_list, 'year_sec_list':year_sec_list})
     elif status:
         org_list = classroom.objects.all().filter(room_status = status ).order_by('room_datecreated')
-        return render(request, 'Facilitation/classroom.html', {'org_list':org_list, 'stud_list':stud_list})
+        return render(request, 'Facilitation/classroom.html', {'org_list':org_list, 'stud_list':stud_list, 'course_list':course_list, 'year_sec_list':year_sec_list})
     else:   
         org_list = classroom.objects.all().order_by('room_datecreated')
-        return render(request, 'Facilitation/classroom.html', {'org_list':org_list, 'stud_list':stud_list})
+        return render(request, 'Facilitation/classroom.html', {'org_list':org_list, 'stud_list':stud_list, 'course_list':course_list, 'year_sec_list':year_sec_list})
 
 
 def organization_osas_new_class_account(request):
     stud = request.POST.get('stud')
     class_year = request.POST.get('class_year')
-    class_sec = request.POST.get('class_sec')
+    class_course = request.POST.get('class_course')
     class_email = request.POST.get('class_email')
     class_pass = request.POST.get('class_pass')
     try:
-        org = classroom.objects.get(room_year = class_year, room_sec = class_sec, room_email = class_email, room_stud_id = osas_r_personal_info.objects.get(stud_no = stud))
+        c = classroom.objects.get(room_course = class_course, room_year = class_year)
         data = {'error':True}
         return JsonResponse(data, safe=False)
     except ObjectDoesNotExist:
-        today = datetime.today()
-        year = timedelta(days=365)
-        room_datecreated = today
-        room_expiration = today + year
-        room = classroom( 
-            room_year = class_year,
-            room_sec = class_sec, 
-            room_email = class_email, 
-            room_pass = class_pass, 
-            room_stud_id = osas_r_personal_info.objects.get(stud_no = stud), 
-            room_datecreated = room_datecreated,
-            room_expiration = room_expiration,
-            )
-        room.save()
-        data = {'success':True}
-        return JsonResponse(data, safe=False)
+        try:
+            o = officer.objects.get(off_stud_id = osas_r_personal_info.objects.get(stud_no = stud))
+            data = {'error1':True} 
+            return JsonResponse(data, safe=False)
+        except ObjectDoesNotExist:
+            try: 
+                c = classroom.objects.get(room_email = class_email)
+                p = organization.objects.get(org_email = class_email)
+                data = {'error2':True} 
+                return JsonResponse(data, safe=False)
+            except ObjectDoesNotExist:
+                try:
+                    p = organization.objects.get(org_email = class_email)
+                    data = {'error2':True} 
+                    return JsonResponse(data, safe=False)
+                except ObjectDoesNotExist:
+                    today = datetime.today()
+                    year = timedelta(days=365)
+                    room_datecreated = today
+                    room_expiration = today + year
+                    room = classroom( 
+                        room_year = class_year,
+                        room_course = class_course, 
+                        room_email = class_email, 
+                        room_pass = class_pass, 
+                        room_stud_id = osas_r_personal_info.objects.get(stud_no = stud), 
+                        room_datecreated = room_datecreated,
+                        room_expiration = room_expiration,
+                        )
+                    room.save()
+                    officer.objects.create(
+                        off_stud_id = osas_r_personal_info.objects.get(stud_no = stud),
+                        off_room_id = classroom.objects.get(room_stud_id = osas_r_personal_info.objects.get(stud_no = stud)), 
+                        off_position = 'President')
+                    data = {'success':True}
+                    return JsonResponse(data, safe=False)
 
 def organization_new_account(request):
     stud = request.POST.get('stud')
@@ -3008,7 +3038,7 @@ def concept_paper_osas_msg(request):
     course_name = s.room_stud_id.stud_course_id.course_name
     class_year = s.room_year
     class_sec = s.room_sec
-    class_name = course_name + ' ' + class_year + ' - ' + class_sec
+    class_name = course_name + ' ' + class_year
     try:
         today = datetime.today()
         d = organization_chat(
@@ -3021,7 +3051,7 @@ def concept_paper_osas_msg(request):
         data = {'success':True}
         return JsonResponse(data, safe=False)
     except ObjectDoesNotExist:
-        data = {'error':True}
+        data = {'error':True}   
         return JsonResponse(data, safe=False)
 
 def concept_paper_class_msg(request):
@@ -3034,7 +3064,7 @@ def concept_paper_class_msg(request):
     course_name = s.room_stud_id.stud_course_id.course_name
     class_year = s.room_year
     class_sec = s.room_sec
-    class_name = course_name + ' ' + class_year + ' - ' + class_sec
+    class_name = course_name + ' ' + class_year
     try:
         today = datetime.today()
         d = organization_chat(
@@ -3354,38 +3384,170 @@ def gen_report_get_info_organization(request):
 def orgnaization_request_fund(request):
     fund_desc = request.POST.get('fund_desc')
     fund_amount = request.POST.get('fund_amount')
-    fund_word = request.POST.get('fund_word')
+    word = request.POST.get('fund_word')
+    fund_word = word + ' Pesos Only'
     org_id = request.POST.get('org_id')
+    type_fund = request.POST.get('type_fund')
+    print(type_fund)
     status = request.POST.get('foredit')
-    if status:
-        fund_id = request.POST.get('fund_id')
-        f = fund.objects.get(fund_id = fund_id,fund_org_id = organization.objects.get(org_id = org_id))
-        f.fund_desc = fund_desc
-        f.fund_amount = fund_amount
-        f.fund_word = fund_word
-        f.save()
+    if type_fund == 'DEPOSIT':
+        if status:
+            fund_id = request.POST.get('fund_id')
+            f = fund.objects.get(fund_id = fund_id,fund_org_id = organization.objects.get(org_id = org_id))
+            f.fund_desc = fund_desc
+            f.fund_amount = fund_amount
+            f.fund_word = fund_word
+            f.fund_type = type_fund
+            f.save()
+        else:
+            fund.objects.create(fund_desc = fund_desc, fund_amount = fund_amount, fund_word = fund_word, fund_org_id = organization.objects.get(org_id = org_id), fund_type = 'DEPOSIT')
+        data = {'success':True}
+        return JsonResponse(data, safe=False)
+    elif type_fund == 'REQUEST':
+        b = organization.objects.get(org_id = org_id)
+
+        if b.org_fund > int(fund_amount):
+            if status:
+                fund_id = request.POST.get('fund_id')
+                f = fund.objects.get(fund_id = fund_id,fund_org_id = organization.objects.get(org_id = org_id))
+                f.fund_desc = fund_desc
+                f.fund_amount = fund_amount
+                f.fund_word = fund_word
+                f.fund_type = type_fund
+                f.save()
+            else:
+                fund.objects.create(fund_desc = fund_desc, fund_amount = fund_amount, fund_word = fund_word, fund_org_id = organization.objects.get(org_id = org_id), fund_type = 'REQUEST')
+            data = {'success':True}
+            return JsonResponse(data, safe=False)
+        else:
+            print('hahaha')
+            data = {'error':True}
+            return JsonResponse(data, safe=False)
+
+def osas_fund(request):
+    status = request.POST.get('filter_status')
+    acad_year = request.POST.get('acad_year')
+    fund_type = request.POST.get('fund_type')
+    year = str(acad_year)
+    file_list = fund_file.objects.all()
+    fund_pending = fund.objects.filter(fund_status = 'PENDING', fund_type = 'REQUEST')
+    fund_deposit = fund.objects.filter(fund_status = 'PENDING', fund_type = 'DEPOSIT')
+    fund_balance_negative = fund.objects.filter(fund_status = 'APPROVED', fund_type = 'REQUEST')
+    fund_balance_positive = fund.objects.filter(fund_status = 'APPROVED', fund_type = 'DEPOSIT')
+    i = 0
+    j = 0
+    k = 0
+    l = 0
+    for x in fund_balance_positive:
+        k = k + x.fund_amount
+    for l in fund_balance_negative:
+        l = l + x.fund_amount
+
+    for x in fund_pending:
+        i = i + x.fund_amount
+    for x in fund_deposit:
+        j = j + x.fund_amount
+
+    if acad_year and status and fund_type:
+        fund_org_list = fund.objects.all().filter(fund_date_requested__contains = year, fund_status = status, fund_type = fund_type)
+        return render(request, 'Facilitation/fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list, 'i':i,'j':j})
+    elif acad_year and status:
+        fund_org_list = fund.objects.all().filter(fund_date_requested__contains = year, fund_status = status)
+        return render(request, 'Facilitation/fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list, 'i':i,'j':j})
+    elif acad_year and fund_type:
+        fund_org_list = fund.objects.all().filter(fund_date_requested__contains = year, fund_type = fund_type)
+        return render(request, 'Facilitation/fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list, 'i':i,'j':j})
+    elif status and fund_type:
+        fund_org_list = fund.objects.all().filter(fund_status = status, fund_type = fund_type)
+        return render(request, 'Facilitation/fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list, 'i':i,'j':j})
+    elif status:
+        fund_org_list = fund.objects.all().filter(fund_status = status)
+        return render(request, 'Facilitation/fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list, 'i':i,'j':j})
+    elif acad_year:
+        fund_org_list = fund.objects.all().filter(fund_date_requested__contains = year)
+        return render(request, 'Facilitation/fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list, 'i':i,'j':j})
+    elif fund_type:
+        fund_org_list = fund.objects.all().filter(fund_type = fund_type)
+        return render(request, 'Facilitation/fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list, 'i':i,'j':j})
     else:
-        fund.objects.create(fund_desc = fund_desc, fund_amount = fund_amount, fund_word = fund_word, fund_org_id = organization.objects.get(org_id = org_id))
-    data = {'success':True}
-    return JsonResponse(data, safe=False)
+        fund_org_list = fund.objects.all()
+        return render(request, 'Facilitation/fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list, 'i':i,'j':j})
 
 def organization_fund(request):
     status = request.POST.get('filter_status')
     acad_year = request.POST.get('acad_year')
+    fund_type = request.POST.get('fund_type')
     year = str(acad_year)
     file_list = fund_file.objects.all().filter(fund_f_org_id = organization.objects.get(org_id = request.session['session_user_id']) )
-    if acad_year and status:
+    fund_pending = fund.objects.filter(fund_org_id = organization.objects.get(org_id = request.session['session_user_id']), fund_status = 'PENDING', fund_type = 'REQUEST')
+    fund_deposit = fund.objects.filter(fund_org_id = organization.objects.get(org_id = request.session['session_user_id']), fund_status = 'PENDING', fund_type = 'DEPOSIT')
+    fund_balance_negative = fund.objects.filter(fund_org_id = organization.objects.get(org_id = request.session['session_user_id']), fund_status = 'APPROVED', fund_type = 'REQUEST')
+    fund_balance_positive = fund.objects.filter(fund_org_id = organization.objects.get(org_id = request.session['session_user_id']), fund_status = 'APPROVED', fund_type = 'DEPOSIT')
+    i = 0
+    j = 0
+    k = 0
+    l = 0
+    for x in fund_balance_positive:
+        k = k + x.fund_amount
+    for l in fund_balance_negative:
+        l = l + x.fund_amount
+
+    for x in fund_pending:
+        i = i + x.fund_amount
+    for x in fund_deposit:
+        j = j + x.fund_amount
+
+    balance = k - l
+    org_fund = organization.objects.get(org_id = request.session['session_user_id'])
+    tot_bal = org_fund.org_fund
+    print(tot_bal)
+    if acad_year and status and fund_type:
+        fund_org_list = fund.objects.all().filter(fund_org_id = organization.objects.get(org_id = request.session['session_user_id']), fund_date_requested__contains = year, fund_status = status, fund_type = fund_type)
+        return render(request, 'Organization/fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list, 'i':i,'j':j, 'balance':balance, 'tot_bal':tot_bal})
+    elif acad_year and status:
         fund_org_list = fund.objects.all().filter(fund_org_id = organization.objects.get(org_id = request.session['session_user_id']), fund_date_requested__contains = year, fund_status = status)
-        return render(request, 'Organization/fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list})
+        return render(request, 'Organization/fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list, 'i':i,'j':j, 'balance':balance, 'tot_bal':tot_bal})
+    elif acad_year and fund_type:
+        fund_org_list = fund.objects.all().filter(fund_org_id = organization.objects.get(org_id = request.session['session_user_id']), fund_date_requested__contains = year, fund_type = fund_type)
+        return render(request, 'Organization/fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list, 'i':i,'j':j, 'balance':balance, 'tot_bal':tot_bal})
+    elif status and fund_type:
+        fund_org_list = fund.objects.all().filter(fund_org_id = organization.objects.get(org_id = request.session['session_user_id']), fund_status = status, fund_type = fund_type)
+        return render(request, 'Organization/fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list, 'i':i,'j':j, 'balance':balance, 'tot_bal':tot_bal})
+    elif status:
+        fund_org_list = fund.objects.all().filter(fund_org_id = organization.objects.get(org_id = request.session['session_user_id']), fund_status = status)
+        return render(request, 'Organization/fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list, 'i':i,'j':j, 'balance':balance, 'tot_bal':tot_bal})
     elif acad_year:
         fund_org_list = fund.objects.all().filter(fund_org_id = organization.objects.get(org_id = request.session['session_user_id']), fund_date_requested__contains = year)
-        return render(request, 'Organization/fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list})
-    if status:
-        fund_org_list = fund.objects.all().filter(fund_org_id = organization.objects.get(org_id = request.session['session_user_id']), fund_status = status)
-        return render(request, 'Organization/fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list})
+        return render(request, 'Organization/fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list, 'i':i,'j':j, 'balance':balance, 'tot_bal':tot_bal})
+    elif fund_type:
+        fund_org_list = fund.objects.all().filter(fund_org_id = organization.objects.get(org_id = request.session['session_user_id']), fund_type = fund_type)
+        return render(request, 'Organization/fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list, 'i':i,'j':j, 'balance':balance, 'tot_bal':tot_bal})
     else:
         fund_org_list = fund.objects.all().filter(fund_org_id = organization.objects.get(org_id = request.session['session_user_id']))
-        return render(request, 'Organization/fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list})
+        return render(request, 'Organization/fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list, 'i':i,'j':j, 'balance':balance, 'tot_bal':tot_bal})
+
+def organization_deposit_fund(request):
+    status = request.POST.get('filter_status')
+    acad_year = request.POST.get('acad_year')
+    year = str(acad_year)
+    file_list = fund_file.objects.all().filter(fund_f_org_id = organization.objects.get(org_id = request.session['session_user_id']) )
+    fund_pending = fund.objects.filter(fund_org_id = organization.objects.get(org_id = request.session['session_user_id']), fund_status = 'APPROVED')
+    i = 0
+    for x in fund_pending:
+        i = i + x.fund_amount
+    print(i)
+    if acad_year and status:
+        fund_org_list = fund.objects.all().filter(fund_org_id = organization.objects.get(org_id = request.session['session_user_id']), fund_date_requested__contains = year, fund_status = status)
+        return render(request, 'Organization/fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list, 'i':i})
+    elif acad_year:
+        fund_org_list = fund.objects.all().filter(fund_org_id = organization.objects.get(org_id = request.session['session_user_id']), fund_date_requested__contains = year)
+        return render(request, 'Organization/fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list, 'i':i})
+    if status:
+        fund_org_list = fund.objects.all().filter(fund_org_id = organization.objects.get(org_id = request.session['session_user_id']), fund_status = status)
+        return render(request, 'Organization/fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list, 'i':i})
+    else:
+        fund_org_list = fund.objects.all().filter(fund_org_id = organization.objects.get(org_id = request.session['session_user_id']))
+        return render(request, 'Organization/fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list, 'i':i})
 
 def organization_fund_reciept_upload(request):
     docu = request.FILES.get('file')
@@ -3396,13 +3558,48 @@ def organization_fund_reciept_upload(request):
     filename = str(docu)
     extension = filename.split(".")[1]
     try:
-        f = fund_file.objects.get(fund_f_id = fund_f_id, fund_fund_id = fund.objects.get(fund_id = fund_id), fund_f_org_id = organization.objects.get(org_id = request.session['session_user_id']),  fund_f_status =  receipt)
-        f.delete()
-        fund_file.objects.create(fund_fund_id = fund.objects.get(fund_id = fund_id), fund_f_org_id = organization.objects.get(org_id = request.session['session_user_id']), fund_f_file = docu, fund_f_file_ext = extension, fund_f_status =  receipt)
-        return HttpResponse('')
+        if fund_f_id:
+            f = fund_file.objects.get(fund_f_id = fund_f_id, fund_fund_id = fund.objects.get(fund_id = fund_id), fund_f_org_id = organization.objects.get(org_id = request.session['session_user_id']),  fund_f_status =  receipt)
+            f.delete()
+            fund_file.objects.create(fund_fund_id = fund.objects.get(fund_id = fund_id), fund_f_org_id = organization.objects.get(org_id = request.session['session_user_id']), fund_f_file = docu, fund_f_file_ext = extension, fund_f_status =  receipt)
+            return HttpResponse('')
+        else:
+            fund_file.objects.create(fund_fund_id = fund.objects.get(fund_id = fund_id), fund_f_org_id = organization.objects.get(org_id = request.session['session_user_id']), fund_f_file = docu, fund_f_file_ext = extension, fund_f_status =  receipt)
+            return HttpResponse('')
     except ObjectDoesNotExist:
         fund_file.objects.create(fund_fund_id = fund.objects.get(fund_id = fund_id), fund_f_org_id = organization.objects.get(org_id = request.session['session_user_id']), fund_f_file = docu, fund_f_file_ext = extension, fund_f_status =  receipt)
         return HttpResponse('')
+
+def class_fund_reciept_upload(request):
+    docu = request.FILES.get('file')
+    org_id2 = request.POST.get('org_id2')
+    fund_id = request.POST.get('fund_id2')
+    receipt = request.POST.get('receipt')
+    fund_f_id = request.POST.get('fund_f_id')
+    filename = str(docu)
+    extension = filename.split(".")[1]
+    try:
+        if fund_f_id:
+            f = fund_file.objects.get(fund_f_id = fund_f_id, fund_fund_id = fund.objects.get(fund_id = fund_id), fund_f_room_id = classroom.objects.get(room_id = request.session['session_user_id']),  fund_f_status =  receipt)
+            f.delete()
+            fund_file.objects.create(fund_fund_id = fund.objects.get(fund_id = fund_id),  fund_f_room_id = classroom.objects.get(room_id = request.session['session_user_id']), fund_f_file = docu, fund_f_file_ext = extension, fund_f_status =  receipt)
+            return HttpResponse('')
+        else:
+            fund_file.objects.create(fund_fund_id = fund.objects.get(fund_id = fund_id),  fund_f_room_id = classroom.objects.get(room_id = request.session['session_user_id']), fund_f_file = docu, fund_f_file_ext = extension, fund_f_status =  receipt)
+            return HttpResponse('')
+    except ObjectDoesNotExist:
+        fund_file.objects.create(fund_fund_id = fund.objects.get(fund_id = fund_id),  fund_f_room_id = classroom.objects.get(room_id = request.session['session_user_id']), fund_f_file = docu, fund_f_file_ext = extension, fund_f_status =  receipt)
+        return HttpResponse('')
+
+def class_fund_populate(request):
+    room_id = request.POST.get('room_id')
+    fund_id = request.POST.get('fund_id')
+    fund_list = list(fund.objects.filter(fund_id = fund_id, fund_room_id = classroom.objects.get(room_id = room_id)).values())
+    room_id = classroom.objects.get(room_id = room_id)
+    return JsonResponse({
+        'data': fund_list,
+        'org_id':room_id.room_id
+    })
 
 def organization_fund_populate(request):
     org_id = request.POST.get('org_id')
@@ -3413,6 +3610,7 @@ def organization_fund_populate(request):
         'data': fund_list,
         'org_id':org_id.org_id
     })
+
 
 def fund_request_remove(request):
     fund_id = request.POST.get('fund_id')
@@ -3427,6 +3625,120 @@ def fund_request_remove(request):
     except ObjectDoesNotExist:
         data = {'error':True}
         return JsonResponse(data, safe=False)
+
+def classroom_fund_request_remove(request):
+    fund_id = request.POST.get('fund_id')
+    try:
+        c = fund.objects.get(fund_id = fund_id)
+        f_list = fund_file.objects.filter(fund_fund_id = fund.objects.get(fund_id = fund_id), fund_f_room_id = classroom.objects.get(room_id = request.session['session_user_id']))
+        for x in f_list:
+            x.delete()
+        c.delete()
+        data = {'success':True}
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        data = {'error':True}
+        return JsonResponse(data, safe=False)
+
+def classroom_fund(request):
+    status = request.POST.get('filter_status')
+    acad_year = request.POST.get('acad_year')
+    fund_type = request.POST.get('fund_type')
+    year = str(acad_year)
+    file_list = fund_file.objects.all().filter(fund_f_room_id = classroom.objects.get(room_id = request.session['session_user_id']) )
+    fund_pending = fund.objects.filter(fund_room_id = classroom.objects.get(room_id = request.session['session_user_id']), fund_status = 'PENDING', fund_type = 'REQUEST')
+    fund_deposit = fund.objects.filter(fund_room_id = classroom.objects.get(room_id = request.session['session_user_id']), fund_status = 'PENDING', fund_type = 'DEPOSIT')
+    fund_balance_negative = fund.objects.filter(fund_room_id = classroom.objects.get(room_id = request.session['session_user_id']), fund_status = 'APPROVED', fund_type = 'REQUEST')
+    fund_balance_positive = fund.objects.filter(fund_room_id = classroom.objects.get(room_id = request.session['session_user_id']), fund_status = 'APPROVED', fund_type = 'DEPOSIT')
+    i = 0
+    j = 0
+    k = 0
+    l = 0
+    for x in fund_balance_positive:
+        k = k + x.fund_amount
+    for l in fund_balance_negative:
+        l = l + x.fund_amount
+
+    for x in fund_pending:
+        i = i + x.fund_amount
+    for x in fund_deposit:
+        j = j + x.fund_amount
+
+    balance = k - l
+    class_fund = classroom.objects.get(room_id = request.session['session_user_id'])
+    tot_bal = class_fund.room_fund
+    print(tot_bal)
+
+    if acad_year and status and fund_type:
+        fund_org_list = fund.objects.all().filter(fund_room_id = classroom.objects.get(room_id = request.session['session_user_id']), fund_date_requested__contains = year, fund_status = status, fund_type = fund_type)
+        return render(request, 'classroom/class_fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list, 'i':i,'j':j, 'balance':balance, 'tot_bal':tot_bal})
+    elif acad_year and status:
+        fund_org_list = fund.objects.all().filter(fund_room_id = classroom.objects.get(room_id = request.session['session_user_id']), fund_date_requested__contains = year, fund_status = status)
+        return render(request, 'classroom/class_fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list, 'i':i,'j':j, 'balance':balance, 'tot_bal':tot_bal})
+    elif acad_year and fund_type:
+        fund_org_list = fund.objects.all().filter(fund_room_id = classroom.objects.get(room_id = request.session['session_user_id']), fund_date_requested__contains = year, fund_type = fund_type)
+        return render(request, 'classroom/class_fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list, 'i':i,'j':j, 'balance':balance, 'tot_bal':tot_bal})
+    elif status and fund_type:
+        fund_org_list = fund.objects.all().filter(fund_room_id = classroom.objects.get(room_id = request.session['session_user_id']), fund_status = status, fund_type = fund_type)
+        return render(request, 'classroom/class_fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list, 'i':i,'j':j, 'balance':balance, 'tot_bal':tot_bal})
+    elif status:
+        fund_org_list = fund.objects.all().filter(fund_room_id = classroom.objects.get(room_id = request.session['session_user_id']), fund_status = status)
+        return render(request, 'classroom/class_fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list, 'i':i,'j':j, 'balance':balance, 'tot_bal':tot_bal})
+    elif acad_year:
+        fund_org_list = fund.objects.all().filter(fund_room_id = classroom.objects.get(room_id = request.session['session_user_id']), fund_date_requested__contains = year)
+        return render(request, 'classroom/class_fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list, 'i':i,'j':j, 'balance':balance, 'tot_bal':tot_bal})
+    elif fund_type:
+        fund_org_list = fund.objects.all().filter(fund_room_id = classroom.objects.get(room_id = request.session['session_user_id']), fund_type = fund_type)
+        return render(request, 'classroom/class_fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list, 'i':i,'j':j, 'balance':balance, 'tot_bal':tot_bal})
+    else:
+        fund_org_list = fund.objects.all().filter(fund_room_id = classroom.objects.get(room_id = request.session['session_user_id']))
+        return render(request, 'classroom/class_fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list, 'i':i,'j':j, 'balance':balance, 'tot_bal':tot_bal})
+
+def class_request_fund(request):
+    fund_desc = request.POST.get('fund_desc')
+    fund_amount = request.POST.get('fund_amount')
+    word = request.POST.get('fund_word')
+    fund_word = word + ' Pesos Only'
+    room_id = request.POST.get('room_id')
+    type_fund = request.POST.get('type_fund')
+    print(type_fund)
+    status = request.POST.get('foredit')
+    fund_id = request.POST.get('fund_id')
+    if type_fund == 'DEPOSIT':
+        if status:
+            f = fund.objects.get(fund_id = fund_id,fund_room_id = classroom.objects.get(room_id = room_id))
+            f.fund_desc = fund_desc
+            f.fund_amount = fund_amount
+            f.fund_word = fund_word
+            f.fund_type = type_fund
+            f.save()
+        else:
+            fund.objects.create(fund_desc = fund_desc, fund_amount = fund_amount, fund_word = fund_word, fund_room_id = classroom.objects.get(room_id = room_id), fund_type = 'DEPOSIT')
+        data = {'success':True}
+        return JsonResponse(data, safe=False)
+    elif type_fund == 'REQUEST':
+        b = classroom.objects.get(room_id = room_id)
+        f = fund.objects.filter(fund_room_id = classroom.objects.get(room_id = room_id), fund_status = 'PENDING', fund_type = 'REQUEST')
+        i = 0
+        for x in f:
+            i = i + x.fund_amount
+        tot_request = i + int(fund_amount)
+        if b.room_fund >= tot_request :
+            if status:
+                fund_id = request.POST.get('fund_id')
+                f = fund.objects.get(fund_id = fund_id,fund_room_id = classroom.objects.get(room_id = room_id))
+                f.fund_desc = fund_desc
+                f.fund_amount = fund_amount
+                f.fund_word = fund_word
+                f.fund_type = type_fund
+                f.save()
+            else:
+                fund.objects.create(fund_desc = fund_desc, fund_amount = fund_amount, fund_word = fund_word, fund_room_id = classroom.objects.get(room_id = room_id), fund_type = 'REQUEST')
+            data = {'success':True}
+            return JsonResponse(data, safe=False)
+        else:
+            data = {'error':True}
+            return JsonResponse(data, safe=False)
 
 def organization_officer(request):
     status = request.POST.get('filter_status')
@@ -3450,7 +3762,63 @@ def organization_officer(request):
             return render(request, 'Organization/officers.html', {'officer_list':officer_list, 'stud_list2':stud_list2})
     except ObjectDoesNotExist:
         print('error')
-   
+
+def classroom_officer(request):
+    status = request.POST.get('filter_status')
+    acad_year = request.POST.get('acad_year')
+    year = str(acad_year)
+    try:
+        o = classroom.objects.get(room_id = request.session['session_user_id'])
+        course = o.room_stud_id.stud_course_id.course_name
+        stud_list2 = osas_r_personal_info.objects.filter(stud_course_id = osas_r_course.objects.get(course_name = course))
+        if acad_year and status:
+            officer_list = officer.objects.all().filter(off_room_id = classroom.objects.get(room_id = request.session['session_user_id']), off_date_added__contains = year, off_status = status)
+            return render(request, 'classroom/officer.html', {'officer_list':officer_list, 'stud_list2':stud_list2})
+        elif acad_year:
+            officer_list = officer.objects.all().filter(off_room_id = classroom.objects.get(room_id = request.session['session_user_id']), off_date_added__contains = year)
+            return render(request, 'classroom/officer.html', {'officer_list':officer_list, 'stud_list2':stud_list2})
+        if status:
+            officer_list = officer.objects.all().filter(off_room_id = classroom.objects.get(room_id = request.session['session_user_id']), off_status = status)
+            return render(request, 'classroom/officer.html', {'officer_list':officer_list, 'stud_list2':stud_list2})
+        else:
+            officer_list = officer.objects.all().filter(off_room_id = classroom.objects.get(room_id = request.session['session_user_id']), off_status = 'ACTIVE')
+            return render(request, 'classroom/officer.html', {'officer_list':officer_list, 'stud_list2':stud_list2})
+    except ObjectDoesNotExist:
+        print('error')
+
+def classroom_add_officer(request):
+    position = request.POST.get('position')
+    stud_no = request.POST.get('stud_no')
+    status = request.POST.get('foredit')
+    if status:
+        off_id = request.POST.get('off_id')
+        room_id = request.POST.get('org_id')
+        try:
+            f = officer.objects.get(off_room_id = classroom.objects.get(room_id = room_id), off_position = position)
+            if f:
+                data = {'error':True}
+                return JsonResponse(data, safe=False)
+        except ObjectDoesNotExist:
+            f = officer.objects.get(off_id = off_id, off_room_id = classroom.objects.get(room_id = room_id))
+            f.off_position = position
+            f.save()
+            data = {'success':True}
+            return JsonResponse(data, safe=False)
+    else:
+        try:
+            f = officer.objects.get(off_room_id = classroom.objects.get(room_id = request.session['session_user_id']), off_position = position)
+            data = {'error1':True}
+            return JsonResponse(data, safe=False)
+        except ObjectDoesNotExist:
+            try:
+                o = officer.objects.get(off_room_id = classroom.objects.get(room_id = request.session['session_user_id']), off_stud_id = osas_r_personal_info.objects.get(stud_no = stud_no))
+                data = {'error':True}
+                return JsonResponse(data, safe=False)
+            except ObjectDoesNotExist:
+                officer.objects.create(off_position = position, off_stud_id = osas_r_personal_info.objects.get(stud_no = stud_no), off_room_id = classroom.objects.get(room_id = request.session['session_user_id']))
+    data = {'success':True}
+    return JsonResponse(data, safe=False)
+
 def orgnaization_add_officer(request):
     position = request.POST.get('position')
     stud_no = request.POST.get('stud_no')
@@ -3496,6 +3864,17 @@ def organization_fund_voucher_gen(request):
         'org_id':org_id.org_id
     })
 
+def class_fund_voucher_gen(request):
+    room_id = request.POST.get('room_id')
+    fund_id = request.POST.get('fund_id')
+    fund_list = list(fund.objects.filter(fund_id = fund_id, fund_room_id = classroom.objects.get(room_id = room_id)).values())
+    off_list = list(officer.objects.all().filter(off_room_id = classroom.objects.get(room_id = room_id)).values())
+    room_id = classroom.objects.get(room_id = room_id)
+    return JsonResponse({
+        'data': fund_list,
+        'data2':off_list,
+        'org_id':room_id.room_id
+    })
 def organization_signature_upload(request):
     docu = request.FILES.get('file')
     org_id2 = request.POST.get('org_id2')
@@ -3521,12 +3900,18 @@ def organization_signature_upload(request):
 def officer_remove(request):
     off_id = request.POST.get('off_id')
     org_id = request.POST.get('org_id')
-    print(off_id,org_id)
+    cat = request.POST.get('category_')
     try:
-        c = officer.objects.get(off_id = off_id, off_org_id = organization.objects.get(org_id = org_id))
-        c.delete()
-        data = {'success':True}
-        return JsonResponse(data, safe=False)
+        if cat:
+            c = officer.objects.get(off_id = off_id, off_room_id = classroom.objects.get(room_id = org_id))
+            c.delete()
+            data = {'success':True}
+            return JsonResponse(data, safe=False)
+        else:
+            c = officer.objects.get(off_id = off_id, off_org_id = organization.objects.get(org_id = org_id))
+            c.delete()
+            data = {'success':True}
+            return JsonResponse(data, safe=False)
     except ObjectDoesNotExist:
         data = {'error':True}
         return JsonResponse(data, safe=False)

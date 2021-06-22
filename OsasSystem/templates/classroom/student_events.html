@@ -892,7 +892,7 @@ function viewNote(){
                 studData.map(item=>{
                     const msg_date_new = moment(item.msg_date).format("YYYY-MM-DD, ddd, hh:mm A");
                     // console.log(msg_date_new, 'orig')
-                    if(item.msg_send_from == response.room_course + ' ' + response.room_year + ' - ' + response.room_sec){
+                    if(item.msg_send_from == response.room_course + ' ' + response.room_year ){
                         if(temp_org_date){
                             console.log('bad')
                             if(temp_org_date == msg_date_new){
@@ -903,7 +903,7 @@ function viewNote(){
                                 objDiv.scrollTop = objDiv.scrollHeight;
                             }   
                             else{
-                                $('#chatbox').append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted sample_date"  id="date_" style="font-size: 10px">'+msg_date_new+'</small><strong class="primary-font pull-right" style="font-size: 10px" >'+response.room_course + ' ' + response.room_year + ' - ' + response.room_sec+'</strong></div><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" class="bg-info pull-right osas_msg comments" style="max-width: 300px; text-align: left; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;" name="comment_stud">'+item.msg_message+'</p></div></li>')
+                                $('#chatbox').append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted sample_date"  id="date_" style="font-size: 10px">'+msg_date_new+'</small><strong class="primary-font pull-right" style="font-size: 10px" >'+response.room_course + ' ' + response.room_year + '</strong></div><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" class="bg-info pull-right osas_msg comments" style="max-width: 300px; text-align: left; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;" name="comment_stud">'+item.msg_message+'</p></div></li>')
                                 
                                 $("#modal_message #chatbox_date").append('<li>'+item.msg_date+'</li>')
                                 temp_org_date = msg_date_new
@@ -914,7 +914,7 @@ function viewNote(){
                             }
                         }
                         else{
-                            $('#chatbox').append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted sample_date"  id="date_" style="font-size: 10px">'+msg_date_new+'</small><strong class="primary-font pull-right" style="font-size: 10px" >'+response.room_course + ' ' + response.room_year + ' - ' + response.room_sec+'</strong></div><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" class="bg-info pull-right osas_msg" style="max-width: 300px; text-align: left; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;" id="comments"  name="comment_stud">'+item.msg_message+'</p></div></li>')
+                            $('#chatbox').append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted sample_date"  id="date_" style="font-size: 10px">'+msg_date_new+'</small><strong class="primary-font pull-right" style="font-size: 10px" >'+response.room_course + ' ' + response.room_year + '</strong></div><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" class="bg-info pull-right osas_msg" style="max-width: 300px; text-align: left; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;" id="comments"  name="comment_stud">'+item.msg_message+'</p></div></li>')
                             
                             temp_org_date = msg_date_new
                             // console.log('else lang' + temp_org_date)
@@ -923,7 +923,7 @@ function viewNote(){
                                 objDiv.scrollTop = objDiv.scrollHeight;
                         }
                     }
-                    else if (item.msg_send_to == response.room_course + ' ' + response.room_year + ' - ' + response.room_sec && response.osas_role_id){
+                    else if (item.msg_send_to == response.room_course + ' ' + response.room_year && response.osas_role_id){
                         osas_message = item.msg_id
                         console.log('goods')
                         $.ajax({
