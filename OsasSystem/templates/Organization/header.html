@@ -72,10 +72,40 @@
                 <div class="dropdown-menu dropdown-menu-right">
                     <a href="" class="dropdown-item">Account Setting</a>
                     <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" data-toggle="modal" href="#modal_upload3"><i class="fas fa-user-circle mr-2" ></i> Change/Upload Logo</i></a>
+                    <a class="dropdown-item"><i class="fas fa-lock mr-2" ></i> Change Password</i></a>
                     <a href="{%url 'logout' %}" class="dropdown-item"><i class="fas fa-sign-out-alt mr-2" ></i> Log Out</i></a>
+                   
                 </div>
             </li>
         </ul>
         <!-- end header navigation right -->
+    </div>
+
+    <div class="modal fade" id="modal_upload3" role="dialog"  data-backdrop="static">
+        <div class="modal-dialog modal-md" role="document" id="myModal">
+            <div class="modal-content">
+                <input class="form-control" id="excuse_id" type="hidden" name="excuse_id"/>
+                <div class="panel panel-inverse" >
+                    <button type="button" class="close" data-dismiss="modal" id="close_upload" aria-hidden="true" style="color: gray; margin: 6px;">×</button>  
+                    <div class="panel-body">
+                        <h1 class="page-header mb-1"><i class="fas fa-upload mr-2" ></i> Change/Upload Logo</h1>
+                        <p class="mb-5">Page Descriptions</p>
+                        <div id="dropzone">
+                            <form action="{%url 'organization_fund_reciept_upload' %}" method="POST" class="dropzone" id="file-upload2">
+                                {% csrf_token %}
+                                <input class="form-control" id="org_id3" type="hidden" name="org_id2"/>
+                                <input class="form-control" id="fund_id3" type="hidden" name="fund_id2"/>
+                                <input class="form-control" id="receipt" type="hidden" name="receipt" value="Reciept"/>
+                                <input class="form-control" id="fund_f_id2" type="hidden" name="fund_f_id" value=""/>
+                                <div class="fallback">
+                                    <input name="file" type="file" multiple id="document_file" />
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <!-- end #header -->

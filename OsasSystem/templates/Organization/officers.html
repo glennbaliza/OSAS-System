@@ -121,9 +121,11 @@
                                     <td width="1%" class="text-nowrap">
                                         <div class="text-nowrap">
                                             <div class="btn-group ">
+                                                {% if officer.off_position != 'President' %}
                                                 <button id="edit-btn" class="btn btn-info" data-toggle="modal" href="#modal_edit"  onClick="editPosition('{{officer.off_id}}', '{{officer.off_org_id.org_id}}')" ><i class="fas fa-edit"></i> Edit</button>
-                                                <button id="edit-btn" class="btn btn-warning" data-toggle="modal" href="#modal_upload" onClick="uploadDocu('{{officer.off_id}}', '{{officer.off_org_id.org_id}}')" ><i  class="fas fa-upload"></i> Upload</button>
-                                                <button id="edit-btn" class="btn btn-danger" onClick="removeOfficer('{{officer.off_id}}', '{{officer.off_org_id.org_id}}')" ><i class="fas fa-trash"></i> Remove</button>                                            
+                                                <button id="edit-btn" class="btn btn-danger" onClick="removeOfficer('{{officer.off_id}}', '{{officer.off_org_id.org_id}}')" ><i class="fas fa-trash"></i> Remove</button>  
+                                                {% endif %}                    
+                                                <button id="edit-btn" class="btn btn-warning" data-toggle="modal" href="#modal_upload" onClick="uploadDocu('{{officer.off_id}}', '{{officer.off_org_id.org_id}}')" ><i  class="fas fa-upload"></i> Upload</button>                      
                                             </div>
                                         </div>
                                     </td>
@@ -289,30 +291,30 @@
 
 
     });
-    // $(document).on('contextmenu', 'img', function() {
-    //   return false;
-    // })
-    // function copyToClipboard() {
-    // // Create a "hidden" input
-    // var aux = document.createElement("input");
-    // // Assign it the value of the specified element
-    // aux.setAttribute("value", "Print Screen is disable in this web page.");
-    // // Append it to the body
-    // document.body.appendChild(aux);
-    // // Highlight its content
-    // aux.select();
-    // // Copy the highlighted text
-    // document.execCommand("copy");
-    // // Remove it from the body
-    // document.body.removeChild(aux);
-    // alert("Print screen is disable, this web page contains personal information.");
-    // }
+    $(document).on('contextmenu', 'img', function() {
+      return false;
+    })
+    function copyToClipboard() {
+    // Create a "hidden" input
+    var aux = document.createElement("input");
+    // Assign it the value of the specified element
+    aux.setAttribute("value", "Print Screen is disable in this web page.");
+    // Append it to the body
+    document.body.appendChild(aux);
+    // Highlight its content
+    aux.select();
+    // Copy the highlighted text
+    document.execCommand("copy");
+    // Remove it from the body
+    document.body.removeChild(aux);
+    alert("Print screen is disable, this web page contains personal information.");
+    }
 
-    // $(window).keyup(function(e){
-    // if(e.keyCode == 44){
-    //     copyToClipboard();
-    // }
-    // }); 
+    $(window).keyup(function(e){
+    if(e.keyCode == 44){
+        copyToClipboard();
+    }
+    }); 
 
     // $(window).focus(function() {
     // $("body").show();

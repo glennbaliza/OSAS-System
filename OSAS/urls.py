@@ -60,7 +60,11 @@ urlpatterns = [
     path('id_request_completed/', views.id_request_completed, name="id_request_completed"),
     path('id_request_remove/', views.id_request_remove, name="id_request_remove"),
 
+    path('student_id_request/', views.student_id_request, name="student_id_request"),
+    path('student_id_upload/', views.student_id_upload, name="student_id_upload"),
+    path('student_id_remove/', views.student_id_remove, name="student_id_remove"),
 
+    path('osas_id_update/', views.osas_id_update, name="osas_id_update"),
 #--------------------------------------------STUDENT ROLE-------------------------------------------------------------------
     path('dashboard/', views.dashboard, name="dashboard"), 
     path('profile/', views.profile, name="profile"),
@@ -157,6 +161,7 @@ urlpatterns = [
     path('class_request_fund/', views.class_request_fund, name="class_request_fund"),
 
     path('osas_fund/', views.osas_fund, name="osas_fund"),
+    path('osas_fund_authentication/', views.osas_fund_authentication, name="osas_fund_authentication"),
 
     path('class_fund_voucher_gen/', views.class_fund_voucher_gen, name="class_fund_voucher_gen"),
     path('class_fund_populate/', views.class_fund_populate, name="class_fund_populate"),
@@ -179,6 +184,7 @@ urlpatterns = [
     path('org_concept_paper_title/', views.org_concept_paper_title, name="org_concept_paper_title"),
     path('organization_event_populate/', views.organization_event_populate, name="organization_event_populate"),
     path('organization_concept_paper_upload/', views.organization_concept_paper_upload, name="organization_concept_paper_upload"),
+    path('organization_accomplishment_upload/', views.organization_accomplishment_upload, name="organization_accomplishment_upload"),
     path('gen_report_get_info_organization/', views.gen_report_get_info_organization, name="gen_report_get_info_organization"),
     path('orgnaization_request_fund/', views.orgnaization_request_fund, name="orgnaization_request_fund"),
     path('organization_fund_reciept_upload/', views.organization_fund_reciept_upload, name="organization_fund_reciept_upload"),
@@ -193,6 +199,7 @@ urlpatterns = [
     path('fund_request_remove/', views.fund_request_remove, name="fund_request_remove"),
 
     path('event_generate_report/', views.event_generate_report, name="event_generate_report"),
+    path('event_accomplishment_report/', views.event_accomplishment_report, name="event_accomplishment_report"),
 
     path('classroom_home/', views.classroom_home, name="classroom_home"),
     path('concept_paper_class_msg/', views.concept_paper_class_msg, name="concept_paper_class_msg"),
@@ -203,6 +210,7 @@ urlpatterns = [
     path('class_concept_papers/', views.class_concept_papers, name="class_concept_papers"),
     path('classroom_conceptpaper_upload/', views.classroom_conceptpaper_upload, name="classroom_conceptpaper_upload"),
     path('classroom_concept_paper_upload/', views.classroom_concept_paper_upload, name="classroom_concept_paper_upload"),
+    path('classroom_accomplishment_upload/', views.classroom_accomplishment_upload, name="classroom_accomplishment_upload"),
     path('class_concept_paper_send/', views.class_concept_paper_send, name="class_concept_paper_send"),
     path('class_concept_paper_title/', views.class_concept_paper_title, name="class_concept_paper_title"),
     path('class_concept_paper_document_delete/', views.class_concept_paper_document_delete, name="class_concept_paper_document_delete"),

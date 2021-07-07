@@ -37,20 +37,20 @@
                 <div class="panel-heading p-25">
                     {% if j %}
                     <div class="container col-lg-6 col-md-3" style="display: inline-block;">
-                        <h2 class="panel-title" style="font-size:15px; display: inline-block; ">Pending Deposited amount: <span class="badge badge-warning" style="font-family: Roboto; font-size: 16px;">₱ {{j}}</span></h2>
+                        <h2 class="panel-title" style="font-size:15px; display: inline-block; ">Pending Deposited Amount: <span class="badge badge-warning" style="font-family: Roboto; font-size: 16px;">₱ {{j}}</span></h2>
                     </div>     
                     {% else %}
                     <div class="container col-lg-6 col-md-3" style=" display: inline-block;">
-                        <h2 class="panel-title" style="font-size:15px; display: inline-block">Pending deposited amount: <span class="badge badge-warning" style="font-family: Roboto; font-size: 16px;">₱ 0</span></h2>
+                        <h2 class="panel-title" style="font-size:15px; display: inline-block">Pending Deposited Amount: <span class="badge badge-warning" style="font-family: Roboto; font-size: 16px;">₱ 0</span></h2>
                     </div>     
                     {% endif %}
                     {% if i %}
                     <div class="container col-lg-6 col-md-4 pull-right" style=" display: inline-block;">
-                        <h2 class="panel-title" style="font-size:15px; display: inline-block;  ">Pending amount requested: <span class="badge badge-warning" style="font-family: Roboto; font-size: 16px;">₱ {{i}}</span></h2>
+                        <h2 class="panel-title" style="font-size:15px; display: inline-block;  ">Pending Amount Requested: <span class="badge badge-warning" style="font-family: Roboto; font-size: 16px;">₱ {{i}}</span></h2>
                     </div> 
                     {% else %}
                     <div class="container col-lg-6 col-md-4 pull-right" style=" display: inline-block;">
-                        <h2 class="panel-title" style="font-size:15px; display: inline-block; ">Pending amount requested: <span class="badge badge-warning" style="font-family: Roboto; font-size: 16px;">₱ 0</span></h2>
+                        <h2 class="panel-title" style="font-size:15px; display: inline-block; ">Pending Amount Requested: <span class="badge badge-warning" style="font-family: Roboto; font-size: 16px;">₱ 0</span></h2>
                     </div> 
                     {% endif %}
                 </div>
@@ -95,7 +95,7 @@
                                 <select id="filter_status" name="filter_status" class="form-control">
                                     <option selected disabled="true">--Select--</option>
                                     <option  value="PENDING">Pending</option>
-                                    <option  value="APPROVED">Approved</option>
+                                    <option  value="COMPLETED">Completed</option>
                                 </select>
                             </div>
                         </div>
@@ -110,7 +110,7 @@
             <div class="panel">
                 <div class="panel-heading p-25">
                     <div class="btn-group btn-group-toggle pull-right" data-toggle="buttons" style="margin-right: -10px; margin-bottom: -10px;">
-                        <button class="btn btn-success" data-toggle="modal" href="#modal_newfund" id="donwload" ><i class="fas fa-plus mr-2"></i>Deposit/Request Fund</button>
+                        <!-- <button class="btn btn-success" data-toggle="modal" href="#modal_newfund" id="donwload" ><i class="fas fa-plus mr-2"></i>Deposit/Request Fund</button> -->
                     </div>
                     <h2 class="panel-title" style="font-size:16px;"><i class="fas fa-calendar-alt mr-2" ></i>Fund List</h2>  
                 </div>
@@ -120,7 +120,7 @@
                             <tr>
                                 <th width="1%"></th>
                                 <th data-orderable="false">Item Descriptions</th>
-                                <th data-orderable="false">Signed Voucher</th>
+                                <th data-orderable="false" hidden>Signed Voucher</th>
                                 <th data-orderable="false">Cash Reciept</th>
                                 <th data-orderable="false">Action</th>
                             </tr>
@@ -140,12 +140,14 @@
                                                 <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id  }}"><strong>{{ fund.fund_date_requested }}</strong></dd>
                                                 {% if fund.fund_status == 'PENDING'%}
                                                 <dd class="col-sm-8 gritter- "><strong><span class="badge badge-warning  yss{{ fund.fund_id  }}">{{ fund.fund_status }}</span></strong></dd>
-                                                {% else %}
+                                                {% elif fund.fund_status == 'PROCESSING' %}
+                                                <dd class="col-sm-8 gritter- "><strong><span class="badge badge-info  yss{{ fund.fund_id  }}">{{ fund.fund_status }}</span></strong></dd>
+                                                {% elif fund.fund_status == 'COMPLETED' %}
                                                 <dd class="col-sm-8 gritter- "><strong><span class="badge badge-success  yss{{ fund.fund_id  }}">{{ fund.fund_status }}</span></strong></dd>
                                                 {% endif %}
                                             </dl>
                                         </td>
-                                        <td width="28%" >
+                                        <td width="28%" hidden >
                                             {% if file_list %}
                                                 {% for file in file_list %}
                                                     {% if fund.fund_id == file.fund_fund_id.fund_id %}  
@@ -188,22 +190,33 @@
                                             {% endif %}
                                         </td>
                                         <td width="1%" class="text-nowrap">
-                                            {% if fund.fund_status == 'PENDING' and fund.fund_type == 'REQUEST'%}
-                                            <div class="text-nowrap">
-                                                <div class="btn-group ">
-                                                    <button id="add_note" class="btn btn-info" data-toggle="modal" href="#modal_message" onClick="viewNote('{{fund.fund_org_id.org_id}}')" ><i class="fas fa-envelope" data-toggle="tooltip" data-placement="right" title="Message"  ></i></button>
+                                            {% if fund.fund_status == 'PENDING' or fund.fund_status == 'PROCESSING' %}
+                                                {% if fund.fund_type == 'REQUEST'%}
+                                                <div class="text-nowrap">
+                                                    <div class="btn-group ">
+                                                        <button id="upload-btn" class="btn btn-danger" data-toggle="modal" href="#modal_confirm" onClick="fundTrans('{{fund.fund_id }}', '{{fund.fund_org_id.org_id}}', 'org', '{{fund.fund_amount}}', '{{fund.fund_type}}')" ><i data-toggle="tooltip" data-placement="left" title="Release Fund" class="fas fa-minus"></i></button>  
+                                                        <button id="add_note"  class="btn btn-success" data-toggle="modal" href="#modal_message" onClick="viewNote('{{fund.fund_org_id.org_id}}')" ><i data-toggle="tooltip" data-placement="right" title="Message" class="fas fa-envelope" ></i></button>  
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            {% elif fund.fund_status == 'PENDING' and fund.fund_type == 'DEPOSIT'%}
+                                                {% elif fund.fund_type == 'DEPOSIT'%}
+                                                <div class="text-nowrap">
+                                                    <div class="btn-group ">
+                                                        <button id="upload-btn" class="btn btn-info" data-toggle="modal" href="#modal_confirm" onClick="fundTrans('{{fund.fund_id }}', '{{fund.fund_org_id.org_id}}', 'org', '{{fund.fund_amount}}', '{{fund.fund_type}}')" ><i data-toggle="tooltip" data-placement="left" title="Add Fund" class="fas fa-plus"></i></button>  
+                                                        <button id="upload-btn" class="btn btn-warning" data-toggle="modal" href="#modal_choices" onClick="uploadDocu('{{fund.fund_id }}', '{{fund.fund_room_id.room_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Upload" class="fas fa-upload"></i></button> 
+                                                        <button id="add_note"  class="btn btn-success" data-toggle="modal" href="#modal_message" onClick="viewNote('{{fund.fund_org_id.org_id}}')" ><i data-toggle="tooltip" data-placement="right" title="Message" class="fas fa-envelope" ></i></button>  
+                                                    </div>
+                                                </div>
+                                                {% endif %}
+                                            {% elif fund.fund_status == 'COMPLETED' %}
                                             <div class="text-nowrap">
-                                                <div class="btn-group ">
-                                                    <button id="upload-btn" class="btn btn-warning" data-toggle="modal" href="#modal_choices" onClick="uploadDocu('{{fund.fund_id }}', '{{fund.fund_org_id.org_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Upload" class="fas fa-upload"></i></button>  
-                                                    <button id="add_note" class="btn btn-info" data-toggle="modal" href="#modal_message" onClick="viewNote('{{fund.fund_org_id.org_id}}')" ><i class="fas fa-envelope" data-toggle="tooltip" data-placement="right" title="Message"  ></i></button>
+                                                <div class="btn-group "> 
+                                                    <button id="add_note"  class="btn btn-success" data-toggle="modal" href="#modal_message" onClick="viewNote('{{fund.fund_org_id.org_id}}')" ><i data-toggle="tooltip" data-placement="right" title="Message" class="fas fa-envelope" ></i></button>  
                                                 </div>
                                             </div>
                                             {% endif %}
                                         </td>
                                     </tr>
+                                <!--FOR MODAL MESSAGE CLASSROOM--> 
                                 {% elif fund.fund_room_id %}    
                                     <tr class="odd gradeA tr_  align-middle" id="{{ fund.fund_id }}">
                                         <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
@@ -216,7 +229,9 @@
                                                 <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id  }}"><strong>{{ fund.fund_date_requested }}</strong></dd>
                                                 {% if fund.fund_status == 'PENDING'%}
                                                 <dd class="col-sm-8 gritter- "><strong><span class="badge badge-warning  yss{{ fund.fund_id  }}">{{ fund.fund_status }}</span></strong></dd>
-                                                {% else %}
+                                                {% elif fund.fund_status == 'PROCESSING' %}
+                                                <dd class="col-sm-8 gritter- "><strong><span class="badge badge-info  yss{{ fund.fund_id  }}">{{ fund.fund_status }}</span></strong></dd>
+                                                {% elif fund.fund_status == 'COMPLETED' %}
                                                 <dd class="col-sm-8 gritter- "><strong><span class="badge badge-success  yss{{ fund.fund_id  }}">{{ fund.fund_status }}</span></strong></dd>
                                                 {% endif %}
                                             </dl>
@@ -264,17 +279,27 @@
                                             {% endif %}
                                         </td>
                                         <td width="1%" class="text-nowrap">
-                                            {% if fund.fund_status == 'PENDING' and fund.fund_type == 'REQUEST'%}
-                                            <div class="text-nowrap">
-                                                <div class="btn-group ">
-                                                    <button id="add_note"  class="btn btn-info" data-toggle="modal" href="#modal_message2" onClick="viewNote2('{{fund.fund_room_id.room_id}}')" ><i data-toggle="tooltip" data-placement="right" title="Message" class="fas fa-envelope" ></i></button>  
+                                            {% if fund.fund_status == 'PENDING' or fund.fund_status == 'PROCESSING' %}
+                                                {% if fund.fund_type == 'REQUEST'%}
+                                                <div class="text-nowrap">
+                                                    <div class="btn-group ">
+                                                        <button id="upload-btn" class="btn btn-danger" data-toggle="modal" href="#modal_confirm" onClick="fundTrans('{{fund.fund_id }}', '{{fund.fund_room_id.room_id}}', 'class', '{{fund.fund_amount}}', '{{fund.fund_type}}' )" ><i data-toggle="tooltip" data-placement="left" title="Release Fund" class="fas fa-minus"></i></button>  
+                                                        <button id="add_note"  class="btn btn-success" data-toggle="modal" href="#modal_message2" onClick="viewNote2('{{fund.fund_room_id.room_id}}')" ><i data-toggle="tooltip" data-placement="right" title="Message" class="fas fa-envelope" ></i></button>  
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            {% elif fund.fund_status == 'PENDING' and fund.fund_type == 'DEPOSIT'%}
+                                                {% elif fund.fund_type == 'DEPOSIT'%}
+                                                <div class="text-nowrap">
+                                                    <div class="btn-group ">
+                                                        <button id="upload-btn" class="btn btn-info" data-toggle="modal" href="#modal_confirm" onClick="fundTrans('{{fund.fund_id }}', '{{fund.fund_room_id.room_id}}', 'class', '{{fund.fund_amount}}', '{{fund.fund_type}}')" ><i data-toggle="tooltip" data-placement="left" title="Add Fund" class="fas fa-plus"></i></button>  
+                                                        <button id="upload-btn" class="btn btn-warning" data-toggle="modal" href="#modal_choices" onClick="uploadDocu('{{fund.fund_id }}', '{{fund.fund_room_id.room_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Upload" class="fas fa-upload"></i></button> 
+                                                        <button id="add_note"  class="btn btn-success" data-toggle="modal" href="#modal_message2" onClick="viewNote2('{{fund.fund_room_id.room_id}}')" ><i data-toggle="tooltip" data-placement="right" title="Message" class="fas fa-envelope" ></i></button>  
+                                                    </div>
+                                                </div>
+                                                {% endif %}
+                                            {% elif fund.fund_status == 'COMPLETED' %}
                                             <div class="text-nowrap">
                                                 <div class="btn-group ">
-                                                    <button id="upload-btn" class="btn btn-warning" data-toggle="modal" href="#modal_choices" onClick="uploadDocu('{{fund.fund_id }}', '{{fund.fund_room_id.room_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Upload" class="fas fa-upload"></i></button> 
-                                                    <button id="add_note"  class="btn btn-info" data-toggle="modal" href="#modal_message2" onClick="viewNote2('{{fund.fund_room_id.room_id}}')" ><i data-toggle="tooltip" data-placement="right" title="Message" class="fas fa-envelope" ></i></button>  
+                                                    <button id="add_note"  class="btn btn-success" data-toggle="modal" href="#modal_message2" onClick="viewNote2('{{fund.fund_room_id.room_id}}')" ><i data-toggle="tooltip" data-placement="right" title="Message" class="fas fa-envelope" ></i></button>  
                                                 </div>
                                             </div>
                                             {% endif %}
@@ -286,6 +311,39 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_confirm" role="dialog"  data-backdrop="static">
+    <div class="modal-dialog modal-md" role="document" id="myModal">
+        <div class="modal-content">
+            <input class="form-control" id="excuse_id" type="hidden" name="excuse_id"/>
+            <div class="panel panel-inverse" >
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="color: gray; margin: 6px;">×</button>  
+                <div class="panel-body">
+                    <div class="col">
+                        <h1 class="page-header mb-1">Add/Release Fund</h1>
+                        <p class="mb-5"><i class="fas fa-exclamation m-l-3" ></i> This page cointains important transaction. Authorized and verified personel are required to input needed information in order to proceed.</p>
+                        <div class="col-lg-12" id="error">
+                        </div>
+                        <div class="col-lg-12 col-md-6">
+                            <input class="form-control" id="trans_fund_id" type="hidden" name="trans_fund_id"/>
+                            <input class="form-control" id="trans_fund_cat" type="hidden" name="trans_fund_cat"/>
+                            <input class="form-control" id="trans_fund_type" type="hidden" name="trans_fund_type"/>
+                            <input class="form-control" id="trans_fund_amount" type="hidden" name="trans_fund_amount"/>
+                            <input class="form-control" id="trans_type" type="hidden" name="trans_type"/>
+                            <label>Password: <span class="text-danger">*</span></label>
+                            <input class="form-control" type="password" id="auth_pass"  name="auth_pass" placeholder="Write your password here..."></input><br>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <button class="btn btn_success col-md-3 pull-right m-l-10 " id="btn_submit" style="height: 33px; padding: 5px; background: linear-gradient(to right, #66ccff -1%, #3366ff 98%); border:none; color: white;" >Proceed<i class="far fa-paper-plane m-l-3 zoom" ></i></button>
+                    <a class="btn btn-white pull-right m-l-10" data-dismiss="modal">Cancel<i class="fas fa-reply m-l-3 zoom"></i></a>
+                </div>
+                <br>
             </div>
         </div>
     </div>
@@ -456,6 +514,26 @@
                     </div>
                     <br>
                     <button type="submit" onclick="genReport()" class="btn btn-success col-sm-8 offset-md-2">Generate Report <i class="fas fa-spinner mr-2" ></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_view_date2" role="dialog" data-backdrop="static">
+    <div class="modal-dialog modal-md" >
+        <div class="modal-content " style="background-color:whitesmoke;" >
+            <div class="panel panel-inverse" style="border-radius: 15px; background-color:whitesmoke;">
+                <button type="button" class="close"  data-dismiss="modal" aria-hidden="true" style="color: gray; margin: 6px;">×</button>
+                <div class="panel-body"  style="background-color:whitesmoke;" id="notes_body">
+                    <h5 class="page-header mb-1"><i class="fas fa-calendar-alt mr-2 " ></i> Academic School Year</h5>
+                    <div class="input-group input-daterange mt-5 col-lg-10 offset-md-1">
+                        <input type="month" id="datepicker2" name="datepicker"  min="2020-01"/>
+                        <div class="input-group-addon">to</div>
+                        <input type="month" id="datepicker3" name="datepicker2" />
+                    </div>
+                    <br>
+                    <button type="submit" onclick="genReport2()" class="btn btn-success col-sm-8 offset-md-2">Generate Report <i class="fas fa-spinner mr-2" ></i></button>
                 </div>
             </div>
         </div>
@@ -835,7 +913,57 @@ function viewNote2(room_id){
     }    
 }
 
+function fundTrans(fund_id, org_id, org, amount, type){
+    console.log(fund_id, org_id, org, amount, type)
+    $('#trans_fund_cat').val(org_id)
+    $('#trans_fund_id').val(fund_id)
+    $('#trans_fund_type').val(org)
+    $('#trans_fund_amount').val(amount)
+    $('#trans_type').val(type)
+}
 
+$('#modal_confirm').on('click','#btn_submit', function () {
+    var auth_pass = $('#auth_pass').val().trim();
+    var trans_fund_id = $('#trans_fund_id').val()
+    var trans_fund_type = $('#trans_fund_type').val()
+    var trans_fund_cat = $('#trans_fund_cat').val()
+    var trans_fund_amount = $('#trans_fund_amount').val()
+    var trans_type = $('#trans_type').val()
+    if (auth_pass,trans_fund_id,trans_fund_type,trans_fund_cat,trans_fund_amount,trans_type){
+        $.ajax({
+            url: '{% url "osas_fund_authentication" %}',
+            type: "POST",
+            data: {
+                auth_pass: auth_pass,
+                trans_fund_id:trans_fund_id,
+                trans_fund_cat:trans_fund_cat,
+                trans_fund_type:trans_fund_type,
+                trans_fund_amount:trans_fund_amount,
+                trans_type:trans_type,
+                csrfmiddlewaretoken: "{{ csrf_token }}",
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.success){
+                    swal("Success! Fund transferred!.", {
+                    icon: "success",
+                    })
+                    window.location.reload()
+                }
+                else if (data.error){
+                    swal("Error! Unathorized Personel!", {
+                    icon: "error",
+                    })
+                }
+                else if (data.error1){
+                    swal("Error! error occured.", {
+                    icon: "error",
+                    })
+                }
+            }
+        });
+    }  
+});
 
 function genVoucher(fund_id, org_id){
     var wme = window.open("","", "width = 816px, height = 1344px");
@@ -1325,6 +1453,7 @@ function viewNote(org_id){
                 studData.map(item=>{
                     const msg_date_new = moment(item.msg_date).format("YYYY-MM-DD, ddd, hh:mm A");
                     // console.log(msg_date_new, 'orig')
+                    console.log(temp_osas_date, temp_org_date)
                     if(item.msg_send_to == response.org_data){
                       
                         if(temp_org_date){
@@ -1403,12 +1532,19 @@ function viewNote(org_id){
                                 objDiv.scrollTop = objDiv.scrollHeight;
                         }
                         
+                        // temp_osas_date = msg_date_new
+                        // // console.log(temp_osas_date)
+                        // $("#modal_message #chatbox_date").append('<li>'+msg_date_new+'</li>')
+                        // var objDiv = document.getElementById("chatparent");
+                        //         objDiv.scrollTop = objDiv.scrollHeight;
+
                     }
                 })
             }
         });
     }    
 }
+
 
 function addNote(org_id){
     if (org_id) {

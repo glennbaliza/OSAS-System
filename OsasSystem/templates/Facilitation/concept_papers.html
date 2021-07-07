@@ -75,7 +75,8 @@
             <div class="panel">
                 <div class="panel-heading p-25">
                     <div class="btn-group btn-group-toggle pull-right" data-toggle="buttons" style="margin-right: -10px; margin-bottom: -10px;">
-                        <button class="btn btn-white" data-toggle="modal" href="#modal_view_date" id="donwload" ><i class="far fa-file-pdf mr-2"></i>Report</button>
+                        <button class="btn btn-white" data-toggle="modal" href="#modal_view_date" id="donwload" ><i class="far fa-file-pdf mr-2"></i>Concept Paper Report</button>
+                        <button class="btn btn-white" data-toggle="modal" href="#modal_view_date2" id="donwload" ><i class="far fa-file-pdf mr-2"></i>Accomplishment Report</button>
                     </div>
                     <h2 class="panel-title" style="font-size:16px;"><i class="fas fa-calendar-alt mr-2" ></i>Event List</h2>  
                 </div>
@@ -105,8 +106,14 @@
                                         {% elif org.title_status == "PENDING" %}
                                         <dd class="col-sm-8 gritter- "><strong><span class="badge badge-warning  yss{{ org.title_org_id.org_id  }}">{{ org.title_status }}</span></strong></dd>
                                         {% else %}  
-                                        <dd class="col-sm-8 gritter- "><strong><span class="badge badge-success  yss{{ org.title_org_id.org_id  }}">{{ org.title_status }}</span></strong></dd>
+                                            {% if org.title_accomplishment_file %}
+                                                <dd class="col-sm-8 gritter- "><a id="{{ org.title_org_id.org_id }}" href="/media/{{ org.title_accomplishment_file }}" target="blank"> <strong><span class="label label-info  yss{{ org.title_org_id.org_id }}">Accopmplisment Report <i class="far fa-file fa-md" > </i></span></strong></a></dd>
+                                                <dd class="col-sm-8 gritter- "><strong><span class="badge badge-success  yss{{org.title_org_id.org_id }}">ACCOMPLISHED</span></strong></dd>
+                                            {% else %}
+                                                <dd class="col-sm-8 gritter- "><strong><span class="badge badge-success  yss{{ org.title_org_id.org_id  }}">{{ org.title_status }}</span></strong></dd>
+                                            {% endif %}
                                         {% endif %}
+                                        
                                     </dl>
                                     </td>
                                     <td width="32%">
@@ -183,7 +190,7 @@
                                 <tr class="odd gradeA tr_  align-middle" id="{{ org.title_room_id.room_id }}">
                                     <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
                                     <td width="28%" ><dl class="row mb-0 p-2" style="line-height: .6rem;">
-                                        <dd class="col-sm-8 gritter-  ysd{{ org.title_room_id.room_id  }}" style=" font-size: 11px; "><strong>{{ org.title_room_id.room_stud_id.stud_course_id.course_code }} {{ org.title_room_id.room_year }} - {{ org.title_room_id.room_sec }}</strong></dd>
+                                        <dd class="col-sm-8 gritter-  ysd{{ org.title_room_id.room_id  }}" style=" font-size: 11px; "><strong>{{ org.title_room_id.room_stud_id.stud_course_id.course_code }} {{ org.title_room_id.room_year }}</strong></dd>
                                         <dd class="col-sm-8 gritter-  ysd{{ org.title_room_id.room_id  }} " style=" font-size: 11px; ">{{ org.title_name }}</dd>
                                         <dd class="col-sm-8 gritter-  ysd{{ org.title_room_id.room_id  }}" >{{ org.title_datecreated|date:"Y-m-d" }}</dd>
                                         {% if org.title_status == "VALIDATED" %}
@@ -191,7 +198,12 @@
                                         {% elif org.title_status == "PENDING" %}
                                         <dd class="col-sm-8 gritter- "><strong><span class="badge badge-warning  yss{{ org.title_room_id.room_id  }}">{{ org.title_status }}</span></strong></dd>
                                         {% else %}  
-                                        <dd class="col-sm-8 gritter- "><strong><span class="badge badge-success  yss{{ org.title_room_id.room_id  }}">{{ org.title_status }}</span></strong></dd>
+                                            {% if org.title_accomplishment_file %}
+                                                <dd class="col-sm-8 gritter- "><a id="{{ org.title_room_id.room_id }}" href="/media/{{ org.title_accomplishment_file }}" target="blank"> <strong><span class="label label-info  yss{{ org.title_room_id.room_id }}">Accopmplisment Report <i class="far fa-file fa-md" > </i></span></strong></a></dd>
+                                                <dd class="col-sm-8 gritter- "><strong><span class="badge badge-success  yss{{ org.title_room_id.room_id  }}">ACCOMPLISHED</span></strong></dd>
+                                            {% else %}
+                                                <dd class="col-sm-8 gritter- "><strong><span class="badge badge-success  yss{{ org.title_room_id.room_id  }}">{{ org.title_status }}</span></strong></dd>
+                                            {% endif %}
                                         {% endif %}
                                     </dl>
                                     </td>    
@@ -278,21 +290,6 @@
                         </tbody>
                     </table>
                     
-                    <!-- <table id="data-table" class="table table-striped table-bordered tabless">
-                        <thead>
-                            <tr>
-                                <th width="1%"></th>
-                                <th data-orderable="false">Organization Info</th>
-                                <th data-orderable="false">Accreditaion Documents</th>
-                                <th data-orderable="false">Notes</th>
-                                <th data-orderable="false">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-
-                        </tbody>
-                    </table> 
-                    -->
                 </div>
             </div>
         </div>
@@ -384,6 +381,26 @@
     </div>
 </div>
 
+<div class="modal fade" id="modal_view_date2" role="dialog" data-backdrop="static">
+    <div class="modal-dialog modal-md" >
+        <div class="modal-content " style="background-color:whitesmoke;" >
+            <div class="panel panel-inverse" style="border-radius: 15px; background-color:whitesmoke;">
+                <button type="button" class="close"  data-dismiss="modal" aria-hidden="true" style="color: gray; margin: 6px;">×</button>
+                <div class="panel-body"  style="background-color:whitesmoke;" id="notes_body">
+                    <h5 class="page-header mb-1"><i class="fas fa-calendar-alt mr-2 " ></i> Academic School Year</h5>
+                    <div class="input-group input-daterange mt-5 col-lg-10 offset-md-1">
+                        <input type="month" id="datepicker2" name="datepicker"  min="2020-01"/>
+                        <div class="input-group-addon">to</div>
+                        <input type="month" id="datepicker3" name="datepicker2" />
+                    </div>
+                    <br>
+                    <button type="submit" onclick="genReport2()" class="btn btn-success col-sm-8 offset-md-2">Generate Report <i class="fas fa-spinner mr-2" ></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="modal_view_date" role="dialog" data-backdrop="static">
     <div class="modal-dialog modal-md" >
         <div class="modal-content " style="background-color:whitesmoke;" >
@@ -418,9 +435,9 @@
                         <div id="dropzone">
                             <form action="{%url 'organization_upload_osas' %}" method="POST" class="dropzone needsclick" id="file-upload">
                                 {% csrf_token %}
-                                <input class="form-control" id="pk_id" type="hidden" name="pk_id"/>
-                                <input class="form-control" id="title_id" type="hidden" name="title_id"/>
-                                <input class="form-control" id="identity" type="hidden" name="identity"/>
+                                <input class="form-control" id="pk_id" type="" name="pk_id"/>
+                                <input class="form-control" id="title_id" type="" name="title_id"/>
+                                <input class="form-control" id="identity" type="" name="identity"/>
                                 <div class="fallback">
                                     <input name="file" type="file" multiple id="document_file" />
                                 </div>
@@ -911,6 +928,110 @@ function approveDocu(org_id){
     }
 } 
 
+function genReport2(){
+    var from = $('input[name="datepicker"]').val();
+    var to = $('input[name="datepicker2"]').val();
+    from_2 = from + "-01"
+    to_2 = to + "-01"
+    const date_from = moment(from)
+    const date_to = moment(to)
+    const date_year = moment(to)
+    var new_date_from = date_from.format('MMMM')
+    var new_date_to = date_to.format('MMMM')
+    var new_date_year = date_year.format('YYYY')
+    var i = 1;
+    var wme = window.open("","", "width = 816px, height = 1344px");
+    if (from && to){
+        $.ajax({
+            url: '{% url "event_accomplishment_report" %}',
+            type: "POST",
+            data: {
+                from_2: from_2,
+                to_2: to_2,
+                csrfmiddlewaretoken: "{{ csrf_token }}",
+            },
+            dataType: 'json',
+            success: function(response){
+                
+
+                const studData = response.data
+                console.log(studData.length)
+                studData.map(item=>{
+                    var type;
+                    const date_submitted = moment(item.title_date_accomplished)
+                    const date_accredited = moment(item.title_dateapproved)
+                    var new_date_submitted = date_submitted.format('LL')
+                    const new_date_accredited = date_accredited.format('LL')
+                    if (item.title_room_id_id){
+                        type = 'classroom'
+                        model_id = item.title_room_id_id
+                        // console.log(type)
+                    }
+                    else if (item.title_org_id_id){
+                        type = 'organization'
+                        model_id = item.title_org_id_id
+                        // console.log(type)
+                    }
+                    $.ajax({
+                        url: '{% url "gen_report_get_info_classroom" %}',
+                        type: "POST",
+                        data: {
+                            type:type,
+                            model_id: model_id,
+                            csrfmiddlewaretoken: "{{ csrf_token }}",
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.success) {
+                                // console.log(data.success)
+                                
+                                if (i == 1){
+                                    // console.log('print')
+                                   
+
+                                    wme.document.write(
+                                    '<page size="Letter" style="word-wrap:break-word; margin: 0px;">')
+                                        
+                                    wme.document.write('<div class="row" style="margin-top: -5px;"><img src="/media/PUPLOGO.png" style="width: auto; height: 92.2204724411px; margin-left: 35.795275590551px; margin-right: 100px;"/><div style="margin-right: 85px; float: right; margin-top: -15px; padding: 5px;"><p style="font-family: Calibri; font-size: 14.5px; color: black; margin-left: -120px">Republic of the Philippines</p><p style="font-family: Californian FB; font-size: 15.5px; color: black; margin-top: -15px; margin-left: -120px;"><b>POLYTECHNIC UNIVERSITY OF THE PHILIPPINES</b></p><p style="font-family: Tahoma; color: black; margin-top: -20px; font-size: 14.5px; margin-left: -120px;"><b>QUEZON CITY BRANCH</b></p><p style="font-family: Times New Roman; color: black; margin-top: -15px; font-size: 18.5px; margin-left: -120px;"><b>OFFICE OF THE STUDENT AFFAIRS AND SERVICES</b></p></div></div><br/><div class="container-fluid" style="background: black; height: 2px; margin-top: -10px; margin-left: 47px;"></div>')
+
+                                    wme.document.write('<div class="row" style="margin-top: 20px; text-align: center;"><p style="font-family: Arial; font-size: 18px; color: black;"><b>FACILITATION OF STUDENTS’ CO-CURRICULAR & EXTRA-CURRICULAR ACTIVITIES</b></p></div>')
+                                    wme.document.write('<div class="row" style="margin-top: -15px; text-align: center;"><p style="font-family: Arial; font-size: 17px; color: black;"><b>'+new_date_from+' - '+new_date_to+' '+new_date_year+'</b></p></div><br>')
+
+                                    wme.document.write("<table style='border-collapse: collapse; width: 100%; font-family: Arial; font-size: 14.5px;' id='data-table' class='table table-bordered' ><thead ><tr><th  width='29%' style='border: 1px solid black; text-align: center; padding: 5px; font-size:15px; background-color: lightgray;'>NAME OF ORGANIZATION</th><th  width='35%' style='border: 1px solid black; text-align: center; padding: 5px; font-size:15px; background-color: lightgray;'>ACTIVITY</th> <th width='18%' style='border: 1px solid black; text-align: center; padding: 5px; font-size: 14.5px; background-color: lightgray;'>DATE CONDUCTED</th><th width='18%' style='border: 1px solid black; text-align: center; font-size:14.5px; background-color: lightgray; padding: 5px;'>DATE SUBMITTED</th></tr></thead><tbody>");
+                                }
+                                // console.log(data.success)
+
+                                wme.document.write("<tr class='odd gradeA tr_'><td width='29%' style='border: 1px solid black; text-align: center; font-family: Arial; font-size:14.5px'>"+data.success+"</td><td width='35%' style='border: 1px solid black; text-align: center; font-family: Arial; font-size:14.5px'>"+item.title_name+"</td><td style='border: 1px solid black; text-align: center; font-family: Arial; font-size:14.5px' width='18%'>"+new_date_accredited+"</td><td style='border: 1px solid black; text-align: center; font-family: Arial; font-size:14.5px' width='18%'>"+new_date_submitted+"</td></tr>")
+
+                                if (i == studData.length){
+                                    // console.log('last print')
+                                    wme.document.write("</tbody></table>")
+                                    wme.document.write('</page>')
+                                
+                                    wme.document.close();
+                                    wme.focus()
+                                    wme.print();
+                                    wme.close();
+                                }
+                                i += 1
+                            }
+                            if (data.error) {
+                                
+                            }
+                            
+                        }
+                    });
+                   
+                })
+
+                
+            },
+            error: function(error){
+                console.log(error)
+            }
+        })
+    }
+}
 
 function genReport(){
     var from = $('input[name="datepicker"]').val();
@@ -1111,7 +1232,7 @@ function uploadDocu2(room_id, title_id){
         $('#pk_id').val(room_id);
         $('#title_id').val(title_id);
         $('#identity').val(identity);
-        console.log(room_id, identity, title_id)
+        console.log("room_id = " + room_id, " type = " + identity, " title_id = " + title_id)
     }
 } 
 CKEDITOR.replace('essay_text',{

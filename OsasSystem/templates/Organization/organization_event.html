@@ -111,6 +111,9 @@
                                     <td width="28%" ><dl class="row mb-0 p-2" style="line-height: .6rem;">
                                         <dd class="col-sm-8 gritter-  ysd{{ org.title_org_id.org_id  }}" style=" font-size: 11px; "><strong>{{ org.title_name }}</strong></dd>
                                         <dd class="col-sm-8 gritter-  ysd{{ org.title_org_id.org_id  }}" >{{ org.title_datecreated|date:"Y-m-d" }}</dd>
+                                        {% if org.title_accomplishment_file %}
+                                        <dd class="col-sm-8 gritter- "><a id="{{ org.title_room_id.room_id }}" href="/media/{{ org.title_accomplishment_file }}" target="blank"> <strong><span class="label label-info  yss{{ org.title_room_id.room_id }}">Accopmplisment Report <i class="far fa-file fa-md" > </i></span></strong></a></dd>
+                                        {% endif %}
                                         {% if org.title_status == "VALIDATED" %}
                                         <dd class="col-sm-8 gritter- "><strong><span class="badge badge-info  yss{{ org.title_org_id.org_id  }}">{{ org.title_status }}</span></strong></dd>
                                         {% elif org.title_status == "PENDING" %}
@@ -118,6 +121,7 @@
                                         {% else %}  
                                         <dd class="col-sm-8 gritter- "><strong><span class="badge badge-success  yss{{ org.title_org_id.org_id  }}">{{ org.title_status }}</span></strong></dd>
                                         {% endif %}
+                                       
                                     </dl>
                                     </td>
                                     <td width="32%">
@@ -204,6 +208,14 @@
                                                 </div>
                                             </dl>
                                         {% else %}
+                                        {% if org.title_accomplishment_file %}
+                                            {% else %}
+                                            <dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                                <div class="col-sm-12">
+                                                    <button id="edit-btn" class="btn btn-warning" onClick="uploadAccomplish('{{ org.title_org_id.org_id  }}', '{{org.title_id}}', '{{org.title_name}}')" ><i data-toggle="tooltip" data-placement="left" title="Upload Accomplishment Report" class="fas fa-upload"></i></button>
+                                                </div>
+                                            </dl>
+                                            {% endif %}
                                         {% endif %}
                                     </td>
                                 </tr>
@@ -370,11 +382,38 @@
             <div class="panel panel-inverse" >
                 <button type="button" class="close" data-dismiss="modal" id="close_upload" aria-hidden="true" style="color: gray; margin: 6px;">×</button>  
                 <div class="panel-body">
+                    <h1 class="page-header mb-1"><i class="fas fa-upload mr-2" ></i> Upload Concept Papers</h1>
+                    <p class="mb-5">Page Descriptions</p>
                     <div id="dropzone">
                         <form action="{%url 'organization_concept_paper_upload' %}" method="POST" class="dropzone" id="file-upload">
                             {% csrf_token %}
                             <input class="form-control" id="org_id2" type="hidden" name="org_id2"/>
                             <input class="form-control" id="title_id2" type="hidden" name="title_id2"/>
+                            <div class="fallback">
+                                <input name="file" type="file" multiple id="document_file" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_upload2" role="dialog"  data-backdrop="static">
+    <div class="modal-dialog modal-md" role="document" id="myModal">
+        <div class="modal-content">
+            <input class="form-control" id="excuse_id" type="hidden" name="excuse_id"/>
+            <div class="panel panel-inverse" >
+                <button type="button" class="close" data-dismiss="modal" id="close_upload2" aria-hidden="true" style="color: gray; margin: 6px;">×</button>  
+                <div class="panel-body">
+                    <h1 class="page-header mb-1"><i class="fas fa-upload mr-2" ></i> Upload Accomplishment Report</h1>
+                    <p class="mb-5">Page Descriptions</p>
+                    <div id="dropzone">
+                        <form action="{%url 'organization_accomplishment_upload' %}" method="POST" class="dropzone" id="file-upload2">
+                            {% csrf_token %}
+                            <input class="form-control" id="org_id3" type="" name="org_id2"/>
+                            <input class="form-control" id="title_id3" type="" name="title_id2"/>
                             <div class="fallback">
                                 <input name="file" type="file" multiple id="document_file" />
                             </div>
@@ -458,6 +497,43 @@ function uploadDocu(room_id, title_id, title_name){
     $('#title_id2').val(title_id)
     $('#org_id2').val(room_id)
 }
+
+function uploadAccomplish(room_id, title_id, title_name){
+    $('#title_id3').val(title_id)
+    $('#org_id3').val(room_id)
+     
+    swal({
+            title: "Do you want to proceed?",
+            text: "File cannot be change or edit once uploaded!", 
+            icon: "warning",
+            buttons: {
+                cancel: {
+                    text: 'Cancel',
+                    value: null,
+                    visible: true,
+                    className: 'btn btn-default',
+                    closeModal: true,
+                },
+                confirm: {
+                    text: 'Yes',
+                    value: true,
+                    visible: true,
+                    className: 'btn btn-warning',
+                    closeModal: true
+                }
+            }
+            })
+            .then((willDelete) => {
+            if (willDelete) {
+                $('#modal_upload2').modal() 
+            } 
+        });
+    }
+
+$('#modal_upload2').on('click','#close_upload2', function () {
+    window.location.reload()
+});
+
 
 $('#modal_upload').on('click','#close_upload', function () {
     window.location.reload()

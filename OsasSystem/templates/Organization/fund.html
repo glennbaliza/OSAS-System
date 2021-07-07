@@ -141,7 +141,7 @@
                             <tr>
                                 <th width="1%"></th>
                                 <th data-orderable="false">Item Descriptions</th>
-                                <th data-orderable="false">Signed Voucher</th>
+                                <th data-orderable="false" hidden>Signed Voucher</th>
                                 <th data-orderable="false">Cash Reciept</th>
                                 <th data-orderable="false">Action</th>
                             </tr>
@@ -164,7 +164,7 @@
                                             {% endif %}
                                         </dl>
                                     </td>
-                                    <td width="28%" >
+                                    <td width="28%" hidden>
                                         {% if file_list %}
                                             {% for file in file_list %}
                                                 {% if fund.fund_id == file.fund_fund_id.fund_id %}  
@@ -210,8 +210,8 @@
                                         {% if fund.fund_status == 'PENDING' and fund.fund_type == 'REQUEST'%}
                                         <div class="text-nowrap">
                                             <div class="btn-group ">
-                                                <button id="upload-btn" class="btn btn-warning" data-toggle="modal" href="#modal_choices" onClick="uploadDocu('{{fund.fund_id }}', '{{fund.fund_org_id.org_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Upload" class="fas fa-upload"></i></button>
-                                                <button id="edit-btn" class="btn btn-success" onClick="genVoucher('{{fund.fund_id }}', '{{fund.fund_org_id.org_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Download Voucher" class="fas fa-download"></i></button>
+                                                <button id="upload-btn" class="btn btn-warning" data-toggle="modal" href="#modal_upload2" onClick="uploadDocu('{{fund.fund_id }}', '{{fund.fund_org_id.org_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Upload" class="fas fa-upload"></i></button>
+                                                <button hidden id="edit-btn" class="btn btn-success" onClick="genVoucher('{{fund.fund_id }}', '{{fund.fund_org_id.org_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Download Voucher" class="fas fa-download"></i></button>
                                                 <button id="edit-btn" class="btn btn-info" data-toggle="modal" href="#modal_editfund" onClick="editDocu('{{fund.fund_id }}', '{{fund.fund_org_id.org_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Edit" class="fas fa-edit"></i></button>
                                                 <button id="edit-btn" class="btn btn-danger" onClick="removeEvent('{{fund.fund_id }}', '{{fund.fund_org_id.org_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Remove" class="fas fa-trash"></i></button>    
                                             </div>
@@ -219,7 +219,7 @@
                                         {% elif fund.fund_status == 'PENDING' and fund.fund_type == 'DEPOSIT'%}
                                         <div class="text-nowrap">
                                             <div class="btn-group ">
-                                                <button id="upload-btn" class="btn btn-warning" data-toggle="modal" href="#modal_choices" onClick="uploadDocu('{{fund.fund_id }}', '{{fund.fund_org_id.org_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Upload" class="fas fa-upload"></i></button>
+                                                <button id="upload-btn" class="btn btn-warning" data-toggle="modal" href="#modal_upload2" onClick="uploadDocu('{{fund.fund_id }}', '{{fund.fund_org_id.org_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Upload" class="fas fa-upload"></i></button>
                                                 <button id="edit-btn" class="btn btn-info" data-toggle="modal" href="#modal_editfund" onClick="editDocu1('{{fund.fund_id }}', '{{fund.fund_org_id.org_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Edit" class="fas fa-edit"></i></button>
                                                 <button id="edit-btn" class="btn btn-danger" onClick="removeEvent('{{fund.fund_id }}', '{{fund.fund_org_id.org_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Remove" class="fas fa-trash"></i></button>    
                                             </div>
@@ -227,7 +227,7 @@
                                         {% else %}
                                             <div class="text-nowrap">
                                                 <div class="btn-group ">
-                                                    <button id="upload-btn" class="btn btn-warning" data-toggle="modal" href="#modal_choices" onClick="uploadDocu('{{fund.fund_id }}', '{{fund.fund_org_id.org_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Upload" class="fas fa-upload"></i></button>
+                                                    <button id="upload-btn" class="btn btn-warning" data-toggle="modal" href="#modal_upload2" onClick="uploadDocu('{{fund.fund_id }}', '{{fund.fund_org_id.org_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Upload" class="fas fa-upload"></i></button>
                                                 </div>
                                             </div>
                                         {% endif %}

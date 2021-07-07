@@ -5,6 +5,7 @@
     <link href="{% static 'OsasSystem/assets/plugins/DataTables/media/css/dataTables.bootstrap.min.css' %}" rel="stylesheet" />
 	<link href="{% static 'OsasSystem/assets/plugins/DataTables/extensions/Responsive/css/responsive.bootstrap.min.css' %}" rel="stylesheet" />
 
+    <link href="{%static 'OsasSystem/assets/plugins/dropzone/min/dropzone.min.css' %}" rel="stylesheet" />
 {% endblock%}
 
 {% block title %}
@@ -54,9 +55,9 @@
                             <div class="col-sm-12">
                                 <select id="filter_status" name="filter_status" class="form-control">
                                     <option selected disabled="true">--Select--</option>
-                                    <option  value="Pending">Pending</option>
-                                    <option  value="On Process">On Process</option>
-                                    <option  value="Completed">Completed</option>
+                                    <option  value="ON PROCESS">On Process</option>
+                                    <option  value="FOR CLAIMING">For Claiming</option>
+                                    <option  value="CLAIMED">Claimed</option>
                                 </select>
                             </div>
                         </div>
@@ -72,8 +73,13 @@
                 <input class="form-control" id="stud_no_" type="hidden" name="stud_no_" value="{{request.session.session_user_no}}"/>
                 <div class="panel-heading p-25">
                     <div class="btn-group btn-group-toggle pull-right" data-toggle="buttons">
-                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal_add" onClick="addRequest('{{request.session.session_user_no}}')" id="test"><i class="fas fa-plus mr-2" ></i>New Request</button>
-                        <button class="btn btn-gray" id="donwload">Print  <i class="fas fa-print text-white-lighter f-s-16"></i></button>
+                        {% if s %}
+                            <button type="button" class="btn btn-success" onClick="addRequest2('{{request.session.session_user_no}}')" id="test"><i class="fas fa-plus mr-2" ></i>Request Lost Id</button>
+                        {% else %}
+                         <button type="button" class="btn btn-success" onClick="addRequest('{{request.session.session_user_no}}')" id="test"><i class="fas fa-plus mr-2" ></i>Request New Id</button>
+                        {% endif %}
+                        
+                        <!-- <button class="btn btn-gray" id="donwload">Print  <i class="fas fa-print text-white-lighter f-s-16"></i></button> -->
                     </div>
                     <h2 class="panel-title" style="font-size:16px;"><i class="fas fa-address-card mr-2" ></i>Lost ID</h2>
                 </div>
@@ -89,6 +95,7 @@
                                 <th data-orderable="false">Student Information</th>
                                 <th data-orderable="false">Transaction Detail</th>
                                 <th hidden data-orderable="false">Personal Detail</th>
+                                <th data-orderable="false">Attachment</th>
                                 <th data-orderable="false">Action</th>
                             </tr>
                         </thead>
@@ -103,16 +110,20 @@
                                 </dl>
                                 </td>
                                 <td><dl class="row mb-0 p-2" style="line-height: .6rem;">
-                                    <dd class="col-sm-8 gritter-" id="IDLost_id" ><strong>{{ id.request_id }}</strong></dd>
-                                    {% if id.lost_id_status == 'PENDING'%}
-                                    <dd class="col-sm-8 gritter-"><strong><span class="badge badge-info">PENDING</span></strong></dd>
-                                    {% elif id.lost_id_status == 'PROCESSING'%}
-                                    <dd class="col-sm-8 gritter-"><strong><span class="badge badge-warning">ON PROCESS</span></strong></dd>
+                                    {% if id.lost_id_type == 'NEW ID'%}
+                                        <dd class="col-sm-8 gritter-" id="IDLost_id" ><strong>{{ id.request_id }} <span class="label label-danger"> NEW ID</span></strong></dd>
                                     {% else %}
-                                    <dd class="col-sm-8 gritter-"><strong><span class="badge badge-danger">COMPLETED</span></strong></dd>
+                                        <dd class="col-sm-8 gritter-" id="IDLost_id" ><strong>{{ id.request_id }} <span class="label label-danger"> LOST ID</span></strong></dd>
+                                    {% endif %}
+                                    {% if id.lost_id_status == 'ON PROCESS'%}
+                                    <dd class="col-sm-8 gritter-"><strong><span class="badge badge-info">ON PROCESS</span></strong></dd>
+                                    {% elif id.lost_id_status == 'FOR CLAIMING'%}
+                                    <dd class="col-sm-8 gritter-"><strong><span class="badge badge-warning">FOR CLAIMING</span></strong></dd>
+                                    {% else %}
+                                    <dd class="col-sm-8 gritter-"><strong><span class="badge badge-success">CLAIMED</span></strong></dd>
                                     {% endif %}
                                     <dd class="col-sm-8" id="IDLost_date">{{ id.date_updated|date:"Y-m-d" }}</dd>
-                                </dl>
+                                </dl> 
                                 </td>
                                 <td hidden><dl class="row mb-0 p-2" style="line-height: .6rem;">
                                     <dd class="col-sm-8 gritter-" id="IDLost_status" >{{ id.lost_id_status }}</dd>
@@ -125,9 +136,47 @@
                                     <dd class="col-sm-8" id="IDLost_contact">{{days_count }}</dd>
                                 </dl>
                                 </td>
-                                <td class="align-middle"><div class="text-nowrap"><div>
-                                    <button class="btn btn-white" id="btn_view" 
-                                    onClick="viewID('{{ id.lost_id }}')"><i class="fas fa-search mr-2"></i>View</button>
+                                <td width="32%">
+                                    {% if student_id_file %}
+                                        {% for osas_t_id_file in student_id_file %}
+                                            {% if osas_t_id_file.id_lost_id.lost_id == id.lost_id %}
+                                                {% if osas_t_id_file.id_file_ext == 'docx'%}
+                                                    <div style=" display: inline-block; padding: 2px;">
+                                                        <a id="{{ classroom.room_id  }}" href="/media/{{ osas_t_id_file.id_file }}" target="blank" style="color: blue;"><i class="far fa-file-word fa-2x" > </i></a>
+                                                    </div>
+                                                    <div style="display: inline-block;">
+                                                        <a id="{{ classroom.room_id  }}" href="/media/{{ osas_t_id_file.id_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ osas_t_id_file.id_file }} </a>
+                                                    </div></br>
+                                                {% elif osas_t_id_file.id_file_ext == 'pdf'%}
+                                                    <div style="display: inline-block; padding: 2px;">
+                                                        <a id="{{ classroom.room_id  }}" href="/media/{{ osas_t_id_file.id_file }}" target="blank" style="color: red;"><i class="far fa-file-pdf fa-2x" > </i></a>
+                                                    </div>
+                                                    <div style="display: inline;">
+                                                        <a id="{{ classroom.room_id  }}" href="/media/{{ osas_t_id_file.id_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ osas_t_id_file.id_file }}</a>
+                                                    </div><br>
+                                                {% else %}
+                                                    <div style="display: inline-block; padding: 2px;">
+                                                        <a id="{{ classroom.room_id  }}" href="/media/{{ osas_t_id_file.id_file }}" target="blank" style="color: rgb(0, 255, 106);"><i class="far fa-images fa-2x" > </i></a>
+                                                    </div>
+                                                    <div style="display: inline;">
+                                                        <a id="{{ classroom.room_id  }}" href="/media/{{ osas_t_id_file.id_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ osas_t_id_file.id_file }}</a>
+                                                    </div><br>
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                </td>
+                                <td class="align-middle"><div class="text-nowrap">
+                                    {% if id.lost_id_status == 'CLAIMED' or id.lost_id_status == 'FOR CLAIMING'%}
+                                    
+                                    {% else %}
+                                    <dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                        <div class="col-sm-12">
+                                            <button id="edit-btn" class="btn btn-warning" onClick="uploadNew('{{ id.lost_id  }}', '{{id.request_id}}', '{{id.lost_id_type}}')" ><i data-toggle="tooltip" data-placement="right" title="Upload" class="fas fa-upload"></i></button>
+                                            <button id="edit-btn" class="btn btn-danger" onClick="requestRemove('{{ id.lost_id  }}', '{{id.request_id}}', '{{id.lost_id_type}}')"><i data-toggle="tooltip" data-placement="right" title="Remove" class="fas fa-trash"></i></button>
+                                        </div>
+                                    </dl>
+                                    {% endif %}
                                   </div>
                                 </td>
                             </tr>
@@ -141,6 +190,8 @@
                                 <th data-orderable="false"></th>
                                 <th data-orderable="false">Student Information</th>
                                 <th data-orderable="false">Transaction Detail</th>
+                                <th hidden data-orderable="false">Personal Detail</th>
+                                <th hidden data-orderable="false">Attachment</th>
                                 <th data-orderable="false">Action</th>
                             </tr>
                         </thead>
@@ -151,6 +202,34 @@
         </div>
     </div>
 </div>
+
+
+<div class="modal fade" id="modal_receipt_new" role="dialog"  data-backdrop="static">
+    <div class="modal-dialog modal-md" role="document" id="myModal">
+        <div class="modal-content">
+            <input class="form-control" id="excuse_id" type="hidden" name="excuse_id"/>
+            <div class="panel panel-inverse" >
+                <button type="button" class="close" data-dismiss="modal" id="close_upload" aria-hidden="true" style="color: gray; margin: 6px;">×</button>  
+                <div class="panel-body">
+                    <h1 class="page-header mb-1"><i class="fas fa-calendar-alt mr-2" ></i> Upload 2x2 ID Picture</h1>
+                    <p class="mb-5">Upload 2x2 ID picture in order to process the request.</p>
+                    <div id="dropzone">
+                        <form action="{%url 'student_id_upload' %}" method="POST" class="dropzone" id="file-upload">
+                            {% csrf_token %}
+                            <input class="form-control" id="lost_id" type="hidden" name="lost_id"/>
+                            <input class="form-control" id="request_id" type="hidden" name="request_id" />
+                            <input class="form-control" id="id_type" type="hidden" name="id_type" />
+                            <div class="fallback">
+                                <input name="file" type="file" multiple id="document_file" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <div class="modal fade" id="modal_view" role="dialog" data-backdrop="static">
     <div class="modal-dialog modal-lg"  role="document">
@@ -207,8 +286,22 @@
 {% endblock %}
 
 {% block page-level %}
-	<script src="{%static 'OsasSystem/assets/plugins/bootstrap-sweetalert/sweetalert.min.js' %}"></script>
-	<script src="{%static 'OsasSystem/assets/js/demo/ui-modal-notification.demo.min.js' %}"></script>
+<script src="{%static 'OsasSystem/assets/plugins/bootstrap-sweetalert/sweetalert.min.js' %}"></script>
+<script src="{%static 'OsasSystem/assets/js/demo/ui-modal-notification.demo.min.js' %}"></script>
+<script src="{%static 'OsasSystem/assets/index.js' %}"></script>
+
+<script src="{%static 'OsasSystem/assets/plugins/isotope/jquery.isotope.min.js' %}"></script>
+  <script src="{%static 'OsasSystem/assets/plugins/lightbox/js/lightbox.min.js' %}"></script>
+<script src="{%static 'OsasSystem/assets/js/demo/gallery.demo.min.js' %}"></script>
+
+<script src="{%static 'OsasSystem/assets/plugins/dropzone/min/dropzone.min.js' %}"></script>
+<script src="{%static 'OsasSystem/assets/plugins/highlight/highlight.common.js' %}"></script>
+<script src="{%static 'OsasSystem/assets/js/demo/render.highlight.js' %}"></script>
+
+<script src="https://cdn.ckeditor.com/4.16.0/standard-all/ckeditor.js"></script>
+
+<script src="{%static 'OsasSystem/assets/js/demo/render.highlight.js' %}"></script>
+<script src="{%static 'OsasSystem/assets/plugins/highlight/highlight.common.js' %}"></script>
 {% endblock %}
 
 {% block page-js %}
@@ -222,10 +315,118 @@
 </script>
 <script>
 
+function uploadNew(lost_id, request_id, id_type){
+    console.log(lost_id, request_id, id_type)
+    $('#modal_receipt_new').modal()
+    $('#lost_id').val(lost_id)
+    $('#request_id').val(request_id)
+    $('#id_type').val(id_type)
+}
+
+$("#modal_receipt_new").on('click','#close_upload',function(){
+    window.location.reload()
+})
+
+function requestRemove(lost_id, request_id, id_type){
+    console.log(lost_id, request_id, id_type)
+    swal({
+            title: "Are you sure?",
+            text: "You want to remove this request?", 
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+          if (willDelete) {
+            $.ajax({
+                type: "POST",
+                url: "{% url 'student_id_remove' %}",
+                data:{
+                    request_id:request_id,
+                    id_type:id_type,
+                    lost_id:lost_id,
+                    csrfmiddlewaretoken: "{{ csrf_token }}",
+                },
+                success: function(data){
+                    if(data.success){
+                        swal("Success! request has been removed.", {
+                        icon: "success",
+                        })
+                        $("#data-table #" + lost_id).fadeOut("slow", function(){
+                                $("#data-table #" + lost_id).remove();
+                                window.location.reload()
+                            })
+                    }
+                },
+                error: function(error){
+                    console.log(error);
+                }
+            
+            });
+        
+        } 
+    });
+}
+function addRequest2(session_user_no){
+		console.log(session_user_no)
+        stud = session_user_no
+        request_type = 'lost_id'
+		swal({
+            title: "Are you sure?",
+            text: "You want to request lost ID?", 
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+          if (willDelete) {
+            //   $('#modal_receipt').modal()
+
+		$.ajax({
+			type: "POST",
+			url: "{% url 'student_id_request' %}",
+			data:{
+				stud: stud,
+                request_type:request_type,
+				csrfmiddlewaretoken: "{{ csrf_token }}",
+			},
+			success: function(data){
+                if(data.error){
+                    swal("Error! there is an unclaimed new ID!", {
+		            icon: "error",
+		            })
+                }
+                else if (data.error1){
+				swal("Error! you have on processing status for Lost ID.", {
+		            icon: "error",
+		            })
+                }
+                else if (data.error2){
+				swal("Error! you have for claiming status for Lost ID.", {
+		            icon: "error",
+		            })
+                }
+                else{
+				swal("Success! request has been completed", {
+		            icon: "success",
+		            })
+                    window.location.reload()
+                }
+			},
+			error: function(error){
+				console.log(error);
+			}
+		
+        });
+        
+          } 
+        });
+    }
 
 function addRequest(session_user_no){
 		console.log(session_user_no)
         stud = session_user_no
+        request_type = 'new_id'
 		swal({
             title: "Are you sure?",
             text: "You want to request new ID?", 
@@ -235,11 +436,14 @@ function addRequest(session_user_no){
         })
         .then((willDelete) => {
           if (willDelete) {
+            //   $('#modal_receipt').modal()
+
 		$.ajax({
 			type: "POST",
-			url: "{% url 'add_id_request' %}",
+			url: "{% url 'student_id_request' %}",
 			data:{
 				stud: stud,
+                request_type:request_type,
 				csrfmiddlewaretoken: "{{ csrf_token }}",
 			},
 			success: function(data){
@@ -265,31 +469,33 @@ function addRequest(session_user_no){
                     
                 }
                 else{
+                    
 				swal("Success! request has been completed", {
 		            icon: "success",
 		            })
-                    lost_id = data.sanction
-                    sanction_id = data.sanction_id
-                    console.log(data.sanction)
-                    if (data){
-                        $.ajax({
-                            type: "POST",
-                            url: "{% url 'lost_id_notif_stud' %}",
-                            data:{
-                                lost_id: lost_id,
-                                sanction_id:sanction_id,
-                                stud: stud,
-                                csrfmiddlewaretoken: "{{ csrf_token }}",
-                            },
-                            success: function(data){
-                                console.log(lost_id,sanction_id)
-                            },
-                        });
+                    window.location.reload()
+                    // lost_id = data.sanction
+                    // sanction_id = data.sanction_id
+                    // console.log(data.sanction)
+                    // if (data){
+                    //     $.ajax({
+                    //         type: "POST",
+                    //         url: "{% url 'lost_id_notif_stud' %}",
+                    //         data:{
+                    //             lost_id: lost_id,
+                    //             sanction_id:sanction_id,
+                    //             stud: stud,
+                    //             csrfmiddlewaretoken: "{{ csrf_token }}",
+                    //         },
+                    //         success: function(data){
+                    //             console.log(lost_id,sanction_id)
+                    //         },
+                    //     });
                        
-                        $('#modal_add').modal('hide');
-                            window.location.reload()
+                    //     $('#modal_add').modal('hide');
+                    //         window.location.reload()
 
-                    }
+                    // }
                 }
 			},
 			error: function(error){

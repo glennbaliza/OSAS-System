@@ -6,7 +6,7 @@ from django.views import View
 from django.shortcuts import render, redirect, get_object_or_404, reverse, HttpResponse
 from django.http import HttpResponseRedirect, Http404, JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
-from .models import osas_r_userrole, osas_r_course, osas_r_section_and_year, osas_r_personal_info, osas_r_auth_user, osas_t_id, osas_t_sanction, osas_r_code_title, osas_r_disciplinary_sanction, osas_r_designation_office, osas_t_excuse, osas_t_complaint, osas_notif, organization, org_accreditation, organization_chat, org_concept_paper,classroom, concept_paper_title, fund, officer, fund_file
+from .models import osas_r_userrole, osas_r_course, osas_r_section_and_year, osas_r_personal_info, osas_r_auth_user, osas_t_id, osas_t_sanction, osas_r_code_title, osas_r_disciplinary_sanction, osas_r_designation_office, osas_t_excuse, osas_t_complaint, osas_notif, organization, org_accreditation, organization_chat, org_concept_paper,classroom, concept_paper_title, fund, officer, fund_file, osas_t_id_file
 from django.contrib import messages
 from django.views.decorators.cache import cache_control
 from datetime import datetime, date, timedelta
@@ -1041,10 +1041,89 @@ def add_ref(request):
 def id_request_form(request):
     return render(request, 'Role_Student/id_request_form.html')
 
+def student_id_request(request):
+    chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
+    randomstr =''.join((random.choice(chars)) for x in range(8))
+    r_id = randomstr
+    stud_no = request.POST.get('stud')
+    request_type = request.POST.get('request_type')
+    today = datetime.today()
+    if request_type == 'new_id':
+        try:
+            t = osas_t_id.objects.get(lost_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), lost_id_type = 'NEW ID')
+            data = {'error':True}
+            return JsonResponse(data, safe=False)
+        except ObjectDoesNotExist:
+            osas_t_id.objects.create(request_id = r_id, lost_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), lost_id_type = 'NEW ID', date_updated = today)
+            data = {'success':True}
+            return JsonResponse(data, safe=False)
+    elif request_type == 'lost_id':
+        try:
+            t = osas_t_id.objects.get(lost_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), lost_id_type = 'NEW ID', lost_id_status = 'CLAIMED')
+            l = osas_t_id.objects.filter(lost_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), lost_id_type = 'LOST ID').count()
+            if l >= 1:
+                print('equal')
+                o = osas_t_id.objects.filter(lost_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), lost_id_type = 'LOST ID', lost_id_status = 'ON PROCESS').count()
+                if o:
+                    data = {'error1':True}
+                    return JsonResponse(data, safe=False)
+                else:
+                    p = osas_t_id.objects.filter(lost_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), lost_id_type = 'LOST ID', lost_id_status = 'FOR CLAIMING').count()
+                    if p:
+                        data = {'error2':True}
+                        return JsonResponse(data, safe=False)
+                    else:
+                        osas_t_id.objects.create(request_id = r_id, lost_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), lost_id_type = 'LOST ID', date_updated = today, lost_num_request = int(l) + 1)
+                        data = {'success':True}
+                        return JsonResponse(data, safe=False)
+                    return HttpResponse('')
+                return HttpResponse('')
+            else:
+                osas_t_id.objects.create(request_id = r_id, lost_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), lost_id_type = 'LOST ID', date_updated = today, lost_num_request = 1)
+                data = {'success':True}
+                return JsonResponse(data, safe=False)
+            return HttpResponse('')
+        except ObjectDoesNotExist:  
+            data = {'error':True}
+            return JsonResponse(data, safe=False)
+    return HttpResponse('')
+
+def student_id_remove(request):
+    request_id = request.POST.get('request_id')
+    id_type = request.POST.get('id_type')
+    lost_id = request.POST.get('lost_id')
+    try:
+        t = osas_t_id.objects.get(lost_id = lost_id, request_id = request_id, lost_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), lost_id_type = id_type )
+        d_list = osas_t_id_file.objects.filter(id_lost_id = osas_t_id.objects.get(lost_id = lost_id))
+        for x in d_list:
+            x.delete()
+        t.delete()
+        data = {'success':True}
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        data = {'error':True}
+        return JsonResponse(data, safe=False)
+
+def student_id_upload(request):
+    lost_id = request.POST.get('lost_id')
+    request_id = request.POST.get('request_id')
+    id_type = request.POST.get('id_type')
+    doc = request.FILES.get('file')
+    filename = str(doc)
+    extension = filename.split(".")[1]
+    try:
+        t = osas_t_id.objects.get(lost_id = lost_id, request_id = request_id, lost_id_type = id_type )
+        osas_t_id_file.objects.create(id_file = doc, id_file_ext = extension, id_lost_id = osas_t_id.objects.get(lost_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no'])))
+        return HttpResponse('')
+    except ObjectDoesNotExist:
+        return HttpResponse('')
+
 def student_lost_id(request):
     date1 = request.POST.get('date_from')
     date2 = request.POST.get('date_to')
     status = request.POST.get('filter_status')
+    s = osas_t_id.objects.filter(lost_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no'])).count()
+    student_id_file = osas_t_id_file.objects.all()
     if status == "On Process":
         status = "PROCESSING"
     notif = osas_notif.objects.all().filter(notif_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), notif_stud = 'Sent').count()
@@ -1052,44 +1131,76 @@ def student_lost_id(request):
     if date1 and date2:
         if status:
             stud_info = osas_t_id.objects.all().filter(lost_stud_id = request.session['session_user_id'], lost_id_status = status, date_updated__range=[date1, date2]).order_by('-date_created')
-            return render(request, 'Role_Student/student_lost_id.html', {'stud_info': stud_info, 'notif':notif, 'notif_info':notif_info})
+            return render(request, 'Role_Student/student_lost_id.html', {'stud_info': stud_info, 'notif':notif, 'notif_info':notif_info, 's':s, 'student_id_file':student_id_file})
         else:   
             stud_info = osas_t_id.objects.all().filter(lost_stud_id = request.session['session_user_id'], date_updated__range=[date1, date2]).order_by('-date_created')
-            return render(request, 'Role_Student/student_lost_id.html', {'stud_info': stud_info, 'notif':notif, 'notif_info':notif_info})
+            return render(request, 'Role_Student/student_lost_id.html', {'stud_info': stud_info, 'notif':notif, 'notif_info':notif_info, 's':s, 'student_id_file':student_id_file})
     elif status:
         stud_info = osas_t_id.objects.all().filter(lost_stud_id = request.session['session_user_id'], lost_id_status = status).order_by('-date_created')
-        return render(request, 'Role_Student/student_lost_id.html', {'stud_info': stud_info, 'notif':notif, 'notif_info':notif_info})
+        return render(request, 'Role_Student/student_lost_id.html', {'stud_info': stud_info, 'notif':notif, 'notif_info':notif_info, 's':s, 'student_id_file':student_id_file})
     else:
         stud_info = osas_t_id.objects.all().filter(lost_stud_id = request.session['session_user_id']).order_by('-date_created')
-        return render(request, 'Role_Student/student_lost_id.html', {'stud_info': stud_info, 'notif':notif, 'notif_info':notif_info})
+        return render(request, 'Role_Student/student_lost_id.html', {'stud_info': stud_info, 'notif':notif, 'notif_info':notif_info, 's':s, 'student_id_file':student_id_file})
 
 #-----------------------------ID---------------------------------------------------------------------------
 def lost_id(request):
     date1 = request.POST.get('date_from')
     date2 = request.POST.get('date_to')
     status = request.POST.get('filter_status')
+    student_id_file = osas_t_id_file.objects.all()
     if status == "On Process":
         status = "PROCESSING"
-    id_request =  osas_t_id.objects.all().order_by('-date_created')
-    notif = osas_notif.objects.all().filter(notif_head = 'Sent').count()
-    notif_info = osas_notif.objects.all().filter(notif_head = "Sent").order_by("-notif_datecreated")
-    stud_list = osas_t_id.objects.filter(lost_id_status = 'COMPLETE') # queryset for all existing student_no
-    stud_ = osas_r_personal_info.objects.all()
-    stud_list2 = osas_r_personal_info.objects.filter(stud_id__in = stud_.values_list('stud_id',)) # queryset for all the student then exclude the data that existing in the osas_t_id
-   
+    # notif = osas_notif.objects.all().filter(notif_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), notif_stud = 'Sent').count()
+    # notif_info = osas_notif.objects.all().filter(notif_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), notif_stud = "Sent").order_by("-notif_datecreated")
     if date1 and date2:
         if status:
-            id_request = osas_t_id.objects.all().filter(lost_id_status = status, date_updated__range=[date1, date2]).order_by('-date_created')
-            return render(request, 'id/lost_id.html', {'stud_list2': stud_list2, 'id_request': id_request, 'stud_list':stud_list, 'notif':notif, 'notif_info':notif_info})
+            stud_info = osas_t_id.objects.all().filter(lost_id_status = status, date_updated__range=[date1, date2]).order_by('-date_created')
+            stats = status
+            return render(request, 'id/lost_id.html', {'stud_info': stud_info,  'student_id_file':student_id_file, 'stats':stats})
         else:   
-            id_request = osas_t_id.objects.all().filter(date_updated__range=[date1, date2]).order_by('-date_created')
-            return render(request, 'id/lost_id.html', {'stud_list2': stud_list2, 'id_request': id_request, 'stud_list':stud_list, 'notif':notif, 'notif_info':notif_info})
+            stats = status
+            stud_info = osas_t_id.objects.all().filter( date_updated__range=[date1, date2]).order_by('-date_created')
+            return render(request, 'id/lost_id.html', {'stud_info': stud_info,   'student_id_file':student_id_file, 'stats':stats})
     elif status:
-        id_request = osas_t_id.objects.all().filter(lost_id_status = status).order_by('-date_created')
-        return render(request, 'id/lost_id.html', {'stud_list2': stud_list2, 'id_request': id_request, 'stud_list':stud_list, 'notif':notif, 'notif_info':notif_info})
+        stats = status
+        stud_info = osas_t_id.objects.all().filter( lost_id_status = status).order_by('-date_created')
+        return render(request, 'id/lost_id.html', {'stud_info': stud_info, 'student_id_file':student_id_file, 'stats':stats})
     else:
-        id_request = osas_t_id.objects.all().order_by('-date_created')
-        return render(request, 'id/lost_id.html', {'stud_list2': stud_list2, 'id_request': id_request, 'stud_list':stud_list, 'notif':notif, 'notif_info':notif_info})
+        stud_info = osas_t_id.objects.all().filter( lost_id_status = 'ON PROCESS').order_by('-date_created')
+        stats = 'ON PROCESS'
+        return render(request, 'id/lost_id.html', {'stud_info': stud_info,'student_id_file':student_id_file, 'stats':stats})
+
+
+def osas_id_update(request):
+    request_id = request.POST.get('request_id')
+    r = request.POST.get('r')
+    status = request.POST.get('status')
+    today = datetime.today()
+    try:
+        d = osas_t_id.objects.get(lost_id = request_id)
+        if status == 'ON PROCESS':
+            d.lost_id_status = 'FOR CLAIMING'
+            d.save()
+            data = {'success':True}
+            return JsonResponse(data, safe=False)
+        elif status == 'FOR CLAIMING':
+            d.lost_id_status = 'CLAIMED'
+            d.save()
+            data = {'success':True}
+            return JsonResponse(data, safe=False)
+        if r == 'FOR CLAIMING':
+            d.lost_id_status = r
+            d.save()
+            data = {'success':True}
+            return JsonResponse(data, safe=False)
+        else:
+            d.lost_id_status = r
+            d.save()
+            data = {'success':True}
+            return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        data = {'error':True}
+        return JsonResponse(data, safe=False)
 
 def lost_id_student_data(request):
     selected_student = request.POST.get('selected_student')
@@ -2222,7 +2333,10 @@ def organization_student_data(request):
 def classroom_student_data(request):
     stud_course = request.POST.get('stud_course')
     stud_year_sec = request.POST.get('stud_year_sec')
-    stud_list = list(osas_r_personal_info.objects.all().filter(stud_course_id = osas_r_course.objects.get(course_name = stud_course), stud_yas_id = osas_r_section_and_year.objects.get(yas_descriptions = stud_year_sec)).values())
+    if stud_course == 'N/A':
+        stud_list = list(osas_r_personal_info.objects.all().values())
+    else:
+        stud_list = list(osas_r_personal_info.objects.all().filter(stud_course_id = osas_r_course.objects.get(course_name = stud_course), stud_yas_id = osas_r_section_and_year.objects.get(yas_descriptions = stud_year_sec)).values())
     return JsonResponse({
         'data': stud_list,
     })
@@ -2232,18 +2346,21 @@ def organization_osas(request):
     acad_year = request.POST.get('acad_year')
     stud_list = osas_r_personal_info.objects.all().order_by("stud_no")
     year = str(acad_year)
+
+    course_list =  osas_r_course.objects.all().order_by("course_name")
+    year_sec_list = osas_r_section_and_year.objects.all().order_by("-yas_descriptions")
     if acad_year and status:
         org_list = organization.objects.all().filter(org_status = status, org_datecreated__contains =  year).order_by('org_datecreated')
-        return render(request, 'Facilitation/organization.html', {'org_list':org_list, 'stud_list':stud_list})
+        return render(request, 'Facilitation/organization.html', {'org_list':org_list, 'stud_list':stud_list, 'course_list':course_list, 'year_sec_list':year_sec_list})
     elif acad_year:
         org_list = organization.objects.all().filter(org_datecreated__contains =  year).order_by('org_datecreated')
-        return render(request, 'Facilitation/organization.html', {'org_list':org_list, 'stud_list':stud_list})
+        return render(request, 'Facilitation/organization.html', {'org_list':org_list, 'stud_list':stud_list, 'course_list':course_list, 'year_sec_list':year_sec_list})
     elif status:
         org_list = organization.objects.all().filter(org_status = status ).order_by('org_datecreated')
-        return render(request, 'Facilitation/organization.html', {'org_list':org_list, 'stud_list':stud_list})
+        return render(request, 'Facilitation/organization.html', {'org_list':org_list, 'stud_list':stud_list, 'course_list':course_list, 'year_sec_list':year_sec_list})
     else:   
         org_list = organization.objects.all().order_by('org_datecreated')
-        return render(request, 'Facilitation/organization.html', {'org_list':org_list, 'stud_list':stud_list})
+        return render(request, 'Facilitation/organization.html', {'org_list':org_list, 'stud_list':stud_list, 'course_list':course_list, 'year_sec_list':year_sec_list})
         
 def organization_osas_classroom(request):
     status = request.POST.get('filter_status')
@@ -2279,13 +2396,12 @@ def organization_osas_new_class_account(request):
         return JsonResponse(data, safe=False)
     except ObjectDoesNotExist:
         try:
-            o = officer.objects.get(off_stud_id = osas_r_personal_info.objects.get(stud_no = stud))
+            o = officer.objects.get(off_stud_id = osas_r_personal_info.objects.get(stud_no = stud), off_position = 'President')
             data = {'error1':True} 
             return JsonResponse(data, safe=False)
         except ObjectDoesNotExist:
             try: 
                 c = classroom.objects.get(room_email = class_email)
-                p = organization.objects.get(org_email = class_email)
                 data = {'error2':True} 
                 return JsonResponse(data, safe=False)
             except ObjectDoesNotExist:
@@ -2314,45 +2430,99 @@ def organization_osas_new_class_account(request):
                         off_position = 'President')
                     data = {'success':True}
                     return JsonResponse(data, safe=False)
+                
 
 def organization_new_account(request):
     stud = request.POST.get('stud')
     org_name = request.POST.get('org_name')
+    class_course = request.POST.get('class_course')
     org_abbr = request.POST.get('org_abbr')
     org_email = request.POST.get('org_email')
     org_pass = request.POST.get('org_pass')
-    try:
-        org = organization.objects.get(org_name = org_name, org_abbr = org_abbr, org_email = org_email, org_stud_id = osas_r_personal_info.objects.get(stud_no = stud))
-        data = {'error':True}
-        return JsonResponse(data, safe=False)
-    except ObjectDoesNotExist:
+    print(org_name, org_abbr, org_email, org_pass, stud)
+    if class_course == 'N/A':
         try:
-            o = officer.objects.get(off_stud_id = osas_r_personal_info.objects.get(stud_no = stud))
-            data = {'error1':True}
+            c = organization.objects.get(org_name = org_name)
+            data = {'error':True}
             return JsonResponse(data, safe=False)
         except ObjectDoesNotExist:
-            today = datetime.today()
-            year = timedelta(days=365)
-            org_date_accredited = today
-            org_date_accredited_year = today
-            org_expiration = today + year
-            org = organization( 
-                org_name = org_name,
-                org_abbr = org_abbr, 
-                org_email = org_email, 
-                org_pass = org_pass, 
-                org_stud_id = osas_r_personal_info.objects.get(stud_no = stud), 
-                org_status = 'INACTIVE', 
-                org_date_accredited = org_date_accredited,
-                org_expiration = org_expiration,
-                org_date_accredited_year = org_date_accredited_year,
-                org_submit_date = today
-                )
-            org.save()
-            officer.objects.create(off_stud_id = osas_r_personal_info.objects.get(stud_no = stud), off_org_id = organization.objects.get(org_name = org_name, org_abbr = org_abbr, org_email = org_email), off_position = 'President')
-            officer
-            data = {'success':True}
+            try:
+                o = officer.objects.get(off_stud_id = osas_r_personal_info.objects.get(stud_no = stud), off_position = 'President')
+                data = {'error1':True} 
+                return JsonResponse(data, safe=False)
+            except ObjectDoesNotExist:
+                try: 
+                    c = classroom.objects.get(room_email = org_email)
+                    data = {'error2':True} 
+                    return JsonResponse(data, safe=False)
+                except ObjectDoesNotExist:
+                    try:
+                        p = organization.objects.get(org_email = org_email)
+                        data = {'error2':True} 
+                        return JsonResponse(data, safe=False)
+                    except ObjectDoesNotExist:
+                        today = datetime.today()
+                        year = timedelta(days=365)
+                        org_date_accredited = today
+                        org_expiration = today + year
+                        room = organization( 
+                            org_name = org_name,
+                            org_abbr = org_abbr, 
+                            org_email = org_email, 
+                            org_pass = org_pass, 
+                            org_stud_id = osas_r_personal_info.objects.get(stud_no = stud), 
+                            org_expiration = org_expiration,
+                            org_status = 'INACTIVE',
+                            org_course = class_course
+                            )
+                        room.save()
+                        officer.objects.create(
+                            off_stud_id = osas_r_personal_info.objects.get(stud_no = stud),
+                            off_org_id = organization.objects.get(org_stud_id = osas_r_personal_info.objects.get(stud_no = stud)), 
+                            off_position = 'President')
+                        data = {'success':True}
+                        return JsonResponse(data, safe=False)
+    else:
+        try:
+            c = organization.objects.get(org_name = org_name)
+            data = {'error':True}
             return JsonResponse(data, safe=False)
+        except ObjectDoesNotExist:
+            try:
+                o = officer.objects.get(off_stud_id = osas_r_personal_info.objects.get(stud_no = stud), off_position = 'President')
+                data = {'error1':True} 
+                return JsonResponse(data, safe=False)
+            except ObjectDoesNotExist:
+                try: 
+                    c = classroom.objects.get(room_email = org_email)
+                    data = {'error2':True} 
+                    return JsonResponse(data, safe=False)
+                except ObjectDoesNotExist:
+                    try:
+                        p = organization.objects.get(org_email = org_email)
+                        data = {'error2':True} 
+                        return JsonResponse(data, safe=False)
+                    except ObjectDoesNotExist:
+                        today = datetime.today()
+                        year = timedelta(days=365)
+                        org_date_accredited = today
+                        org_expiration = today + year
+                        room = organization( 
+                            org_name = org_name,
+                            org_abbr = org_abbr, 
+                            org_email = org_email, 
+                            org_pass = org_pass, 
+                            org_stud_id = osas_r_personal_info.objects.get(stud_no = stud), 
+                            org_expiration = org_expiration,
+                            org_status = 'INACTIVE'
+                            )
+                        room.save()
+                        officer.objects.create(
+                            off_stud_id = osas_r_personal_info.objects.get(stud_no = stud),
+                            off_org_id = organization.objects.get(org_stud_id = osas_r_personal_info.objects.get(stud_no = stud)), 
+                            off_position = 'President')
+                        data = {'success':True}
+                        return JsonResponse(data, safe=False)
 
 def organization_update_account(request):
     stud = request.POST.get('stud')
@@ -2615,10 +2785,15 @@ def organization_upload_osas(request):
             org_concept_paper.objects.create(con_file = docu, con_org_id = organization.objects.get(org_id = pk_id), con_file_ext = extension, con_status = "APPROVED", con_auth_id = osas_r_auth_user.objects.get(auth_id = auth_id), con_title_id = concept_paper_title.objects.get(title_id = title_id))
             return HttpResponse('')
         elif ident == 'class':
-            o = org_concept_paper.objects.get(con_title_id = concept_paper_title.objects.get(title_id = title_id), con_file = docu, con_room_id = classroom.objects.get(room_id = pk_id))
-            o.delete()
-            org_concept_paper.objects.create(con_file = docu, con_room_id = classroom.objects.get(room_id = pk_id), con_file_ext = extension, con_status = "APPROVED" , con_auth_id = osas_r_auth_user.objects.get(auth_id = auth_id), con_title_id = concept_paper_title.objects.get(title_id = title_id))
-            return HttpResponse('')
+            
+            try:
+                o = org_concept_paper.objects.get(con_title_id = concept_paper_title.objects.get(title_id = title_id), con_file = docu, con_room_id = classroom.objects.get(room_id = pk_id))
+                o.delete()
+                org_concept_paper.objects.create(con_file = docu, con_room_id = classroom.objects.get(room_id = pk_id), con_file_ext = extension, con_status = "APPROVED" , con_auth_id = osas_r_auth_user.objects.get(auth_id = auth_id), con_title_id = concept_paper_title.objects.get(title_id = title_id))
+                print('room_id = '+ pk_id, ' type = ' + ident, 'title_id = ' + title_id, docu)
+            except ObjectDoesNotExist:
+                print('room_id = '+ pk_id, ' type = ' + ident, 'title_id = ' + title_id, docu, 'error')
+                return HttpResponse('')
     return JsonResponse({'error': True})
 
 def organization_view_certificate(request):
@@ -2654,6 +2829,18 @@ def event_generate_report(request):
     date_to = request.POST.get('to_2')
     try:    
         accredited_values = list(concept_paper_title.objects.all().filter(title_datecreated__range = [date_from, date_to], title_status = "APPROVED").values())
+        return JsonResponse({
+            'data': accredited_values,
+        })
+    except ObjectDoesNotExist:
+        data = {'error':"error"}
+        return JsonResponse(data, safe=False)
+
+def event_accomplishment_report(request):
+    date_from = request.POST.get('from_2')
+    date_to = request.POST.get('to_2')
+    try:    
+        accredited_values = list(concept_paper_title.objects.all().filter(title_datecreated__range = [date_from, date_to], title_status = "ACCOMPLISHED").values())
         return JsonResponse({
             'data': accredited_values,
         })
@@ -3142,6 +3329,28 @@ def classroom_concept_paper_upload(request):
             return HttpResponse('')
     return JsonResponse({'error': True})
 
+
+def classroom_accomplishment_upload(request):
+    docu = request.FILES.get('file')
+    org_id2 = request.POST.get('org_id2')
+    title_id2 = request.POST.get('title_id2')
+    filename = str(docu)
+    extension = filename.split(".")[1]
+    print (extension)
+    today = datetime.today()
+    if request.method == 'POST':
+        try:
+            a = concept_paper_title.objects.get(title_id = title_id2, title_room_id = classroom.objects.get(room_id = request.session['session_user_id']))
+            a.title_accomplishment_file = docu
+            a.title_accomplishment_file_ext = extension
+            a.title_date_accomplished = today
+            a.title_status = 'ACCOMPLISHED'
+            a.save()
+            return HttpResponse('')
+        except ObjectDoesNotExist:
+            return HttpResponse('')
+    return JsonResponse({'error': True})
+
 def organization_concept_paper_upload(request):
     docu = request.FILES.get('file')
     org_id2 = request.POST.get('org_id2')
@@ -3155,6 +3364,28 @@ def organization_concept_paper_upload(request):
             org_concept_paper.objects.create(con_file = docu, con_org_id = organization.objects.get(org_id = request.session['session_user_id']), con_file_ext = extension, con_status = 'SENT', con_title_id = concept_paper_title.objects.get(title_id = title_id2))
             return HttpResponse('')
     return JsonResponse({'error': True})
+
+def organization_accomplishment_upload(request):
+    docu = request.FILES.get('file')
+    org_id2 = request.POST.get('org_id2')
+    title_id2 = request.POST.get('title_id2')
+    filename = str(docu)
+    extension = filename.split(".")[1]
+    print (extension)
+    today = datetime.today()
+    if request.method == 'POST':
+        try:
+            a = concept_paper_title.objects.get(title_id = title_id2, title_org_id = organization.objects.get(org_id = request.session['session_user_id']))
+            a.title_accomplishment_file = docu
+            a.title_accomplishment_file_ext = extension
+            a.title_date_accomplished = today
+            a.title_status = 'ACCOMPLISHED'
+            a.save()
+            return HttpResponse('')
+        except ObjectDoesNotExist:
+            return HttpResponse('')
+    return JsonResponse({'error': True})
+
 
 def organization_concept_papers(request):
     status = request.POST.get('filter_status')
@@ -3361,7 +3592,7 @@ def gen_report_get_info_classroom(request):
     try:
         if mode == 'classroom':
             c = classroom.objects.get(room_id = model_id)
-            data = {'success':c.room_stud_id.stud_course_id.course_name + ' ' + c.room_year + ' - ' + c.room_sec}
+            data = {'success':c.room_stud_id.stud_course_id.course_name + ' ' + c.room_year}
         if mode == 'organization':
             c = organization.objects.get(org_id = model_id)
             data = {'success':c.org_name}
@@ -3473,6 +3704,74 @@ def osas_fund(request):
         fund_org_list = fund.objects.all()
         return render(request, 'Facilitation/fund.html', {'fund_org_list':fund_org_list, 'file_list':file_list, 'i':i,'j':j})
 
+def osas_fund_authentication(request):
+    auth_pass = request.POST.get('auth_pass')
+    trans_fund_id = request.POST.get('trans_fund_id')
+    trans_fund_cat = request.POST.get('trans_fund_cat')
+    trans_fund_type = request.POST.get('trans_fund_type')
+    trans_fund_amount = request.POST.get('trans_fund_amount')
+    trans_type = request.POST.get('trans_type')
+    try:
+        a = osas_r_auth_user.objects.get(auth_id = request.session['session_user_id'], auth_password = auth_pass)
+        if trans_fund_type == 'class':
+            try:
+                o = fund.objects.get(fund_id = trans_fund_id, fund_room_id = classroom.objects.get(room_id = trans_fund_cat ))
+                if trans_type == 'REQUEST':
+                    c = classroom.objects.get(room_id = trans_fund_cat)
+                    balance = c.room_fund
+                    c.room_fund = balance - int(trans_fund_amount)
+                    c.save()
+                    o.fund_status = 'COMPLETED'
+                    o.save()
+                    data = {'success':True}
+                    return JsonResponse(data, safe=False)
+                elif trans_type == 'DEPOSIT':
+                    c = classroom.objects.get(room_id = trans_fund_cat)
+                    balance = c.room_fund
+                    c.room_fund = balance + int(trans_fund_amount)
+                    c.save()
+                    o.fund_status = 'COMPLETED'
+                    o.save()
+                    data = {'success':True}
+                    return JsonResponse(data, safe=False)
+                else:
+                    data = {'error1':True}
+                    return JsonResponse(data, safe=False)
+            except ObjectDoesNotExist:
+                data = {'error':True}
+                return JsonResponse(data, safe=False)
+        else:
+            try:
+                o = fund.objects.get(fund_id = trans_fund_id, fund_org_id = organization.objects.get(org_id = trans_fund_cat ))
+                if trans_type == 'REQUEST':
+                    c = organization.objects.get(org_id = trans_fund_cat)
+                    balance = c.org_fund
+                    c.org_fund = balance - int(trans_fund_amount)
+                    c.save()
+                    o.fund_status = 'COMPLETED'
+                    o.save()
+                    data = {'success':True}
+                    return JsonResponse(data, safe=False)
+                elif trans_type == 'DEPOSIT':
+                    c = organization.objects.get(org_id = trans_fund_cat)
+                    balance = c.org_fund
+                    c.org_fund = balance + int(trans_fund_amount)
+                    c.save()
+                    o.fund_status = 'COMPLETED'
+                    o.save()
+                    data = {'success':True}
+                    return JsonResponse(data, safe=False)
+                else:
+                    data = {'error1':True}
+                    return JsonResponse(data, safe=False)
+            except ObjectDoesNotExist:
+                data = {'error':True}
+                return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        data = {'error':True}
+        return JsonResponse(data, safe=False)
+
+
 def organization_fund(request):
     status = request.POST.get('filter_status')
     acad_year = request.POST.get('acad_year')
@@ -3569,6 +3868,9 @@ def organization_fund_reciept_upload(request):
     except ObjectDoesNotExist:
         fund_file.objects.create(fund_fund_id = fund.objects.get(fund_id = fund_id), fund_f_org_id = organization.objects.get(org_id = request.session['session_user_id']), fund_f_file = docu, fund_f_file_ext = extension, fund_f_status =  receipt)
         return HttpResponse('')
+    
+#create function for uploading logo
+
 
 def class_fund_reciept_upload(request):
     docu = request.FILES.get('file')
@@ -3746,8 +4048,11 @@ def organization_officer(request):
     year = str(acad_year)
     try:
         o = organization.objects.get(org_id = request.session['session_user_id'])
-        course = o.org_stud_id.stud_course_id.course_name
-        stud_list2 = osas_r_personal_info.objects.filter(stud_course_id = osas_r_course.objects.get(course_name = course))
+        if o.org_course == 'N/A':
+            stud_list2 = osas_r_personal_info.objects.all()
+        else:
+            course = o.org_stud_id.stud_course_id.course_name
+            stud_list2 = osas_r_personal_info.objects.filter(stud_course_id = osas_r_course.objects.get(course_name = course))
         if acad_year and status:
             officer_list = officer.objects.all().filter(off_org_id = organization.objects.get(org_id = request.session['session_user_id']), off_date_added__contains = year, off_status = status)
             return render(request, 'Organization/officers.html', {'officer_list':officer_list, 'stud_list2':stud_list2})

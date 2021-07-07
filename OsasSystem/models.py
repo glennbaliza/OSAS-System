@@ -96,26 +96,31 @@ class osas_r_personal_info(models.Model):
 class osas_t_id(models.Model):
     lost_id = models.AutoField(primary_key=True)
     request_id = models.CharField(unique=True, max_length=10)
-    lost_id_status = models.CharField(max_length=13, default='PENDING')
+    lost_id_status = models.CharField(max_length=13, default='ON PROCESS')
     lost_id_sanction_excuse = models.CharField(max_length=13, null=True, blank=True)
     lost_stud_id = models.ForeignKey(osas_r_personal_info, on_delete=models.CASCADE)
-    date_created = models.DateField(max_length=50)
+    date_created = models.DateField(max_length=50, default = now)
     date_updated = models.DateField(max_length=50)
     lost_id_notif_stud = models.CharField(max_length=13, null = True)
     lost_id_notif_head = models.CharField(max_length=13, null = True)
+    lost_id_type = models.CharField(max_length=13, null = True)
+    lost_num_request = models.IntegerField(null = True)
+    def __str__(self):
+        return str(self.lost_id)
+
+class osas_t_id_file(models.Model):
+    id_file_id = models.AutoField(primary_key=True)
+    id_file = models.FileField(upload_to='')
+    id_file_ext = models.CharField(max_length = 20)
+    id_datecreated = models.DateField(default=now)
+    id_lost_id = models.ForeignKey(osas_t_id, on_delete=models.CASCADE)
+
     def __str__(self):
         return str(self.lost_id)
         
-# class osas_t_admission(models.Model):
-
-#     admission_id = models.IntegerField(primary_key=True)
-#     request_name = models.CharField(max_length=50, verbose_name='Name of Request')
-#     request_detail = models.CharField(max_length=50, verbose_name='Request Details')
-#     admission_status = models.CharField(max_length=50, verbose_name='Admission Status')
-#     admission_stud_id = models.ForeignKey('osas_r_personal_info', on_delete=models.CASCADE)
-
-#     def __str__(self):
-#         return self.request_name, self.request_detail
+    def delete(self, *args, **kwargs):
+        self.id_file.delete()
+        super().delete(*args, **kwargs)
 
 class osas_r_userrole(models.Model):
 
@@ -317,6 +322,7 @@ class organization(models.Model):
     org_abbr = models.CharField(max_length = 50, null = True)
     org_email = models.EmailField(max_length = 50)
     org_pass = models.CharField(max_length = 16)
+    org_logo = models.FileField(upload_to='', null=True, blank = True)
     org_status = models.CharField(max_length = 10, default = 'ACCREDITED')
     org_notes = models.CharField(max_length = 500, null=True)
     org_stud_id = models.ForeignKey('osas_r_personal_info', on_delete = models.CASCADE, null=True)
@@ -327,6 +333,7 @@ class organization(models.Model):
     org_dateupdated = models.DateField(default = now)
     org_expiration = models.DateField(null=True)
     org_fund = models.IntegerField(default = 0)
+    org_course = models.CharField(max_length = 500, null=True)
     def __str__(self):
         return str(self.org_id)
 
@@ -371,6 +378,9 @@ class concept_paper_title(models.Model):
     title_org_id = models.ForeignKey('organization', on_delete = models.CASCADE, null=True)
     title_room_id = models.ForeignKey('classroom', on_delete = models.CASCADE, null=True)
     title_auth_id = models.ForeignKey('osas_r_auth_user', on_delete = models.CASCADE, null=True)
+    title_accomplishment_file = models.FileField(upload_to='', null=True, blank = True)
+    title_date_accomplished = models.DateField(null = True)
+    title_accomplishment_file_ext = models.CharField(max_length = 20, null=True)
 
     def __str__(self):
         return str(self.title_id)
