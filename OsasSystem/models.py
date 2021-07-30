@@ -261,12 +261,13 @@ class classroom(models.Model):
     room_dateupdated = models.DateField(default = now)
     room_expiration = models.DateField(null=True)
     room_fund = models.IntegerField(default = 0)
-
+    room_adviser = models.CharField(max_length = 50, null = True)
     def __str__(self):
         return str(self.org_id)
 
 class fund(models.Model):
     fund_id = models.AutoField(primary_key = True)
+    fund_serial = models.CharField(unique=True, max_length=15, null = True)
     fund_desc = models.CharField(max_length = 500, null = True)
     fund_amount = models.IntegerField()
     fund_word = models.CharField(max_length = 500)
@@ -320,10 +321,12 @@ class organization(models.Model):
     org_id = models.AutoField(primary_key = True)
     org_name = models.CharField(unique=True, max_length = 50)
     org_abbr = models.CharField(max_length = 50, null = True)
+    org_type = models.CharField(max_length = 50, null = True)
+    org_adviser = models.CharField(max_length = 50, null = True)
     org_email = models.EmailField(max_length = 50)
     org_pass = models.CharField(max_length = 16)
     org_logo = models.FileField(upload_to='', null=True, blank = True)
-    org_status = models.CharField(max_length = 10, default = 'ACCREDITED')
+    org_status = models.CharField(max_length = 10, default = 'INACTIVE')
     org_notes = models.CharField(max_length = 500, null=True)
     org_stud_id = models.ForeignKey('osas_r_personal_info', on_delete = models.CASCADE, null=True)
     org_submit_date = models.DateField(null = True)
@@ -334,6 +337,9 @@ class organization(models.Model):
     org_expiration = models.DateField(null=True)
     org_fund = models.IntegerField(default = 0)
     org_course = models.CharField(max_length = 500, null=True)
+    org_accre_status = models.IntegerField(default = 0)
+    org_issue = models.CharField(max_length = 500, null=True)
+    
     def __str__(self):
         return str(self.org_id)
 
@@ -358,10 +364,13 @@ class org_accreditation(models.Model):
     acc_return_file = models.FileField(upload_to=return_file_path, null=True, blank = True)
     acc_org_id = models.ForeignKey('organization', on_delete = models.CASCADE, null=True)
     acc_room_id = models.ForeignKey('classroom', on_delete = models.CASCADE, null=True)
-    acc_doc_type = models.FileField(upload_to=file_ext, null=True, blank = True)
+    acc_doc_type = models.CharField(max_length = 20, null=True)
     acc_status = models.CharField(max_length = 20, default = 'SAVED')
     acc_datecreated = models.DateField(default = now)
+    acc_datesubmitted = models.DateField(null = True)
     acc_dateupdated = models.DateField(default = now)
+    acc_docu_term = models.IntegerField(null = True)
+    acc_issue = models.CharField(max_length = 500, null=True)
 
     def image_tag(self):
         return mark_safe('<img src="/media/accreditation/" width = "50" height="50" />'%(self.acc_file))
@@ -369,8 +378,13 @@ class org_accreditation(models.Model):
     def __str__(self):
         return self.acc_id
 
+    def delete(self, *args, **kwargs):
+        self.acc_file.delete()
+        super().delete(*args, **kwargs)
+
 class concept_paper_title(models.Model):
     title_id = models.AutoField(primary_key = True)
+    title_serial = models.CharField(unique=True, max_length=15, null = True)
     title_name = models.CharField(unique=True, max_length = 200)
     title_status = models.CharField(max_length = 20, null = True)
     title_datecreated = models.DateField(default = now)
@@ -381,7 +395,8 @@ class concept_paper_title(models.Model):
     title_accomplishment_file = models.FileField(upload_to='', null=True, blank = True)
     title_date_accomplished = models.DateField(null = True)
     title_accomplishment_file_ext = models.CharField(max_length = 20, null=True)
-
+    title_date_conducted = models.DateField(null = True)
+    
     def __str__(self):
         return str(self.title_id)
 

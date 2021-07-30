@@ -14,18 +14,36 @@
 	
 	<!-- ================== BEGIN BASE CSS STYLE ================== -->
 	<link href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
-	<link href="{% static 'OsasSystem/assets/plugins/jquery-ui/jquery-ui.min.css'%}" rel="stylesheet" />
-	<link href="{% static 'OsasSystem/assets/plugins/bootstrap/4.0.0/css/bootstrap.min.css'%}" rel="stylesheet" />
-	<link href="{% static 'OsasSystem/assets/plugins/font-awesome/5.0/css/fontawesome-all.min.css'%}" rel="stylesheet" />
-	<link href="{% static 'OsasSystem/assets/plugins/animate/animate.min.css'%}" rel="stylesheet" />
-	<link href="{% static 'OsasSystem/assets/css/default/style.min.css'%}" rel="stylesheet" />
-	<link href="{% static 'OsasSystem/assets/css/default/style-responsive.min.css'%}" rel="stylesheet" />
-	<link href="{% static 'OsasSystem/assets/css/default/theme/red.css'%}" rel="stylesheet" id="theme" />
+	<link href="{%static 'OsasSystem/assets/plugins/jquery-ui/jquery-ui.min.css' %}" rel="stylesheet" />
+	<link href="{%static 'OsasSystem/assets/plugins/bootstrap/4.0.0/css/bootstrap.min.css' %}" rel="stylesheet" />
+	<link href="{%static 'OsasSystem/assets/plugins/font-awesome/5.0/css/fontawesome-all.min.css' %}" rel="stylesheet" />
+	<link href="{%static 'OsasSystem/assets/plugins/animate/animate.min.css' %}" rel="stylesheet" />
+	<link href="{%static 'OsasSystem/assets/css/default/style.min.css' %}" rel="stylesheet" />
+	<link href="{%static 'OsasSystem/assets/css/default/style-responsive.min.css' %}" rel="stylesheet" />
+	<link href="{%static 'OsasSystem/assets/css/default/theme/default.css' %}" rel="stylesheet" id="theme" />
 	<!-- ================== END BASE CSS STYLE ================== -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+	<!-- ================== BEGIN PAGE LEVEL CSS STYLE ================== -->
+	<!-- <link href="{% static 'OsasSystem/assets/plugins/jquery-jvectormap/jquery-jvectormap.css'%}" rel="stylesheet" />
+	<link href="{% static 'OsasSystem/assets/plugins/bootstrap-calendar/css/bootstrap_calendar.css'%}" rel="stylesheet" />
+	<link href="{% static 'OsasSystem/assets/plugins/gritter/css/jquery.gritter.css'%}" rel="stylesheet" />
+	<link href="{% static 'OsasSystem/assets/plugins/nvd3/build/nv.d3.css'%}" rel="stylesheet" /> -->
+	<!-- ================== END PAGE LEVEL CSS STYLE ================== -->
+
+	<!-- ================== BEGIN PAGE LEVEL STYLE ================== -->
+
+	<!-- <script src="{%static 'OsasSystem/assets/plugins/pace/pace.min.js' %}"></script> -->
+	<link href="{%static 'OsasSystem/assets/plugins/DataTables/media/css/dataTables.bootstrap.min.css' %}" rel="stylesheet" />
+	<link href="{%static 'OsasSystem/assets/plugins/DataTables/extensions/Responsive/css/responsive.bootstrap.min.css' %}" rel="stylesheet" />
+	<!-- ================== END PAGE LEVEL STYLE ================== -->
 	
     <!-- ================== BEGIN BASE JS ================== -->
     <!-- <script src="{% static 'OsasSystem/assets/plugins/pace/pace.min.js'%}"></script> -->
     <!-- ================== END BASE JS ================== -->
+
+	{% block page-css %} 
+	
+	{% endblock %}
 </head>
 <body>
 {% block content%}
@@ -33,26 +51,145 @@
 {% endblock %}
 
 
-<!-- ================== BEGIN BASE JS ================== -->
-<script src="{% static 'OsasSystem/assets/plugins/jquery/jquery-3.2.1.min.js'%}"></script>
-<script src="{% static 'OsasSystem/assets/plugins/jquery-ui/jquery-ui.min.js'%}"></script>
-<script src="{% static 'OsasSystem/assets/plugins/bootstrap/4.0.0/js/bootstrap.bundle.min.js'%}"></script>
-<!--[if lt IE 9]>
-    <script src="../assets/crossbrowserjs/html5shiv.js"></script>
-    <script src="../assets/crossbrowserjs/respond.min.js"></script>
-    <script src="../assets/crossbrowserjs/excanvas.min.js"></script>
-<![endif]-->
-<script src="{% static 'OsasSystem/assets/plugins/slimscroll/jquery.slimscroll.min.js'%}"></script>
-<script src="{% static 'OsasSystem/assets/plugins/js-cookie/js.cookie.js'%}"></script>
-<script src="{% static 'OsasSystem/assets/js/theme/default.min.js'%}"></script>
-<script src="{% static 'OsasSystem/assets/js/apps.min.js'%}"></script>
-<script src="{% static 'OsasSystem/assets/plugins/parsley/dist/parsley.js' %}"></script>
-<!-- ================== END BASE JS ================== -->
+	<!-- ================== BEGIN BASE JS ================== -->
+	<script src="{%static 'OsasSystem/assets/plugins/jquery/jquery-3.2.1.min.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/plugins/jquery-ui/jquery-ui.min.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/plugins/bootstrap/4.0.0/js/bootstrap.bundle.min.js' %}"></script>
+	<!--[if lt IE 9]>
+		<script src="../assets/crossbrowserjs/html5shiv.js"></script>
+		<script src="../assets/crossbrowserjs/respond.min.js"></script>
+		<script src="../assets/crossbrowserjs/excanvas.min.js"></script>
+	<![endif]-->
+	<script src="{%static 'OsasSystem/assets/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/plugins/js-cookie/js.cookie.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/js/theme/default.min.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/js/apps.min.js' %}"></script>
 
+	<!-- ================== END BASE JS ================== -->
+	<script src="{% static 'OsasSystem/assets/plugins/parsley/dist/parsley.js' %}"></script>
+	<!-- ================== BEGIN PAGE LEVEL JS ================== -->
+
+	<!-- ================== BEGIN PAGE LEVEL JS ================== -->
+	<script src="{%static 'OsasSystem/assets/plugins/DataTables/media/js/jquery.dataTables.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/plugins/DataTables/media/js/dataTables.bootstrap.min.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/plugins/DataTables/extensions/Buttons/js/vfs_fonts.min.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/plugins/DataTables/extensions/Buttons/js/buttons.html5.min.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/plugins/DataTables/extensions/Buttons/js/buttons.print.min.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/plugins/DataTables/extensions/Responsive/js/dataTables.responsive.min.js' %}"></script>
+	<!-- ================== END PAGE LEVEL JS ================== -->
+	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script> -->
+
+	<script src="{%static 'OsasSystem/assets/plugins/DataTables/media/js/jquery.dataTables.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/plugins/DataTables/media/js/dataTables.bootstrap.min.js' %}"></script>
+	<script src="{% static 'OsasSystem/assets/plugins/DataTables/extensions/Buttons/js/dataTables.buttons.min.js'%}"></script>
+	<script src="{% static 'OsasSystem/assets/plugins/DataTables/extensions/Buttons/js/buttons.bootstrap.min.js'%}"></script>
+	<script src="{% static 'OsasSystem/assets/plugins/DataTables/extensions/Buttons/js/buttons.flash.min.js'%}"></script>
+	<script src="{% static 'OsasSystem/assets/plugins/DataTables/extensions/Buttons/js/jszip.min.js'%}"></script>
+	<script src="{% static 'OsasSystem/assets/plugins/DataTables/extensions/Buttons/js/pdfmake.min.js'%}"></script>
+	<script src="{% static 'OsasSystem/assets/plugins/DataTables/extensions/Buttons/js/vfs_fonts.min.js'%}"></script>
+	<script src="{%static 'OsasSystem/assets/plugins/DataTables/extensions/Buttons/js/buttons.html5.min.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/plugins/DataTables/extensions/Buttons/js/buttons.print.min.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/plugins/DataTables/extensions/Responsive/js/dataTables.responsive.min.js' %}"></script>
+	<script src="{% static 'OsasSystem/assets/js/demo/table-manage-buttons.demo.min.js'%}"></script>
+
+	{% block page-js %} {% endblock %}
+	{% block page-level %} {% endblock %}
 <script>
     $(document).ready(function() {
         App.init();
     });
+</script>
+<script>
+	$("#modal-dialog").on('click','#btn_add',function(){
+    var stud_no = $('input[name="stud_number1"]').val();
+    stud_course = $("#dd_course").children("option:selected").val().trim();
+    year_sec = $("#dd_yr1").children("option:selected").val().trim();
+    stud_gender = $("#txt_Gender1").children("option:selected").val().trim();
+    var stud_lname = $('input[name="txt_l_name1"]').val();
+    var stud_fname = $('input[name="txt_f_name1"]').val();
+    var stud_mname = $('input[name="txt_m_name1"]').val();
+    var stud_sname = $('input[name="txt_s_name1"]').val();
+    var stud_birthdate = $('input[name="date_of_birth1"]').val();
+    var stud_email = $('input[name="txt_email1"]').val();
+    var stud_m_number = $('input[name="txt_mobile_number1"]').val();
+    var stud_address = $('input[name="txt_address1"]').val();
+    var stud_hs = $('input[name="h_name1"]').val();
+    var stud_hs_add = $('input[name="txt_h_address1"]').val();
+    var stud_sh = $('input[name="s_name1"]').val();
+    var stud_sh_add = $('input[name="txt_sh_address1"]').val();
+    var stud_e_name = $('input[name="txt_e_name1"]').val();
+    var stud_e_m_number = $('input[name="txt_e_number1"]').val();
+    var stud_e_address = $('input[name="txt_e_address1"]').val();
+
+	pass1 = $('input[name="pass1"]').val().trim();
+	pass2 = $('input[name="pass2"]').val().trim();
+    console.log(pass1,pass2)
+    if(stud_no){
+		if( pass1 == pass2){
+			$.ajax({
+				url: '{% url "student_process_add" %}',
+				type: "POST",
+				data: {
+					stud_no: stud_no,
+					year_sec: year_sec,
+					stud_course: stud_course,
+					stud_lname: stud_lname,
+					stud_fname: stud_fname,
+					stud_mname: stud_mname,
+					stud_sname: stud_sname,
+					stud_birthdate: stud_birthdate,
+					stud_email: stud_email,
+					stud_m_number: stud_m_number,
+					stud_address: stud_address,
+					stud_hs: stud_hs,
+					stud_gender: stud_gender,
+					stud_hs_add: stud_hs_add,
+					stud_sh: stud_sh,
+					stud_sh_add: stud_sh_add,
+					stud_e_name: stud_e_name,
+					stud_e_m_number: stud_e_m_number,
+					stud_e_address:stud_e_address,
+					pass1:pass1,
+					pass2:pass2,
+					csrfmiddlewaretoken: "{{ csrf_token }}",
+				},
+				dataType: 'json',
+				success: function (data) {
+					if (data.success) {
+						$('#modal-dialog').modal('hide');
+						swal("Success! Student profile has been added.", {
+							icon: "success",
+						})
+
+					}
+					if (data.error) {
+						console.log(data.error)
+					}
+					
+				}
+			});
+		}
+		else{
+			$("#error").append('<div class="container col-12" id="error_msg"><p class="alert alert-danger text-center" style="font-size:11px;" >'+'Password does not match' + '</p></div>')
+				setTimeout(function(){
+					if (document.getElementById("error_msg")){
+						var myobj = document.getElementById("error_msg");
+						myobj.remove();
+					}
+				}, 2000);
+		}
+	}
+	else{
+		$("#error").append('<div class="container col-12" id="error_msg"><p class="alert alert-danger text-center" style="font-size:11px;" >'+'invalid student number.' + '</p></div>')
+				setTimeout(function(){
+					if (document.getElementById("error_msg")){
+						var myobj = document.getElementById("error_msg");
+						myobj.remove();
+					}
+				}, 2000);
+	}
+        
+});
 </script>
 </body>
 </html>

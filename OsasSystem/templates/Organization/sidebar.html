@@ -25,9 +25,10 @@
         <!-- begin sidebar nav -->
         <ul class="nav">
             <li class="nav-header">Navigation</li>
+            
             <li class="has-sub">
                 <a href="{% url 'organization_home' %}">
-                    <i class="far fa-chart-bar"></i>
+                    <i class="fas fa-chart-pie"></i>
                     <span>Dashboard</span>
                 </a>
             </li>
@@ -37,12 +38,14 @@
                     <span>Accreditation</span>
                 </a>
             </li>
+            {% if request.session.session_org_status == 'ACCREDITED'%}
             <li class="has-sub">
                 <a href="{% url 'organization_events' %}">
                     <i class="fas fa-calendar-check"></i> 
                     <span>Accreditation</span>
                 </a>
             </li>
+           
             <!-- <li class="has-sub">
                 <a href="javascript:;">
                     <b class="caret"></b>
@@ -75,6 +78,7 @@
                     <span>Officers</span>
                 </a>
             </li>
+            {% endif %}
             <li><a href="javascript:;" class="sidebar-minify-btn" data-click="sidebar-minify"><i class="fa fa-angle-double-left"></i></a></li>
         </ul>
       

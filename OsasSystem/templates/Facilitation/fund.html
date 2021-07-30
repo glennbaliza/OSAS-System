@@ -23,7 +23,7 @@
         <li class="breadcrumb-item"><a href="{% url 'home' %}">Dashboard</a></li>
         <li class="breadcrumb-item">Fund</li>
     </ol>
-    <h1 class="page-header mb-1"><i class="fas fa-dollar-sign mr-2" ></i>Fund</h1>
+    <h1 class="page-header mb-1"  style="font-weight: 700; color:#800000 "><i class="fas fa-dollar-sign mr-2" ></i>Fund</h1>
     <p class="mb-5">Page Description</p>
     <img hidden id="myImg" style="width: auto; height: auto;"/>
     <img hidden id="myImg2" style="width: auto; height: auto;"/>
@@ -37,7 +37,7 @@
                 <div class="panel-heading p-25">
                     {% if j %}
                     <div class="container col-lg-6 col-md-3" style="display: inline-block;">
-                        <h2 class="panel-title" style="font-size:15px; display: inline-block; ">Pending Deposited Amount: <span class="badge badge-warning" style="font-family: Roboto; font-size: 16px;">₱ {{j}}</span></h2>
+                        <h2 class="panel-title" style="font-size:15px; display: inline-block; " >Pending Deposited Amount: <span class="badge badge-warning" style="font-family: Roboto; font-size: 16px;">₱ {{j}}</span></h2>
                     </div>     
                     {% else %}
                     <div class="container col-lg-6 col-md-3" style=" display: inline-block;">
@@ -77,7 +77,7 @@
                                     <option  value="REQUEST">Request</option>
                                 </select>
                             </div>
-                            <label style="text-align: left; margin-bottom: 7px; margin-top: 4px;" class="col-sm-12">Academic Year:</label> 
+                            <label style="text-align: left; margin-bottom: 7px; margin-top: 4px;" class="col-sm-12" >Academic Year:</label> 
                             <div class="col-sm-12">
                                 <select id="acad_year" name="acad_year" class="form-control">
                                     <option selected disabled="true">--Select--</option>
@@ -119,10 +119,10 @@
                         <thead>
                             <tr>
                                 <th width="1%"></th>
-                                <th data-orderable="false">Item Descriptions</th>
-                                <th data-orderable="false" hidden>Signed Voucher</th>
-                                <th data-orderable="false">Cash Reciept</th>
-                                <th data-orderable="false">Action</th>
+                                <th data-orderable="false" class="text-nowrap" style="font-weight: 700; color:#800000 ">DESCRIPTIONS</th>
+                                <th data-orderable="false" class="text-nowrap" style="font-weight: 700; color:#800000">VOUCHER</th>
+                                <th data-orderable="false"class="text-nowrap" style="font-weight: 700; color:#800000">RECEIPT</th>
+                                <th data-orderable="false" class="text-nowrap" style="font-weight: 700; color:#800000">ACTION</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -131,9 +131,9 @@
                                 {% if fund.fund_org_id %}  
                                     <tr class="odd gradeA tr_  align-middle" id="{{ fund.fund_id }}">
                                         <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
-                                        <td width="28%" >
-                                            <dl class="row mb-0 p-2" style="line-height: .9rem;">
-                                                <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id  }}" ><strong>{{ fund.fund_org_id.org_name }} ({{fund.fund_org_id.org_abbr}})</strong></dd>
+                                        <td class="text-nowrap" >
+                                            <dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                                <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id  }}" style="color: rgb(106, 106, 255)"><strong>{{ fund.fund_org_id.org_name }} ({{fund.fund_org_id.org_abbr}})</strong></dd>
                                                 <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id  }}" >{{ fund.fund_desc }}</dd>
                                                 <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id }}" ><strong>₱ {{ fund.fund_amount }}</strong> <span class="label label-info  yss{{ fund.fund_id  }}">{{ fund.fund_type }}</span></dd>
                                                 <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id  }}">{{ fund.fund_word }}</dd>
@@ -147,7 +147,7 @@
                                                 {% endif %}
                                             </dl>
                                         </td>
-                                        <td width="28%" hidden >
+                                        <td class="text-nowrap" >
                                             {% if file_list %}
                                                 {% for file in file_list %}
                                                     {% if fund.fund_id == file.fund_fund_id.fund_id %}  
@@ -175,7 +175,7 @@
                                                 {% endfor %}
                                             {% endif %}
                                         </td>                                 
-                                        <td width="28%" >
+                                        <td class="text-nowrap">
                                             {% if file_list %}
                                                 {% for file in file_list %}
                                                     {% if fund.fund_id == file.fund_fund_id.fund_id %}  
@@ -220,9 +220,9 @@
                                 {% elif fund.fund_room_id %}    
                                     <tr class="odd gradeA tr_  align-middle" id="{{ fund.fund_id }}">
                                         <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
-                                        <td width="28%" >
-                                            <dl class="row mb-0 p-2" style="line-height: .9rem;">
-                                                <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id  }}" ><strong>{{ fund.fund_room_id.room_stud_id.stud_course_id.course_name }} {{ fund.fund_room_id.room_stud_id.stud_yas_id.yas_descriptions }}</strong></dd>
+                                        <td class="text-nowrap" >
+                                            <dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                                <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id  }}" style="color: rgb(255, 106, 106)"><strong>{{ fund.fund_room_id.room_stud_id.stud_course_id.course_name }} {{ fund.fund_room_id.room_stud_id.stud_yas_id.yas_descriptions }}</strong></dd>
                                                 <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id  }}" >{{ fund.fund_desc }}</dd>
                                                 <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id }}" ><strong>₱ {{ fund.fund_amount }}</strong> <span class="label label-info  yss{{ fund.fund_id  }}">{{ fund.fund_type }}</span></dd>
                                                 <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id  }}">{{ fund.fund_word }}</dd>
@@ -236,7 +236,7 @@
                                                 {% endif %}
                                             </dl>
                                         </td>
-                                        <td width="28%" >
+                                        <td class="text-nowrap" >
                                             {% if file_list %}
                                                 {% for file in file_list %}
                                                     {% if fund.fund_id == file.fund_fund_id.fund_id %}  
@@ -264,7 +264,7 @@
                                                 {% endfor %}
                                             {% endif %}
                                         </td>                                 
-                                        <td width="28%" >
+                                        <td class="text-nowrap" >
                                             {% if file_list %}
                                                 {% for file in file_list %}
                                                     {% if fund.fund_id == file.fund_fund_id.fund_id %}  
@@ -359,8 +359,7 @@
                     <div class="col">
                         <h1 class="page-header mb-1">Deposit/Request New Fund</h1>
                         <p class="mb-5">Page Description</p>
-                        <div class="col-lg-12" id="error">
-                        </div>
+                        <div class="col-lg-12" id="error"></div>
                         <div class="col-sm-12">
                             <label>Type: <span class="text-danger">*</span></label>
                             <select id="type_fund" name="type_fund" class="form-control">

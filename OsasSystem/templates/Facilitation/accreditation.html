@@ -13,7 +13,7 @@
 {% endblock%}
 
 {% block title %}
-    Year and Section
+    Accreditation
 {% endblock %}
 
 
@@ -24,7 +24,7 @@
         <li class="breadcrumb-item">Facilitation Student Activites</li>
         <li class="breadcrumb-item">Accreditation</li>
     </ol>
-    <h1 class="page-header mb-1"><i class="fas fa-upload mr-2" ></i> Accreditaion</h1>
+    <h1 class="page-header mb-1"  style="font-weight: 700; color:#800000 "><i class="fas fa-upload mr-2"></i> Accreditaion</h1>
     <p class="mb-5">Page Description</p>
     <img hidden id="myImg" style="width: auto; height: auto;"/>
     <img hidden id="myImg2" style="width: auto; height: auto;"/>
@@ -76,7 +76,7 @@
             <div class="panel">
                 <div class="panel-heading p-25">
                     <div class="btn-group btn-group-toggle pull-right" data-toggle="buttons" style="margin-right: -10px; margin-bottom: -10px;">
-                        <button class="btn btn-white" data-toggle="modal" href="#modal_view_date" id="donwload" ><i class="far fa-file-pdf mr-2"></i>Report</button>
+                        <button class="btn btn-white" data-toggle="modal" href="#modal_view_date" id="donwload" ><i class="far fa-file-pdf mr-2" style="color: red;"></i>Report</button>
                     </div>
                     <h2 class="panel-title" style="font-size:16px;"><i class="fas fa-calendar-alt mr-2" ></i>Accreditation Documents List</h2>  
                 </div>
@@ -86,23 +86,29 @@
                         <thead>
                             <tr>
                                 <th width="1%"></th>
-                                <th data-orderable="false">Organization Info</th>
-                                <th data-orderable="false">Accreditaion Documents</th>
-                                <th data-orderable="false">Inbox</th>
-                                <th data-orderable="false">Action</th>
+                                <th data-orderable="false" style="font-weight: 700; color:#800000">ORGANIZATION INFO</th>
+                                <th data-orderable="false"style="font-weight: 700; color:#800000" >DATE</th>
+                                <th data-orderable="false" style="font-weight: 700; color:#800000">STATUS</th>
+                                <th data-orderable="false" style="font-weight: 700; color:#800000">ACTION</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for organization in acc_list %}
                             <tr class="odd gradeA tr_  align-middle" id="{{ organization.org_id }}">
                                 <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
-                                <td width="30%" ><dl class="row mb-0 p-2" style="line-height: .6rem;">
-                                    <dd class="col-sm-8 gritter-  ysd{{ organization.org_id  }}" style=" font-size: 11px; "><strong>{{ organization.org_name }}</strong></dd>
-                                    <dd class="col-sm-8 gritter-  ysd{{ organization.org_id  }} " style=" font-size: 11px; ">{{ organization.org_stud_id.stud_lname }}, {{ organization.org_stud_id.stud_fname }} {{ organization.org_stud_id.stud_mname }}</dd>
+                                <td class="text-nowrap" ><dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                    <dd class="col-sm-8 gritter-  ysd{{ organization.org_id  }}" style="color: rgb(106, 106, 255)"><strong>{{ organization.org_name }} ({{ organization.org_abbr }})</strong></dd>
+                                    <dd class="col-sm-8 gritter-  ysd{{ organization.org_id  }} ">{{ organization.org_stud_id.stud_lname }}, {{ organization.org_stud_id.stud_fname }} {{ organization.org_stud_id.stud_mname }}</dd>
+                                </dl>
+                                </td>
+                                <td class="text-nowrap" ><dl class="row mb-0 p-2" style="line-height: .6rem;">
                                     {% if organization.org_status == "ACCREDITED" %}
-                                    <dd class="col-sm-8 gritter-  ysd{{ organization.org_id  }}" >{{ organization.org_date_accredited|date:"Y-m-d" }} -</dd>
-                                    <dd class="col-sm-8 gritter-  ysd{{ organization.org_id  }}" >{{ organization.org_expiration|date:"Y-m-d" }}</dd>
-                                    
+                                    <dd class="col-sm-8 gritter-  ysd{{ organization.org_id  }}" ><strong>{{ organization.org_date_accredited|date:"Y-m-d" }}</strong> to <strong>{{ organization.org_expiration|date:"Y-m-d" }}</strong></dd>
+                                    {% endif %}
+                                </dl>
+                                </td>
+                                <td class="text-nowrap" ><dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                    {% if organization.org_status == "ACCREDITED" %}
                                     <dd class="col-sm-8 gritter- "><strong><span class="badge badge-success  yss{{ organization.org_id }}">{{ organization.org_status }}</span></strong></dd>
                                     {% elif organization.org_status == "DISMISSED" %}
                                     <dd class="col-sm-8 gritter- "><strong><span class="badge badge-danger  yss{{ organization.org_id }}">{{ organization.org_status }}</span></strong></dd>
@@ -111,47 +117,21 @@
                                     {% endif %}
                                 </dl>
                                 </td>
-                                <td width="45%">
-                                    {% if acc_docu_list %}
-                                    {% for org_accreditation in acc_docu_list %}
-                                    {% if org_accreditation.acc_doc_type == '.docx' and org_accreditation.acc_org_id.org_id == organization.org_id and org_accreditation%}
-                                    <div style=" display: inline-block; padding: 2px;">
-                                        <a id="{{ organization.org_id  }}" href="/media/{{ org_accreditation.acc_file }}" target="blank"><i class="far fa-file-word fa-2x" > </i></a>
-                                    </div>
-                                    <div style="display: inline-block;">
-                                        <a id="{{ organization.org_id  }}" href="/media/{{ org_accreditation.acc_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_accreditation.acc_file }}</a>
-                                    </div></br>
-                                    {% elif org_accreditation.acc_org_id.org_id == organization.org_id %}
-                                    <div style="display: inline-block; padding: 2px;">
-                                        <a id="{{ organization.org_id  }}" href="/media/{{ org_accreditation.acc_file }}" target="blank" style="color: red;"><i class="far fa-file-pdf fa-2x" > </i></a>
-                                    </div>
-                                    <div style="display: inline;">
-                                        <a id="{{ organization.org_id  }}" href="/media/{{ org_accreditation.acc_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_accreditation.acc_file }}</a>
-                                    </div><br>
+                                <!-- <td width="45%">
+                                    {% if organization.org_submit_date and organization.org_date_accredited %}
+                                        <button class="btn btn-success mt-2" onClick="viewRequirements('{{organization.org_id}}', '{{organization.org_accre_status}}')"><span style="font-size: 12px; font-weight: 400; font-family: Roboto; " class="badge badge-success  yss{{ organization.org_id }}">Requirements <i class="fas fa-file"></i></span></button>
+                                    {% else %}
+                                        <button class="btn btn-warning mt-2" onClick="viewRequirements('{{organization.org_id}}', '{{organization.org_accre_status}}')"><span style="font-size: 12px; font-weight: 400; font-family: Roboto; " class="badge badge-warning  yss{{ organization.org_id }}">Requirements <i class="fas fa-file"></i></span></button>
                                     {% endif %}
-                                    {% endfor %}
-                                    {% endif %}
-                                </td>
-                                <td width="11%">
-                                    <dl class="row mb-0 p-2" style="line-height: .6rem;">
-                                        <div class="col-sm-12">
-                                            <button id="add_note" class="btn btn-success" data-toggle="modal" href="#modal_message" onClick="viewNote('{{organization.org_id}}')">Message <i class="fas fa-envelope ml-2" ></i></button>
-                                        </div>
-                                    </dl>
-                                </td>
-                                <td width="8%" class="text-nowrap  m-l-5">
+                                </td> -->
+                                <td  class="text-nowrap">
+                                    <div class="text-nowrap">
+                                        <button id="edit-btn" class="btn btn-info" onClick="viewRequirements('{{organization.org_id}}', '{{organization.org_accre_status}}', '{{organization.org_status}}', '{{organization.org_issue}}')" ><i data-toggle="tooltip" data-placement="left" title="Requirements" class="fas fa-eye"></i></button>
                                         {% if organization.org_status == 'ACCREDITED' %}
-                                        <div class="btn-group p-2" style=" float: left;">
-                                            <button id="edit-btn" class="btn btn-danger" onClick="dismissOrg('{{organization.org_id}}')" style="width: 104.72px;"><i class="fas fa-trash mr-2"></i>Dismiss</button>
-                                        </div>
-                                        <div class="btn-group p-2" style=" float: left;">
-                                            <button id="e_cert" class="btn btn-warning" onClick="viewCert('{{organization.org_id}}')" style="width: 104.72px;"><i class="fas fa-file mr-2"></i>Certificate</button>
-                                        </div>
-                                        {% else %}
-                                        <div class="btn-group p-2" style=" float: left;">
-                                            <button id="edit-btn" class="btn btn-success" onClick="approveDocu('{{organization.org_id}}')" style="width: 104.72px;"><i class="fas fa-check mr-2"></i>Accredit</button>
-                                        </div>
+                                        <button id="e_cert" class="btn btn-warning" onClick="viewCert('{{organization.org_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Certificate" class="fas fa-certificate"></i></button>
                                         {% endif %}
+                                        <button id="add_note" class="btn btn-success" data-toggle="modal" href="#modal_message" onClick="viewNote('{{organization.org_id}}')"><i data-toggle="tooltip" data-placement="left" title="Message" class="fas fa-envelope"></i></button>
+                                    </div>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -173,6 +153,28 @@
                         </tbody>
                     </table> 
                     {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_view_req" role="dialog"  data-backdrop="static">
+    <div class="modal-dialog modal-lg" role="document" id="myModal">
+        <div class="modal-content">
+            <input class="form-control" id="excuse_id" type="hidden" name="excuse_id"/>
+            <div class="panel panel-inverse" >
+                <button type="button" class="close" data-dismiss="modal" id="close_upload" aria-hidden="true" style="color: gray; margin: 6px;">×</button>  
+                <div class="panel-body">
+                    <input class="form-control" id="org_id" type="hidden" name="org_id"/>
+                    <input class="form-control" id="org_term" type="hidden" name="org_term"/>
+                    <div class="col" id="header_2"></div>
+                    <div class="col" id="header_"></div>
+                   
+                </div>
+                <div class="panel-footer">
+                    <button class="btn btn_approve col-md-3 pull-right m-l-10 " type="" onClick="approveDocu(org_id_)" id="btn_approve" style="height: 33px; padding: 5px; background: linear-gradient(to right, #66ccff -1%, #3366ff 98%); border:none; color: white;" >Approve<i class="far fa-paper-plane m-l-3 zoom" ></i></button>
+                    <a class="btn btn-white pull-right m-l-10" data-dismiss="modal">Back<i class="fas fa-reply m-l-3 zoom"></i></a>
                 </div>
             </div>
         </div>
@@ -396,8 +398,236 @@
     });
 </script>
 <script>
+var org_id_;
+var org_term_;
+var org_status_;
+var org_issue_;
+function viewRequirements(id, org_term, org_Status, org_issue){
+
+    const new_org = ['Constitutions and By Laws', 'Set of Officers', 'One-year Plan of Activities', 'Clearance/Certificate (University-Wide)','Clearance/Certificate (College-Based)','Financial Clearance', 'Guidance Certificate', 'Medical Certificate']
+    const renew_org = ['Annual Report', 'Financial Statement', 'New Constitution', 'Set of Officers', 'Plan Activities', 'Clearance/Certificate (University-Wide)','Clearance/Certificate (College-Based)', 'Audit Clearance', 'Guidance Certificate', 'Medical Certificate', 'Registrar Certificate']
+    org_id_ = id
+    org_term_ = org_term
+    org_status_ = org_Status
+    org_issue_ = org_issue
+    $('#header_2').empty()
+    $('#org_term').val(org_term)
+    if (org_Status == 'ACCREDITED'){
+        $('.btn_approve').hide()
+    }
+    else {
+        $('.btn_approve').show()
+    }
+    $("#modal_view_req #header_").empty()
+
+      
+    $.ajax({
+        url: '{% url "osas_accreditation_requirements" %}',
+        type: "POST",
+        data: {
+            org_id:id,
+            org_term:org_term,
+            csrfmiddlewaretoken: "{{ csrf_token }}",
+        },
+        dataType: 'json',
+        success: function(response){
+            org_info = response.orgname
+            var type = response.org_type
+            console.log(renew_org)
+            // if(response.org_accre_status != 0){
+            //     // FOR RENEW ORG
+            //     if(response.org_type == 'College-Based'){
+            //         i = renew_org.indexOf('University-Wide')
+            //         // console.log(i)
+            //         renew_org.splice(i, 1);
+            //         // console.log(renew_org)
+            //     }
+            //     else{
+            //         i = renew_org.indexOf('College-Based')
+            //         // console.log(i)
+            //         renew_org.splice(i, 1);
+            //         // console.log(renew_org)
+            //     }
+                
+            // }
+            // else{
+            //     // FOR NEW ORG
+            //     if(response.org_type == 'College-Based'){
+            //         i = new_org.indexOf('University-Wide')
+            //         // console.log(i)
+            //         new_org.splice(i, 1);
+                   
+            //     }
+            //     else{
+            //         i = new_org.indexOf('College-Based')
+            //         // console.log(i)
+            //         new_org.splice(i, 1);
+                  
+            //     }
+            // }
+            if (response.org_accre_status == '0'){
+                x = 'NEW'
+            }
+            else{
+                x = 'RENEW'
+            }
+            $("#modal_view_req #header_2").append('<h1 class="page-header mb-1" id="org_info"><i class="fas fa-file mr-2" ></i> '+response.orgname+'</h1><p class="mb-5">Organization Requirements for Accreditation.</p>'); 
+        
+            if(response.orgstatus == 'INACTIVE'){
+                    
+                $("#modal_view_req #header_2").append('<table id="data-table " class="table table-bordered table-striped"><thead><tr><th data-orderable="false">Name of Adviser</th><th data-orderable="false" class="text-nowrap">Category</th><th data-orderable="false" class="text-nowrap">Type</th><th data-orderable="false">Status</th></tr></thead><tbody id="newdata1">'); 
+
+                $("#modal_view_req #newdata1").append('<tr class="odd gradeA tr_  " id="details"><td class="f-s-600 text-inverse text-nowrap" >'+response.org_adviser+'</td><td  class="f-s-600 text-inverse text-nowrap" >'+response.org_type+'</td><td  class="text-nowrap" ><span class="badge badge-info">'+x+'</span></td><td class="f-s-600 text-inverse text-nowrap" ><span class="badge badge-warning">'+response.orgstatus+'</span></td></tr>'); 
+
+                $("#modal_view_req #header_2").append('</tbody></table>'); 
+
+            }
+            else{
+
+                $("#modal_view_req #header_2").append('<table id="data-table " class="table table-bordered table-striped"><thead><tr><th data-orderable="false">Name of Adviser</th><th data-orderable="false" class="text-nowrap">Category</th><th data-orderable="false">Date Accredited</th><th data-orderable="false">Status</th></tr></thead><tbody id="newdata1">'); 
+
+                $("#modal_view_req #newdata1").append('<tr class="odd gradeA tr_  " id="details"><td class="f-s-600 text-inverse text-nowrap" >'+response.org_adviser+'</td><td class="f-s-600 text-inverse text-nowrap" >'+response.org_type+'</td><td class="f-s-600 text-inverse text-nowrap" >'+response.org_date_accredited+'</td><td class="f-s-600 text-inverse text-nowrap" ><span class="badge badge-success">'+response.orgstatus+'</span></td></tr>'); 
+
+                $("#modal_view_req #header_2").append('</tbody></table>'); 
+
+              
+            }
+
+            $("#modal_view_req #header_").append('<table id="data-table " class="table table-bordered table-striped"><thead><tr><th data-orderable="false" hidden></th><th data-orderable="false" style="font-weight: 700; color:#800000"  class="text-nowrap">Document Title</th><th data-orderable="false" style="text-align:center; font-weight: 700; color:#800000"  class="text-nowrap">Attach File</th><th data-orderable="false" style="font-weight: 700; color:#800000"  class="text-nowrap">Date Submitted</th><th data-orderable="false" style="font-weight: 700; color:#800000"  class="text-nowrap">Status</th><th style="font-weight: 700; color:#800000"  class="text-nowrap">Action</th></tr></thead><tbody id="newdata">'); 
+
+            const studData = response.data
+            studData.map(item=>{
+
+                // console.log(item.acc_title, item.acc_file, org_info)
+                if(item.acc_status == 'SENT'){
+                    if (x == 'RENEW'){
+
+                        $("#modal_view_req #newdata").append('<tr class="odd gradeA tr_  " id="details"><td width="1%" hidden class="f-s-600 text-inverse" >'+item.acc_id+'</td><td width="1%"  class="f-s-600 text-inverse align-middle" >'+item.acc_title+'</td><td style="text-align:center;" width="85%"  class="text-nowrap align-middle " ><a href="/media/'+item.acc_file+'" target="blank" style="color: rgb(95, 94, 94);">'+item.acc_file+'</a></td><td class="text-nowrap align-middle"  >'+item.acc_datesubmitted+'</td><td width="1%"  class="f-s-600 text-inverse align-middle" ><i class="fas fa-check mr-2" style="color: green;"></i></td><td width="1%"  class="f-s-600 text-inverse align-middle" ><button id="edit-btn" class="btn btn-danger" onClick="returnDocument('+item.acc_id+')" ><i data-toggle="tooltip" data-placement="left" title="Return" class="fas fa-undo-alt"></i></button></td></tr>');
+                       
+                        if(type == 'College-Based'){
+                            i = renew_org.indexOf('Clearance/Certificate (University-Wide)')
+                            renew_org.splice(i, 1);
+                        }
+                        else if (type == 'University-Wide'){
+                            i = renew_org.indexOf('Clearance/Certificate (College-Based)')
+                            renew_org.splice(i, 1);
+                        }
+                        
+                        i = renew_org.indexOf(item.acc_title)
+                        renew_org.splice(i, 1);
+                        console.log(item.acc_title)
+                    }
+                    else if (x == 'NEW'){
+                        console.log('hey')
+                        $("#modal_view_req #newdata").append('<tr class="odd gradeA tr_  " id="details"><td width="1%" hidden class="f-s-600 text-inverse" >'+item.acc_id+'</td><td width="1%"  class="f-s-600 text-inverse align-middle" >'+item.acc_title+'</td><td style="text-align:center;" width="85%"  class="text-nowrap align-middle " ><a href="/media/'+item.acc_file+'" target="blank" style="color: rgb(95, 94, 94);">'+item.acc_file+'</a></td><td class="text-nowrap align-middle"  >'+item.acc_datesubmitted+'</td><td width="1%"  class="f-s-600 text-inverse align-middle" ><i class="fas fa-check mr-2" style="color: green;"></i></td><td width="1%"  class="f-s-600 text-inverse align-middle" ><button id="edit-btn" class="btn btn-danger" onClick="returnDocument('+item.acc_id+')" ><i data-toggle="tooltip" data-placement="left" title="Return" class="fas fa-undo-alt"></i></button></td></tr>');
+                       
+                        if(type == 'College-Based'){
+                            i = renew_org.indexOf('Clearance/Certificate (University-Wide)')
+                            renew_org.splice(i, 1);
+                        }
+                        else if(type == 'University-Wide'){
+                            i = renew_org.indexOf('Clearance/Certificate (College-Based)')
+                            renew_org.splice(i, 1);
+                        }
+                        i = new_org.indexOf(item.acc_title)
+                        new_org.splice(i, 1);
+                    }
 
 
+                }
+            })
+            console.log(renew_org)
+            if (x == 'RENEW'){
+                if(renew_org != null){
+                    console.log(renew_org)
+                    if (type == 'College-Based'){
+                        i = renew_org.indexOf('Clearance/Certificate (University-Wide)')
+                        renew_org.splice(i, 1);
+                    }
+                    else if(type == 'University-Wide'){
+                        i = renew_org.indexOf('Clearance/Certificate (College-Based)')
+                        renew_org.splice(i, 1);
+                    }
+                    var arrayLength1 = renew_org.length;
+                    for (var i = 0; i < arrayLength1; i++) {
+                        console.log(renew_org[i]);
+                        $("#modal_view_req #newdata").append('<tr class="odd gradeA tr_  " id="details"><td width="1%" hidden class="f-s-600 text-inverse" ></td><td width="1%"  class="f-s-600 text-inverse" >'+renew_org[i]+'</td><td style="text-align:center;" width="85%"  class="text-nowrap align-middle " ></td><td  class="f-s-600 text-inverse text-nowrap" ></td><td width="1%"  class="f-s-600 text-inverse" ><i class="fas fa-times mr-2" style="color: red;"></i></td><td width="1%"  class="f-s-600 text-inverse" ></td></tr>');
+        
+                    }
+
+                }
+            }
+            else if(x == 'NEW'){
+                console.log(new_org)
+                if(new_org != null){
+                    if (type == 'College-Based'){
+                        i = new_org.indexOf('Clearance/Certificate (University-Wide)')
+                        new_org.splice(i, 1);
+                    }
+                    else if(type == 'University-Wide'){
+                        i = new_org.indexOf('Clearance/Certificate (College-Based)')
+                        new_org.splice(i, 1);
+                    }
+                    var arrayLength = new_org.length;
+                    for (var i = 0; i < arrayLength; i++) {
+                        console.log(new_org[i]);
+                        $("#modal_view_req #newdata").append('<tr class="odd gradeA tr_  " id="details"><td width="1%" hidden class="f-s-600 text-inverse" ></td><td width="1%"  class="f-s-600 text-inverse" >'+new_org[i]+'</td><td style="text-align:center;" width="85%"  class="text-nowrap align-middle " ></td><td  class="f-s-600 text-inverse text-nowrap" ></td><td width="1%"  class="f-s-600 text-inverse" ><i class="fas fa-times mr-2" style="color: red;"></i></td><td width="1%"  class="f-s-600 text-inverse" ></td></tr>');
+                    }
+                    // if (type == 'College-Based'){
+                    //     $("#modal_view_req #newdata").append('<tr class="odd gradeA tr_  " id="details"><td width="1%" hidden class="f-s-600 text-inverse" ></td><td width="1%"  class="f-s-600 text-inverse" >Clearance/Certificate (College-Based)</td><td style="text-align:center;" width="85%"  class="text-nowrap align-middle " ></td><td  class="f-s-600 text-inverse text-nowrap" ></td><td width="1%"  class="f-s-600 text-inverse" ><i class="fas fa-times mr-2" style="color: red;"></i></td><td width="1%"  class="f-s-600 text-inverse" ></td></tr>');
+                        
+                    // }
+                    // else if(type == 'University-Wide'){
+                    //     $("#modal_view_req #newdata").append('<tr class="odd gradeA tr_  " id="details"><td width="1%" hidden class="f-s-600 text-inverse" ></td><td width="1%"  class="f-s-600 text-inverse" >Clearance/Certificate (University-Wide)</td><td style="text-align:center;" width="85%"  class="text-nowrap align-middle " ></td><td  class="f-s-600 text-inverse text-nowrap" ></td><td width="1%"  class="f-s-600 text-inverse" ><i class="fas fa-times mr-2" style="color: red;"></i></td><td width="1%"  class="f-s-600 text-inverse" ></td></tr>');
+                    
+                    // }
+                    console.log(new_org)
+                }
+            }
+            $("#modal_view_req #header_").append('</tbody></table>'); 
+        }
+    });
+    
+    $('#modal_view_req').modal()
+    
+}
+
+function returnDocument(id){
+    console.log(id)
+    swal({
+            title: "Are you sure?",
+            text: "You want to return this document?", 
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+            if (willDelete) {
+                $.ajax({
+                    url: '{% url "accreditation_document_return_osas" %}',
+                    type: "POST",
+                    data: {
+                        id: id,
+                        csrfmiddlewaretoken: "{{ csrf_token }}",
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.success) {
+                            console.log(data.success)
+                            swal("Success! Organization has been successfully returned.", {
+                                icon: "success",
+                            });
+                            window.location.reload()
+                        }
+                        else{
+                            console.log(data.error)
+                        }
+                    }
+                    
+                });
+            } 
+        });
+}
 function clearMsg(){
     $('#chatbox').empty()
 }
@@ -591,7 +821,9 @@ function orgData(){
 function approveDocu(org_id){
     if (org_id) {
         tr_id = org_id;
-        console.log(org_id)
+        org_term = $('#org_term').val()
+        console.log(org_id,org_term)
+        
         swal({
             title: "Are you sure?",
             text: "You want to renew this organization?", 
@@ -606,6 +838,7 @@ function approveDocu(org_id){
                     type: "POST",
                     data: {
                         org_id: org_id,
+                        org_term:org_term,
                         csrfmiddlewaretoken: "{{ csrf_token }}",
                     },
                     dataType: 'json',
@@ -639,6 +872,13 @@ function genReport(){
     var to = $('input[name="datepicker2"]').val();
     from_2 = from + "-01"
     to_2 = to + "-01"
+    const date_from = moment(from)
+    const date_to = moment(to)
+    const date_year = moment(to)
+    var new_date_from = date_from.format('MMMM')
+    var new_date_to = date_to.format('MMMM')
+    var new_date_year = date_year.format('YYYY')
+    var i = 1;
     console.log(from_2, to_2)
     if (from && to){
         $.ajax({
@@ -659,7 +899,7 @@ function genReport(){
                 wme.document.write('<div class="row" style="margin-top: -5px;"><img src="/media/PUPLOGO.png" style="width: auto; height: 92.2204724411px; margin-left: 35.795275590551px;"/><div style="margin-right: 105px; float: right; margin-top: -15px; padding: 5px;"><p style="font-family: Calibri; font-size: 14.5px; color: black; margin-left: -120px">Republic of the Philippines</p><p style="font-family: Californian FB; font-size: 15.5px; color: black; margin-top: -15px; margin-left: -120px;"><b>POLYTECHNIC UNIVERSITY OF THE PHILIPPINES</b></p><p style="font-family: Tahoma; color: black; margin-top: -20px; font-size: 14.5px; margin-left: -120px;"><b>QUEZON CITY BRANCH</b></p><p style="font-family: Times New Roman; color: black; margin-top: -15px; font-size: 18.5px; margin-left: -120px;"><b>OFFICE OF THE STUDENT AFFAIRS AND SERVICES</b></p></div></div></div><br/><div class="container-fluid" style="background: black; height: 2px; margin-top: -10px; margin-left: 47px;"></div>')
 
                 wme.document.write('<div class="row" style="margin-top: 20px; text-align: center;"><p style="font-family: Arial; font-size: 18px; color: black;"><b>MONITORING AND OVERALL ACCREDITED ORGNAZITION</b></p></div>')
-                wme.document.write('<div class="row" style="margin-top: -15px; text-align: center;"><p style="font-family: Arial; font-size: 17px; color: black;"><b>JUNE - DECEMBER 2021</b></p></div><br>')
+                wme.document.write('<div class="row" style="margin-top: -15px; text-align: center;"><p style="font-family: Arial; font-size: 17px; color: black;"><b>'+new_date_from+' - '+new_date_to+' '+new_date_year+'</b></p></div><br>')
 
                 wme.document.write("<table style='border-collapse: collapse; width: 100%; font-family: Arial; font-size: 14.5px;' id='data-table' class='table table-bordered' ><thead ><tr><th  width='56%' style='border: 1px solid black; text-align: center; padding: 5px; font-size:15px; background-color: lightgray;'>ORGANIZATION NAME</th><th width='22%' style='border: 1px solid black; text-align: center; padding: 5px; font-size: 14.5px; background-color: lightgray;'>DATE SUBMITTED</th><th width='22%' style='border: 1px solid black; text-align: center; font-size:14.5px; background-color: lightgray; padding: 5px;'>DATE ACCREDITED</th></tr></thead><tbody>");
 
@@ -905,7 +1145,7 @@ function addNote(org_id){
 }
 
 
-$("#modal_addnote").on('click','#btn_submit',function(e){
+$("#modal_addnote").on('click','#btn_approve',function(e){
     sample = CKEDITOR.instances.essay_text.getData();
     // sample = data.excuse_val.proof.replace(/\"/g, "")
     var org_id = $('#org_id').val();

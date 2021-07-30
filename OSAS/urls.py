@@ -12,6 +12,7 @@ urlpatterns = [
     path('login/', views.logout, name="logout"),
     path('activate_account/', views.activate_account, name="activate_account"),
     path('account_process/', views.account_process, name="account_process"),
+    path('register_organization/', views.register_organization, name="register_organization"),
 #-----------------------------------------REGISTRATION---------------------------------------------------------------------------------------------
  
 #---------------------------------------STUDENT PROFILE--------------------------------------------------------------------------------------------
@@ -20,6 +21,8 @@ urlpatterns = [
     path('student_process_add/', views.student_process_add, name="student_process_add"),
     path('add_student/', views.add_student, name="add_student"),
     path('<int:stud_id>/edit_student/', views.edit_student, name="edit_student"),
+
+    path('organization_student/', views.organization_student, name="organization_student"),
 #-------------------------------------------USER ROLE----------------------------------------------------------------------------------------------
     path('userrole/', views.userrole, name="userrole"),
     path('<int:user_id>/edit_user/', views.edit_user, name="edit_user"),
@@ -134,6 +137,9 @@ urlpatterns = [
     path('organiation_login_process/', views.organiation_login_process, name="organiation_login_process"),
     path('organization_logout/', views.organization_logout, name="organization_logout"),
 
+    path('organization_upload_logo/', views.organization_upload_logo, name="organization_upload_logo"),
+
+    path('osas_accreditation_requirements/', views.osas_accreditation_requirements, name="osas_accreditation_requirements"),
     path('organization_accreditation/', views.organization_accreditation, name="organization_accreditation"),
     path('accreditation/', views.accreditation, name="accreditation"),
     path('organization_addnnote/', views.organization_addnnote, name="organization_addnnote"),
@@ -153,6 +159,8 @@ urlpatterns = [
     path('accreditation_org_msg/', views.accreditation_org_msg, name="accreditation_org_msg"),
     path('organization_osas_msg_seen/', views.organization_osas_msg_seen, name="organization_osas_msg_seen"),
     path('organization_msg_clear/', views.organization_msg_clear, name="organization_msg_clear"),
+    path('accreditation_document_sent/', views.accreditation_document_sent, name="accreditation_document_sent"),
+    path('accreditation_document_return_osas/', views.accreditation_document_return_osas, name="accreditation_document_return_osas"),
 
     path('organization_fund/', views.organization_fund, name="organization_fund"),
     path('organization_deposit_fund/', views.organization_deposit_fund, name="organization_deposit_fund"),
@@ -227,4 +235,5 @@ urlpatterns = [
     path('accreditation_upload/', views.accreditation_upload, name="accreditation_upload"),
     path('accreditation_document_remove/', views.accreditation_document_remove, name="accreditation_document_remove"),
     path('accreditation_document_send/', views.accreditation_document_send, name="accreditation_document_send"),
+    path('accreditation_sending_files/', views.accreditation_sending_files, name="accreditation_sending_files"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

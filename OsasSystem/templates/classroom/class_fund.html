@@ -23,7 +23,7 @@
         <li class="breadcrumb-item"><a href="{% url 'home' %}">Dashboard</a></li>
         <li class="breadcrumb-item">Funds</li>
     </ol>
-    <h1 class="page-header mb-1"><i class="fas fa-dollar-sign mr-2" ></i>Class Fund</h1>
+    <h1 class="page-header mb-1"style="font-weight: 700; color:#800000"><i class="fas fa-dollar-sign mr-2" ></i>Class Fund</h1>
     <p class="mb-5">Page Description</p>
     <img hidden id="myImg" style="width: auto; height: auto;"/>
     <img hidden id="myImg2" style="width: auto; height: auto;"/>
@@ -140,10 +140,10 @@
                         <thead>
                             <tr>
                                 <th width="1%"></th>
-                                <th data-orderable="false">Item Descriptions</th>
-                                <th data-orderable="false">Signed Voucher</th>
-                                <th data-orderable="false">Cash Reciept</th>
-                                <th data-orderable="false">Action</th>
+                                <th data-orderable="false" style="font-weight: 700; color:#800000">DESCRIPTION</th>
+                                <th data-orderable="false" style="font-weight: 700; color:#800000">VOUCHER</th>
+                                <th data-orderable="false" style="font-weight: 700; color:#800000">RECEIPT</th>
+                                <th data-orderable="false" style="font-weight: 700; color:#800000">ACTION</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -151,9 +151,10 @@
                             {% for fund in fund_org_list %}  
                                 <tr class="odd gradeA tr_  align-middle" id="{{ fund.fund_id }}">
                                     <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
-                                    <td width="28%" >
+                                    <td class="text-nowrap" >
                                         <dl class="row mb-0 p-2" style="line-height: .6rem;">
-                                            <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id  }}" ><strong>{{ fund.fund_desc }}</strong></dd>
+                                            <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id  }}" style=" font-size: 12px; color: rgb(255, 106, 106)" ><strong>{{ fund.fund_serial }}</strong></dd>
+                                            <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id  }}" >{{ fund.fund_desc }}</dd>
                                             <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id }}" ><strong>₱ {{ fund.fund_amount }}</strong> <span class="label label-info  yss{{ fund.fund_id  }}">{{ fund.fund_type }}</span></dd>
                                             <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id  }}">{{ fund.fund_word }}</dd>
                                             <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id  }}"><strong>{{ fund.fund_date_requested }}</strong></dd>
@@ -164,7 +165,7 @@
                                             {% endif %}
                                         </dl>
                                     </td>
-                                    <td width="28%" >
+                                    <td class="text-nowrap" >
                                         {% if file_list %}
                                             {% for file in file_list %}
                                                 {% if fund.fund_id == file.fund_fund_id.fund_id %}  
@@ -192,7 +193,7 @@
                                             {% endfor %}
                                         {% endif %}
                                     </td>                                 
-                                    <td width="28%" >
+                                    <td class="text-nowrap" >
                                         {% if file_list %}
                                             {% for file in file_list %}
                                                 {% if fund.fund_id == file.fund_fund_id.fund_id %}  

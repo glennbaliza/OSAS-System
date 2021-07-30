@@ -23,7 +23,7 @@
         <li class="breadcrumb-item"><a href="{% url 'home' %}">Dashboard</a></li>
         <li class="breadcrumb-item">Events</li>
     </ol>
-    <h1 class="page-header mb-1"><i class="fas fa-calendar-check mr-2" ></i>Events</h1>
+    <h1 class="page-header mb-1" style="font-weight: 700; color:#800000 "><i class="fas fa-calendar-check mr-2" ></i>Events</h1>
     <p class="mb-5">Page Description</p>
     <img hidden id="myImg" style="width: auto; height: auto;"/>
     <img hidden id="myImg2" style="width: auto; height: auto;"/>
@@ -70,9 +70,11 @@
                             <div class="col-sm-12">
                                 <select id="filter_status" name="filter_status" class="form-control">
                                     <option selected disabled="true">--Select--</option>
-                                    <option  value="VALIDATED">Validated</option>
+                                    
                                     <option  value="PENDING">Pending</option>
+                                    <option  value="VALIDATED">Validated</option>
                                     <option  value="APPROVED">Approved</option>
+                                    <option  value="ACCOMPLISHED">Accomplished</option>
                                 </select>
                             </div>
                         </div>
@@ -96,10 +98,10 @@
                         <thead>
                             <tr>
                                 <th width="1%"></th>
-                                <th data-orderable="false">Event Details</th>
-                                <th data-orderable="false">Attached Documents</th>
-                                <th data-orderable="false">Returned Documents</th>
-                                <th data-orderable="false">Action</th>
+                                <th data-orderable="false"style="font-weight: 700; color:#800000">EVENT DETAILS</th>
+                                <th data-orderable="false"style="font-weight: 700; color:#800000">ATTACHED DOCUMENTS</th>
+                                <th data-orderable="false"style="font-weight: 700; color:#800000">RETURNED DOCUMENTS</th>
+                                <th data-orderable="false"style="font-weight: 700; color:#800000">ACTION</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -108,9 +110,11 @@
                                 {% if org.title_org_id.org_id %}
                                 <tr class="odd gradeA tr_  align-middle" id="{{ org.title_org_id.org_id }}">
                                     <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
-                                    <td width="28%" ><dl class="row mb-0 p-2" style="line-height: .6rem;">
-                                        <dd class="col-sm-8 gritter-  ysd{{ org.title_org_id.org_id  }}" style=" font-size: 11px; "><strong>{{ org.title_name }}</strong></dd>
-                                        <dd class="col-sm-8 gritter-  ysd{{ org.title_org_id.org_id  }}" >{{ org.title_datecreated|date:"Y-m-d" }}</dd>
+                                    <td width="30%" ><dl class="row mb-0 p-2" style="line-height: .8rem;">
+                                        <dd class="col-sm-8 gritter-  ysd{{ org.title_org_id.org_id  }}" style=" color: rgb(106, 106, 255) "><strong>{{ org.title_serial }}</strong></dd>
+                                        <dd class="col-sm-8 gritter-  ysd{{ org.title_org_id.org_id  }}" ><strong>{{ org.title_name }}</strong></dd>
+                                        <dd class="col-sm-8 gritter-  ysd{{ org.title_org_id.org_id  }}" >Date Submitted: <strong>{{ org.title_datecreated|date:"Y-m-d" }}</strong></dd>
+                                        <dd class="col-sm-8 gritter-  ysd{{ org.title_org_id.org_id  }}" >Date of Event: <strong>{{ org.title_date_conducted|date:"Y-m-d" }}</strong></dd>
                                         {% if org.title_accomplishment_file %}
                                         <dd class="col-sm-8 gritter- "><a id="{{ org.title_room_id.room_id }}" href="/media/{{ org.title_accomplishment_file }}" target="blank"> <strong><span class="label label-info  yss{{ org.title_room_id.room_id }}">Accopmplisment Report <i class="far fa-file fa-md" > </i></span></strong></a></dd>
                                         {% endif %}
@@ -122,63 +126,45 @@
                                         <dd class="col-sm-8 gritter- "><strong><span class="badge badge-success  yss{{ org.title_org_id.org_id  }}">{{ org.title_status }}</span></strong></dd>
                                         {% endif %}
                                        
-                                    </dl>
+                                    </dl> 
                                     </td>
-                                    <td width="32%">
+                                    <td class="text-nowrap">
                                         {% if acc_docu_list %}
                                             {% for org_concept_paper in acc_docu_list %}
                                                 {% if org_concept_paper.con_file_ext == 'docx' and org_concept_paper.con_title_id.title_id == org.title_id %}
-                                                    <div style=" display: inline-block; padding: 2px;">
-                                                        <a id="{{ org.title_org_id.org_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank"><i class="far fa-file-word fa-2x" > </i></a>
-                                                    </div>
-                                                    <div style="display: inline-block;">
-                                                        <a id="{{ org.title_org_id.org_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_concept_paper.con_file }}</a>
+                                                    <div style="display: inline-block;" class="mt-1" >
+                                                        <a data-toggle="tooltip" data-placement="right" title="{{org_concept_paper.con_file}}" id="{{ org.title_org_id.org_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" ><span class="label label-info " ><i class="far fa-file-word fa-lg" > </i> -  CLICK TO VIEW/DOWNLOAD DOCUMENT</span></a>
                                                     </div></br>
                                                 {% elif org_concept_paper.con_title_id.title_id == org.title_id %}
-                                                    <div style="display: inline-block; padding: 2px;">
-                                                        <a id="{{ org.title_org_id.org_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: red;"><i class="far fa-file-pdf fa-2x" > </i></a>
-                                                    </div>
-                                                    <div style="display: inline;">
-                                                        <a id="{{ org.title_org_id.org_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_concept_paper.con_file }}</a>
-                                                    </div><br>
+                                                    <div style="display: inline-block;" class="mt-1">
+                                                        <a data-toggle="tooltip" data-placement="right" title="{{org_concept_paper.con_file}}" id="{{ org.title_org_id.org_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" ><span class="label label-info " ><i class="far fa-file-pdf fa-lg" > </i> -  CLICK TO VIEW/DOWNLOAD DOCUMENT</span></a>
+                                                    </div></br>
                                                 {% endif %}
                                             {% endfor %}
                                         {% endif %}
                                     </td>
-                                    <td width="32%">
+                                    <td class="text-nowrap">
                                         {% if osas_docu_list %}
                                         {% for org_concept_paper in osas_docu_list %}
                                             {% if org_concept_paper.con_file_ext == 'docx' and org_concept_paper.con_auth_id and org_concept_paper.con_org_id and org_concept_paper.con_title_id.title_name == org.title_name %}
                                                 {% if org.title_status == "APPROVED" %}
-                                                    <div style=" display: inline-block; padding: 2px;">
-                                                        <a id="{{  org.title_org_id.org_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: blue;"><i class="far fa-file-word fa-2x" > </i></a>
-                                                    </div>
-                                                    <div style="display: inline-block;">
-                                                        <a id="{{  org.title_org_id.org_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_concept_paper.con_file }}</a>
+                                                    <div style="display: inline-block;" class="mt-1">
+                                                        <a data-toggle="tooltip" data-placement="right" title="{{org_concept_paper.con_file}}" id="{{ org.title_org_id.org_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" ><span class="label label-success " ><i class="far fa-file-word fa-lg" > </i> -  CLICK TO VIEW/DOWNLOAD DOCUMENT</span></a>
                                                     </div></br>
                                                     {% else %}
-                                                    <div style=" display: inline-block; padding: 2px;">
-                                                        <a id="{{  org.title_org_id.org_id  }}" target="blank" style="color: blue;"><i class="far fa-file-word fa-2x" > </i></a>
-                                                    </div>
-                                                    <div style="display: inline-block;">
-                                                        <a id="{{  org.title_org_id.org_id }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_concept_paper.con_file }}</a>
+                                                    <div style="display: inline-block;" class="mt-1">
+                                                        <a data-toggle="tooltip" data-placement="right" title="{{org_concept_paper.con_file}}" id="{{ org.title_org_id.org_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" ><span class="label label-success " ><i class="far fa-file-word fa-lg" > </i> -  CLICK TO VIEW/DOWNLOAD DOCUMENT</span></a>
                                                     </div></br>
                                                 {% endif %}
                                                 {% elif org_concept_paper.con_auth_id and org_concept_paper.con_org_id and org_concept_paper.con_title_id.title_name == org.title_name %}
                                                     {% if org.title_status == "APPROVED" %}
-                                                        <div style="display: inline-block; padding: 2px;">
-                                                            <a id="{{ org.title_org_id.org_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: red;"><i class="far fa-file-pdf fa-2x" > </i></a>
-                                                        </div>
-                                                        <div style="display: inline;">
-                                                            <a id="{{ org.title_org_id.org_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_concept_paper.con_file }}</a>
-                                                        </div><br>
+                                                        <div style="display: inline-block;" class="mt-1">
+                                                            <a data-toggle="tooltip" data-placement="right" title="{{org_concept_paper.con_file}}" id="{{ org.title_org_id.org_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" ><span class="label label-success " ><i class="far fa-file-pdf fa-lg" > </i> -  CLICK TO VIEW/DOWNLOAD DOCUMENT</span></a>
+                                                        </div></br>
                                                     {% else %}
-                                                        <div style="display: inline-block; padding: 2px;">
-                                                            <a id="{{ org.title_org_id.org_id  }}" target="blank" style="color: red;"><i class="far fa-file-pdf fa-2x" > </i></a>
-                                                        </div>
-                                                        <div style="display: inline;">
-                                                            <a id="{{ org.title_org_id.org_id  }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_concept_paper.con_file }}</a>
-                                                        </div><br>
+                                                    <div style="display: inline-block;" class="mt-1">
+                                                        <a data-toggle="tooltip" data-placement="right" title="{{org_concept_paper.con_file}}" id="{{ org.title_org_id.org_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" ><span class="label label-success " ><i class="far fa-file-pdf fa-lg" > </i> -  CLICK TO VIEW/DOWNLOAD DOCUMENT</span></a>
+                                                    </div></br>
                                                     {% endif %}
                                                 {% endif %}
                                             {% endfor %}
@@ -215,7 +201,7 @@
                                                     <button id="edit-btn" class="btn btn-warning" onClick="uploadAccomplish('{{ org.title_org_id.org_id  }}', '{{org.title_id}}', '{{org.title_name}}')" ><i data-toggle="tooltip" data-placement="left" title="Upload Accomplishment Report" class="fas fa-upload"></i></button>
                                                 </div>
                                             </dl>
-                                            {% endif %}
+                                            {% endif %} 
                                         {% endif %}
                                     </td>
                                 </tr>
@@ -229,6 +215,7 @@
         </div>
     </div>
 </div>
+
 
 <div class="modal fade" id="modal_addtitle" role="dialog"  data-backdrop="static">
     <div class="modal-dialog modal-md" role="document" id="myModal">
@@ -246,6 +233,10 @@
                             <label>Event Title Name:</label>
                             <input class="form-control" id="org_id" type="hidden" name="sanction_id"/>
                             <input class="form-control essay_text" id="con_title"  name="con_title" placeholder="Write your title here..."></input><br>
+                        </div>
+                        <div class="input-group input-daterange col-lg-12">
+                            <div class="input-group-addon">Date</div>
+                            <input type="date" id="datepicker" name="datepicker"/>
                         </div>
                     </div>
                 </div>
@@ -412,8 +403,8 @@
                     <div id="dropzone">
                         <form action="{%url 'organization_accomplishment_upload' %}" method="POST" class="dropzone" id="file-upload2">
                             {% csrf_token %}
-                            <input class="form-control" id="org_id3" type="" name="org_id2"/>
-                            <input class="form-control" id="title_id3" type="" name="title_id2"/>
+                            <input class="form-control" id="org_id3" type="hidden" name="org_id2"/>
+                            <input class="form-control" id="title_id3" type="hidden" name="title_id2"/>
                             <div class="fallback">
                                 <input name="file" type="file" multiple id="document_file" />
                             </div>
@@ -458,9 +449,8 @@
         });
        
         const today = moment()
-        var new_date = today.format('YYYY-MM')
-        document.getElementById('datepicker2').value = new_date;
-        document.getElementById('datepicker').value = new_date;
+        // var new_date = today.format('YYYY-MM-DD')
+        // document.getElementById('datepicker').value = new_date;
         // $("#datepicker").focus(function() {
         //     $(".ui-datepicker-month").hide();
         //     $(".ui-datepicker-calendar").hide();
@@ -756,14 +746,16 @@ function editDocu(org_id, title_id, title_name){
 $('#modal_addtitle').on('click','#btn_submit', function () {
     org_id = $('#auth_id').text();
     var con_title = $('#con_title').val().trim();
-    console.log(org_id, con_title)
-    if (con_title){
+    var date_conducted = $('input[name="datepicker"]').val();
+    console.log(org_id, con_title, date_conducted)
+    if (con_title, date_conducted){
         $.ajax({
             url: '{% url "org_concept_paper_title" %}',
             type: "POST",
             data: {
                 con_title: con_title,
                 org_id:org_id,
+                date_conducted:date_conducted,
                 csrfmiddlewaretoken: "{{ csrf_token }}",
             },
             dataType: 'json',

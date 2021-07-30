@@ -23,7 +23,7 @@
         <li class="breadcrumb-item"><a href="{% url 'home' %}">Dashboard</a></li>
         <li class="breadcrumb-item">Events</li>
     </ol>
-    <h1 class="page-header mb-1"><i class="fas fa-calendar-check mr-2" ></i> Events</h1>
+    <h1 class="page-header mb-1" style="font-weight: 700; color:#800000"><i class="fas fa-calendar-check mr-2" ></i> Events</h1>
     <p class="mb-5">Page Description</p>
     <img hidden id="myImg" style="width: auto; height: auto;"/>
     <img hidden id="myImg2" style="width: auto; height: auto;"/>
@@ -70,9 +70,10 @@
                             <div class="col-sm-12">
                                 <select id="filter_status" name="filter_status" class="form-control">
                                     <option selected disabled="true">--Select--</option>
-                                    <option  value="VALIDATED">Validated</option>
                                     <option  value="PENDING">Pending</option>
+                                    <option  value="VALIDATED">Validated</option>
                                     <option  value="APPROVED">Approved</option>
+                                    <option  value="ACCOMPLISHED">Accomplished</option>
                                 </select>
                             </div>
                         </div>
@@ -96,10 +97,10 @@
                         <thead>
                             <tr>
                                 <th width="1%"></th>
-                                <th data-orderable="false">Organization Info</th>
-                                <th data-orderable="false">Concept Papers</th>
-                                <th data-orderable="false">Returned Concept Papers</th>
-                                <th data-orderable="false">Action</th>
+                                <th data-orderable="false"style="font-weight: 700; color:#800000">EVENT DETAILS</th>
+                                <th data-orderable="false"style="font-weight: 700; color:#800000">ATTACHED DOCUMENTS</th>
+                                <th data-orderable="false"style="font-weight: 700; color:#800000">RETURNED DOCUMENTS</th>
+                                <th data-orderable="false"style="font-weight: 700; color:#800000">ACTION</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -108,10 +109,12 @@
                                 {% if org.title_room_id.room_id%}
                                     <tr class="odd gradeA tr_  align-middle" id="{{ org.title_room_id.room_id }}">
                                         <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
-                                        <td width="28%" ><dl class="row mb-0 p-2" style="line-height: .6rem;">
-                                            <dd class="col-sm-8 gritter-  ysd{{ org.title_room_id.room_id  }}" style=" font-size: 11px; "><strong>{{ org.title_room_id.room_stud_id.stud_course_id.course_code }} {{ org.title_room_id.room_year }} - {{ org.title_room_id.room_sec }}</strong></dd>
+                                        <td class="text-nowrap" ><dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                            <dd class="col-sm-8 gritter-  ysd{{ org.title_room_id.room_id  }}" ><strong>{{ org.title_serial }} </strong></dd>
+                                            <dd class="col-sm-8 gritter-  ysd{{ org.title_room_id.room_id  }}" style=" font-size: 12px; color: rgb(255, 106, 106)"><strong>{{ org.title_room_id.room_stud_id.stud_course_id.course_code }} {{ org.title_room_id.room_year }} </strong></dd>
                                             <dd class="col-sm-8 gritter-  ysd{{ org.title_room_id.room_id  }} " style=" font-size: 11px; ">{{ org.title_name }}</dd>
-                                            <dd class="col-sm-8 gritter-  ysd{{ org.title_room_id.room_id  }}" >{{ org.title_datecreated|date:"Y-m-d" }}</dd>
+                                            <dd class="col-sm-8 gritter-  ysd{{ org.title_org_id.org_id  }}" >Date Submitted: <strong>{{ org.title_datecreated|date:"Y-m-d" }}</strong></dd>
+                                            <dd class="col-sm-8 gritter-  ysd{{ org.title_org_id.org_id  }}" >Date of Event: <strong>{{ org.title_date_conducted|date:"Y-m-d" }}</strong></dd>
                                             {% if org.title_accomplishment_file %}
                                             <dd class="col-sm-8 gritter- "><a id="{{ org.title_room_id.room_id }}" href="/media/{{ org.title_accomplishment_file }}" target="blank"> <strong><span class="label label-info  yss{{ org.title_room_id.room_id }}">Accopmplisment Report <i class="far fa-file fa-md" > </i></span></strong></a></dd>
                                             {% endif %}
@@ -124,7 +127,7 @@
                                             {% endif %}
                                         </dl>
                                         </td>    
-                                        <td width="32%">
+                                        <td class="text-nowrap">
                                             {% if acc_docu_list %}
                                                 {% for class_concept_paper in acc_docu_list %}
                                                     {% if class_concept_paper.con_file_ext == 'docx' and class_concept_paper.con_title_id.title_id == org.title_id %}
@@ -146,7 +149,7 @@
                                             {% endif %}
                                         </td>
                                     
-                                        <td width="32%">
+                                        <td class="text-nowrap">
                                         {% if osas_docu_list %}
                                             {% for org_concept_paper in osas_docu_list %}
                                                 {% if org_concept_paper.con_file_ext == 'docx' and org_concept_paper.con_auth_id and org_concept_paper.con_room_id and org_concept_paper.con_title_id.title_name == org.title_name %}
@@ -332,6 +335,10 @@
                             <label>Event Title Name:</label>
                             <input class="form-control" id="org_id" type="hidden" name="sanction_id"/>
                             <input class="form-control essay_text" id="con_title"  name="con_title" placeholder="Write your title here..."></input><br>
+                        </div>
+                        <div class="input-group input-daterange col-lg-12">
+                            <div class="input-group-addon">Date</div>
+                            <input type="date" id="datepicker" name="datepicker"/>
                         </div>
                     </div>
                 </div>
@@ -728,14 +735,16 @@ $('#modal_edit').on('click','#btn_submit', function () {
 $('#modal_addtitle').on('click','#btn_submit', function () {
     room_id = $('#auth_id').text();
     var con_title = $('#con_title').val().trim();
-    console.log(room_id, con_title)
-    if (con_title){
+    var date_conducted = $('input[name="datepicker"]').val();
+    console.log(room_id, con_title, date_conducted)
+    if (con_title, date_conducted){
         $.ajax({
             url: '{% url "class_concept_paper_title" %}',
             type: "POST",
             data: {
                 con_title: con_title,
                 room_id:room_id,
+                date_conducted:date_conducted,
                 csrfmiddlewaretoken: "{{ csrf_token }}",
             },
             dataType: 'json',

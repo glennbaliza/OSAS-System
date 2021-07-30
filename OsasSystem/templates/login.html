@@ -1,6 +1,10 @@
 {% extends 'loginbase.html'%}
 {% load static %}
-
+{% block page-css %}
+    <link href="{% static 'OsasSystem/assets/plugins/DataTables/media/css/dataTables.bootstrap.min.css' %}" rel="stylesheet" />
+    <link href="{% static 'OsasSystem/assets/plugins/bootstrap-eonasdan-datetimepicker/build/css/bootstrap-datetimepicker.min.css' %}" rel="stylesheet" />
+    <link href="{% static 'OsasSystem/assets/plugins/DataTables/extensions/Responsive/css/responsive.bootstrap.min.css' %}" rel="stylesheet" />
+{% endblock%}
 {% block content %}
 
         
@@ -39,6 +43,9 @@
                         <div class="form-group m-b-20">
                             <input type="password" class="form-control form-control-lg" placeholder="Password" required  name="pass" id="pass"/>
                         </div>
+                        <div class="m-t-10  p-b-10">
+                            Have an student account? Click <a  data-toggle="modal" href="#modal-dialog" >here to</a> register.
+                        </div>
                         <div class="login-buttons">
                             <button type="submit" class="btn btn-light btn-block btn-lg">Sign in</button>
                         </div>
@@ -49,5 +56,287 @@
 
         </div>
         <!-- end page container -->
+
+        <div class="modal fade" id="modal-dialog" role="dialog" data-backdrop="static">
+            <div class="modal-dialog modal-lg"  role="document">
+                <div class="modal-content " >
+                    <div class="panel panel-inverse">
+                        <button type="button" class="close"  data-dismiss="modal" aria-hidden="true" style="color: gray; margin: 6px;">×</button>
+                        <div class="panel-body" style="background-color:whitesmoke;">
+                            <div class="col">
+                                <input class="form-control" id="student_id_" type="hidden" name="student_id_"/>
+                                <h1 class="page-header mb-1">Student Information</h1>
+                                <p class="mb-5">Page Description</p>
+                                <div class="col-lg-12 form-check-inline" id="error">
+                                </div>
+                                <form  id="validate_form_add" method="POST" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                    <!-- <a href="" class="pull-right"><p>Edit</p></a> -->
+                                    <h6>PERSONAL INFORMATION</h6>
+                                    <table class="table table-striped">
+                                        <tbody>
+                                            <tr>
+                                                <th style="width: 50%;">
+                                                    <div class="form-group row" >
+                                                        <label style="font-family: Roboto; font-size: 10px;" class="col-sm-3 col-form-label col-form-label-sm">STUDENT NUMBER</label>
+                                                        <div class="col-sm-9">
+                                                        <input type="text" class="form-control form-control-md" id="stud_number1" name="stud_number1" placeholder="ex: 2021-00001-CM-0">
+                                                        </div>
+                                                    </div>
+                                                </th> 
+                                                <th style="width: 50%;">
+                                                    <div class="form-group row">
+                                                        <label style="font-family: Roboto; font-size: 10px;" class=" col-sm-2 col-form-label col-form-label-sm">COURSE</label>
+                                                        <div class="col-sm-10">
+                                                            {% if student_course %}
+                                                            <select id="dd_course" name="txt_course1" class="form-control form-control-md">
+                                                                <option selected disabled="true">--Select Course--</option>
+                                                                {% for osas_r_course in student_course %}
+                                                                <option value="{{ osas_r_course.course_name }}" name="txt_course1" name="txt_course1" >{{ osas_r_course.course_name }}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </th>  
+                                               
+                                            </tr>
+                                    </tbody>
+                                    </table>
+                                    <table style=" margin-top: -17px;" class="table table-striped">
+                                        <tr>
+                                            <th style="width: 33.33%;">
+                                                <div class="form-group row" >
+                                                    <label style="font-family: Roboto; font-size: 10px;" class="col-sm-3 col-form-label col-form-label-sm">YEAR & SECTION</label> 
+                                                    <div class="col-sm-9" style="margin-top: 4px;">
+                                                        {% if student_yr_sec %}
+                                                        <select id="dd_yr1" name="txt_yr_sec1" class="form-control form-control-md" >
+                                                                <option selected disabled="true">--Select--</option>
+                                                                {% for osas_r_section_and_year in student_yr_sec%}
+                                                                <option  value="{{ osas_r_section_and_year.yas_descriptions }}" name="txt_yr_sec1">{{ osas_r_section_and_year.yas_descriptions }}</option>
+                                                                {% endfor %}
+                                                        </select>
+                                                        {% endif %}
+                                                    </div>  
+                                                </div>
+                                            </th> 
+                                            <th style="width: 33.33%;" style="font-family: Roboto; font-size: 10px;">
+                                                <div class="form-group row" >
+                                                  
+                                                    <label style="font-family: Roboto; font-size: 10px;" class="col-sm-3 col-form-label col-form-label-sm">LAST NAME</label> 
+                                                    <div class="col-sm-9" style="margin-top: 4px;">
+                                                        <input type="text" class="form-control form-control-md" name="txt_l_name1" id="txt_l_name1" required data-parsley-trigger="keyup" placeholder="enter your last name">
+                                                    </div>  
+                                                </div>
+                                            </th> 
+                                            <th style="width: 33.33%;">
+                                                <div class="form-group row">
+                                                    <label style="font-family: Roboto; font-size: 10px;" class="col-sm-3 col-form-label col-form-label-sm">FIRST NAME</label>
+                                                    <div class="col-sm-9" style="margin-top: 4px;">
+                                                        <input type="text" class="form-control form-control-md" name="txt_f_name1"  id="txt_f_name1" required data-parsley-trigger="keyup" placeholder=" enter your first name">
+                                                    </div>
+                                                </div>
+                                            </th> 
+                                        </tr>
+                                    </tbody>
+                                    </table>
+                                    <table style=" margin-top: -17px;" class="table table-striped">
+                                        <tr>
+                                            <th style="width: 33.33%;">
+                                                <div class="form-group row">
+                                                    <label style="font-family: Roboto; font-size: 10px;" class="col-sm-3 col-form-label col-form-label-sm">MIDDLE NAME</label>
+                                                    <div class="col-sm-9" style="margin-top: 4px;">
+                                                        <input type="text" class="form-control form-control-md" name="txt_m_name1"  id="txt_m_name1" required data-parsley-trigger="keyup" placeholder="enter your middle name">
+                                                    </div>
+                                                </div>
+                                            </th> 
+                                            <th style="width: 33.33%;">
+                                                <div class="form-group row">
+                                                    <label style="font-family: Roboto; font-size: 10px;" class="col-sm-3 col-form-label col-form-label-sm">SUFFIX NAME</label>
+                                                    <div class="col-sm-9" style="margin-top: 4px;">
+                                                        <input type="text" class="form-control form-control-md" name="txt_s_name1" id="txt_s_name1"  data-parsley-trigger="keyup" placeholder="enter your suffix name">
+                                                    </div>
+                                                </div>
+                                            </th> 
+                                            <th style="width: 33.33%;" style="font-family: Roboto; font-size: 10px;">
+                                                <div class="form-group row" >
+                                                    <label style="font-family: Roboto; font-size: 10px;" class="col-sm-3 col-form-label col-form-label-sm">GENDER</label>
+                                                    <div class="col-sm-9">
+                                                        <select id="txt_Gender1" name="txt_Gender1" class="form-control">
+                                                            <option selected disabled="true">--Select--</option>
+                                                            <option  value="Male">Male</option>
+                                                            <option  value="Female">Female</option>
+                                                            <option  value="Others">Other</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </th> 
+                                        </tr>
+                                    </tbody>
+                                    </table>
+                                    <table style=" margin-top: -17px;" class="table table-striped">
+                                            <tr>
+                                                <th style="width: 33.33%;" style="font-family: Roboto; font-size: 10px;">
+                                                    <div class="form-group row" >
+                                                        <label style="font-family: Roboto; font-size: 10px;" class="col-sm-3 col-form-label col-form-label-sm">DATE OF BIRTH</label> 
+                                                        <div class="col-sm-9" style="margin-top: 4px;">
+                                                            <input type="date" class="form-control form-control-md" name="date_of_birth1" id="date_of_birth1">
+                                                        </div>  
+                                                    </div>
+                                                </th> 
+                                                <th style="width: 33.33%;">
+                                                    <div class="form-group row">
+                                                        <label style="font-family: Roboto; font-size: 10px;" class="col-sm-3 col-form-label col-form-label-sm">EMAIL ADDRESS</label>
+                                                        <div class="col-sm-9">
+                                                        <input style="margin-top: 4px;" type="email" id="txt_email1" name="txt_email1" placeholder="enter your email address" class="form-control form-control-md" required data-parsley-trigger="keyup">
+                                                        </div>
+                                                    </div>
+                                                </th> 
+                                                <th style="width: 33.33%;">
+                                                    <div class="form-group row">
+                                                        <label style="font-family: Roboto; font-size: 10px;" class="col-sm-3 col-form-label col-form-label-sm">MOBILE NUMBER</label>
+                                                        <div class="col-sm-9" style="margin-top: 4px;">
+                                                            <input  type="text" id="txt_mobile_number1" class="form-control form-control-md" name="txt_mobile_number1" placeholder="enter your mobile number" required data-parsley-trigger="keyup" >
+                                                        </div>
+                                                    </div>
+                                                </th> 
+                                            </tr>
+                                    </tbody>
+                                    </table>
+                                    <table style="margin-top: -17px;" class="table table-striped">
+                                            <tr>
+                                                <th>
+                                                    <div class="form-group row" >
+                                                        <label style="font-family: Roboto; font-size: 10px;" class="col-sm-1 col-form-label col-form-label-sm">ADDRESS</label> 
+                                                        <div class="col-sm-11" >
+                                                            <input type="text" id="txt_address1" name="txt_address1" class="form-control form-control-md" placeholder="enter your address" required data-parsley-trigger="keyup" >
+                                                        </div>  
+                                                    </div>
+                                                </th> 
+                                            </tr>
+                                    </tbody>
+                                    </table>
+                                    <h6>EDUCATIONAL BACKGROUND</h6>
+                                    <table class="table table-striped">
+                                        <form class="form-inline">
+                                            <tr>
+                                                <th style="width: 35%;">
+                                                    <div class="form-group row" >
+                                                        <label style="font-family: Roboto; font-size: 10px;" class="col-sm-3 col-form-label col-form-label-sm">HIGH SCHOOL NAME</label>
+                                                        <div class="col-sm-9" style="margin-top: 4px;">
+                                                        <input type="text" class="form-control form-control-md" placeholder="enter your high school name" name="h_name1" id="h_name1">
+                                                        </div>
+                                                    </div>
+                                                </th> 
+                                                <th style="width: 50%;">
+                                                    <div class="form-group row">
+                                                        <label style="font-family: Roboto; font-size: 10px;" class="col-sm-2 col-form-label col-form-label-sm">HIGH SCHOOL ADDRESS</label>
+                                                        <div class="col-sm-10" style="margin-top: 4px;">
+                                                        <input  style="margin-bottom: 8px;" type="text" id="txt_h_address1" name="txt_h_address1" class="form-control form-control-md" placeholder="enter your high school address" required data-parsley-trigger="keyup">
+                                                        </div>
+                                                    </div>
+                                                </th> 
+                                            </tr>
+                                    </tbody>
+                                    </table>
+                                    <table style="margin-top: -17px;" class="table table-striped">
+                                        <form class="form-inline">
+                                            <tr>
+                                                <th style="width: 35%;">
+                                                    <div class="form-group row" >
+                                                        <label style="font-family: Roboto; font-size: 10px;" class="col-sm-3 col-form-label col-form-label-sm">SENIOR HIGH SCHOOL NAME</label>
+                                                        <div class="col-sm-9" style="margin-top: 4px;">
+                                                        <input type="text" class="form-control form-control-md" placeholder="enter your senior high school" id="s_name1" name="s_name1">
+                                                        </div>
+                                                    </div>
+                                                </th> 
+                                                <th style="width: 50%;">
+                                                    <div class="form-group row">
+                                                        <label style="font-family: Roboto; font-size: 10px;" class="col-sm-3 col-form-label col-form-label-sm">SENIOR HIGH SCHOOL ADDRESS</label>
+                                                        <div class="col-sm-9" style="margin-top: 4px;">
+                                                            <input style="margin-bottom: 8px;" type="text" id="txt_sh_address1" name="txt_sh_address1" class="form-control form-control-md" placeholder="enter your senior high school address" required data-parsley-trigger="keyup" >
+                                                        </div>
+                                                    </div>
+                                                </th> 
+                                            </tr>
+                                    </tbody>
+                                    </table>
+                                    <h6>IN CASE OF EMERGENCY</h6>
+                                    <table class="table table-striped">
+                                        <form class="form-inline">
+                                            <tr>
+                                                <th style="width: 50%;">
+                                                    <div class="form-group row" >
+                                                        <label style="font-family: Roboto; font-size: 10px;" class="col-sm-4 col-form-label col-form-label-sm">EMERGENCY CONTACT PERSON</label>
+                                                        <div class="col-sm-8">
+                                                            <input  type="text" id="txt_e_name1" name="txt_e_name1" class="form-control form-control-md" placeholder="enter your emergency contact person" required data-parsley-trigger="keyup" >
+                                                        </div>
+                                                    </div>
+                                                </th> 
+                                                <th style="width: 50%;">
+                                                    <div class="form-group row">
+                                                        <label style="font-family: Roboto; font-size: 10px;" class="col-sm-4 col-form-label col-form-label-sm">EMERGENCY CONTACT NO.</label>
+                                                        <div class="col-sm-8">
+                                                            <input type="text" id="txt_e_number1" name="txt_e_number1" placeholder="enter your emergency contact number" class="form-control form-control-md" required data-parsley-trigger="keyup" >
+                                                        </div>
+                                                    </div>
+                                                </th> 
+                                            </tr>
+                                    </tbody>
+                                    </table>
+                                    <table style=" margin-top: -17px;" class="table table-striped">
+                                            <tr>
+                                                <th>
+                                                    <div class="form-group row" >
+                                                        <label style="font-family: Roboto; font-size: 10px;" class="col-sm-2 col-form-label col-form-label-sm">EMERGENCY CONTACT ADDRESS</label> 
+                                                        <div class="col-sm-10">
+                                                            <input type="text" id="txt_e_addres1" name="txt_e_address1" class="form-control form-control-md" placeholder="enter your emergency contact address" required data-parsley-trigger="keyup" >
+                                                        </div>  
+                                                    </div>
+                                                </th> 
+                                            </tr>
+                                    </tbody>
+                                    </table>
+                                    <h6>STUDENT PASSWORD</h6>
+                                    <table class="table table-striped">
+                                        <form class="form-inline">
+                                            <tr>
+                                                <th style="width: 50%;">
+                                                    <div class="form-group row" >
+                                                        <label style="font-family: Roboto; font-size: 10px;" class="col-sm-4 col-form-label col-form-label-sm">PASSWORD:</label>
+                                                        <div class="col-sm-8">
+                                                            <input type="password" name="pass1" id="pass1"class="form-control" placeholder="enter your password." required data-parsley-trigger="keyup" />
+                                                        </div>
+                                                    </div>
+                                                </th> 
+                                                <th style="width: 50%;">
+                                                    <div class="form-group row">
+                                                        <label style="font-family: Roboto; font-size: 10px;" class="col-sm-4 col-form-label col-form-label-sm">CONFIRM PASSWORD:</label>
+                                                        <div class="col-sm-8">
+                                                            <input type="password" name="pass2" id="pass2"class="form-control" placeholder="enter your confirm password." required data-parsley-trigger="keyup" />
+                                                        </div>
+                                                    </div>
+                                                </th> 
+                                            </tr>
+                                    </tbody>
+                                    </table>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="panel-footer" >
+                            <button class="btn btn_success col-md-3 pull-right m-l-10 " type="submit" id="btn_add" style="height: 33px; padding: 5px; background: linear-gradient(to right, #66ccff -1%, #3366ff 98%); border:none; color: white;" >Submit<i class="far fa-paper-plane m-l-3 zoom"></i></button>
+                            <a class="btn btn-white pull-right m-l-10" data-dismiss="modal">Back<i class="fas fa-reply m-l-3 zoom"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+{% endblock %}
+{% block page-level %}
+    <!-- <script src="{% static 'OsasSystem/assets/plugins/bootstrap-eonasdan-datetimepicker/build/js/bootstrap-datetimepicker.min.js' %}"></script> -->
+	<script src="{%static 'OsasSystem/assets/plugins/bootstrap-sweetalert/sweetalert.min.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/js/demo/ui-modal-notification.demo.min.js' %}"></script>
+    <script src="{%static 'OsasSystem/assets/index.js' %}"></script>
 {% endblock %}
 	

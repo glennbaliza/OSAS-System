@@ -24,7 +24,7 @@
         <li class="breadcrumb-item">Facilitation Student Activites</li>
         <li class="breadcrumb-item">Event</li>
     </ol>
-    <h1 class="page-header mb-1"><i class="fas fa-calendar-check mr-2" ></i> Event</h1>
+    <h1 class="page-header mb-1" style="font-weight: 700; color:#800000 "><i class="fas fa-calendar-check mr-2" ></i> Event</h1>
     <p class="mb-5">Page Description</p>
     <img hidden id="myImg" style="width: auto; height: auto;"/>
     <img hidden id="myImg2" style="width: auto; height: auto;"/>
@@ -40,27 +40,26 @@
                     <h2 class="panel-title" style="font-size:16px;">Filter <i class="fas fa-filter mr-2" ></i></h2>
                 </div>
                 <div class="panel-body" style="padding: 0%; height: 200px;">
-                    <form id="validate_form" method="POST" action="{% url 'organization_accreditation' %}" enctype="multipart/form-data">
+                    <form id="validate_form" method="POST" action="{% url 'concept_papers' %}" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="form-group" >
                             <label style="text-align: left; margin-bottom: 7px; margin-top: 4px;" class="col-sm-12">Academic Year:</label> 
                             <div class="col-sm-12">
                                 <select id="acad_year" name="acad_year" class="form-control">
                                     <option selected disabled="true">--Select--</option>
-                                    <option  value="2016">2016 - 2017</option>
-                                    <option  value="2017">2017 - 2018</option>
-                                    <option  value="2018">2018 - 2019</option>
                                     <option  value="2019">2019 - 2020</option>
                                     <option  value="2020">2020 - 2021</option>
                                     <option  value="2021">2021 - 2022</option>
+                                    <option  value="2022">2022 - 2023</option>
                                 </select>
                             </div>
                             <label style="text-align: left; margin-bottom: 7px; margin-top: 4px;" class="col-sm-12">Status:</label> 
                             <div class="col-sm-12">
                                 <select id="filter_status" name="filter_status" class="form-control">
                                     <option selected disabled="true">--Select--</option>
-                                    <option  value="VALIDATED">Validated</option>
                                     <option  value="PENDING">Pending</option>
+                                    <option  value="APPROVED">Approved</option>
+                                    <option  value="ACCOMPLISHED">Accomplished</option>
                                 </select>
                             </div>
                         </div>
@@ -75,8 +74,8 @@
             <div class="panel">
                 <div class="panel-heading p-25">
                     <div class="btn-group btn-group-toggle pull-right" data-toggle="buttons" style="margin-right: -10px; margin-bottom: -10px;">
-                        <button class="btn btn-white" data-toggle="modal" href="#modal_view_date" id="donwload" ><i class="far fa-file-pdf mr-2"></i>Concept Paper Report</button>
-                        <button class="btn btn-white" data-toggle="modal" href="#modal_view_date2" id="donwload" ><i class="far fa-file-pdf mr-2"></i>Accomplishment Report</button>
+                        <button class="btn btn-white" data-toggle="modal" href="#modal_view_date" id="donwload" ><i class="far fa-file-pdf mr-2" style="color: red;"></i>Concept Paper Report</button>
+                        <button class="btn btn-white" data-toggle="modal" href="#modal_view_date2" id="donwload" ><i class="far fa-file-pdf mr-2" style="color: red;"></i>Accomplishment Report</button>
                     </div>
                     <h2 class="panel-title" style="font-size:16px;"><i class="fas fa-calendar-alt mr-2" ></i>Event List</h2>  
                 </div>
@@ -85,10 +84,10 @@
                         <thead>
                             <tr>
                                 <th width="1%"></th>
-                                <th data-orderable="false">Activity Info</th>
-                                <th data-orderable="false">Concept Papers</th>
-                                <th data-orderable="false">Signed Concept Papers</th>
-                                <th data-orderable="false">Action</th>
+                                <th data-orderable="false" style="font-weight: 700;">ACTIVITY INFO</th>
+                                <th data-orderable="false" style="font-weight: 700;">CONCEPT PAPERS</th>
+                                <th data-orderable="false" style="font-weight: 700;">SIGNED CONCEPT PAPERS</th>
+                                <th data-orderable="false" style="font-weight: 700;">ACTION</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -97,10 +96,12 @@
                                 {% if org.title_org_id.org_id %}
                                 <tr class="odd gradeA tr_  align-middle" id="{{ org.title_org_id.org_id }}">
                                     <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
-                                    <td width="28%" ><dl class="row mb-0 p-2" style="line-height: .6rem;">
-                                        <dd class="col-sm-8 gritter-  ysd{{ org.title_org_id.org_id  }}" style=" font-size: 11px; "><strong>{{ org.title_org_id.org_name }}</strong></dd>
+                                    <td width="40%" ><dl class="row mb-0 p-2" style="line-height: .7rem;">
+                                        <dd class="col-sm-8 gritter-  ysd{{ org.title_org_id.org_id  }}" style=" font-size: 11px; "><strong>{{ org.title_serial }}</strong></dd>
+                                        <dd class="col-sm-8 gritter-  ysd{{ org.title_org_id.org_id  }}" style=" font-size: 12px; color: rgb(106, 106, 255)"><strong>{{ org.title_org_id.org_name }} ({{ org.title_org_id.org_abbr }})</strong></dd>
                                         <dd class="col-sm-8 gritter-  ysd{{ org.title_org_id.org_id  }} " style=" font-size: 11px; ">{{ org.title_name }}</dd>
-                                        <dd class="col-sm-8 gritter-  ysd{{ org.title_org_id.org_id  }}" >{{ org.title_datecreated|date:"Y-m-d" }}</dd>
+                                        <dd class="col-sm-8 gritter-  ysd{{ org.title_org_id.org_id  }}" >Date Submitted: <strong>{{ org.title_datecreated|date:"Y-m-d" }}</strong></dd>
+                                        <dd class="col-sm-8 gritter-  ysd{{ org.title_org_id.org_id  }}" >Date of Event: <strong>{{ org.title_date_conducted|date:"Y-m-d" }}</strong></dd>
                                         {% if org.title_status == "VALIDATED" %}
                                         <dd class="col-sm-8 gritter- "><strong><span class="badge badge-info  yss{{ org.title_org_id.org_id  }}">{{ org.title_status }}</span></strong></dd>
                                         {% elif org.title_status == "PENDING" %}
@@ -116,49 +117,37 @@
                                         
                                     </dl>
                                     </td>
-                                    <td width="32%">
+                                    <td width="25%">
                                         {% if acc_docu_list %}
                                             {% for org_concept_paper in acc_docu_list %}
                                                 {% if org_concept_paper.con_file_ext == 'docx' and org_concept_paper.con_title_id.title_id == org.title_id %}
-                                                    <div style=" display: inline-block; padding: 2px;">
-                                                        <a id="{{ org.title_org_id.org_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank"><i class="far fa-file-word fa-2x" > </i></a>
-                                                    </div>
-                                                    <div style="display: inline-block;">
-                                                        <a id="{{ org.title_org_id.org_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_concept_paper.con_file }}</a>
+                                                    <div style="display: inline-block;" class="mt-1" >
+                                                        <a data-toggle="tooltip" data-placement="right" title="{{org_concept_paper.con_file}}" id="{{ org.title_org_id.org_id  }}" style="padding:5px;" href="/media/{{ org_concept_paper.con_file }}" target="blank" ><span class="label label-info  yss{{org.title_org_id.org_id }}" ><i class="far fa-file-word fa-lg" > </i> -  CLICK TO VIEW/DOWNLOAD DOCUMENT</span></a>
                                                     </div></br>
                                                 {% elif org_concept_paper.con_title_id.title_id == org.title_id %}
-                                                    <div style="display: inline-block; padding: 2px;">
-                                                        <a id="{{ org.title_org_id.org_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: red;"><i class="far fa-file-pdf fa-2x" > </i></a>
-                                                    </div>
-                                                    <div style="display: inline;">
-                                                        <a id="{{ org.title_org_id.org_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_concept_paper.con_file }}</a>
-                                                    </div><br>
+                                                    <div style="display: inline-block;" class="mt-1" >
+                                                        <a data-toggle="tooltip" data-placement="right" title="{{org_concept_paper.con_file}}" id="{{ org.title_org_id.org_id  }}" style="padding:5px;" href="/media/{{ org_concept_paper.con_file }}" target="blank" ><span class="label label-info  yss{{org.title_org_id.org_id }}" ><i class="far fa-file-pdf fa-lg" data-toggle="tooltip" data-placement="right" title="{{org_concept_paper.con_file}}"> </i> -  CLICK TO VIEW/DOWNLOAD DOCUMENT</span></a>
+                                                    </div></br>
                                                 {% endif %}
                                             {% endfor %}
                                         {% endif %}
                                     </td>
-                                    <td width="32%">
+                                    <td width="25%">
                                         {% if osas_docu_list %}
                                         {% for org_concept_paper in osas_docu_list %}
                                             {% if org_concept_paper.con_file_ext == 'docx' and org_concept_paper.con_auth_id and org_concept_paper.con_org_id and org_concept_paper.con_title_id.title_id == org.title_id and org_concept_paper.con_title_id.title_name == org.title_name %}
-                                                <div style=" display: inline-block; padding: 2px;">
-                                                    <a id="{{ organization.org_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank"><i class="far fa-file-word fa-2x" > </i></a>
-                                                </div>
-                                                <div style="display: inline-block;">
-                                                    <a id="{{ organization.org_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_concept_paper.con_file }}</a>
+                                                <div style="display: inline-block;" class="mt-1">
+                                                    <a data-toggle="tooltip" data-placement="right" title="{{org_concept_paper.con_file}}" id="{{ organization.org_id  }}" style="padding:5px;" href="/media/{{ org_concept_paper.con_file }}" target="blank" ><span class="label label-success  yss{{org.title_org_id.org_id }}" ><i class="far fa-file-word fa-lg" > </i> -  CLICK TO VIEW/DOWNLOAD DOCUMENT</span></a>
                                                 </div></br>
                                             {% elif org_concept_paper.con_auth_id and org_concept_paper.con_org_id and org_concept_paper.con_title_id.title_id == org.title_id and org_concept_paper.con_title_id.title_name == org.title_name %}
-                                                <div style="display: inline-block; padding: 2px;">
-                                                    <a id="{{ organization.org_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: red;"><i class="far fa-file-pdf fa-2x" > </i></a>
-                                                </div>
-                                                <div style="display: inline;">
-                                                    <a id="{{ organization.org_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_concept_paper.con_file }}</a>
-                                                </div><br>
+                                                <div style="display: inline-block;" class="mt-1">
+                                                    <a data-toggle="tooltip" data-placement="right" title="{{org_concept_paper.con_file}}" id="{{ organization.org_id  }}" style="padding:5px;" href="/media/{{ org_concept_paper.con_file }}" target="blank" ><span class="label label-success  yss{{org.title_org_id.org_id }}" ><i class="far fa-file-pdf fa-lg" > </i> -  CLICK TO VIEW/DOWNLOAD DOCUMENT</span></a>
+                                                </div></br>
                                             {% endif %}
                                         {% endfor %}
                                         {% endif %}
                                     </td>
-                                    <td width="1%" class="text-nowrap">
+                                    <td class="text-nowrap" class="text-nowrap">
                                         <dl class="row mb-0 p-2" style="line-height: .6rem;">
                                             <div class="col-sm-12">
                                                 <button id="add_note" class="btn btn-info" data-toggle="modal" href="#modal_message" onClick="viewNote('{{org.title_org_id.org_id}}')" ><i class="fas fa-envelope" data-toggle="tooltip" data-placement="right" title="Message"  ></i></button>
@@ -189,10 +178,12 @@
                                 {% elif org.title_room_id.room_id%}
                                 <tr class="odd gradeA tr_  align-middle" id="{{ org.title_room_id.room_id }}">
                                     <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
-                                    <td width="28%" ><dl class="row mb-0 p-2" style="line-height: .6rem;">
-                                        <dd class="col-sm-8 gritter-  ysd{{ org.title_room_id.room_id  }}" style=" font-size: 11px; "><strong>{{ org.title_room_id.room_stud_id.stud_course_id.course_code }} {{ org.title_room_id.room_year }}</strong></dd>
+                                    <td width="40%" ><dl class="row mb-0 p-2" style="line-height: .7rem;">
+                                        <dd class="col-sm-8 gritter-  ysd{{ org.title_org_id.org_id  }}" style=" font-size: 11px; "><strong>{{ org.title_serial }}</strong></dd>
+                                        <dd class="col-sm-8 gritter-  ysd{{ org.title_room_id.room_id  }}" style=" font-size: 12px; color: rgb(255, 106, 106)"><strong>{{ org.title_room_id.room_stud_id.stud_course_id.course_code }} {{ org.title_room_id.room_year }}</strong></dd>
                                         <dd class="col-sm-8 gritter-  ysd{{ org.title_room_id.room_id  }} " style=" font-size: 11px; ">{{ org.title_name }}</dd>
-                                        <dd class="col-sm-8 gritter-  ysd{{ org.title_room_id.room_id  }}" >{{ org.title_datecreated|date:"Y-m-d" }}</dd>
+                                        <dd class="col-sm-8 gritter-  ysd{{ org.title_org_id.org_id  }}" >Date Submitted: <strong>{{ org.title_datecreated|date:"Y-m-d" }}</strong></dd>
+                                        <dd class="col-sm-8 gritter-  ysd{{ org.title_org_id.org_id  }}" >Date of Event: <strong>{{ org.title_date_conducted|date:"Y-m-d" }}</strong></dd>
                                         {% if org.title_status == "VALIDATED" %}
                                         <dd class="col-sm-8 gritter- "><strong><span class="badge badge-info  yss{{ org.title_room_id.room_id  }}">{{ org.title_status }}</span></strong></dd>
                                         {% elif org.title_status == "PENDING" %}
@@ -207,45 +198,33 @@
                                         {% endif %}
                                     </dl>
                                     </td>    
-                                    <td width="32%">
+                                    <td width="25%">
                                         {% if acc_docu_list %}
                                             {% for class_concept_paper in acc_docu_list %}
                                                 {% if class_concept_paper.con_file_ext == 'docx' and class_concept_paper.con_title_id.title_id == org.title_id %}
-                                                    <div style=" display: inline-block; padding: 2px;">
-                                                        <a id="{{ org.title_room_id.room_id  }}" href="/media/{{ class_concept_paper.con_file }}" target="blank"><i class="far fa-file-word fa-2x" > </i></a>
-                                                    </div>
-                                                    <div style="display: inline-block;">
-                                                        <a id="{{ org.title_room_id.room_id  }}" href="/media/{{ class_concept_paper.con_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ class_concept_paper.con_file }}</a>
+                                                    <div style="display: inline-block;" class="mt-1">
+                                                        <a data-toggle="tooltip" data-placement="right" title="{{org_concept_paper.con_file}}" id="{{ org.title_room_id.room_id  }}" href="/media/{{ class_concept_paper.con_file }}" target="blank" ><span class="label label-info  yss{{org.title_org_id.org_id }}" ><i class="far fa-file-word fa-lg" > </i> -  CLICK TO VIEW/DOWNLOAD DOCUMENT</span></a>
                                                     </div></br>
                                                 {% elif class_concept_paper.con_title_id.title_id == org.title_id %}
-                                                    <div style="display: inline-block; padding: 2px;">
-                                                        <a id="{{ org.title_room_id.room_id  }}" href="/media/{{ class_concept_paper.con_file }}" target="blank" style="color: red;"><i class="far fa-file-pdf fa-2x" > </i></a>
-                                                    </div>
-                                                    <div style="display: inline;">
-                                                        <a id="{{org.title_room_id.room_id  }}" href="/media/{{ class_concept_paper.con_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ class_concept_paper.con_file }}</a>
-                                                    </div><br>
+                                                    <div style="display: inline-block;" class="mt-1">
+                                                        <a data-toggle="tooltip" data-placement="right" title="{{org_concept_paper.con_file}}" id="{{ org.title_room_id.room_id  }}" href="/media/{{ class_concept_paper.con_file }}" target="blank" ><span class="label label-info  yss{{org.title_org_id.org_id }}" ><i class="far fa-file-pdf fa-lg" > </i> -  CLICK TO VIEW/DOWNLOAD DOCUMENT</span></a>
+                                                    </div></br>
                                                 {% endif %}
                                             {% endfor %}
                                         {% endif %}
                                     </td>
                                    
-                                    <td width="32%">
+                                    <td width="25%">
                                         {% if osas_docu_list %}
                                         {% for org_concept_paper in osas_docu_list %}
                                             {% if org_concept_paper.con_file_ext == 'docx' and org_concept_paper.con_auth_id and org_concept_paper.con_room_id and org_concept_paper.con_title_id.title_name == org.title_name%}
-                                                <div style=" display: inline-block; padding: 2px;">
-                                                    <a id="{{ classroom.room_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank"><i class="far fa-file-word fa-2x" > </i></a>
-                                                </div>
-                                                <div style="display: inline-block;">
-                                                    <a id="{{ classroom.room_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_concept_paper.con_file }}</a>
+                                                <div style="display: inline-block;" class="mt-1">
+                                                    <a data-toggle="tooltip" data-placement="right" title="{{org_concept_paper.con_file}}" id="{{ classroom.room_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" ><span class="label label-success  yss{{org.title_org_id.org_id }}" ><i class="far fa-file-word fa-lg" > </i> -  CLICK TO VIEW/DOWNLOAD DOCUMENT</span></a>
                                                 </div></br>
                                             {% elif org_concept_paper.con_auth_id and org_concept_paper.con_room_id and org_concept_paper.con_title_id.title_name == org.title_name %}
-                                                <div style="display: inline-block; padding: 2px;">
-                                                    <a id="{{ classroom.room_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: red;"><i class="far fa-file-pdf fa-2x" > </i></a>
-                                                </div>
-                                                <div style="display: inline;">
-                                                    <a id="{{ classroom.room_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_concept_paper.con_file }}</a>
-                                                </div><br>
+                                                <div style="display: inline-block;" class="mt-1">
+                                                    <a data-toggle="tooltip" data-placement="right" title="{{org_concept_paper.con_file}}" id="{{ classroom.room_id  }}" href="/media/{{ org_concept_paper.con_file }}" target="blank" ><span class="label label-success  yss{{org.title_org_id.org_id }}" ><i class="far fa-file-pdf fa-lg" > </i> -  CLICK TO VIEW/DOWNLOAD DOCUMENT</span></a>
+                                                </div></br>
                                             {% endif %}
                                         {% endfor %}
                                         {% endif %}
@@ -388,8 +367,9 @@
                 <button type="button" class="close"  data-dismiss="modal" aria-hidden="true" style="color: gray; margin: 6px;">×</button>
                 <div class="panel-body"  style="background-color:whitesmoke;" id="notes_body">
                     <h5 class="page-header mb-1"><i class="fas fa-calendar-alt mr-2 " ></i> Academic School Year</h5>
+                    <p class="mb-5"><i class="fas fa-exclamation mr-2"></i>Note! Date range start with the first day of the month.</p>
                     <div class="input-group input-daterange mt-5 col-lg-10 offset-md-1">
-                        <input type="month" id="datepicker2" name="datepicker"  min="2020-01"/>
+                        <input type="month" id="datepicker2" name="datepicker" />
                         <div class="input-group-addon">to</div>
                         <input type="month" id="datepicker3" name="datepicker2" />
                     </div>
@@ -408,11 +388,12 @@
                 <button type="button" class="close"  data-dismiss="modal" aria-hidden="true" style="color: gray; margin: 6px;">×</button>
                 <div class="panel-body"  style="background-color:whitesmoke;" id="notes_body">
                     <h5 class="page-header mb-1"><i class="fas fa-calendar-alt mr-2 " ></i> Academic School Year</h5>
+                    <p class="mb-5"><i class="fas fa-exclamation mr-2"></i>Note! Date range start with the first day of the month.</p>
                     <div class="input-group input-daterange mt-5 col-lg-10 offset-md-1">
                         
-                        <input type="month" id="datepicker" name="datepicker"  min="2020-01"/>
+                        <input type="month" id="datepicker4" name="datepicker4" />
                         <div class="input-group-addon">to</div>
-                        <input type="month" id="datepicker2" name="datepicker2" />
+                        <input type="month" id="datepicker1" name="datepicker1" />
                     </div>
                     <br>
                     <button type="submit" onclick="genReport()" class="btn btn-success col-sm-8 offset-md-2">Generate Report <i class="fas fa-spinner mr-2" ></i></button>
@@ -426,7 +407,7 @@
         <div class="modal-dialog modal-md" >
             <div class="modal-content " style="background-color:whitesmoke;" >
                 <div class="panel panel-inverse" style="border-radius: 15px; background-color:whitesmoke;">
-                    <button type="button" class="close"  data-dismiss="modal" aria-hidden="true" style="color: gray; margin: 6px;">×</button>
+                    <button type="button" class="close"  data-dismiss="modal" aria-hidden="true" style="color: gray; margin: 6px;" id="close">×</button>
                     <div class="panel-body"  style="background-color:whitesmoke;" id="notes_body">
                         <div class="col">
                             <h1 class="page-header mb-1">Upload File</h1>
@@ -435,9 +416,9 @@
                         <div id="dropzone">
                             <form action="{%url 'organization_upload_osas' %}" method="POST" class="dropzone needsclick" id="file-upload">
                                 {% csrf_token %}
-                                <input class="form-control" id="pk_id" type="" name="pk_id"/>
-                                <input class="form-control" id="title_id" type="" name="title_id"/>
-                                <input class="form-control" id="identity" type="" name="identity"/>
+                                <input class="form-control" id="pk_id" type="hidden" name="pk_id"/>
+                                <input class="form-control" id="title_id" type="hidden" name="title_id"/>
+                                <input class="form-control" id="identity" type="hidden" name="identity"/>
                                 <div class="fallback">
                                     <input name="file" type="file" multiple id="document_file" />
                                 </div>
@@ -530,8 +511,10 @@
        
         const today = moment()
         var new_date = today.format('YYYY-MM')
+        document.getElementById('datepicker3').value = new_date;
         document.getElementById('datepicker2').value = new_date;
-        document.getElementById('datepicker').value = new_date;
+        document.getElementById('datepicker1').value = new_date;
+        document.getElementById('datepicker4').value = new_date;
         // $("#datepicker").focus(function() {
         //     $(".ui-datepicker-month").hide();
         //     $(".ui-datepicker-calendar").hide();
@@ -852,7 +835,6 @@ function orgData(){
             const orgData = response.data
             orgData.map(item=>{
                 if (item.org_status == "ACCREDITED"){
-                    console.log(item.org_expiration)
                     org_id = item.org_id
                     org_date = item.org_expiration
                     $.ajax({
@@ -940,7 +922,8 @@ function genReport2(){
     var new_date_to = date_to.format('MMMM')
     var new_date_year = date_year.format('YYYY')
     var i = 1;
-    var wme = window.open("","", "width = 816px, height = 1344px");
+    console.log(from, to)
+    
     if (from && to){
         $.ajax({
             url: '{% url "event_accomplishment_report" %}',
@@ -956,75 +939,79 @@ function genReport2(){
 
                 const studData = response.data
                 console.log(studData.length)
-                studData.map(item=>{
-                    var type;
-                    const date_submitted = moment(item.title_date_accomplished)
-                    const date_accredited = moment(item.title_dateapproved)
-                    var new_date_submitted = date_submitted.format('LL')
-                    const new_date_accredited = date_accredited.format('LL')
-                    if (item.title_room_id_id){
-                        type = 'classroom'
-                        model_id = item.title_room_id_id
-                        // console.log(type)
-                    }
-                    else if (item.title_org_id_id){
-                        type = 'organization'
-                        model_id = item.title_org_id_id
-                        // console.log(type)
-                    }
-                    $.ajax({
-                        url: '{% url "gen_report_get_info_classroom" %}',
-                        type: "POST",
-                        data: {
-                            type:type,
-                            model_id: model_id,
-                            csrfmiddlewaretoken: "{{ csrf_token }}",
-                        },
-                        dataType: 'json',
-                        success: function (data) {
-                            if (data.success) {
-                                // console.log(data.success)
-                                
-                                if (i == 1){
-                                    // console.log('print')
-                                   
-
-                                    wme.document.write(
-                                    '<page size="Letter" style="word-wrap:break-word; margin: 0px;">')
-                                        
-                                    wme.document.write('<div class="row" style="margin-top: -5px;"><img src="/media/PUPLOGO.png" style="width: auto; height: 92.2204724411px; margin-left: 35.795275590551px; margin-right: 100px;"/><div style="margin-right: 85px; float: right; margin-top: -15px; padding: 5px;"><p style="font-family: Calibri; font-size: 14.5px; color: black; margin-left: -120px">Republic of the Philippines</p><p style="font-family: Californian FB; font-size: 15.5px; color: black; margin-top: -15px; margin-left: -120px;"><b>POLYTECHNIC UNIVERSITY OF THE PHILIPPINES</b></p><p style="font-family: Tahoma; color: black; margin-top: -20px; font-size: 14.5px; margin-left: -120px;"><b>QUEZON CITY BRANCH</b></p><p style="font-family: Times New Roman; color: black; margin-top: -15px; font-size: 18.5px; margin-left: -120px;"><b>OFFICE OF THE STUDENT AFFAIRS AND SERVICES</b></p></div></div><br/><div class="container-fluid" style="background: black; height: 2px; margin-top: -10px; margin-left: 47px;"></div>')
-
-                                    wme.document.write('<div class="row" style="margin-top: 20px; text-align: center;"><p style="font-family: Arial; font-size: 18px; color: black;"><b>FACILITATION OF STUDENTS’ CO-CURRICULAR & EXTRA-CURRICULAR ACTIVITIES</b></p></div>')
-                                    wme.document.write('<div class="row" style="margin-top: -15px; text-align: center;"><p style="font-family: Arial; font-size: 17px; color: black;"><b>'+new_date_from+' - '+new_date_to+' '+new_date_year+'</b></p></div><br>')
-
-                                    wme.document.write("<table style='border-collapse: collapse; width: 100%; font-family: Arial; font-size: 14.5px;' id='data-table' class='table table-bordered' ><thead ><tr><th  width='29%' style='border: 1px solid black; text-align: center; padding: 5px; font-size:15px; background-color: lightgray;'>NAME OF ORGANIZATION</th><th  width='35%' style='border: 1px solid black; text-align: center; padding: 5px; font-size:15px; background-color: lightgray;'>ACTIVITY</th> <th width='18%' style='border: 1px solid black; text-align: center; padding: 5px; font-size: 14.5px; background-color: lightgray;'>DATE CONDUCTED</th><th width='18%' style='border: 1px solid black; text-align: center; font-size:14.5px; background-color: lightgray; padding: 5px;'>DATE SUBMITTED</th></tr></thead><tbody>");
-                                }
-                                // console.log(data.success)
-
-                                wme.document.write("<tr class='odd gradeA tr_'><td width='29%' style='border: 1px solid black; text-align: center; font-family: Arial; font-size:14.5px'>"+data.success+"</td><td width='35%' style='border: 1px solid black; text-align: center; font-family: Arial; font-size:14.5px'>"+item.title_name+"</td><td style='border: 1px solid black; text-align: center; font-family: Arial; font-size:14.5px' width='18%'>"+new_date_accredited+"</td><td style='border: 1px solid black; text-align: center; font-family: Arial; font-size:14.5px' width='18%'>"+new_date_submitted+"</td></tr>")
-
-                                if (i == studData.length){
-                                    // console.log('last print')
-                                    wme.document.write("</tbody></table>")
-                                    wme.document.write('</page>')
-                                
-                                    wme.document.close();
-                                    wme.focus()
-                                    wme.print();
-                                    wme.close();
-                                }
-                                i += 1
-                            }
-                            if (data.error) {
-                                
-                            }
-                            
+                if (studData.length == 0){
+                    alert('No record found.')
+                }
+                else{
+                    var wme = window.open("","", "width = 816px, height = 1344px");
+                    studData.map(item=>{
+                        var type;
+                        const date_submitted = moment(item.title_date_accomplished)
+                        const date_accredited = moment(item.title_date_conducted)
+                        var new_date_submitted = date_submitted.format('LL')
+                        const new_date_accredited = date_accredited.format('LL')
+                        if (item.title_room_id_id){
+                            type = 'classroom'
+                            model_id = item.title_room_id_id
+                            // console.log(type)
                         }
-                    });
-                   
-                })
+                        else if (item.title_org_id_id){
+                            type = 'organization'
+                            model_id = item.title_org_id_id
+                            // console.log(type)
+                        }
+                        $.ajax({
+                            url: '{% url "gen_report_get_info_classroom" %}',
+                            type: "POST",
+                            data: {
+                                type:type,
+                                model_id: model_id,
+                                csrfmiddlewaretoken: "{{ csrf_token }}",
+                            },
+                            dataType: 'json',
+                            success: function (data) {
+                                if (data.success) {
+                                    console.log(data.success)
+                                    
+                                    if (i == 1){
+                                        console.log('print')
+                                    
 
-                
+                                        wme.document.write(
+                                        '<page size="Letter" style="word-wrap:break-word; margin: 0px;">')
+                                            
+                                        wme.document.write('<div class="row" style="margin-top: -5px;"><img src="/media/PUPLOGO.png" style="width: auto; height: 92.2204724411px; margin-left: 35.795275590551px; margin-right: 100px;"/><div style="margin-right: 85px; float: right; margin-top: -15px; padding: 5px;"><p style="font-family: Calibri; font-size: 14.5px; color: black; margin-left: -120px">Republic of the Philippines</p><p style="font-family: Californian FB; font-size: 15.5px; color: black; margin-top: -15px; margin-left: -120px;"><b>POLYTECHNIC UNIVERSITY OF THE PHILIPPINES</b></p><p style="font-family: Tahoma; color: black; margin-top: -20px; font-size: 14.5px; margin-left: -120px;"><b>QUEZON CITY BRANCH</b></p><p style="font-family: Times New Roman; color: black; margin-top: -15px; font-size: 18.5px; margin-left: -120px;"><b>OFFICE OF THE STUDENT AFFAIRS AND SERVICES</b></p></div></div><br/><div class="container-fluid" style="background: black; height: 2px; margin-top: -10px; margin-left: 47px;"></div>')
+
+                                        wme.document.write('<div class="row" style="margin-top: 20px; text-align: center;"><p style="font-family: Arial; font-size: 18px; color: black;"><b>FACILITATION OF STUDENTS’ CO-CURRICULAR & EXTRA-CURRICULAR ACTIVITIES</b></p></div>')
+                                        wme.document.write('<div class="row" style="margin-top: -15px; text-align: center;"><p style="font-family: Arial; font-size: 17px; color: black;"><b>'+new_date_from+' - '+new_date_to+' '+new_date_year+'</b></p></div><br>')
+
+                                        wme.document.write("<table style='border-collapse: collapse; width: 100%; font-family: Arial; font-size: 14.5px;' id='data-table' class='table table-bordered' ><thead ><tr><th  width='29%' style='border: 1px solid black; text-align: center; padding: 5px; font-size:15px; background-color: lightgray;'>NAME OF ORGANIZATION</th><th  width='35%' style='border: 1px solid black; text-align: center; padding: 5px; font-size:15px; background-color: lightgray;'>ACTIVITY</th> <th width='18%' style='border: 1px solid black; text-align: center; padding: 5px; font-size: 14.5px; background-color: lightgray;'>DATE CONDUCTED</th><th width='18%' style='border: 1px solid black; text-align: center; font-size:14.5px; background-color: lightgray; padding: 5px;'>DATE SUBMITTED</th></tr></thead><tbody>");
+                                    }
+                                    // console.log(data.success)
+
+                                    wme.document.write("<tr class='odd gradeA tr_'><td width='29%' style='border: 1px solid black; text-align: center; font-family: Arial; font-size:12px;'>"+data.success+"</td><td width='35%' style='border: 1px solid black; text-align: center; font-family: Arial; font-size:12px;'>"+item.title_name+"</td><td style='border: 1px solid black; text-align: center; font-family: Arial; font-size:12px;' width='18%'>"+new_date_accredited+"</td><td style='border: 1px solid black; text-align: center; font-family: Arial; font-size:12px;' width='18%'>"+new_date_submitted+"</td></tr>")
+
+                                    if (i == studData.length){
+                                        console.log('last print')
+                                        wme.document.write("</tbody></table>")
+                                        wme.document.write('</page>')
+                                    
+                                        wme.document.close();
+                                        wme.focus()
+                                        wme.print();
+                                        wme.close();
+                                    }
+                                    i += 1
+                                }
+                                if (data.error) {
+                                    
+                                }
+                                
+                            }
+                        });
+                    
+                    })
+                }
             },
             error: function(error){
                 console.log(error)
@@ -1033,9 +1020,13 @@ function genReport2(){
     }
 }
 
+$('#modal_upload').on('click','#close', function () {
+    window.location.reload()
+});
+
 function genReport(){
-    var from = $('input[name="datepicker"]').val();
-    var to = $('input[name="datepicker2"]').val();
+    var from = $('input[name="datepicker4"]').val();
+    var to = $('input[name="datepicker1"]').val();
     from_2 = from + "-01"
     to_2 = to + "-01"
     const date_from = moment(from)
@@ -1045,7 +1036,8 @@ function genReport(){
     var new_date_to = date_to.format('MMMM')
     var new_date_year = date_year.format('YYYY')
     var i = 1;
-    var wme = window.open("","", "width = 816px, height = 1344px");
+    console.log(from, to)
+    
     if (from && to){
         $.ajax({
             url: '{% url "event_generate_report" %}',
@@ -1061,73 +1053,80 @@ function genReport(){
 
                 const studData = response.data
                 console.log(studData.length)
-                studData.map(item=>{
-                    var type;
-                    const date_submitted = moment(item.title_datecreated)
-                    const date_accredited = moment(item.title_dateapproved)
-                    var new_date_submitted = date_submitted.format('LL')
-                    const new_date_accredited = date_accredited.format('LL')
-                    if (item.title_room_id_id){
-                        type = 'classroom'
-                        model_id = item.title_room_id_id
-                        // console.log(type)
-                    }
-                    else if (item.title_org_id_id){
-                        type = 'organization'
-                        model_id = item.title_org_id_id
-                        // console.log(type)
-                    }
-                    $.ajax({
-                        url: '{% url "gen_report_get_info_classroom" %}',
-                        type: "POST",
-                        data: {
-                            type:type,
-                            model_id: model_id,
-                            csrfmiddlewaretoken: "{{ csrf_token }}",
-                        },
-                        dataType: 'json',
-                        success: function (data) {
-                            if (data.success) {
-                                // console.log(data.success)
-                                
-                                if (i == 1){
-                                    // console.log('print')
-                                   
-
-                                    wme.document.write(
-                                    '<page size="Letter" style="word-wrap:break-word; margin: 0px;">')
-                                        
-                                    wme.document.write('<div class="row" style="margin-top: -5px;"><img src="/media/PUPLOGO.png" style="width: auto; height: 92.2204724411px; margin-left: 35.795275590551px;"/><div style="margin-right: 105px; float: right; margin-top: -15px; padding: 5px;"><p style="font-family: Calibri; font-size: 14.5px; color: black; margin-left: -120px">Republic of the Philippines</p><p style="font-family: Californian FB; font-size: 15.5px; color: black; margin-top: -15px; margin-left: -120px;"><b>POLYTECHNIC UNIVERSITY OF THE PHILIPPINES</b></p><p style="font-family: Tahoma; color: black; margin-top: -20px; font-size: 14.5px; margin-left: -120px;"><b>QUEZON CITY BRANCH</b></p><p style="font-family: Times New Roman; color: black; margin-top: -15px; font-size: 18.5px; margin-left: -120px;"><b>OFFICE OF THE STUDENT AFFAIRS AND SERVICES</b></p></div></div></div><br/><div class="container-fluid" style="background: black; height: 2px; margin-top: -10px; margin-left: 47px;"></div>')
-
-                                    wme.document.write('<div class="row" style="margin-top: 20px; text-align: center;"><p style="font-family: Arial; font-size: 18px; color: black;"><b>FACILITATION OF STUDENTS’ CO-CURRICULAR & EXTRA-CURRICULAR ACTIVITIES</b></p></div>')
-                                    wme.document.write('<div class="row" style="margin-top: -15px; text-align: center;"><p style="font-family: Arial; font-size: 17px; color: black;"><b>'+new_date_from+' - '+new_date_to+' '+new_date_year+'</b></p></div><br>')
-
-                                    wme.document.write("<table style='border-collapse: collapse; width: 100%; font-family: Arial; font-size: 14.5px;' id='data-table' class='table table-bordered' ><thead ><tr><th  width='29%' style='border: 1px solid black; text-align: center; padding: 5px; font-size:15px; background-color: lightgray;'>NAME OF ORGANIZATION</th><th  width='35%' style='border: 1px solid black; text-align: center; padding: 5px; font-size:15px; background-color: lightgray;'>ACTIVITY</th> <th width='18%' style='border: 1px solid black; text-align: center; padding: 5px; font-size: 14.5px; background-color: lightgray;'>DATE PROPOSED</th><th width='18%' style='border: 1px solid black; text-align: center; font-size:14.5px; background-color: lightgray; padding: 5px;'>DATE CONDUCTED</th></tr></thead><tbody>");
-                                }
-                                // console.log(data.success)
-
-                                wme.document.write("<tr class='odd gradeA tr_'><td width='29%' style='border: 1px solid black; text-align: center; font-family: Arial; font-size:14.5px'>"+data.success+"</td><td width='35%' style='border: 1px solid black; text-align: center; font-family: Arial; font-size:14.5px'>"+item.title_name+"</td><td style='border: 1px solid black; text-align: center; font-family: Arial; font-size:14.5px' width='18%'>"+new_date_submitted+"</td><td style='border: 1px solid black; text-align: center; font-family: Arial; font-size:14.5px' width='18%'>"+new_date_accredited+"</td></tr>")
-
-                                if (i == studData.length){
-                                    // console.log('last print')
-                                    wme.document.write("</tbody></table>")
-                                    wme.document.write('</page>')
-                                
-                                    wme.document.close();
-                                    wme.focus()
-                                    wme.print();
-                                    wme.close();
-                                }
-                                i += 1
-                            }
-                            if (data.error) {
-                                
-                            }
-                            
+                if (studData.length == 0){
+                    alert('No record found.')
+                }
+                else{
+                    var wme = window.open("","", "width = 816px, height = 1344px");
+                    studData.map(item=>{
+                        var type;
+                        const date_submitted = moment(item.title_datecreated)
+                        const date_accredited = moment(item.title_date_conducted)
+                        var new_date_submitted = date_submitted.format('LL')
+                        const new_date_accredited = date_accredited.format('LL')
+                        if (item.title_room_id_id){
+                            type = 'classroom'
+                            model_id = item.title_room_id_id
+                            // console.log(type)
                         }
-                    });
-                   
-                })
+                        else if (item.title_org_id_id){
+                            type = 'organization'
+                            model_id = item.title_org_id_id
+                            // console.log(type)
+                        }
+                        $.ajax({
+                            url: '{% url "gen_report_get_info_classroom" %}',
+                            type: "POST",
+                            data: {
+                                type:type,
+                                model_id: model_id,
+                                csrfmiddlewaretoken: "{{ csrf_token }}",
+                            },
+                            dataType: 'json',
+                            success: function (data) {
+                                if (data.success) {
+                                    console.log(data.success)
+                                    
+                                    if (i == 1){
+                                        console.log('print')
+                                    
+
+                                        wme.document.write(
+                                        '<page size="Letter" style="word-wrap:break-word; margin: 0px; ">')
+                                            
+                                        wme.document.write('<div class="row" style="margin-top: -5px;"><img src="/media/PUPLOGO.png" style="width: auto; height: 92.2204724411px; margin-left: 35.795275590551px;"/><div style="margin-right: 105px; float: right; margin-top: -15px; padding: 5px;"><p style="font-family: Calibri; font-size: 14.5px; color: black; margin-left: -120px">Republic of the Philippines</p><p style="font-family: Californian FB; font-size: 15.5px; color: black; margin-top: -15px; margin-left: -120px;"><b>POLYTECHNIC UNIVERSITY OF THE PHILIPPINES</b></p><p style="font-family: Tahoma; color: black; margin-top: -20px; font-size: 14.5px; margin-left: -120px;"><b>QUEZON CITY BRANCH</b></p><p style="font-family: Times New Roman; color: black; margin-top: -15px; font-size: 18.5px; margin-left: -120px;"><b>OFFICE OF THE STUDENT AFFAIRS AND SERVICES</b></p></div></div></div><br/><div class="container-fluid" style="background: black; height: 2px; margin-top: -10px; margin-left: 47px;"></div>')
+
+                                        wme.document.write('<div class="row" style="margin-top: 20px; text-align: center;"><p style="font-family: Arial; font-size: 18px; color: black;"><b>FACILITATION OF STUDENTS’ CO-CURRICULAR & EXTRA-CURRICULAR ACTIVITIES</b></p></div>')
+                                        wme.document.write('<div class="row" style="margin-top: -15px; text-align: center;"><p style="font-family: Arial; font-size: 17px; color: black;"><b>'+new_date_from+' - '+new_date_to+' '+new_date_year+'</b></p></div><br>')
+
+                                        wme.document.write("<table style='border-collapse: collapse; width: 100%; font-family: Arial; font-size: 14.5px;' id='data-table' class='table table-bordered' ><thead ><tr><th  width='29%' style='border: 1px solid black; text-align: center; padding: 5px; font-size:15px; background-color: lightgray;'>NAME OF ORGANIZATION</th><th  width='35%' style='border: 1px solid black; text-align: center; padding: 5px; font-size:15px; background-color: lightgray;'>ACTIVITY</th> <th width='18%' style='border: 1px solid black; text-align: center; padding: 5px; font-size: 14.5px; background-color: lightgray;'>DATE PROPOSED</th><th width='18%' style='border: 1px solid black; text-align: center; font-size:14.5px; background-color: lightgray; padding: 5px;'>DATE CONDUCTED</th></tr></thead><tbody>");
+                                    }
+                                    console.log(data.success)
+
+                                    wme.document.write("<tr class='odd gradeA tr_'><td width='29%' style='border: 1px solid black; text-align: center; font-family: Arial; font-size:12px'>"+data.success+"</td><td width='35%' style='border: 1px solid black; text-align: center; font-family: Arial; font-size:12px'>"+item.title_name+"</td><td style='border: 1px solid black; text-align: center; font-family: Arial; font-size:12px' width='18%'>"+new_date_submitted+"</td><td style='border: 1px solid black; text-align: center; font-family: Arial; font-size:12px' width='18%'>"+new_date_accredited+"</td></tr>")
+
+                                    if (i == studData.length){
+                                        console.log('last print')
+                                        wme.document.write("</tbody></table>")
+                                        wme.document.write('</page>')
+                                    
+                                        wme.document.close();
+                                        wme.focus()
+                                        wme.print();
+                                        wme.close();
+                                    }
+                                    i += 1
+                                }
+                                if (data.error) {
+                                    
+                                }
+                                
+                            }
+                        });
+                    
+                    })
+                }
+                
 
                 
             },

@@ -23,7 +23,7 @@
         <li class="breadcrumb-item"><a href="{% url 'home' %}">Dashboard</a></li>
         <li class="breadcrumb-item">Funds</li>
     </ol>
-    <h1 class="page-header mb-1"><i class="fas fa-dollar-sign mr-2" ></i>Fund</h1>
+    <h1 class="page-header mb-1" style="font-weight: 700; color:#800000 "><i class="fas fa-dollar-sign mr-2" ></i>Fund</h1>
     <p class="mb-5">Page Description</p>
     <img hidden id="myImg" style="width: auto; height: auto;"/>
     <img hidden id="myImg2" style="width: auto; height: auto;"/>
@@ -140,10 +140,10 @@
                         <thead>
                             <tr>
                                 <th width="1%"></th>
-                                <th data-orderable="false">Item Descriptions</th>
-                                <th data-orderable="false" hidden>Signed Voucher</th>
-                                <th data-orderable="false">Cash Reciept</th>
-                                <th data-orderable="false">Action</th>
+                                <th data-orderable="false" style="font-weight: 700; color:#800000">DESCRIPTIONS</th>
+                                <th data-orderable="false"style="font-weight: 700; color:#800000" >VOUCHER</th>
+                                <th data-orderable="false" style="font-weight: 700; color:#800000">RECEIPT</th>
+                                <th data-orderable="false" style="font-weight: 700; color:#800000">ACTION</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -151,9 +151,10 @@
                             {% for fund in fund_org_list %}  
                                 <tr class="odd gradeA tr_  align-middle" id="{{ fund.fund_id }}">
                                     <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
-                                    <td width="28%" >
+                                    <td class="text-nowrap" >
                                         <dl class="row mb-0 p-2" style="line-height: .6rem;">
-                                            <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id  }}" ><strong>{{ fund.fund_desc }}</strong></dd>
+                                            <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id  }}" style=" color: rgb(106, 106, 255) " ><strong>{{ fund.fund_serial }}</strong></dd>
+                                            <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id  }}" >{{ fund.fund_desc }}</dd>
                                             <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id }}" ><strong>₱ {{ fund.fund_amount }}</strong> <span class="label label-info  yss{{ fund.fund_id  }}">{{ fund.fund_type }}</span></dd>
                                             <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id  }}">{{ fund.fund_word }}</dd>
                                             <dd class="col-sm-8 gritter-  ysd{{ fund.fund_id  }}"><strong>{{ fund.fund_date_requested }}</strong></dd>
@@ -164,7 +165,7 @@
                                             {% endif %}
                                         </dl>
                                     </td>
-                                    <td width="28%" hidden>
+                                    <td class="text-nowrap" >
                                         {% if file_list %}
                                             {% for file in file_list %}
                                                 {% if fund.fund_id == file.fund_fund_id.fund_id %}  
@@ -192,7 +193,7 @@
                                             {% endfor %}
                                         {% endif %}
                                     </td>                                 
-                                    <td width="28%" >
+                                    <td class="text-nowrap" >
                                         {% if file_list %}
                                             {% for file in file_list %}
                                                 {% if fund.fund_id == file.fund_fund_id.fund_id %}  
@@ -210,7 +211,7 @@
                                         {% if fund.fund_status == 'PENDING' and fund.fund_type == 'REQUEST'%}
                                         <div class="text-nowrap">
                                             <div class="btn-group ">
-                                                <button id="upload-btn" class="btn btn-warning" data-toggle="modal" href="#modal_upload2" onClick="uploadDocu('{{fund.fund_id }}', '{{fund.fund_org_id.org_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Upload" class="fas fa-upload"></i></button>
+                                                <button id="upload-btn" class="btn btn-warning" data-toggle="modal" href="#modal_choices" onClick="uploadDocu('{{fund.fund_id }}', '{{fund.fund_org_id.org_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Upload" class="fas fa-upload"></i></button>
                                                 <button hidden id="edit-btn" class="btn btn-success" onClick="genVoucher('{{fund.fund_id }}', '{{fund.fund_org_id.org_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Download Voucher" class="fas fa-download"></i></button>
                                                 <button id="edit-btn" class="btn btn-info" data-toggle="modal" href="#modal_editfund" onClick="editDocu('{{fund.fund_id }}', '{{fund.fund_org_id.org_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Edit" class="fas fa-edit"></i></button>
                                                 <button id="edit-btn" class="btn btn-danger" onClick="removeEvent('{{fund.fund_id }}', '{{fund.fund_org_id.org_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Remove" class="fas fa-trash"></i></button>    
@@ -219,7 +220,7 @@
                                         {% elif fund.fund_status == 'PENDING' and fund.fund_type == 'DEPOSIT'%}
                                         <div class="text-nowrap">
                                             <div class="btn-group ">
-                                                <button id="upload-btn" class="btn btn-warning" data-toggle="modal" href="#modal_upload2" onClick="uploadDocu('{{fund.fund_id }}', '{{fund.fund_org_id.org_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Upload" class="fas fa-upload"></i></button>
+                                                <button id="upload-btn" class="btn btn-warning" data-toggle="modal" href="#modal_choices" onClick="uploadDocu('{{fund.fund_id }}', '{{fund.fund_org_id.org_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Upload" class="fas fa-upload"></i></button>
                                                 <button id="edit-btn" class="btn btn-info" data-toggle="modal" href="#modal_editfund" onClick="editDocu1('{{fund.fund_id }}', '{{fund.fund_org_id.org_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Edit" class="fas fa-edit"></i></button>
                                                 <button id="edit-btn" class="btn btn-danger" onClick="removeEvent('{{fund.fund_id }}', '{{fund.fund_org_id.org_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Remove" class="fas fa-trash"></i></button>    
                                             </div>
@@ -227,7 +228,7 @@
                                         {% else %}
                                             <div class="text-nowrap">
                                                 <div class="btn-group ">
-                                                    <button id="upload-btn" class="btn btn-warning" data-toggle="modal" href="#modal_upload2" onClick="uploadDocu('{{fund.fund_id }}', '{{fund.fund_org_id.org_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Upload" class="fas fa-upload"></i></button>
+                                                    <button id="upload-btn" class="btn btn-warning" data-toggle="modal" href="#modal_choices" onClick="uploadDocu('{{fund.fund_id }}', '{{fund.fund_org_id.org_id}}')" ><i data-toggle="tooltip" data-placement="left" title="Upload" class="fas fa-upload"></i></button>
                                                 </div>
                                             </div>
                                         {% endif %}

@@ -23,7 +23,7 @@
         <li class="breadcrumb-item"><a href="{% url 'home' %}">Dashboard</a></li>
         <li class="breadcrumb-item">Officers</li>
     </ol>
-    <h1 class="page-header mb-1"><i class="fas fa-users mr-2" ></i>Officers</h1>
+    <h1 class="page-header mb-1" style="font-weight: 700; color:#800000"><i class="fas fa-users mr-2" ></i>Officers</h1>
     <p class="mb-5">Page Description</p>
     <img hidden id="myImg" style="width: auto; height: auto;"/>
     <img hidden id="myImg2" style="width: auto; height: auto;"/>
@@ -83,10 +83,10 @@
                         <thead>
                             <tr>
                                 <th width="1%"></th>
-                                <th data-orderable="false">Student Information</th>
-                                <th data-orderable="false">Position</th>
-                                <th data-orderable="false">Signature</th>
-                                <th data-orderable="false">Action</th>
+                                <th data-orderable="false" style="font-weight: 700; color:#800000">STUDENT INFORMATION</th>
+                                <th data-orderable="false" style="font-weight: 700; color:#800000">POSITION</th>
+                                <th data-orderable="false" style="font-weight: 700; color:#800000">SIGNATURE</th>
+                                <th data-orderable="false" style="font-weight: 700; color:#800000">ACTION</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -94,14 +94,14 @@
                             {% for officer in officer_list %}  
                                 <tr class="odd gradeA tr_  align-middle" id="{{ officer.off_id }}">
                                     <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
-                                    <td width="28%" >
+                                    <td class="text-nowrap" >
                                         <dl class="row mb-0 p-2" style="line-height: .6rem;">
                                             <dd class="col-sm-8 gritter-  ysd{{ officer.off_id  }}" ><strong>{{ officer.off_stud_id.stud_no }}</strong></dd>
                                             <dd class="col-sm-8 gritter-  ysd{{ officer.off_id  }}">{{ officer.off_stud_id.stud_lname }}, {{ officer.off_stud_id.stud_fname }} {{ officer.off_stud_id.stud_mname }}</dd>
-                                            <dd class="col-sm-8 gritter-  ysd{{ officer.off_id  }}"><strong>{{ officer.off_stud_id.stud_course_id.course_name }} {{ officer.off_stud_id.stud_yas_id.yas_descriptions }}</strong></dd>
+                                            <dd class="col-sm-8 gritter-  ysd{{ officer.off_id  }}" style=" font-size: 12px; color: rgb(255, 106, 106)"><strong>{{ officer.off_stud_id.stud_course_id.course_name }} {{ officer.off_stud_id.stud_yas_id.yas_descriptions }}</strong></dd>
                                         </dl>
                                     </td>
-                                    <td width="28%" >
+                                    <td class="text-nowrap" >
                                         <dl class="row mb-0 p-2" style="line-height: .6rem;">
                                             <dd class="col-sm-8 gritter-  ysd{{ officer.off_id  }}" ><strong>{{ officer.off_position }}</strong></dd>
                                             <dd class="col-sm-8 gritter-  ysd{{ officer.off_id  }}">{{ officer.off_date_added|date:"Y-m-d" }}</dd>
@@ -110,7 +110,7 @@
                                             {% endif %}
                                         </dl>
                                     </td>
-                                    <td width="28%" >
+                                    <td class="text-nowrap">
                                         {% if officer.off_signature%}
                                             <dl class="row mb-0 p-2" style="line-height: .6rem;">
                                                 <dd class="col-sm-8 gritter-  ysd{{ officer.off_id  }}" ><img src="/media/{{officer.off_signature}}" style="width: auto; height: 80px; "/></dd>

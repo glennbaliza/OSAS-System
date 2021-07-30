@@ -20,7 +20,7 @@
         <li class="breadcrumb-item">Facilitation Student Activites</li>
         <li class="breadcrumb-item">Student Classroom</li>
     </ol>
-    <h1 class="page-header mb-1"><i class="fas fa-users mr-2" ></i> Classroom</h1>
+    <h1 class="page-header mb-1" style="font-weight: 700; color:#800000 "><i class="fas fa-users mr-2" ></i> Classroom</h1>
     <p class="mb-5">Page Description</p>
 
     <div class="row">
@@ -75,23 +75,27 @@
                         <thead>
                             <tr>
                                 <th width="1%"></th>
-                                <th data-orderable="false">President Info</th>
-                                <th data-orderable="false">Account Details</th>
-                                <th data-orderable="false">Action</th>
+                                <th data-orderable="false" style="font-weight: 700; color:#800000">PRESIDENT INFO</th>
+                                <th data-orderable="false" style="font-weight: 700; color:#800000">ADVISER</th>
+                                <th data-orderable="false" style="font-weight: 700; color:#800000">ACCOUNT DETAILS</th>
+                                <th data-orderable="false" style="font-weight: 700; color:#800000">ACTION</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for classroom in org_list %}
                             <tr class="odd gradeA tr_" id="{{ classroom.room_id }}">
                                 <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
-                                <td width="30%"><dl class="row mb-0 p-2" style="line-height: .9rem;">
+                                <td class="text-nowrap"><dl class="row mb-0 p-2" style="line-height: .6rem;">
                                     <dd class="col-sm-8 gritter-  ysd{{ classroom.room_id  }}" ><strong>{{ classroom.room_stud_id.stud_no }}</strong></dd>
                                     <dd class="col-sm-8 gritter-  ysd{{ classroom.room_id  }}" >{{ classroom.room_stud_id.stud_lname }}, {{ classroom.room_stud_id.stud_fname }} {{ classroom.room_stud_id.stud_mname }}</dd>
                                     <dd class="col-sm-8 gritter-  ysd{{ classroom.room_id  }}" >{{ classroom.room_email }}</dd>
                                 </dl>
                                 </td>
-                                <td width="50%"><dl class="row mb-0 p-2" style="line-height: .6rem;">
-                                    <dd class="col-sm-8 gritter-  ysd{{ classroom.room_id  }}" style=" font-size: 11px; "><strong>{{ classroom.room_course }} {{ classroom.room_year }}</strong></dd>
+                                <td class="text-nowrap"><dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                    <dd class="col-sm-8 gritter-  ysd{{ classroom.room_id  }}" style=" font-size: 11px; "><strong>{{ classroom.room_adviser }}</strong></dd>
+                                </td>
+                                <td class="text-nowrap"><dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                    <dd class="col-sm-8 gritter-  ysd{{ classroom.room_id  }}" style=" font-size: 12px; color: rgb(255, 106, 106)"><strong>{{ classroom.room_course }} {{ classroom.room_year }}</strong></dd>
                                     <dd class="col-sm-8 gritter-  ysd{{ classroom.room_id  }}" >{{ classroom.room_dateupdated|date:"Y-m-d" }}</dd>
                                     {% if classroom.room_status == "ACTIVE" %}
                                     <dd class="col-sm-8 gritter- "><strong><span class="badge badge-success  yss{{ classroom.room_id }}">{{ classroom.room_status }}</span></strong></dd>
@@ -169,6 +173,12 @@
                                             {% endfor %}
                                         {% endif %}   
                                     </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 form-check-inline" type="hidden" id="adviser">
+                                <div class="col">
+                                    <label style="font-size: 12px;" class="col-form-label text-md-left">Adiviser Name: <span class="text-danger">*</span></label>
+                                    <input id="stud_adviser" name="stud_adviser" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="text" data-parsley-trigger="keyup">
                                 </div>
                             </div>
                             <div class="col-lg-12 form-check-inline" type="hidden" id="stud_no">
@@ -341,6 +351,7 @@ $('#btn_rem').click(function(){
     $('#stud_info').hide(1000);
     $('#stud_email').hide(1000);
     $('#stud_pass').hide(1000);
+    $('#adviser').hide();
     count_ = 0
 })
 
@@ -361,6 +372,7 @@ year_.addEventListener('change', e=>{
     const selected_year = e.target.value
     stud_year_sec = selected_year
     $("#stud_no").show(1000);
+    $("#adviser").show(1000);
     console.log(count_, stud_course_, stud_year_sec)
     $('#stud')
         .find('option')
@@ -549,11 +561,12 @@ $('#modal_add').on('click','#btn_submit', function(event){
     var class_email = $('input[name="org_email"]').val().trim();
     var class_pass = $('input[name="org_pass"]').val().trim();
     var class_pass1 = $('input[name="org_pass1"]').val().trim();
+    var stud_adviser = $('input[name="stud_adviser"]').val();
     stud = document.getElementById("stud").value
     class_course = document.getElementById("stud_course").value
     class_year = document.getElementById("class_year_").value
-    console.log(stud, class_course, class_year,)
-    if (class_year, class_email, class_course, stud,  class_pass == class_pass1){
+    console.log(stud, class_course, class_year, stud_adviser)
+    if (class_year, class_email, class_course, stud,  class_pass == class_pass1, stud_adviser){
         $.ajax({
             url : "{% url 'organization_osas_new_class_account' %}",
             type : "POST",
@@ -564,6 +577,7 @@ $('#modal_add').on('click','#btn_submit', function(event){
                 class_year: class_year,
                 class_email:class_email,
                 class_pass:class_pass,
+                stud_adviser:stud_adviser,
                 csrfmiddlewaretoken: "{{ csrf_token }}",
             },
             success : function(data){

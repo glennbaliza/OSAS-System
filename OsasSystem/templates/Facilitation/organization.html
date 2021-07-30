@@ -8,7 +8,7 @@
 {% endblock%}
 
 {% block title %}
-    Year and Section
+    Organization
 {% endblock %}
 
 
@@ -19,7 +19,7 @@
         <li class="breadcrumb-item">Facilitation Student Activites</li>
         <li class="breadcrumb-item">Organization</li>
     </ol>
-    <h1 class="page-header mb-1"><i class="fas fa-users mr-2" ></i> Organization</h1>
+    <h1 class="page-header mb-1" style="font-weight: 700; color:#800000 "><i class="fas fa-users mr-2" ></i> Organization</h1>
     <p class="mb-5">Page Description</p>
 
     <div class="row">
@@ -75,23 +75,25 @@
                         <thead>
                             <tr>
                                 <th width="1%"></th>
-                                <th data-orderable="false">President Info</th>
-                                <th data-orderable="false">Account Details</th>
-                                <th data-orderable="false">Action</th>
+                                <th data-orderable="false" style="font-weight: 700; color:#800000">PRESIDENT INFO</th>
+                                <th data-orderable="false" style="font-weight: 700; color:#800000">ACCOUNT DETAILS</th>
+                                <th data-orderable="false" style="font-weight: 700; color:#800000">TYPE</th>
+                                <th data-orderable="false" style="font-weight: 700; color:#800000">ADVISER</th>
+                                <th data-orderable="false" style="font-weight: 700; color:#800000">ACTION</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for organization in org_list %}
                             <tr class="odd gradeA tr_" id="{{ organization.org_id }}">
                                 <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
-                                <td width="30%"><dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                <td class="text-nowrap"><dl class="row mb-0 p-2" style="line-height: .6rem;">
                                     <dd class="col-sm-8 gritter-  ysd{{ organization.org_id  }}" ><strong>{{ organization.org_stud_id.stud_no }}</strong></dd>
                                     <dd class="col-sm-8 gritter-  ysd{{ organization.org_id  }}" >{{ organization.org_stud_id.stud_lname }}, {{ organization.org_stud_id.stud_fname }} {{ organization.org_stud_id.stud_mname }}</dd>
                                     <dd class="col-sm-8 gritter-  ysd{{ organization.org_id  }}" >{{ organization.org_stud_id.stud_course_id.course_name }}</dd>
                                 </dl>
                                 </td>
-                                <td width="50%"><dl class="row mb-0 p-2" style="line-height: .6rem;">
-                                    <dd class="col-sm-8 gritter-  ysd{{ organization.org_id  }}" style=" font-size: 11px; "><strong>{{ organization.org_name }}</strong> (<small style="font-size: 12px;">{{ organization.org_abbr }}</small>)</dd>
+                                <td class="text-nowrap"><dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                    <dd class="col-sm-8 gritter-  ysd{{ organization.org_id  }}" style=" color: rgb(106, 106, 255) "><strong>{{ organization.org_name }}</strong> (<small style="font-size: 12px;">{{ organization.org_abbr }}</small>)</dd>
                                     <dd class="col-sm-8 gritter-  ysd{{ organization.org_id  }}" >{{ organization.org_dateupdated|date:"Y-m-d" }}</dd>
                                     {% if organization.org_status == "ACCREDITED" %}
                                     <dd class="col-sm-8 gritter- "><strong><span class="badge badge-success  yss{{ organization.org_id }}">{{ organization.org_status }}</span></strong></dd>
@@ -100,13 +102,22 @@
                                     {% endif %}
                                 </dl>
                                 </td>
-                                <td><div class="text-nowrap"><div class="btn-group ">
-                                    {% if  organization.org_status == "ACCREDITED"%}
-                                    <button id="edit-btn" class="btn btn-info" data-toggle="modal" href="#modal_view" onClick="editOrg('{{organization.org_id}}')"><i class="fas fa-edit mr-2"></i>Edit</button>
-                                    <button id="delete-btn" class="btn btn-danger" onClick="deleteOrg('{{organization.org_id}}')"><i class="fas fa-trash-alt mr-2"></i>Dismiss</button>
-                                    {% else %}
-                                    <button id="delete-btn" class="btn btn-success" onClick="deleteOrg('{{organization.org_id}}')"><i class="fas fa-redo mr-2"></i>Accredit</button>
-                                    {% endif %}
+                                <td class="text-nowrap"><dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                    <dd class="col-sm-8 gritter-  ysd{{ organization.org_id  }}" style=" font-size: 11px; "><strong>{{ organization.org_type }}</strong></dd>
+                                </dl>
+                                </td>
+                                <td class="text-nowrap"><dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                    <dd class="col-sm-8 gritter-  ysd{{ organization.org_id  }}" style=" font-size: 11px; "><strong>{{ organization.org_adviser }}</strong></dd>
+                                </dl>
+                                </td>
+                                <td class="text-nowrap">
+                                    <div class="text-nowrap">
+                                        {% if  organization.org_status == "ACCREDITED"%}
+                                        <button id="edit-btn" class="btn btn-info" data-toggle="modal" href="#modal_view" onClick="editOrg('{{organization.org_id}}')"><i data-toggle="tooltip" data-placement="left" title="Edit"class="fas fa-edit mr-2"></i></button>
+                                        <button id="edit-btn"  class="btn btn-danger" onClick="deleteOrg('{{organization.org_id}}')"><i data-toggle="tooltip" data-placement="left" title="Dismiss" class="fas fa-trash-alt mr-2"></i></button>
+                                        {% else %}
+                                        <button id="edit-btn"  class="btn btn-success" onClick="deleteOrg('{{organization.org_id}}')"><i data-toggle="tooltip" data-placement="left" title="Accredit" class="fas fa-redo mr-2"></i></button>
+                                        {% endif %}
                                   </div>
                                 </td>
                             </tr>
@@ -147,14 +158,30 @@
                         </div>
                         <div class="col-lg-12 form-check-inline">
                             <div class="col">
+                                <label style="font-size: 12px;" class="col-form-label text-md-right">Select Type: <span class="text-danger">*</span></label>
+                                <select style="margin-top: -3px; " id="org_type" name="org_type" class="form-control">
+                                    <option  value="--select--" selected hidden >--select--</option>
+                                    <option  value="College-Based" >College-Based</option>
+                                    <option  value="University-Wid" >University-Wide</option>
+                                </select> 
+                            </div>
+                        </div>
+                        <div class="col-lg-12 form-check-inline">
+                            <div class="col">
                                 <label style="font-size: 12px;" class="col-form-label text-md-right">Organization Name: <span class="text-danger">*</span></label>
-                                <input id="org_name" name="org_name" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="number" data-parsley-trigger="keyup">
+                                <input id="org_name" name="org_name" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="text" data-parsley-trigger="keyup">
                             </div>
                         </div>
                         <div class="col-lg-12 form-check-inline">
                             <div class="col">
                                 <label style="font-size: 12px;" class="col-form-label text-md-right">Abbreviation  Name: <span class="text-danger">*</span></label>
-                                <input id="org_abbr" name="org_abbr" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="number" data-parsley-trigger="keyup">
+                                <input id="org_abbr" name="org_abbr" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="text" data-parsley-trigger="keyup">
+                            </div>
+                        </div>
+                        <div class="col-lg-12 form-check-inline">
+                            <div class="col">
+                                <label style="font-size: 12px;" class="col-form-label text-md-right">Adviser  Name: <span class="text-danger">*</span></label>
+                                <input id="org_adviser" name="org_adviser" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="text" data-parsley-trigger="keyup">
                             </div>
                         </div>
                         <div class="col-lg-12 form-check-inline" id="courses">
@@ -688,8 +715,10 @@ $('#modal_add').on('click','#btn_submit', function(event){
     var org_email = $('input[name="org_email"]').val().trim();
     var org_pass = $('input[name="org_pass"]').val().trim();
     var org_pass1 = $('input[name="org_pass1"]').val().trim();
+    var org_adviser = $('input[name="org_adviser"]').val().trim();
     stud = document.getElementById("stud").value
     class_course = document.getElementById("stud_course").value
+    org_type = document.getElementById("org_type").value
     class_year = document.getElementById("class_year_").value
     console.log(org_name, org_abbr, org_email, org_pass, org_pass1, class_course)
     if (org_name, org_abbr, org_email, org_pass, org_pass1, class_course, org_pass){
@@ -701,6 +730,8 @@ $('#modal_add').on('click','#btn_submit', function(event){
                 data : {
                     stud:stud,
                     class_course:class_course,
+                    org_type:org_type,
+                    org_adviser:org_adviser,
                     org_name: org_name,
                     org_abbr: org_abbr,
                     org_email:org_email,

@@ -1,0 +1,793 @@
+{% extends 'Role_Student/studentbase.html'%}
+{% load static %}
+
+{% block page-css %}
+    <link href="{% static 'OsasSystem/assets/plugins/DataTables/media/css/dataTables.bootstrap.min.css' %}" rel="stylesheet" />
+    <link href="{% static 'OsasSystem/assets/plugins/bootstrap-eonasdan-datetimepicker/build/css/bootstrap-datetimepicker.min.css' %}" rel="stylesheet" />
+    <link href="{% static 'OsasSystem/assets/plugins/DataTables/extensions/Responsive/css/responsive.bootstrap.min.css' %}" rel="stylesheet" />
+{% endblock%}
+
+{% block title %}
+    Organization
+{% endblock %}
+
+
+{% block content%}
+<div id="content" class="content">
+    <ol class="breadcrumb pull-right">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Dashboard</a></li>
+        <li class="breadcrumb-item">Organization</li>
+    </ol>
+    <h1 class="page-header mb-1" style="font-weight: 700; color:#800000 "><i class="fas fa-users mr-2" ></i> Organization</h1>
+    <p class="mb-5">Page Description</p>
+
+    <!-- <div class="row">
+        <div class="col-lg-2">
+            <div class="panel" data-sortable-id="index-1">
+                <div class="panel-heading p-25">
+                    <h2 class="panel-title" style="font-size:16px;">Filter <i class="fas fa-filter mr-2" ></i></h2>
+                </div>
+                <div class="panel-body" style="padding: 0%; height: 200px;">
+                    <form id="validate_form" method="POST" action="{% url 'organization_osas' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group" >
+                            <label style="text-align: left; margin-bottom: 7px; margin-top: 4px;" class="col-sm-12">Academic Year:</label> 
+                            <div class="col-sm-12">
+                                <select id="acad_year" name="acad_year" class="form-control">
+                                    <option selected disabled="true">--Select--</option>
+                                    <option  value="2016">2016 - 2017</option>
+                                    <option  value="2017">2017 - 2018</option>
+                                    <option  value="2018">2018 - 2019</option>
+                                    <option  value="2019">2019 - 2020</option>
+                                    <option  value="2020">2020 - 2021</option>
+                                    <option  value="2021">2021 - 2022</option>
+                                </select>
+                            </div>
+                            <label style="text-align: left; margin-bottom: 7px; margin-top: 4px;" class="col-sm-12">Status:</label> 
+                            <div class="col-sm-12">
+                                <select id="filter_status" name="filter_status" class="form-control">
+                                    <option selected disabled="true">--Select--</option>
+                                    <option  value="ACCREDITED">Accredited</option>
+                                    <option  value="DISMISSED">Dismissed</option>
+                                    <option  value="INACTIVE">Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <button type="submit" class="btn btn-success col-sm-12">Filter <i class="fas fa-filter mr-2" ></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-10">
+            <div class="panel">
+                <div class="panel-heading p-25">
+                    <div class="btn-group btn-group-toggle pull-right" data-toggle="buttons">
+                        <button class="btn btn-success" href="#modal_add" id="btn_rem" data-toggle="modal"><i class="fas fa-plus mr-2"></i>New Account</button>
+                    </div>
+                    <h2 class="panel-title" style="font-size:16px;"><i class="fas fa-users mr-2" ></i>Organization List</h2>  
+                </div>
+                <div class="panel-body">
+                    {% if org_list %}
+                    <table id="data-table" class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th width="1%"></th>
+                                <th data-orderable="false" style="font-weight: 700; color:#800000">PRESIDENT INFO</th>
+                                <th data-orderable="false" style="font-weight: 700; color:#800000">ACCOUNT DETAILS</th>
+                                <th data-orderable="false" style="font-weight: 700; color:#800000">TYPE</th>
+                                <th data-orderable="false" style="font-weight: 700; color:#800000">ADVISER</th>
+                                <th data-orderable="false" style="font-weight: 700; color:#800000">ACTION</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for organization in org_list %}
+                            <tr class="odd gradeA tr_" id="{{ organization.org_id }}">
+                                <td width="1%" class="f-s-600 text-inverse">{{ forloop.counter }}</td>
+                                <td class="text-nowrap"><dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                    <dd class="col-sm-8 gritter-  ysd{{ organization.org_id  }}" ><strong>{{ organization.org_stud_id.stud_no }}</strong></dd>
+                                    <dd class="col-sm-8 gritter-  ysd{{ organization.org_id  }}" >{{ organization.org_stud_id.stud_lname }}, {{ organization.org_stud_id.stud_fname }} {{ organization.org_stud_id.stud_mname }}</dd>
+                                    <dd class="col-sm-8 gritter-  ysd{{ organization.org_id  }}" >{{ organization.org_stud_id.stud_course_id.course_name }}</dd>
+                                </dl>
+                                </td>
+                                <td class="text-nowrap"><dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                    <dd class="col-sm-8 gritter-  ysd{{ organization.org_id  }}" style=" color: rgb(106, 106, 255) "><strong>{{ organization.org_name }}</strong> (<small style="font-size: 12px;">{{ organization.org_abbr }}</small>)</dd>
+                                    <dd class="col-sm-8 gritter-  ysd{{ organization.org_id  }}" >{{ organization.org_dateupdated|date:"Y-m-d" }}</dd>
+                                    {% if organization.org_status == "ACCREDITED" %}
+                                    <dd class="col-sm-8 gritter- "><strong><span class="badge badge-success  yss{{ organization.org_id }}">{{ organization.org_status }}</span></strong></dd>
+                                    {% else %}
+                                    <dd class="col-sm-8 gritter- "><strong><span class="badge badge-danger  yss{{ organization.org_id }}">{{ organization.org_status }}</span></strong></dd>
+                                    {% endif %}
+                                </dl>
+                                </td>
+                                <td class="text-nowrap"><dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                    <dd class="col-sm-8 gritter-  ysd{{ organization.org_id  }}" style=" font-size: 11px; "><strong>{{ organization.org_type }}</strong></dd>
+                                </dl>
+                                </td>
+                                <td class="text-nowrap"><dl class="row mb-0 p-2" style="line-height: .6rem;">
+                                    <dd class="col-sm-8 gritter-  ysd{{ organization.org_id  }}" style=" font-size: 11px; "><strong>{{ organization.org_adviser }}</strong></dd>
+                                </dl>
+                                </td>
+                                <td><div class="text-nowrap"><div class="btn-group ">
+                                    {% if  organization.org_status == "ACCREDITED"%}
+                                    <button id="edit-btn" class="btn btn-info" data-toggle="modal" href="#modal_view" onClick="editOrg('{{organization.org_id}}')"><i class="fas fa-edit mr-2"></i>Edit</button>
+                                    <button id="delete-btn" class="btn btn-danger" onClick="deleteOrg('{{organization.org_id}}')"><i class="fas fa-trash-alt mr-2"></i>Dismiss</button>
+                                    {% else %}
+                                    <button id="delete-btn" class="btn btn-success" onClick="deleteOrg('{{organization.org_id}}')"><i class="fas fa-redo mr-2"></i>Accredit</button>
+                                    {% endif %}
+                                  </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <table id="data-table" class="table table-striped table-bordered tabless">
+                        <thead>
+                            <tr>
+                                <th width="1%"></th>
+                                <th data-orderable="false">President Info</th>
+                                <th data-orderable="false">Account Details</th>
+                                <th data-orderable="false">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table> 
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div> -->
+
+<div class="modal fade" id="modal_add" role="dialog" data-backdrop="static">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content " style="background-color:whitesmoke;">
+            <div class="panel panel-inverse">
+                <button type="button" class="close"  data-dismiss="modal" aria-hidden="true" style="color: gray; margin: 6px;">×</button>
+                <div class="panel-body"  style="background-color:whitesmoke;">
+                    <div class="col">
+                        <h1 class="page-header mb-1">New Organization Account</h1>
+                        <p class="mb-5">Page Description</p>
+                        <div class="col-lg-12 form-check-inline" id="error">
+                        </div>
+                        <div class="col-lg-12 form-check-inline">
+                            <div class="col">
+                                <label style="font-size: 12px;" class="col-form-label text-md-right">Select Type: <span class="text-danger">*</span></label>
+                                <select style="margin-top: -3px; " id="org_type" name="org_type" class="form-control">
+                                    <option  value="--select--" selected hidden >--select--</option>
+                                    <option  value="College-Based" >College-Based</option>
+                                    <option  value="University-Wid" >University-Wide</option>
+                                </select> 
+                            </div>
+                        </div>
+                        <div class="col-lg-12 form-check-inline">
+                            <div class="col">
+                                <label style="font-size: 12px;" class="col-form-label text-md-right">Organization Name: <span class="text-danger">*</span></label>
+                                <input id="org_name" name="org_name" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="text" data-parsley-trigger="keyup">
+                            </div>
+                        </div>
+                        <div class="col-lg-12 form-check-inline">
+                            <div class="col">
+                                <label style="font-size: 12px;" class="col-form-label text-md-right">Abbreviation  Name: <span class="text-danger">*</span></label>
+                                <input id="org_abbr" name="org_abbr" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="text" data-parsley-trigger="keyup">
+                            </div>
+                        </div>
+                        <div class="col-lg-12 form-check-inline">
+                            <div class="col">
+                                <label style="font-size: 12px;" class="col-form-label text-md-right">Adviser  Name: <span class="text-danger">*</span></label>
+                                <input id="org_adviser" name="org_adviser" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="text" data-parsley-trigger="keyup">
+                            </div>
+                        </div>
+                        <div class="col-lg-12 form-check-inline" id="courses">
+                            <div class="col">
+                                <label style="font-size: 12px;" class="col-form-label text-md-right">Select Course: <span class="text-danger">*</span></label>
+                                <select style="margin-top: -3px; " id="stud_course" name="stud_course" class="form-control">
+                                    <option  value="--select--" selected hidden >--select--</option>
+                                        {% if course_list %}
+                                            {% for osas_r_course in course_list %}
+                                                <option value="{{osas_r_course.course_name}}">{{osas_r_course.course_name}}</option> 
+                                            {% endfor %}
+                                                <option value="N/A">N/A</option>  
+                                        {% endif %}   
+                                </select> 
+                            </div>
+                        </div>
+                        <div class="col-lg-12 form-check-inline" type="hidden" id="class_year">
+                            <div class="col">
+                                <label style="font-size: 12px;" class="col-form-label text-md-right">Select Class Year & Section: <span class="text-danger">*</span></label>
+                                <select id="class_year_" name="class_year" class="form-control">
+                                    <option selected disabled="true">--Select--</option>
+                                    {% if year_sec_list %}
+                                        {% for osas_r_section_and_year in year_sec_list %}
+                                            <option value="{{osas_r_section_and_year.yas_descriptions}}">{{osas_r_section_and_year.yas_descriptions}}</option>  
+                                        {% endfor %}
+                                    {% endif %}   
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 form-check-inline" type="hidden" id="stud_no">
+                            <div class="col">
+                                <label style="font-size: 12px;" class="col-form-label text-md-right">Class President Student Number: <span class="text-danger">*</span></label>
+                                <select style="margin-top: -3px; " id="stud" name="stud" class="form-control">
+                                  
+                                </select> 
+                            </div>
+                        </div>
+                        <div class="col-lg-12 form-check-inline" type="hidden" id="stud_info">
+                            <div class="col">
+                                <label style="font-size: 12px;" class="col-form-label text-md-left">Last Name: <span class="text-danger">*</span></label>
+                                <input readonly id="stud_lname" name="stud_lname" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="number" data-parsley-trigger="keyup">
+                            </div>
+                            <div class="col">
+                                <label style="font-size: 12px;" class="col-form-label text-md-left">First Name: <span class="text-danger">*</span></label>
+                                <input readonly id="stud_fname" name="stud_fname" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="number" data-parsley-trigger="keyup">
+                            </div>
+                            <div class="col">
+                                <label style="font-size: 12px;" class="col-form-label text-md-left">Middle Name: <span class="text-danger">*</span></label>
+                                <input readonly id="stud_mname" name="stud_mname" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="number" data-parsley-trigger="keyup">
+                            </div>
+                        </div>
+                        <div class="col-lg-12 form-check-inline" type="hidden" id="stud_email">
+                            <div class="col-lg-12">
+                                <label style="font-size: 12px;" class="col-form-label text-md-right">Email Address: <span class="text-danger">*</span></label>
+                                <input id="org_email" name="org_email" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="text" data-parsley-trigger="keyup" placeholder="sample@email.com">
+                            </div>
+                        </div>
+                        <div class="col-lg-12 form-check-inline" type="hidden" id="stud_pass">
+                            <div class="col">
+                                <label style="font-size: 12px;" class="col-form-label text-md-right">Password: <span class="text-danger">*</span></label>
+                                <input id="org_pass" name="org_pass" type="password" class="form-control"  data-parsley-trigger="keyup">
+                            </div>
+                            <div class="col" >
+                                <label style="font-size: 12px;" class="col-form-label text-md-right">Confirm Password: <span class="text-danger">*</span></label>
+                                <input id="org_pass1" name="org_pass1" type="password" class="form-control"  data-parsley-trigger="keyup">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-footer" style=" background-color:white;">
+                <button class="btn btn_success col-md-3 pull-right m-l-10 " id="btn_submit" style="height: 33px; padding: 5px; background: linear-gradient(to right, #66ccff -1%, #3366ff 98%); border:none; color: white;" >Submit<i class="far fa-paper-plane m-l-3 zoom"></i></button>
+                <a class="btn btn-white pull-right m-l-10" data-dismiss="modal">Back<i class="fas fa-reply m-l-3 zoom"></i></a>
+            </div>
+        </div>
+    </div>
+</div>
+    <!-- <div class="modal fade" id="modal_add" role="dialog" data-backdrop="static">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content " style="background-color:whitesmoke;">
+                <div class="panel panel-inverse">
+                    <button type="button" class="close"  data-dismiss="modal" aria-hidden="true" style="color: gray; margin: 6px;">×</button>
+                    <div class="panel-body"  style="background-color:whitesmoke;">
+                        <div class="col">
+                            <h1 class="page-header mb-1">New Organization Account</h1>
+                            <p class="mb-5">Page Description</p>
+                            <div class="col-lg-12 form-check-inline" id="error">
+                            </div>
+                            <div class="col-lg-12 form-check-inline">
+                                <div class="col">
+                                    <label style="font-size: 12px;" class="col-form-label text-md-right">Organization Name: <span class="text-danger">*</span></label>
+                                    <input id="org_name" name="org_name" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="number" data-parsley-trigger="keyup">
+                                </div>
+                            </div>
+                            <div class="col-lg-12 form-check-inline">
+                                <div class="col">
+                                    <label style="font-size: 12px;" class="col-form-label text-md-right">Abbreviation  Name: <span class="text-danger">*</span></label>
+                                    <input id="org_abbr" name="org_abbr" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="number" data-parsley-trigger="keyup">
+                                </div>
+                            </div>
+                            <div class="col-lg-12 form-check-inline">
+                                <div class="col">
+                                    <label style="font-size: 12px;" class="col-form-label text-md-right">President Student Number: <span class="text-danger">*</span></label>
+                                    <select style="margin-top: -3px; " id="stud" name="stud" class="form-control">
+                                        <option  value="--select--" selected hidden >--select--</option>
+                                            {% if stud_list %}
+                                                {% for osas_r_personal_info in stud_list %}
+                                                    <option value="{{osas_r_personal_info.stud_no}}">{{osas_r_personal_info.stud_no}}</option>  
+                                                {% endfor %}
+                                            {% endif %}   
+                                    </select> 
+                                </div>
+                            </div>
+                            <div class="col-lg-12 form-check-inline">
+                                <div class="col">
+                                    <label style="font-size: 12px;" class="col-form-label text-md-left">Last Name: <span class="text-danger">*</span></label>
+                                    <input readonly id="stud_lname" name="stud_lname" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="number" data-parsley-trigger="keyup">
+                                </div>
+                                <div class="col">
+                                    <label style="font-size: 12px;" class="col-form-label text-md-left">First Name: <span class="text-danger">*</span></label>
+                                    <input readonly id="stud_fname" name="stud_fname" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="number" data-parsley-trigger="keyup">
+                                </div>
+                                <div class="col">
+                                    <label style="font-size: 12px;" class="col-form-label text-md-left">Middle Name: <span class="text-danger">*</span></label>
+                                    <input readonly id="stud_mname" name="stud_mname" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="number" data-parsley-trigger="keyup">
+                                </div>
+                            </div>
+                            <div class="col-lg-12 form-check-inline">
+                                <div class="col">
+                                    <label style="font-size: 12px;" class="col-form-label text-md-right">Email Address: <span class="text-danger">*</span></label>
+                                    <input id="org_email" name="org_email" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="text" data-parsley-trigger="keyup">
+                                </div>
+                            </div>
+                            <div class="col-lg-12 form-check-inline">
+                                <div class="col">
+                                    <label style="font-size: 12px;" class="col-form-label text-md-right">Password: <span class="text-danger">*</span></label>
+                                    <input id="org_pass" name="org_pass" type="password" class="form-control"  data-parsley-trigger="keyup">
+                                </div>
+                                <div class="col">
+                                    <label style="font-size: 12px;" class="col-form-label text-md-right">Confirm Password: <span class="text-danger">*</span></label>
+                                    <input id="org_pass1" name="org_pass1" type="password" class="form-control"  data-parsley-trigger="keyup">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer" style=" background-color:white;">
+                    <button class="btn btn_success col-md-3 pull-right m-l-10 " id="btn_submit" style="height: 33px; padding: 5px; background: linear-gradient(to right, #66ccff -1%, #3366ff 98%); border:none; color: white;" >Submit<i class="far fa-paper-plane m-l-3 zoom"></i></button>
+                    <a class="btn btn-white pull-right m-l-10" data-dismiss="modal">Back<i class="fas fa-reply m-l-3 zoom"></i></a>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+    <div class="modal fade" id="modal_view" role="dialog" data-backdrop="static">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content " style="background-color:whitesmoke;">
+                <div class="panel panel-inverse">
+                    <button type="button" class="close"  data-dismiss="modal" aria-hidden="true" style="color: gray; margin: 6px;">×</button>
+                    <div class="panel-body"  style="background-color:whitesmoke;">
+                        <div class="col">
+                            <h1 class="page-header mb-1">Update Organization Account</h1>
+                            <p class="mb-5">Page Description</p>
+                            <div class="col-lg-12 form-check-inline" id="error">
+                            </div>
+                            <input hidden readonly id="org_id" name="org_id" type="text" class="form-control">
+                            <div class="col-lg-12 form-check-inline">
+                                <div class="col">
+                                    <label style="font-size: 12px;" class="col-form-label text-md-right">Organization Name: <span class="text-danger">*</span></label>
+                                    <input readonly id="org_name2" name="org_name2" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="number" data-parsley-trigger="keyup">
+                                </div>
+                            </div>
+                            <div class="col-lg-12 form-check-inline">
+                                <div class="col">
+                                    <label style="font-size: 12px;" class="col-form-label text-md-right">Abbreviation  Name: <span class="text-danger">*</span></label>
+                                    <input id="org_abbr2" name="org_abbr2" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="number" data-parsley-trigger="keyup">
+                                </div>
+                            </div>
+                            <div class="col-lg-12 form-check-inline">
+                                <div class="col">
+                                    <label style="font-size: 12px;" class="col-form-label text-md-right">President Student Number: <span class="text-danger">*</span></label>
+                                    <select style="margin-top: -3px; " id="stud2" name="stud2" class="form-control">
+                                        <option  value="--select--" selected hidden >--select--</option>
+                                            {% if stud_list %}
+                                                {% for osas_r_personal_info in stud_list %}
+                                                    <option value="{{osas_r_personal_info.stud_no}}">{{osas_r_personal_info.stud_no}}</option>  
+                                                {% endfor %}
+                                            {% endif %}   
+                                    </select> 
+                                </div>
+                            </div>
+                            <div class="col-lg-12 form-check-inline">
+                                <div class="col">
+                                    <label style="font-size: 12px;" class="col-form-label text-md-left">Last Name: <span class="text-danger">*</span></label>
+                                    <input readonly id="stud_lname2" name="stud_lname2" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="number" data-parsley-trigger="keyup">
+                                </div>
+                                <div class="col">
+                                    <label style="font-size: 12px;" class="col-form-label text-md-left">First Name: <span class="text-danger">*</span></label>
+                                    <input readonly id="stud_fname2" name="stud_fname2" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="number" data-parsley-trigger="keyup">
+                                </div>
+                                <div class="col">
+                                    <label style="font-size: 12px;" class="col-form-label text-md-left">Middle Name: <span class="text-danger">*</span></label>
+                                    <input readonly id="stud_mname2" name="stud_mname2" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="number" data-parsley-trigger="keyup">
+                                </div>
+                            </div>
+                            <div class="col-lg-12 form-check-inline">
+                                <div class="col">
+                                    <label style="font-size: 12px;" class="col-form-label text-md-right">Email Address: <span class="text-danger">*</span></label>
+                                    <input id="org_email2" name="org_email2" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="text" data-parsley-trigger="keyup">
+                                </div>
+                            </div>
+                            <div class="col-lg-12 form-check-inline">
+                                <div class="col">
+                                    <label style="font-size: 12px;" class="col-form-label text-md-right">Password: <span class="text-danger">*</span></label>
+                                    <input id="org_pass2" name="org_pass2" type="password" class="form-control"  data-parsley-trigger="keyup">
+                                </div>
+                                <div class="col">
+                                    <label style="font-size: 12px;" class="col-form-label text-md-right">Confirm Password: <span class="text-danger">*</span></label>
+                                    <input id="org_pass3" name="org_pass3" type="password" class="form-control"  data-parsley-trigger="keyup">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer" style=" background-color:white;">
+                    <button class="btn btn_success col-md-3 pull-right m-l-10 " id="btn_submit" style="height: 33px; padding: 5px; background: linear-gradient(to right, #66ccff -1%, #3366ff 98%); border:none; color: white;" >Update<i class="far fa-paper-plane m-l-3 zoom"></i></button>
+                    <a class="btn btn-white pull-right m-l-10" data-dismiss="modal">Cancel<i class="fas fa-reply m-l-3 zoom"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block page-level %}
+    <!-- <script src="{% static 'OsasSystem/assets/plugins/bootstrap-eonasdan-datetimepicker/build/js/bootstrap-datetimepicker.min.js' %}"></script> -->
+	<script src="{%static 'OsasSystem/assets/plugins/bootstrap-sweetalert/sweetalert.min.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/js/demo/ui-modal-notification.demo.min.js' %}"></script>
+    <script src="{%static 'OsasSystem/assets/index.js' %}"></script>
+{% endblock %}
+{% block page-js %}
+<script>
+    $(document).ready(function() {
+        $('#data-table').DataTable({
+                    ordering: false,
+        });
+    });
+</script>
+<script>
+
+const student = document.getElementById('stud')
+student.addEventListener('change', e=>{
+    
+    const selected_student = e.target.value
+    $("#stud_info").show(1000);
+    $('#stud_email').show(1000);
+    
+    $.ajax({
+        type:'POST',
+        url : "{% url 'organization_student_data' %}",
+        data : {
+            selected_student:selected_student,
+            csrfmiddlewaretoken: "{{ csrf_token }}",
+        },
+        success: function(data){
+            $("#stud_lname").val(data.lname);
+            $("#stud_fname").val(data.fname);
+            $("#stud_mname").val(data.mname);
+            
+        },
+        error: function(error){
+            console.log(error)
+        }
+    })
+})
+
+$('#btn_rem').click(function(){
+    $("#class_year").hide();
+    $('#stud_no').hide(1000);
+    $('#stud_info').hide(1000);
+    $('#stud_email').hide(1000);
+    $('#stud_pass').hide(1000);
+    count_ = 0
+})
+
+var stud_course_;
+var stud_year_sec;
+const courses = document.getElementById('courses')
+courses.addEventListener('change', e=>{
+
+    const selected_courses = e.target.value
+    if (selected_courses == 'N/A'){
+        $("#class_year").hide(1000);
+        $.ajax({
+            type:'POST',
+            url : "{% url 'classroom_student_data' %}",
+            data : {
+                stud_course:selected_courses,
+                csrfmiddlewaretoken: "{{ csrf_token }}",
+            },
+            success: function(response){
+                $('#stud').append($('<option>', {
+                    value: '',
+                    text: '--select--'
+                }));
+                const studData = response.data
+                studData.map(item=>{
+                    $('#stud').append($('<option>', {
+                        value: item.stud_no,
+                        text: item.stud_no
+                    }));
+                    console.log(item.stud_no)
+                })
+            },
+            error: function(error){
+                console.log(error)
+            }
+        })
+        $("#stud_no").show(1000);
+    }
+    else{
+        $("#class_year").show(1000);
+        stud_course_ = selected_courses
+    }
+    
+    console.log(selected_courses)
+})
+
+const year_ = document.getElementById('class_year')
+year_.addEventListener('change', e=>{
+    const selected_year = e.target.value
+    stud_year_sec = selected_year
+    $("#stud_no").show(1000);
+    console.log(count_, stud_course_, stud_year_sec)
+    $('#stud')
+        .find('option')
+        .remove()
+        .end()
+    ;
+    $.ajax({
+        type:'POST',
+        url : "{% url 'classroom_student_data' %}",
+        data : {
+            stud_course:stud_course_,
+            stud_year_sec: stud_year_sec,
+            csrfmiddlewaretoken: "{{ csrf_token }}",
+        },
+        success: function(response){
+            $('#stud').append($('<option>', {
+                value: '',
+                text: '--select--'
+            }));
+            const studData = response.data
+            studData.map(item=>{
+                $('#stud').append($('<option>', {
+                    value: item.stud_no,
+                    text: item.stud_no
+                }));
+                console.log(item.stud_no)
+            })
+        },
+        error: function(error){
+            console.log(error)
+        }
+    })
+})
+
+$('#modal_add').on('click','#stud_email', function(event){
+    $("#stud_pass").show(1000);
+});
+
+//for edit//
+const student2 = document.getElementById('stud2')
+student2.addEventListener('change', e=>{
+    
+    const selected_student = e.target.value
+
+    $.ajax({
+        type:'POST',
+        url : "{% url 'organization_student_data' %}",
+        data : {
+            selected_student:selected_student,
+            csrfmiddlewaretoken: "{{ csrf_token }}",
+        },
+        success: function(data){
+            $("#stud_lname2").val(data.lname);
+            $("#stud_fname2").val(data.fname);
+            $("#stud_mname2").val(data.mname);
+            
+        },
+        error: function(error){
+            console.log(error)
+        }
+    })
+})
+
+
+function editOrg(auth_id){
+    $("#data-table #" + auth_id).each(function() {
+        orgname = $(this).closest("tbody tr").find("td :eq(7)").html()
+        orgabbr = $(this).closest("tbody tr").find("td :eq(8)").html()
+        $('#org_name2').val(orgname)
+        if (orgabbr == "None"){
+            $('#org_abbr2').val("")
+        }
+        else{
+            $('#org_abbr2').val(orgabbr)
+        }
+        org_id = $('#org_id').val(auth_id)
+    });
+}
+
+function deleteOrg(org_id){
+    status = $('#delete-btn').text()
+    console.log(status)
+    $.ajax({
+        type:'POST',
+        url : "{% url 'organization_status_account' %}",
+        data: {
+            org_id:org_id,
+            status:status,
+            csrfmiddlewaretoken: "{{ csrf_token }}",
+        },
+        success: function(data){
+            swal("Success!  " + "Organization account is successfully" + status + ".", {
+            icon: "success",
+            })
+            console.log(data.success)
+            setTimeout(function(){
+                window.location.reload()  
+            }, 1000);
+        },
+        error: function(error){
+            console.log(error)
+        }
+    })
+}
+
+
+$('#modal_view').on('click','#btn_submit', function(event){
+    var org_name = $('#org_name2').val();
+    var org_abbr = $('#org_abbr2').val();
+    var org_email = $('input[name="org_email2"]').val().trim();
+    var org_pass = $('input[name="org_pass2"]').val().trim();
+    var org_pass1 = $('input[name="org_pass3"]').val().trim();
+    stud = document.getElementById("stud2").value
+    org_id = $('input[name="org_id"]').val()
+    console.log(org_id)
+    if (org_name, org_email, org_pass == org_pass1, stud != '--select--'){
+        $.ajax({
+            url : "{% url 'organization_update_account' %}",
+            type : "POST",
+            dataType: 'json',
+            data : {
+                org_id:org_id,
+                stud:stud,
+                org_name: org_name,
+                org_abbr: org_abbr,
+                org_email:org_email,
+                org_pass:org_pass,
+                csrfmiddlewaretoken: "{{ csrf_token }}",
+            },
+            success : function(data){
+                if (data.error) {
+                    $("#error").append('<div class="container col-12" id="error_msg"><p class="alert alert-danger text-center" style="font-size:11px;" >'+ org_name + " " + ' is already in record' + '</p></div>')
+                    setTimeout(function(){
+                        if (document.getElementById("error_msg")){
+                            var myobj = document.getElementById("error_msg");
+                            myobj.remove();
+                        }
+                    }, 2000);
+                    
+                }
+                else {
+                    swal("Success!  " + "Organization account is successfully updated.", {
+                    icon: "success",
+                    })
+                    $('#modal_add').modal('hide');
+                    setTimeout(function(){
+                        window.location.reload()  
+                    }, 1000);
+                }
+            },
+            error: function(error){
+                    console.log(error);
+            }
+        });
+    }
+    else {
+    alert("All fields must have a valid value.");}
+    return false;
+});
+
+function deleteYr(yas_id) {
+    swal({
+        title: "Are you sure?",
+        text: "You want to deactivate this record?", 
+        icon: "warning",
+        buttons: true,
+        dangerMode: true,
+    })
+    .then((willDelete) => {
+        if (willDelete) {
+            $.ajax({
+                url: '{% url "deactivate_yr_sec" %}',
+                type: "POST",
+                data: {
+                    yas_id: yas_id,
+                    csrfmiddlewaretoken: "{{ csrf_token }}",
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.deleted) {
+                    $("#data-table #" + yas_id).remove();
+                    swal("Success! Record has been deactivated.", {
+                        icon: "success",
+                    });
+                    window.location.reload()
+                    }
+                }
+                
+            });
+        } 
+    });
+}
+
+$('#modal_add').on('click','#btn_submit', function(event){
+    var org_name = $('input[name="org_name"]').val().trim();
+    var org_abbr = $('input[name="org_abbr"]').val().trim();
+    var org_email = $('input[name="org_email"]').val().trim();
+    var org_pass = $('input[name="org_pass"]').val().trim();
+    var org_pass1 = $('input[name="org_pass1"]').val().trim();
+    var org_adviser = $('input[name="org_adviser"]').val().trim();
+    stud = document.getElementById("stud").value
+    class_course = document.getElementById("stud_course").value
+    org_type = document.getElementById("org_type").value
+    class_year = document.getElementById("class_year_").value
+    console.log(org_name, org_abbr, org_email, org_pass, org_pass1, class_course)
+    if (org_name, org_abbr, org_email, org_pass, org_pass1, class_course, org_pass){
+        if (org_pass == org_pass1){
+            $.ajax({
+                url : "{% url 'organization_new_account' %}",
+                type : "POST",
+                dataType: 'json',
+                data : {
+                    stud:stud,
+                    class_course:class_course,
+                    org_type:org_type,
+                    org_adviser:org_adviser,
+                    org_name: org_name,
+                    org_abbr: org_abbr,
+                    org_email:org_email,
+                    org_pass:org_pass,
+                    csrfmiddlewaretoken: "{{ csrf_token }}",
+                },
+                success : function(data){
+                    if (data.error) {
+                        $("#error").append('<div class="container col-12" id="error_msg"><p class="alert alert-danger text-center" style="font-size:11px;" >'+ org_name + " " + ' is already in record' + '</p></div>')
+                        setTimeout(function(){
+                            if (document.getElementById("error_msg")){
+                                var myobj = document.getElementById("error_msg");
+                                myobj.remove();
+                            }
+                        }, 2000);
+                        
+                    }
+                    if(data.error1){
+                        swal("Error!  " + "Student is already an officer in an organization.", {
+                        icon: "error",
+                        })
+                    }
+                    else if(data.error2){
+                        swal("Error!  " + "Email address is already taken.", {
+                        icon: "error",
+                        })
+                    }
+                    else if(data.success) {
+                        swal("Success!  " + "New Organization is successfully added.", {
+                        icon: "success",
+                        })
+                        $('#modal_add').modal('hide');
+                        setTimeout(function(){
+                            window.location.reload()  
+                        }, 1000);
+                    }
+                },
+                error: function(error){
+                        console.log(error);
+                }
+            });
+        }
+        else {
+            $("#error").append('<div class="container col-12" id="error_msg"><p class="alert alert-danger text-center" style="font-size:11px;" >'+'Password does not match' + '</p></div>')
+                setTimeout(function(){
+                    if (document.getElementById("error_msg")){
+                        var myobj = document.getElementById("error_msg");
+                        myobj.remove();
+                    }
+                }, 2000);
+        }
+        
+    }
+    else {
+    alert("All fields must have a valid value.");}
+    return false;
+});
+
+</script>
+{% endblock %}
+
