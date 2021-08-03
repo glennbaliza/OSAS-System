@@ -129,40 +129,6 @@
 		});
     </script>
 	<script>
-		function notif_head_id(notif_lost_id){
-			$.ajax({
-				type:'POST',
-				url : "{% url 'notif_seen' %}",
-				data:{
-					notif_lost_id: notif_lost_id,
-					csrfmiddlewaretoken: "{{ csrf_token }}",
-				},
-				success: function(data){
-					console.log(data.notif_lost_id)
-				},
-				error: function(error){ 
-					console.log(error)
-				}
-			})
-		}
-		function notif_head_sanction(sanction_id){
-			console.log(sanction_id)
-			$.ajax({
-				type:'POST',
-				url : "{% url 'notif_sanction' %}",
-				data:{
-					sanction_id: sanction_id,
-					csrfmiddlewaretoken: "{{ csrf_token }}",
-				},
-				success: function(data){
-					console.log(data.sanction_id)
-				},
-				error: function(error){
-					console.log(error)
-				}
-			})
-		}
-		
 
 		$('#modal_changepass').on('click','#btn_submit', function () {
 			var old_pass = $('#old_pass').val();

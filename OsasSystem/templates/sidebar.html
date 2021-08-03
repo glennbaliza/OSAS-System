@@ -32,18 +32,7 @@
                     <span>Dashboard</span>
                 </a>
             </li>
-            <li class="has-sub" hidden>
-                <a href="{% url 'lodge_complaint' %}">
-                    <i class="far fa-comments"></i> 
-                    <span>Grievances</span>   
-                </a>
-            </li>
-            <li class="has-sub" hidden>
-                <a href="{% url 'lost_id' %}">
-                    <i class="far fa-address-card"></i> 
-                    <span>Student ID</span>
-                </a>
-            </li>
+           
             <li class="has-sub">
                 <a href="{% url 'organization_accreditation' %}">
                     <i class="fas fa-certificate"></i> 
@@ -88,42 +77,7 @@
                 </a>
             </li>
             {% endif %}
-            <li class="has-sub" hidden>
-                <a href="javascript:;">
-                    <b class="caret"></b>
-                    <i class="far fa-user"></i> 
-                    <span>Student Sanction</span>
-                </a>
-                <ul class="sub-menu">
-                    <li><a href="{%url 'sanctioning_student' %}">Sanctioning Students</a></li>
-                    {% if request.session.session_user_role == 'HEAD OSAS'%}
-                    <li class="has-sub">
-                        <a href="javascript:;">
-                            <b class="caret"></b>
-                            Sanction Setup
-                        </a>
-                        <ul class="sub-menu">
-                            <li><a href="{% url 'code_descipline' %}">Code of Descipline</a></li>
-                            <li><a href="{%url 'desciplinary_sanction' %}">Desciplinary Sanctions</a></li>
-                            <li><a href="{% url 'designation_office' %}">Designation Office</a></li> 
-                        </ul>
-                    </li>
-                    {% endif %}
-                </ul>
-            </li>
-            <!-- <li class="has-sub">
-                <a href="javascript:;">
-                    <b class="caret"></b>
-                    <i class="fas fa-users"></i>
-                    <span>Alumni</span>
-                </a>
-                <ul class="sub-menu">
-                    <li><a href="{% url 'r_referral' %}">Referral</a></li>
-                    <li><a href="{% url 'r_employ' %}">Employed</a></li>
-                    <li><a href="">Self-Employed</a></li>
-                    <li><a href="">Unemployed</a></li>
-                </ul>
-            </li> -->
+          
             {% if request.session.session_user_role == 'HEAD OSAS'%}
             <li class="has-sub">
                 <a href="javascript:;">
