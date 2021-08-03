@@ -134,8 +134,6 @@
 			var old_pass = $('#old_pass').val();
 			var new_pass =  $('#new_pass').val()
 			var confirm_pass = $('#confirm_pass').val()
-
-			console.log(old_pass, new_pass, confirm_pass)
 			if (old_pass, new_pass, confirm_pass) {
 				$.ajax({
 					url: '{% url "osas_changepass_verify" %}',

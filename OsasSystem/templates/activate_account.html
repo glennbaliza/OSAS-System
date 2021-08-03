@@ -93,38 +93,6 @@
 {% block page-js %}
 <script>
     $("#validate_form").parsley();
-    // $("#validate_form").on('click','#btn_submit',function(){
-    //     stud_id = document.getElementById("s_id").value
-    //     stud_no = document.getElementById("r_studno").value
-    //     r_pass = document.getElementById("r_pass").value
-    //     r_pass2 = document.getElementById("r_pass2").value
-    //     r_pass1 = document.getElementById("r_pass1").value
-    //     alert(stud_id)
-	// 	$.ajax({
-	// 		type: "POST",
-	// 		url: "{% url 'account_process' %}",
-	// 		data:{
-	// 			stud_id: stud_id,
-    //             stud_no:stud_no,
-	// 			r_pass:r_pass,
-    //             r_pass1:r_pass1,
-    //             r_pass2:r_pass2,
-	// 			csrfmiddlewaretoken: "{{ csrf_token }}",
-	// 		},
-	// 		success: function(data){
-	// 			swal("Success! User has been deleted", {
-	// 	              icon: "success",
-	// 	            }).then((willreload) => {
-	// 	            	if(willreload){
-	// 	            		window.location.reload()
-	// 	            	}
-		            	
-	// 	            });
-	// 		},
-	// 		error: function(error){
-	// 			console.log(error);
-	// 		}
-	// 	});
-	// });
+ 
 </script>
 {% endblock %}

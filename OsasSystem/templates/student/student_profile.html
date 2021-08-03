@@ -632,7 +632,6 @@ $('#btn_rem').click(function(){
     $("#data-table .tr_").each(function() {
         document.getElementById("myImg").src = "/media/PUPLOGO.png";
         control_number = $(this).closest("tbody tr").find("td :eq(9)").html() 
-        console.log(control_number)
     });
 }); 
 
@@ -664,7 +663,6 @@ function viewStudent(osas_r_personal_info) {
     tr_id = osas_r_personal_info;
     $('#stud_id_').val(osas_r_personal_info);
     var student_id = $('input[name="stud_id_"]').val().trim();
-    console.log(student_id)
     if (student_id) {
     // Create Ajax Call
         $.ajax({
@@ -677,8 +675,7 @@ function viewStudent(osas_r_personal_info) {
             dataType: 'json',
             success: function (data) {
                
-                if (data.student_val) {     
-                    console.log("error")         
+                if (data.student_val) {          
                     $('#stud_number').val(data.student_val.stud_no).text(data.student_val.stud_no);
                     $('#stud_course').val(data.student_val.stud_course_id).text(data.student_val.stud_course_id);
                     $('#year_sec').val(data.student_val.stud_yas_id).text(data.student_val.stud_yas_id);
@@ -764,7 +761,6 @@ $("#modal_view").on('click','#btn_submit',function(){
         document.getElementById("btn_submit").id = "btn_update";
     }
     else{
-        console.log("dkfgnmdfl")
         
     }
 });
@@ -788,7 +784,6 @@ $("#modal-dialog").on('click','#btn_add',function(){
     var stud_e_name = $('input[name="txt_e_name1"]').val();
     var stud_e_m_number = $('input[name="txt_e_number1"]').val();
     var stud_e_address = $('input[name="txt_e_address1"]').val();
-    console.log(stud_course)
     if(stud_no){
         $.ajax({
             url: '{% url "student_process_add" %}',
@@ -836,7 +831,6 @@ $("#modal-dialog").on('click','#btn_add',function(){
 
 
 $("#modal_view").on('click','#btn_update',function(){
-    console.log(stud_no)
     var stud_no = $('input[name="stud_number"]').val();
     var stud_course = $('input[name="stud_course"]').val();
     var year_sec = $('input[name="year_sec"]').val();
@@ -929,7 +923,6 @@ function refresh_div()
 			            	}
 			            });
 				
-				console.log(data["response"]);
     },
     error: function(error){
 				console.log(error);

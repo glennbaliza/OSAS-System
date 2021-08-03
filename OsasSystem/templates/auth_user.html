@@ -279,7 +279,6 @@ $('#donwload').click(function(){
 function editUser(auth_id){
     $("#data-table #" + auth_id).each(function() {
         office = $(this).closest("tbody tr").find("td :eq(11)").html()
-        console.log(office)
     });
    
     $.ajax({
@@ -308,7 +307,6 @@ $("#modal-view").on('click','#btn_submit',function(){
     var user_lname1 = $('input[name="user_lname1"]').val().trim();
     var user_fname1 = $('input[name="user_fname1"]').val();
     var user_username1 = $('input[name="user_username1"]').val().trim();
-    console.log(user_lname1,user_fname1,user_username1)
     if (user_lname1 && user_fname1 && user_username1){
         $.ajax({
             url: '{% url "auth_user_update" %}',
@@ -331,7 +329,6 @@ $("#modal-view").on('click','#btn_submit',function(){
                     })
                 }
                 if (data.error) {
-                    console.log(data.error)
                     $("#error1").append('<div class="container col-12" id="error_msg"><p class="alert alert-danger text-center" style="font-size:11px;" >Username is already taken.</p></div>')
                     setTimeout(function(){
                         if (document.getElementById("error_msg")){
@@ -434,11 +431,9 @@ $('#modal-dialog').on('click','#btn_submit', function(event){
 
                         $("#data-table").each(function() {
                             test = $(".dataTables_empty").remove();
-                            console.log(test)
                         });
                         const date_created = moment(data.date_created)
                         const new_date_created = date_created.format('YYYY-MM-DD')
-                        console.log("Today's date is: " + date_created.format('YYYY-MM-DD'))  
                         const data_table = document.querySelector('#data-table tbody')
                         row_count = data_table.rows.length
 

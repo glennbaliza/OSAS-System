@@ -518,7 +518,6 @@ $('#modal_upload2').on('click','#close_upload2', function () {
 
 
 $('#modal_edit').on('click','#remove-btn', function () {
-    console.log(con_id_)
     if (con_id_) {
         swal({
             title: "Are you sure?",
@@ -576,7 +575,6 @@ function uploadDocu(room_id, title_id, title_name){
 }
 
 function removeEvent(room_id, title_id, title_name){
-    console.log(room_id, title_id, title_name)
     if (room_id, title_id, title_name) {
         swal({
             title: "Are you sure?",
@@ -641,7 +639,6 @@ function editDocu(room_id, title_id, title_name){
         dataType: 'json',
         success: function (response) {
             i = 0;
-            console.log(response.data)
             const studData = response.data
             studData.map(item=>{
                 i ++
@@ -671,7 +668,6 @@ $('#modal_edit').on('click','#btn_submit', function () {
     room_id = $('#room_id').val();
     title_id = $('#title_id').val();
     var title_name = $('#title_name').val().trim();
-    console.log(title_name)
     if (title_name2 != title_name){
         swal({
             title: "Are you sure?",
@@ -736,7 +732,6 @@ $('#modal_addtitle').on('click','#btn_submit', function () {
     room_id = $('#auth_id').text();
     var con_title = $('#con_title').val().trim();
     var date_conducted = $('input[name="datepicker"]').val();
-    console.log(room_id, con_title, date_conducted)
     if (con_title, date_conducted){
         $.ajax({
             url: '{% url "class_concept_paper_title" %}',
@@ -768,7 +763,6 @@ function clearMsg(){
 }
 
 $('#btn-input').keyup(function (e) {
-    console.log('class')
     if (e.keyCode === 13) {
         var msg = $('input[name="btn-input"]').val().trim();
      
@@ -791,7 +785,6 @@ $('#btn-input').keyup(function (e) {
         if(msg){
             if (x == "right"){
                 if (msg_date3 == date_today2){
-                    console.log("lol")
 
                     $.ajax({
                         url: '{% url "concept_paper_class_msg" %}',
@@ -809,15 +802,12 @@ $('#btn-input').keyup(function (e) {
                             $("#modal_message #chatbox").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><p data-toggle="tooltip" data-placement="right" title="Delivered"  class="bg-info pull-right comments" style="margin-top: -15px; max-width: 300px; text-align: left; float: right; padding: 8px;border-radius: 10px; color: white; word-wrap: break-word; "  name="comment_stud">'+msg+'</p></div></li>'); 
 
                             $("#modal_message #chatbox_date").append('<li>'+date_today+'</li>')
-                            // console.log(date_today)
                             var objDiv = document.getElementById("chatparent");
                             objDiv.scrollTop = objDiv.scrollHeight;
                         }
                     });
                 }
                 else{
-                    console.log("epal")
-                    
                     $.ajax({
                         url: '{% url "concept_paper_class_msg" %}',
                         type: "POST",
@@ -835,7 +825,6 @@ $('#btn-input').keyup(function (e) {
                             $("#modal_message #chatbox").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted"  id="date_" style="font-size: 10px">'+date_today2+'</small><strong class="primary-font pull-right" style="font-size: 10px">'+'{{request.session.session_user_lname}}'+'</strong></div><p data-toggle="tooltip" data-placement="right" title="Delivered"  class="bg-info pull-right comments" style="max-width: 300px; text-align: left; float: right; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;"  name="comment_stud">'+msg+'</p></div></li>'); 
 
                             $("#modal_message #chatbox_date").append('<li>'+date_today+'</li>')
-                            // console.log(date_today)
                             var objDiv = document.getElementById("chatparent");
                             objDiv.scrollTop = objDiv.scrollHeight;
                         }
@@ -873,74 +862,16 @@ $('#btn-input').keyup(function (e) {
 
 });
 
-// function genReport(){
-//     var from = $('input[name="datepicker"]').val();
-//     var to = $('input[name="datepicker2"]').val();
-//     from_2 = from + "-01"
-//     to_2 = to + "-01"
-//     console.log(from_2, to_2)
-//     if (from && to){
-//         $.ajax({
-//             url: '{% url "organization_generate_report" %}',
-//             type: "POST",
-//             data: {
-//                 from_2: from_2,
-//                 to_2: to_2,
-//                 csrfmiddlewaretoken: "{{ csrf_token }}",
-//             },
-//             dataType: 'json',
-//             success: function(response){
-//                 var wme = window.open("","", "width = 816px, height = 1344px");
-
-//                 wme.document.write(
-//                 '<page size="Letter" style="word-wrap:break-word; margin: 0px;">')
-                    
-//                 wme.document.write('<div class="row" style="margin-top: -5px;"><img src="/media/PUPLOGO.png" style="width: auto; height: 92.2204724411px; margin-left: 35.795275590551px;"/><div style="margin-right: 105px; float: right; margin-top: -15px; padding: 5px;"><p style="font-family: Calibri; font-size: 14.5px; color: black; margin-left: -120px">Republic of the Philippines</p><p style="font-family: Californian FB; font-size: 15.5px; color: black; margin-top: -15px; margin-left: -120px;"><b>POLYTECHNIC UNIVERSITY OF THE PHILIPPINES</b></p><p style="font-family: Tahoma; color: black; margin-top: -20px; font-size: 14.5px; margin-left: -120px;"><b>QUEZON CITY BRANCH</b></p><p style="font-family: Times New Roman; color: black; margin-top: -15px; font-size: 18.5px; margin-left: -120px;"><b>OFFICE OF THE STUDENT AFFAIRS AND SERVICES</b></p></div></div></div><br/><div class="container-fluid" style="background: black; height: 2px; margin-top: -10px; margin-left: 47px;"></div>')
-
-//                 wme.document.write('<div class="row" style="margin-top: 20px; text-align: center;"><p style="font-family: Arial; font-size: 18px; color: black;"><b>MONITORING AND OVERALL ACCREDITED ORGNAZITION</b></p></div>')
-//                 wme.document.write('<div class="row" style="margin-top: -15px; text-align: center;"><p style="font-family: Arial; font-size: 17px; color: black;"><b>JUNE - DECEMBER 2021</b></p></div><br>')
-
-//                 wme.document.write("<table style='border-collapse: collapse; width: 100%; font-family: Arial; font-size: 14.5px;' id='data-table' class='table table-bordered' ><thead ><tr><th  width='56%' style='border: 1px solid black; text-align: center; padding: 5px; font-size:15px; background-color: lightgray;'>ORGANIZATION NAME</th><th width='22%' style='border: 1px solid black; text-align: center; padding: 5px; font-size: 14.5px; background-color: lightgray;'>DATE SUBMITTED</th><th width='22%' style='border: 1px solid black; text-align: center; font-size:14.5px; background-color: lightgray; padding: 5px;'>DATE ACCREDITED</th></tr></thead><tbody>");
-
-
-//                 const studData = response.data
-//                 studData.map(item=>{
-                   
-
-//                     const date_submitted = moment(item.org_submit_date)
-//                     const date_accredited = moment(item.org_date_accredited)
-//                     var new_date_submitted = date_submitted.format('LL')
-//                     const new_date_accredited = date_accredited.format('LL')
-
-//                     wme.document.write("<tr class='odd gradeA tr_'><td width='56%' style='border: 1px solid black; text-align: center; font-family: Arial; font-size:14.5px'>"+item.org_name+"</td><td style='border: 1px solid black; text-align: center; font-family: Arial; font-size:14.5px' width='22%'>"+new_date_submitted+"</td><td style='border: 1px solid black; text-align: center; font-family: Arial; font-size:14.5px' width='22%'>"+new_date_accredited+"</td></tr>")
-//                 })
-
-//                 wme.document.write("</tbody></table>")
-//                 wme.document.write('</page>')
-              
-//                 wme.document.close();
-//                 wme.focus()
-//                 wme.print();
-//                 wme.close();
-//             },
-//             error: function(error){
-//                 console.log(error)
-//             }
-//         })
-//     }
-// }
 
 var class_id;
 var osas_id;
 var osas_role_;
 function viewNote(){
     room_id = $('#auth_id').text();
-    console.log(room_id)
     if (room_id) {
         document.getElementById('btn-input').value = "";
         tr_id = room_id;
         class_id = room_id
-        console.log(class_id, "classid")
         $.ajax({
             url: '{% url "class_view_messages" %}',
             type: "POST",
@@ -955,14 +886,11 @@ function viewNote(){
                 var temp_org_date;
                 osas_id = response.osas_role_id
                 osas_role_ = response.osas_role
-                console.log(osas_id)
                 const studData = response.data
                 studData.map(item=>{
                     const msg_date_new = moment(item.msg_date).format("YYYY-MM-DD, ddd, hh:mm A");
-                    // console.log(msg_date_new, 'orig')
                     if(item.msg_send_from == response.room_course + ' ' + response.room_year ){
                         if(temp_org_date){
-                            console.log('bad')
                             if(temp_org_date == msg_date_new){
                                 $("#modal_message #chatbox").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" class="bg-info pull-right comments" style="margin-top: -15px; max-width: 300px; text-align: left; float: right; padding: 8px;border-radius: 10px; color: white; word-wrap: break-word;"  name="comment_stud">'+item.msg_message+'</p></div></li>'); 
 
@@ -975,8 +903,6 @@ function viewNote(){
                                 
                                 $("#modal_message #chatbox_date").append('<li>'+item.msg_date+'</li>')
                                 temp_org_date = msg_date_new
-                                // console.log('else lang' + temp_org_date)
-
                                 var objDiv = document.getElementById("chatparent");
                                 objDiv.scrollTop = objDiv.scrollHeight;
                             }
@@ -985,7 +911,6 @@ function viewNote(){
                             $('#chatbox').append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted sample_date"  id="date_" style="font-size: 10px">'+msg_date_new+'</small><strong class="primary-font pull-right" style="font-size: 10px" >'+response.room_course + ' ' + response.room_year + '</strong></div><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" class="bg-info pull-right osas_msg" style="max-width: 300px; text-align: left; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;" id="comments"  name="comment_stud">'+item.msg_message+'</p></div></li>')
                             
                             temp_org_date = msg_date_new
-                            // console.log('else lang' + temp_org_date)
                             $("#modal_message #chatbox_date").append('<li>'+item.msg_date+'</li>')
                             var objDiv = document.getElementById("chatparent");
                                 objDiv.scrollTop = objDiv.scrollHeight;
@@ -993,7 +918,6 @@ function viewNote(){
                     }
                     else if (item.msg_send_to == response.room_course + ' ' + response.room_year && response.osas_role_id){
                         osas_message = item.msg_id
-                        console.log('goods')
                         $.ajax({
                             url: '{% url "organization_osas_msg_seen" %}',
                             type: "POST",
@@ -1003,7 +927,6 @@ function viewNote(){
                             },
                             dataType: 'json',
                             success: function (data) {
-                                console.log(data.osas_msg_status)
                                 }
                         });
                         if(temp_osas_date){
@@ -1018,8 +941,6 @@ function viewNote(){
                                 
                                 $("#modal_message #chatbox_date").append('<li>'+item.msg_date+'</li>')
                                 temp_osas_date = msg_date_new
-                                // console.log('else lang' + temp_org_date)
-
                                 var objDiv = document.getElementById("chatparent");
                                 objDiv.scrollTop = objDiv.scrollHeight;
                             }
@@ -1029,18 +950,12 @@ function viewNote(){
                             
                             
                             temp_osas_date = msg_date_new
-                            // console.log('else lang' + temp_org_date)
                             $("#modal_message #chatbox_date").append('<li>'+item.msg_date+'</li>')
                             var objDiv = document.getElementById("chatparent");
                                 objDiv.scrollTop = objDiv.scrollHeight;
                         }
                         
-                        // temp_osas_date = msg_date_new
-                        // // console.log(temp_osas_date)
-                        // $("#modal_message #chatbox_date").append('<li>'+msg_date_new+'</li>')
-                        // var objDiv = document.getElementById("chatparent");
-                        //         objDiv.scrollTop = objDiv.scrollHeight;
-
+                      
                     }
                 })
             }
@@ -1052,7 +967,6 @@ function addNote(org_id){
     if (org_id) {
         tr_id = org_id;
         $('#org_id').val(org_id);
-        console.log(org_id)
     }
 }
 

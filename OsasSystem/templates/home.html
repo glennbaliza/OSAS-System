@@ -335,7 +335,6 @@
 			var tot_request = 0
             const orgData = response.data
             orgData.map(item=>{
-               console.log(item)
 			   $("#data-table #fund_table").append('<tr><td>'+item[0]+'</td><td>'+item[1]+'</td><td>'+item[2]+'</td><td>'+item[3]+'</td></tr>'); 
 			   tot_balance = tot_balance + item[1]
 			   tot_deposit = tot_deposit + item[2]

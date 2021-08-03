@@ -191,7 +191,6 @@
 $("#modal_view").on('click','#btn_submit',function(){
     var yr_id = $('input[name="yr_id"]').val().trim();
     var year_sec_name1 = $('input[name="year_sec_name1"]').val().trim();
-    console.log(year_sec_name1)
     if (year_sec_name1){
         $.ajax({
             url: '{% url "update_yr_sec" %}',
@@ -238,7 +237,6 @@ $("#modal_view").on('click','#btn_submit',function(){
 function editYr(yas_id){
     $("#data-table #" + yas_id).each(function() {
         office = $(this).closest("tbody tr").find("td :eq(11)").html()
-        console.log(office)
     });
    
     $.ajax({

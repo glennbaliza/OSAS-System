@@ -1,7 +1,7 @@
 {% extends 'Organization/base.html'%}
 {% load static %}
 {% block title %}
-	Dashboard
+	Accreditation
 {% endblock %}
 {% block page-css %} 
 	<!-- ================== BEGIN PAGE LEVEL STYLE ================== -->
@@ -37,26 +37,6 @@
     <img hidden id="myImg3" style="width: auto; height: auto;"/>
     <img hidden id="myImg4" style="width: auto; height: auto;"/>
     <img hidden id="myImg5" style="width: auto; height: auto;"/>
-    <!-- end page-header -->
-    
-    <!-- <div class="row">
-        <div class="col-md-12">
-            <div class="panel panel-inverse">
-                <div class="panel-body text-inverse">
-                    <div id="dropzone">
-                        <form action="{%url 'accreditation_upload' %}" method="POST" class="dropzone" id="file-upload">
-                            {% csrf_token %}
-                            <div class="fallback">
-                                <input name="file" type="file" multiple id="document_file" />
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> -->
-    
-    <!-- end row -->
     <div class="row">
         <div class="col-lg-2">
             <div class="panel">
@@ -108,10 +88,7 @@
                         {% else %}
                         <button id="send_files" class="btn btn-success" style="visibility: hidden;" onclick="send_files()"><i class="fas fa-share mr-2"></i>Send File(s)</button>   
                         {% endif %}
-                        
-                      
-                        <!-- <button class="btn btn-white m-l-3" id="refresh_doc" >Refresh  <i class="fas fa-sync-alt  text-white-lighter f-s-16"></i></button> -->
-                        <!-- <button class="btn btn-info" data-toggle="modal" href="#modal_upload" id="upload_" ><i class="fas fa-upload mr-2"></i>Upload</button> -->
+                 
                     </div>
                     <h2 class="panel-title" style="font-size:16px;"><i class="fas fa-users mr-2" ></i> Accreditation Document List</h2>
                 </div>
@@ -2256,89 +2233,7 @@
                             </tbody>
                         </table>
                     {% endif %}
-                    
-                    
-                    <!-- {% if files %}
-                    <table id="data-table1" class="table table-bordered" hidden>
-                        <thead>
-                            <tr>
-                                <th data-orderable="false" hidden></th>
-                                <th data-orderable="false"></th>
-                                <th data-orderable="false" class="text-nowrap">Document Name</th>
-                                <th data-orderable="false">Document Status</th>
-                                <th data-orderable="false">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="newdata">
-                            {% for org_accreditation in files %}
-                            <tr class="odd gradeA tr_  " id="{{ org_accreditation.acc_id }}">
-                                <td width="1%" hidden class="f-s-600 text-inverse" >{{ org_accreditation.acc_id }}</td>
-                                <td width="1%" class="f-s-600 text-inverse" >{{ forloop.counter }}</td>
-                                {% if org_accreditation.acc_doc_type == '.docx' %}
-                                <td width="50%"  class="text-nowrap align-middle " >
-                                    <div style=" display: inline-block; padding: 2px;">
-                                        <a id="{{ org_accreditation.acc_id  }}" href="/media/{{ org_accreditation.acc_file }}" target="blank"><i class="far fa-file-word fa-2x" > </i></a>
-                                    </div>
-                                    <div style="display: inline-block;">
-                                        <a id="{{ org_accreditation.acc_id  }}" href="/media/{{ org_accreditation.acc_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_accreditation.acc_file }}</a>
-                                    </div>
-                                </td>
-                                {% else %}
-                                <td width="50%"  class="text-nowrap align-middle " >
-                                    <div style=" display: inline-block; padding: 2px;">
-                                        <a id="{{ organization.org_id  }}" href="/media/{{ org_accreditation.acc_file }}" target="blank" style="color: red;"><i class="far fa-file-pdf fa-2x" > </i></a>
-                                    </div>
-                                    <div style="display: inline-block;">
-                                        <a id="{{ org_accreditation.acc_id  }}" href="/media/{{ org_accreditation.acc_file }}" target="blank" style="color: rgb(95, 94, 94);">{{ org_accreditation.acc_file }}</a>
-                                    </div>
-                                </td>
-                                {% endif %}
-                                <td  width="29%" > 
-                                    <dl class="row mb-0 " style="line-height: .6rem; padding-top: 5px; " >
-                                        <dd class="col-sm-8 gritter-  {{org_accreditation.acc_id }}" >{{ org_accreditation.acc_datecreated|date:"Y-m-d"}}</dd>
-                                        {% if org_accreditation.acc_status == 'SAVED'%}
-                                        <dd class="col-sm-8 gritter-"><strong><span class="badge badge-info">{{org_accreditation.acc_status}}</span></strong></dd>
-                                        {% elif org_accreditation.acc_status == 'SENT'%} 
-                                        <dd class="col-sm-8 gritter-"><strong><span class="badge badge-warning"> SENT</span></strong></dd>
-                                        {% else %}
-                                        <dd class="col-sm-8 gritter-"><strong><i class="far fa-undo" ></i><span class="badge badge-danger">RETURNED</span></strong></dd>
-                                        {% endif %}
-                                    </dl>
-                                </td>
-                              
-                                <td  class="align-middle text-nowrap"> 
-                                    {% if org_accreditation.acc_status == 'SAVED'%}
-                                    <div class="text-nowrap">
-                                        <div class="btn-group ">
-                                            <button id="delete-btn" class="btn btn-danger" onClick="deleteDoc('{{org_accreditation.acc_id}}')"><i class="fas fa-trash-alt mr-2"></i>Remove</button>
-                                        </div>
-                                    </div>
-                                    {% else %}
-                                    <div class="text-nowrap">
-                                        <div class="btn-group ">
-                                            <button id="delete-btn" class="btn btn-danger" onClick="returnDoc('{{org_accreditation.acc_id}}')"><i class="fas fa-undo mr-2"></i>Retrieve</button>
-                                        </div>
-                                    </div>
-                                    {% endif %}
-                                    
-                                </td>
-                            </tr>
-                            {% endfor %}  
-                        </tbody>
-                        </table>
-                       
-                        {% else %}
-                        <table id="data-table" class="table table-striped table-bordered tabless" hidden>
-                            <thead>
-                                <tr>
-                                    <th data-orderable="false"></th>
-                                    <th data-orderable="false" class="text-nowrap">Document Details</th>
-                                    <th data-orderable="false" class="text-nowrap">Notes</th>
-                                    <th data-orderable="false">Action</th>
-                                </tr>
-                            </thead>
-                        </table> 
-                    {% endif %} -->
+                   
                 </div>
             </div>
         </div>
@@ -2467,14 +2362,10 @@
         // var OYPA = $('#CBL').find("td:eq(0)").html() 
         if(CBL != undefined && SO != undefined && OYPA != undefined && FC != undefined || CCB != undefined || CUW != undefined && GC != undefined && MC != undefined ){
             var docu_ids = [CBL, SO, OYPA, FC, CCB, CUW, GC, MC]
-            console.log(docu_ids)
             if(document.getElementById("send_files")){
                 document.getElementById("send_files").style.visibility = "visible";
             }
            
-        }
-        else{
-            console.log('error')
         }
 
         //RENEW
@@ -2492,14 +2383,11 @@
         var R1 = $('#R1').find("td:eq(0)").html()
         if(AR1 != undefined && FS1 != undefined && NC1 != undefined && SO1 != undefined && PA1 != undefined || CCB1 != undefined || CUW1 != undefined && AC1 != undefined && GC1 != undefined && MC1 != undefined && RC1 != undefined){
             var docu_ids = [AR1, FS1, NC1, SO1, PA1, CCB1, CUW1, AC1, GC1, MC1, RC1]
-            console.log(docu_ids)
             if(document.getElementById("send_files")){
                 document.getElementById("send_files").style.visibility = "visible";
             }
         }
-        else{
-            console.log('error')
-        }
+     
 	});
 </script>
 <script>
@@ -2513,7 +2401,6 @@ $('#modal_upload').on( 'click', '#close_upload', function () {
    
 
 function sendFile(id, docu_type){
-    console.log(id, docu_type)
     swal({
         title: "Are you sure?",
         text: "You want to send this" + " " +docu_type+ " " + "file?", 
@@ -2554,7 +2441,6 @@ function sendFile(id, docu_type){
 }
 
 function removeEvent(id, docu_type){
-    console.log(id, docu_type)
     swal({
         title: "Are you sure?",
         text: "You want to remove this" + " " +docu_type+ " " + "file?", 
@@ -2594,7 +2480,6 @@ function removeEvent(id, docu_type){
     });
 }
 function uploadDocu(id, docu_type){
-    console.log(docu_type)
     $('#modal_upload').modal();
     $('#document_type').text(docu_type)
     $('#docu_type').val(docu_type)
@@ -2602,8 +2487,6 @@ function uploadDocu(id, docu_type){
 }
 function clear_msg(){
     org_id = $('#auth_id').text();
-    // $('#chatbox').empty()
-    console.log(org_id, osas_id)
     swal({
         title: "Are you sure?",
         text: "You want to clear all messages?", 
@@ -2663,13 +2546,10 @@ $('#btn-input').keyup(function (e) {
         // initiating ne format neede for appending li tag used for displaying datetime in chatbox
         const msg_date3 = moment(msg_date).format("YYYY-MM-DD, ddd, hh:mm A");
         const date_today2 = moment(now).format("YYYY-MM-DD, ddd, hh:mm A");
-        console.log(osas_id)
        
         if(msg){
             if (x == "right"){
-                console.log('right')
                 if (msg_date3 == date_today2){
-                    console.log("lol")
 
                     $.ajax({
                         url: '{% url "accreditation_org_msg" %}',
@@ -2686,14 +2566,12 @@ $('#btn-input').keyup(function (e) {
                             $("#modal_message #chatbox").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><p data-toggle="tooltip" data-placement="right" title="Delivered" class="bg-info pull-right comments" style="margin-top: -15px; max-width: 300px; text-align: left; float: right; padding: 8px;border-radius: 10px; color: white; word-wrap: break-word; "  name="comment_stud">'+msg+'</p></div></li>'); 
 
                             $("#modal_message #chatbox_date").append('<li>'+date_today+'</li>')
-                            // console.log(date_today)
                             var objDiv = document.getElementById("chatparent");
                             objDiv.scrollTop = objDiv.scrollHeight;
                         }
                     });
                 }
                 else{
-                    console.log("epal")
                     
                     $.ajax({
                         url: '{% url "accreditation_org_msg" %}',
@@ -2711,7 +2589,6 @@ $('#btn-input').keyup(function (e) {
                             $("#modal_message #chatbox").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted"  id="date_" style="font-size: 10px">'+date_today2+'</small><strong class="primary-font pull-right" style="font-size: 10px">'+'{{request.session.session_org_abbr}}'+'</strong></div><p data-toggle="tooltip" data-placement="right" title="Delivered"  class="bg-info pull-right comments" style="max-width: 300px; text-align: left; float: right; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;"  name="comment_stud">'+msg+'</p></div></li>'); 
 
                             $("#modal_message #chatbox_date").append('<li>'+date_today+'</li>')
-                            // console.log(date_today)
                             var objDiv = document.getElementById("chatparent");
                             objDiv.scrollTop = objDiv.scrollHeight;
                         }
@@ -2719,7 +2596,6 @@ $('#btn-input').keyup(function (e) {
                 }
             }
             else{
-                console.log(osas_id, 'epal talaga')
                 $.ajax({
                     url: '{% url "accreditation_org_msg" %}',
                     type: "POST",
@@ -2754,7 +2630,6 @@ function viewMessage(){
 
     if (org_id) {
         document.getElementById('btn-input').value = "";
-        // $('#org_id1').val(org_id);
         $.ajax({
             url: '{% url "organization_view_messages" %}',
             type: "POST",
@@ -2765,18 +2640,15 @@ function viewMessage(){
             dataType: 'json',
             success: function(response){
                 s = $('.org_abbr').text(response.osas_role);
-                console.log(s)
                 var temp_osas_date;
                 var temp_org_date;
                 osas_id = response.osas_role_id
-                // console.log(response.data.msg_status)
                 const studData = response.data
                 studData.map(item=>{
                     const msg_date_new = moment(item.msg_date).format("YYYY-MM-DD, ddd, hh:mm A");
 
                     if(item.msg_send_from == response.osas_role_id && item.msg_send_to == response.org_id){
                         osas_message = item.msg_id
-                        console.log(osas_message)
                         $.ajax({
                             url: '{% url "organization_osas_msg_seen" %}',
                             type: "POST",
@@ -2791,12 +2663,9 @@ function viewMessage(){
                         });
                         
                         if(temp_org_date){
-                            console.log('yes')
                             if(temp_org_date == msg_date_new){
-                                // console.log('same')
                                 $("#modal_message #chatbox").append('<li class="left" style="list-style-type: none;"><div class="chat-body clearfix"><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" style=" max-width: 300px; background-color: white; float: left; padding: 8px; border-radius: 10px; color: black; word-wrap: break-word; margin-top: -15px;"  name="comment_stud">'+item.msg_message+'</p></div></li>'); 
 
-                                // $("#modal_message #chatbox_date").append('<li>'+item.msg_date+'</li>')
                                 var objDiv = document.getElementById("chatparent");
                                 objDiv.scrollTop = objDiv.scrollHeight;
                             }   
@@ -2805,7 +2674,7 @@ function viewMessage(){
                                 
                                 $("#modal_message #chatbox_date").append('<li>'+item.msg_date+'</li>')
                                 temp_org_date = msg_date_new
-                                // console.log('else lang' + temp_org_date)
+                               
 
                                 var objDiv = document.getElementById("chatparent");
                                 objDiv.scrollTop = objDiv.scrollHeight;
@@ -2816,7 +2685,6 @@ function viewMessage(){
                             
                             
                             temp_org_date = msg_date_new
-                            // console.log('else lang' + temp_org_date)
                             $("#modal_message #chatbox_date").append('<li>'+item.msg_date+'</li>')
                             var objDiv = document.getElementById("chatparent");
                                 objDiv.scrollTop = objDiv.scrollHeight;
@@ -2824,13 +2692,9 @@ function viewMessage(){
                     }
                     else if(item.msg_send_from == response.org_id){
                         if(temp_osas_date){
-                            // console.log('temp_date ' + temp_osas_date )
-                            // console.log('last date ' + msg_date_new )
                             if(temp_osas_date == msg_date_new){
-                                console.log('same')
                                 $("#modal_message #chatbox").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" class="bg-info pull-right comments" style="margin-top: -15px; max-width: 300px; text-align: left; float: right; padding: 8px;border-radius: 10px; color: white; word-wrap: break-word;"  name="comment_stud">'+item.msg_message+'</p></div></li>'); 
 
-                                // $("#modal_message #chatbox_date").append('<li>'+item.msg_date+'</li>')
                                 var objDiv = document.getElementById("chatparent");
                                 objDiv.scrollTop = objDiv.scrollHeight;
                             }   
@@ -2839,8 +2703,6 @@ function viewMessage(){
                                 
                                 $("#modal_message #chatbox_date").append('<li>'+item.msg_date+'</li>')
                                 temp_osas_date = msg_date_new
-                                console.log(temp_osas_date)
-                                // console.log('else lang' + temp_org_date)
 
                                 var objDiv = document.getElementById("chatparent");
                                 objDiv.scrollTop = objDiv.scrollHeight;
@@ -2850,7 +2712,6 @@ function viewMessage(){
                             $('#chatbox').append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted sample_date"  id="date_" style="font-size: 10px">'+msg_date_new+'</small><strong class="primary-font pull-right" style="font-size: 10px" >'+response.org_data+'</strong></div><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" class="bg-info pull-right osas_msg comments" style="max-width: 300px; text-align: left; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;" name="comment_stud">'+item.msg_message+'</p></div></li>')
                         
                             temp_osas_date = msg_date_new
-                            console.log(temp_osas_date)
                             $("#modal_message #chatbox_date").append('<li>'+msg_date_new+'</li>')
                             var objDiv = document.getElementById("chatparent");
                                     objDiv.scrollTop = objDiv.scrollHeight;
@@ -2892,7 +2753,6 @@ function send_files(){
     // var OYPA = $('#CBL').find("td:eq(0)").html() 
     if(CBL != undefined && SO != undefined && OYPA != undefined && FC != undefined || CCB != undefined || CUW != undefined && GC != undefined && MC != undefined){
         var docu_ids = [CBL, SO, OYPA, FC, CCB, CUW, GC, MC]
-        console.log(docu_ids)
         swal({
             title: "Are you sure?",
             text: "You want to submit these files?", 
@@ -2944,11 +2804,9 @@ function send_files(){
         var GC1 = $('#GC1').find("td:eq(0)").html()
         var MC1 = $('#MC1').find("td:eq(0)").html()
         var RC1 = $('#RC1').find("td:eq(0)").html()
-        console.log(CCB1, CUW1)
         if(AR1 != undefined && FS1 != undefined && NC1 != undefined && SO1 != undefined && PA1 != undefined || CCB1 != undefined || CUW1 != undefined && AC1 != undefined && GC1 != undefined && MC1 != undefined && RC1 != undefined){
             
             var docu_ids = [AR1, FS1, NC1, SO1, PA1, CCB1, CUW1, AC1, GC1, MC1, RC1]
-            console.log(docu_ids)
             swal({
                 title: "Are you sure?",
                 text: "You want to submit these files?", 
@@ -3000,12 +2858,10 @@ $('#data-table tbody').on( 'click', 'tr', function () {
     }
 
     $(this).toggleClass('selected');
-    console.log(selected)
     
     
         if(table.rows('.selected').data().length > 0){
             if (status == "SAVED"){
-                console.log(status)
                 document.getElementById("send-btn").style.visibility = "";
                 document.getElementById("delete-btn").style.visibility = "";
             }
@@ -3026,7 +2882,6 @@ $('#data-table tbody').on( 'click', 'tr', function () {
  
     $('#delete-btn').click( function () {
         org_id = $('#auth_id').text();
-        console.log(org_id)
         btn_status = document.getElementById("delete-btn").textContent
         if(btn_status == "Remove File(s)"){
             sample = "remove"
@@ -3034,14 +2889,10 @@ $('#data-table tbody').on( 'click', 'tr', function () {
         else if (btn_status == "Retrieve File(s)"){
             sample = "retrieve"
         }
-        
-       
-        // alert( table.rows('.selected').data().length +' row(s) selected' );
     } );
 
     $('#send-btn').click( function () {
         org_id = $('#auth_id').text();
-        console.log(org_id)
         swal({
             title: "Are you sure?",
             text: "You want to send this to OSAS?", 
@@ -3052,8 +2903,6 @@ $('#data-table tbody').on( 'click', 'tr', function () {
         .then((willDelete) => {
             if (willDelete) {
                 selected.forEach(function(doc_id) {
-                    // doc_id = $(this).closest("tbody tr").find("td:eq(0)").html() 
-                    console.log(doc_id)
                     if (doc_id){
                         $.ajax({
                             url: '{% url "accreditation_document_send" %}',
@@ -3095,7 +2944,6 @@ $('#data-table tbody').on( 'click', 'tr', function () {
     })
 
     function deleteDoc(acc_id){
-        console.log(acc_id)
         if (acc_id) {
             swal({
             title: "Are you sure?",
@@ -3149,7 +2997,6 @@ $('#data-table tbody').on( 'click', 'tr', function () {
 
     function returnDoc(acc_id){
         org_id = $('#auth_id').text();
-        console.log(org_id)
         if (acc_id) {
             swal({
             title: "Are you sure?",
@@ -3214,7 +3061,6 @@ $('#data-table tbody').on( 'click', 'tr', function () {
 
 
     function viewCert(org_id){
-    console.log(org_id)
     if (org_id) {
 
         tr_id = org_id;
@@ -3229,7 +3075,6 @@ $('#data-table tbody').on( 'click', 'tr', function () {
             dataType: 'json',
             success: function(data){
                 if (data.org_val) {
-                    console.log(data.org_val.org_id)
                     var wme = window.open("","", "width = 816px, height = 1344px");
                     
                     wme.document.write(
@@ -3241,7 +3086,6 @@ $('#data-table tbody').on( 'click', 'tr', function () {
 
                     const date_created = moment(data.org_val.org_date_accredited)
                     const new_date_created = date_created.format('LL')
-                    console.log("Today's date is: " + date_created.format('LL'))  
                     
     
                     wme.document.write('<div style="padding-left: 96px; padding-right: 96px; padding-top: 11.5px;"><label style="font-weight: bold; font-family: Times New Roman; font-size: 11.5px; ">'+new_date_created+'</label></div>')

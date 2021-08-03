@@ -255,82 +255,6 @@
         </div>
     </div>
 </div>
-    <!-- <div class="modal fade" id="modal_add" role="dialog" data-backdrop="static">
-        <div class="modal-dialog modal-md">
-            <div class="modal-content " style="background-color:whitesmoke;">
-                <div class="panel panel-inverse">
-                    <button type="button" class="close"  data-dismiss="modal" aria-hidden="true" style="color: gray; margin: 6px;">×</button>
-                    <div class="panel-body"  style="background-color:whitesmoke;">
-                        <div class="col">
-                            <h1 class="page-header mb-1">New Organization Account</h1>
-                            <p class="mb-5">Page Description</p>
-                            <div class="col-lg-12 form-check-inline" id="error">
-                            </div>
-                            <div class="col-lg-12 form-check-inline">
-                                <div class="col">
-                                    <label style="font-size: 12px;" class="col-form-label text-md-right">Organization Name: <span class="text-danger">*</span></label>
-                                    <input id="org_name" name="org_name" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="number" data-parsley-trigger="keyup">
-                                </div>
-                            </div>
-                            <div class="col-lg-12 form-check-inline">
-                                <div class="col">
-                                    <label style="font-size: 12px;" class="col-form-label text-md-right">Abbreviation  Name: <span class="text-danger">*</span></label>
-                                    <input id="org_abbr" name="org_abbr" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="number" data-parsley-trigger="keyup">
-                                </div>
-                            </div>
-                            <div class="col-lg-12 form-check-inline">
-                                <div class="col">
-                                    <label style="font-size: 12px;" class="col-form-label text-md-right">President Student Number: <span class="text-danger">*</span></label>
-                                    <select style="margin-top: -3px; " id="stud" name="stud" class="form-control">
-                                        <option  value="--select--" selected hidden >--select--</option>
-                                            {% if stud_list %}
-                                                {% for osas_r_personal_info in stud_list %}
-                                                    <option value="{{osas_r_personal_info.stud_no}}">{{osas_r_personal_info.stud_no}}</option>  
-                                                {% endfor %}
-                                            {% endif %}   
-                                    </select> 
-                                </div>
-                            </div>
-                            <div class="col-lg-12 form-check-inline">
-                                <div class="col">
-                                    <label style="font-size: 12px;" class="col-form-label text-md-left">Last Name: <span class="text-danger">*</span></label>
-                                    <input readonly id="stud_lname" name="stud_lname" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="number" data-parsley-trigger="keyup">
-                                </div>
-                                <div class="col">
-                                    <label style="font-size: 12px;" class="col-form-label text-md-left">First Name: <span class="text-danger">*</span></label>
-                                    <input readonly id="stud_fname" name="stud_fname" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="number" data-parsley-trigger="keyup">
-                                </div>
-                                <div class="col">
-                                    <label style="font-size: 12px;" class="col-form-label text-md-left">Middle Name: <span class="text-danger">*</span></label>
-                                    <input readonly id="stud_mname" name="stud_mname" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="number" data-parsley-trigger="keyup">
-                                </div>
-                            </div>
-                            <div class="col-lg-12 form-check-inline">
-                                <div class="col">
-                                    <label style="font-size: 12px;" class="col-form-label text-md-right">Email Address: <span class="text-danger">*</span></label>
-                                    <input id="org_email" name="org_email" type="text" class="form-control" data-parsley-required="true"   data-parsley-type="text" data-parsley-trigger="keyup">
-                                </div>
-                            </div>
-                            <div class="col-lg-12 form-check-inline">
-                                <div class="col">
-                                    <label style="font-size: 12px;" class="col-form-label text-md-right">Password: <span class="text-danger">*</span></label>
-                                    <input id="org_pass" name="org_pass" type="password" class="form-control"  data-parsley-trigger="keyup">
-                                </div>
-                                <div class="col">
-                                    <label style="font-size: 12px;" class="col-form-label text-md-right">Confirm Password: <span class="text-danger">*</span></label>
-                                    <input id="org_pass1" name="org_pass1" type="password" class="form-control"  data-parsley-trigger="keyup">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="panel-footer" style=" background-color:white;">
-                    <button class="btn btn_success col-md-3 pull-right m-l-10 " id="btn_submit" style="height: 33px; padding: 5px; background: linear-gradient(to right, #66ccff -1%, #3366ff 98%); border:none; color: white;" >Submit<i class="far fa-paper-plane m-l-3 zoom"></i></button>
-                    <a class="btn btn-white pull-right m-l-10" data-dismiss="modal">Back<i class="fas fa-reply m-l-3 zoom"></i></a>
-                </div>
-            </div>
-        </div>
-    </div> -->
 
     <div class="modal fade" id="modal_view" role="dialog" data-backdrop="static">
         <div class="modal-dialog modal-md">
@@ -414,7 +338,7 @@
 {% endblock %}
 
 {% block page-level %}
-    <!-- <script src="{% static 'OsasSystem/assets/plugins/bootstrap-eonasdan-datetimepicker/build/js/bootstrap-datetimepicker.min.js' %}"></script> -->
+ 
 	<script src="{%static 'OsasSystem/assets/plugins/bootstrap-sweetalert/sweetalert.min.js' %}"></script>
 	<script src="{%static 'OsasSystem/assets/js/demo/ui-modal-notification.demo.min.js' %}"></script>
     <script src="{%static 'OsasSystem/assets/index.js' %}"></script>
@@ -490,7 +414,6 @@ courses.addEventListener('change', e=>{
                         value: item.stud_no,
                         text: item.stud_no
                     }));
-                    console.log(item.stud_no)
                 })
             },
             error: function(error){
@@ -504,7 +427,6 @@ courses.addEventListener('change', e=>{
         stud_course_ = selected_courses
     }
     
-    console.log(selected_courses)
 })
 
 const year_ = document.getElementById('class_year')
@@ -512,7 +434,6 @@ year_.addEventListener('change', e=>{
     const selected_year = e.target.value
     stud_year_sec = selected_year
     $("#stud_no").show(1000);
-    console.log(count_, stud_course_, stud_year_sec)
     $('#stud')
         .find('option')
         .remove()
@@ -537,7 +458,6 @@ year_.addEventListener('change', e=>{
                     value: item.stud_no,
                     text: item.stud_no
                 }));
-                console.log(item.stud_no)
             })
         },
         error: function(error){
@@ -587,7 +507,6 @@ function editOrg(auth_id){
 
 function deleteOrg(org_id){
     status = $('#delete-btn').text()
-    console.log(status)
     $.ajax({
         type:'POST',
         url : "{% url 'organization_status_account' %}",
@@ -600,7 +519,6 @@ function deleteOrg(org_id){
             swal("Success!  " + "Organization account is successfully" + status + ".", {
             icon: "success",
             })
-            console.log(data.success)
             setTimeout(function(){
                 window.location.reload()  
             }, 1000);
@@ -620,7 +538,6 @@ $('#modal_view').on('click','#btn_submit', function(event){
     var org_pass1 = $('input[name="org_pass3"]').val().trim();
     stud = document.getElementById("stud2").value
     org_id = $('input[name="org_id"]').val()
-    console.log(org_id, org_name, org_email, org_pass, org_pass1)
     if (org_name, org_email, org_pass == org_pass1, stud != '--select--', org_abbr2){
         $.ajax({
             url : "{% url 'organization_update_account' %}",
@@ -710,7 +627,6 @@ $('#modal_add').on('click','#btn_submit', function(event){
     class_course = document.getElementById("stud_course").value
     org_type = document.getElementById("org_type").value
     class_year = document.getElementById("class_year_").value
-    console.log(org_name, org_abbr, org_email, org_pass, org_pass1, class_course)
     if (org_name, org_abbr, org_email, org_pass, org_pass1, class_course, org_pass){
         if (org_pass == org_pass1){
             $.ajax({

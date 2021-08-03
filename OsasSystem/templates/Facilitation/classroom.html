@@ -107,7 +107,7 @@
                                 <td><div class="text-nowrap"><div class="btn-group ">
                                     {% if  classroom.room_status == "ACTIVE"%}
                                     <button id="edit-btn" class="btn btn-info" data-toggle="modal" href="#modal_view" onClick="editOrg('{{classroom.room_id}}')"><i class="fas fa-edit mr-2"></i>Edit</button>
-                                    <!-- <button id="delete-btn" class="btn btn-danger" onClick="deleteOrg('{{classroom.room_id}}')"><i class="fas fa-trash-alt mr-2"></i>Dismiss</button> -->
+                                  
                                     {% else %}
                                     <button id="delete-btn" class="btn btn-success" onClick="deleteOrg('{{classroom.room_id}}')"><i class="fas fa-redo mr-2"></i>Accredit</button>
                                     {% endif %}
@@ -304,7 +304,7 @@
 {% endblock %}
 
 {% block page-level %}
-    <!-- <script src="{% static 'OsasSystem/assets/plugins/bootstrap-eonasdan-datetimepicker/build/js/bootstrap-datetimepicker.min.js' %}"></script> -->
+  
 	<script src="{%static 'OsasSystem/assets/plugins/bootstrap-sweetalert/sweetalert.min.js' %}"></script>
 	<script src="{%static 'OsasSystem/assets/js/demo/ui-modal-notification.demo.min.js' %}"></script>
     <script src="{%static 'OsasSystem/assets/index.js' %}"></script>
@@ -364,7 +364,6 @@ courses.addEventListener('change', e=>{
     $("#class_year").show(1000);
     $("#class_sec").show(1000);
     stud_course_ = selected_courses
-    console.log(selected_courses)
 })
 
 const year_ = document.getElementById('class_year')
@@ -373,7 +372,6 @@ year_.addEventListener('change', e=>{
     stud_year_sec = selected_year
     $("#stud_no").show(1000);
     $("#adviser").show(1000);
-    console.log(count_, stud_course_, stud_year_sec)
     $('#stud')
         .find('option')
         .remove()
@@ -398,7 +396,6 @@ year_.addEventListener('change', e=>{
                     value: item.stud_no,
                     text: item.stud_no
                 }));
-                console.log(item.stud_no)
             })
         },
         error: function(error){
@@ -415,9 +412,7 @@ const student2 = document.getElementById('stud2')
 student2.addEventListener('change', e=>{
     
     const selected_student = e.target.value
-    // document.getElementById("office_name").value = selected_office
-    // console.log(selected_student)
-    
+ 
     $.ajax({
         type:'POST',
         url : "{% url 'organization_student_data' %}",
@@ -448,7 +443,6 @@ function editOrg(auth_id){
 
 function deleteOrg(org_id){
     status = $('#delete-btn').text()
-    console.log(status)
     $.ajax({
         type:'POST',
         url : "{% url 'organization_status_account' %}",
@@ -461,7 +455,6 @@ function deleteOrg(org_id){
             swal("Success!  " + "Organization account is successfully" + status + ".", {
             icon: "success",
             })
-            console.log(data.success)
             setTimeout(function(){
                 window.location.reload()  
             }, 1000);
@@ -480,7 +473,6 @@ $('#modal_view').on('click','#btn_submit', function(event){
     var room_pass1 = $('input[name="org_pass3"]').val().trim();
     stud = document.getElementById("stud2").value
     room_id = $('input[name="org_id"]').val()
-    console.log(org_id)
     if (org_name, stud != '--select--'){
         $.ajax({
             url : "{% url 'classroom_update_account' %}",
@@ -565,7 +557,6 @@ $('#modal_add').on('click','#btn_submit', function(event){
     stud = document.getElementById("stud").value
     class_course = document.getElementById("stud_course").value
     class_year = document.getElementById("class_year_").value
-    console.log(stud, class_course, class_year, stud_adviser)
     if (class_year, class_email, class_course, stud,  class_pass == class_pass1, stud_adviser){
         $.ajax({
             url : "{% url 'organization_osas_new_class_account' %}",

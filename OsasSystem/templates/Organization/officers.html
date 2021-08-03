@@ -315,16 +315,9 @@
         copyToClipboard();
     }
     }); 
-
-    // $(window).focus(function() {
-    // $("body").show();
-    // }).blur(function() {
-    // $("body").hide();
-    // });
 </script>
 <script>
 function removeOfficer(off_id, org_id){
-    console.log(off_id, org_id)
     if (off_id, org_id) {
         swal({
             title: "Are you sure?",
@@ -376,7 +369,6 @@ function removeOfficer(off_id, org_id){
 }
 
 function editPosition(off_id, org_id){
-    console.log(off_id,org_id)
     $('#org_id1').val(org_id)
     $('#fund_id').val(off_id)
 }
@@ -387,12 +379,10 @@ $('#data-table tbody').on( 'click', 'tr', function () {
 });
 
 $('#modal_edit').on('click','#btn_submit', function () {
-    // org_id = $('#auth_id').text();
     var position = $('#position1').val();
     var org_id =  $('#org_id1').val()
     var off_id = $('#fund_id').val()
     var foredit = 'foredit'
-    console.log(position, org_id, off_id)
     if (org_id,off_id,position){
         $.ajax({
             url: '{% url "orgnaization_add_officer" %}',
@@ -432,7 +422,6 @@ function uploadDocu(fund_id, org_id){
 }
 
 $('#modal_add').on('click','#btn_submit', function () {
-    // org_id = $('#auth_id').text();
     var position = $('#position').val().trim();
     var stud_no = $('#stud2').val().trim();
     if (position,stud_no){
@@ -471,8 +460,6 @@ const student2 = document.getElementById('stud2')
 student2.addEventListener('change', e=>{
     
     const selected_student = e.target.value
-    // document.getElementById("office_name").value = selected_office
-    // console.log(selected_student)
     
     $.ajax({
         type:'POST',

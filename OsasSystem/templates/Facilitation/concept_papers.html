@@ -479,7 +479,7 @@
 {% endblock %}
 
 {% block page-level %}
-    <!-- <script src="{% static 'OsasSystem/assets/plugins/bootstrap-eonasdan-datetimepicker/build/js/bootstrap-datetimepicker.min.js' %}"></script> -->
+   
 	<script src="{%static 'OsasSystem/assets/plugins/bootstrap-sweetalert/sweetalert.min.js' %}"></script>
 	<script src="{%static 'OsasSystem/assets/js/demo/ui-modal-notification.demo.min.js' %}"></script>
     <script src="{%static 'OsasSystem/assets/index.js' %}"></script>
@@ -516,26 +516,7 @@
         document.getElementById('datepicker2').value = new_date;
         document.getElementById('datepicker1').value = new_date;
         document.getElementById('datepicker4').value = new_date;
-        // $("#datepicker").focus(function() {
-        //     $(".ui-datepicker-month").hide();
-        //     $(".ui-datepicker-calendar").hide();
-        // });
-
-        // $('#datepicker2').datepicker({
-        //     changeYear: true,
-        //     showButtonPanel: true,
-        //     dateFormat: 'yy',
-        //     onClose: function(dateText, inst) {
-        //     var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
-        //     $(this).datepicker('setDate', new Date(year, 1));
-        //     }
-        // });
-
-        // $("#datepicker2").focus(function() {
-        //     $(".ui-datepicker-month").hide();
-        //     $(".ui-datepicker-calendar").hide();
-        // });
-
+      
     });
 </script>
 <script>
@@ -552,7 +533,6 @@ function clearMsg2(){
 }
 
 $('#btn-input').keyup(function (e) {
-    console.log('org')
     if (e.keyCode === 13) {
         var msg = $('input[name="btn-input"]').val().trim();
         var osas_id = $('#auth_id').text();
@@ -575,7 +555,6 @@ $('#btn-input').keyup(function (e) {
         if(msg){
             if (x == "right"){
                 if (msg_date3 == date_today2){
-                    console.log("lol")
 
                     $.ajax({
                         url: '{% url "accreditation_osas_msg" %}',
@@ -592,14 +571,12 @@ $('#btn-input').keyup(function (e) {
                             $("#modal_message #chatbox").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><p data-toggle="tooltip" data-placement="right" title="Delivered"  class="bg-info pull-right comments" style="margin-top: -15px; max-width: 300px; text-align: left; float: right; padding: 8px;border-radius: 10px; color: white; word-wrap: break-word; "  name="comment_stud">'+msg+'</p></div></li>'); 
 
                             $("#modal_message #chatbox_date").append('<li>'+date_today+'</li>')
-                            // console.log(date_today)
                             var objDiv = document.getElementById("chatparent");
                             objDiv.scrollTop = objDiv.scrollHeight;
                         }
                     });
                 }
                 else{
-                    console.log("epal")
                     
                     $.ajax({
                         url: '{% url "accreditation_osas_msg" %}',
@@ -617,7 +594,6 @@ $('#btn-input').keyup(function (e) {
                             $("#modal_message #chatbox").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted"  id="date_" style="font-size: 10px">'+date_today2+'</small><strong class="primary-font pull-right" style="font-size: 10px">'+'{{request.session.session_user_role}}'+'</strong></div><p data-toggle="tooltip" data-placement="right" title="Delivered"  class="bg-info pull-right comments" style="max-width: 300px; text-align: left; float: right; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;"  name="comment_stud">'+msg+'</p></div></li>'); 
 
                             $("#modal_message #chatbox_date").append('<li>'+date_today+'</li>')
-                            // console.log(date_today)
                             var objDiv = document.getElementById("chatparent");
                             objDiv.scrollTop = objDiv.scrollHeight;
                         }
@@ -655,7 +631,6 @@ $('#btn-input').keyup(function (e) {
 });
 
 $('#btn-input2').keyup(function (e) {
-    console.log('class')
     if (e.keyCode === 13) {
         var msg = $('input[name="btn-input2"]').val().trim();
         var osas_id = $('#auth_id').text();
@@ -676,8 +651,6 @@ $('#btn-input2').keyup(function (e) {
         if(msg){
             if (x == "right"){
                 if (msg_date3 == date_today2){
-                    console.log("lol")
-
                     $.ajax({
                         url: '{% url "concept_paper_osas_msg" %}',
                         type: "POST",
@@ -693,15 +666,12 @@ $('#btn-input2').keyup(function (e) {
                             $("#modal_message2 #chatbox2").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><p data-toggle="tooltip" data-placement="right" title="Delivered"  class="bg-info pull-right comments" style="margin-top: -15px; max-width: 300px; text-align: left; float: right; padding: 8px;border-radius: 10px; color: white; word-wrap: break-word; "  name="comment_stud">'+msg+'</p></div></li>'); 
 
                             $("#modal_message2 #chatbox_date2").append('<li>'+date_today+'</li>')
-                            // console.log(date_today)
                             var objDiv = document.getElementById("chatparent2");
                             objDiv.scrollTop = objDiv.scrollHeight;
                         }
                     });
                 }
                 else{
-                    console.log("epal")
-                    
                     $.ajax({
                         url: '{% url "concept_paper_osas_msg" %}',
                         type: "POST",
@@ -718,7 +688,6 @@ $('#btn-input2').keyup(function (e) {
                             $("#modal_message2 #chatbox2").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted"  id="date_" style="font-size: 10px">'+date_today2+'</small><strong class="primary-font pull-right" style="font-size: 10px">'+'{{request.session.session_user_role}}'+'</strong></div><p data-toggle="tooltip" data-placement="right" title="Delivered"  class="bg-info pull-right comments" style="max-width: 300px; text-align: left; float: right; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;"  name="comment_stud">'+msg+'</p></div></li>'); 
 
                             $("#modal_message2 #chatbox_date2").append('<li>'+date_today+'</li>')
-                            // console.log(date_today)
                             var objDiv = document.getElementById("chatparent2");
                             objDiv.scrollTop = objDiv.scrollHeight;
                         }
@@ -756,7 +725,6 @@ function ValidateDocu(title_id){
     stats = 'PENDING'
     if (title_id) {
         tr_id = title_id;
-        console.log(title_id)
         swal({
             title: "Are you sure?",
             text: "You want to validate this event?", 
@@ -794,7 +762,6 @@ function ValidateDocu2(title_id){
     stats = 'VALIDATED'
     if (title_id) {
         tr_id = title_id;
-        console.log(title_id)
         swal({
             title: "Are you sure?",
             text: "You want to approve this event?", 
@@ -849,7 +816,6 @@ function orgData(){
                         dataType: 'json',
                         success: function (data) {
                             if (data.success) {
-                                console.log(data.success)
                             $("#data-table #" + org_id).remove();
 
                             }
@@ -869,7 +835,6 @@ function orgData(){
 function approveDocu(org_id){
     if (org_id) {
         tr_id = org_id;
-        console.log(org_id)
         swal({
             title: "Are you sure?",
             text: "You want to renew this organization?", 
@@ -889,7 +854,6 @@ function approveDocu(org_id){
                     dataType: 'json',
                     success: function (data) {
                         if (data.success) {
-                            console.log(data.success)
                             swal("Success! Organization has been successfully accreditted.", {
                                 icon: "success",
                             });
@@ -923,7 +887,6 @@ function genReport2(){
     var new_date_to = date_to.format('MMMM')
     var new_date_year = date_year.format('YYYY')
     var i = 1;
-    console.log(from, to)
     
     if (from && to){
         $.ajax({
@@ -939,7 +902,6 @@ function genReport2(){
                 
 
                 const studData = response.data
-                console.log(studData.length)
                 if (studData.length == 0){
                     alert('No record found.')
                 }
@@ -954,12 +916,10 @@ function genReport2(){
                         if (item.title_room_id_id){
                             type = 'classroom'
                             model_id = item.title_room_id_id
-                            // console.log(type)
                         }
                         else if (item.title_org_id_id){
                             type = 'organization'
                             model_id = item.title_org_id_id
-                            // console.log(type)
                         }
                         $.ajax({
                             url: '{% url "gen_report_get_info_classroom" %}',
@@ -972,10 +932,8 @@ function genReport2(){
                             dataType: 'json',
                             success: function (data) {
                                 if (data.success) {
-                                    console.log(data.success)
                                     
                                     if (i == 1){
-                                        console.log('print')
                                     
 
                                         wme.document.write(
@@ -988,12 +946,10 @@ function genReport2(){
 
                                         wme.document.write("<table style='border-collapse: collapse; width: 100%; font-family: Arial; font-size: 14.5px;' id='data-table' class='table table-bordered' ><thead ><tr><th  width='29%' style='border: 1px solid black; text-align: center; padding: 5px; font-size:15px; background-color: lightgray;'>NAME OF ORGANIZATION</th><th  width='35%' style='border: 1px solid black; text-align: center; padding: 5px; font-size:15px; background-color: lightgray;'>ACTIVITY</th> <th width='18%' style='border: 1px solid black; text-align: center; padding: 5px; font-size: 14.5px; background-color: lightgray;'>DATE CONDUCTED</th><th width='18%' style='border: 1px solid black; text-align: center; font-size:14.5px; background-color: lightgray; padding: 5px;'>DATE SUBMITTED</th></tr></thead><tbody>");
                                     }
-                                    // console.log(data.success)
 
                                     wme.document.write("<tr class='odd gradeA tr_'><td width='29%' style='border: 1px solid black;  font-family: Arial; font-size:12px;'>"+data.success+"</td><td width='35%' style='border: 1px solid black; font-family: Arial; font-size:12px;'>"+item.title_name+"</td><td style='border: 1px solid black;  font-family: Arial; font-size:12px;' width='18%'>"+new_date_accredited+"</td><td style='border: 1px solid black;center; font-family: Arial; font-size:12px;' width='18%'>"+new_date_submitted+"</td></tr>")
 
                                     if (i == studData.length){
-                                        console.log('last print')
                                         wme.document.write("</tbody></table>")
                                         wme.document.write('</page>')
                                     
@@ -1037,7 +993,6 @@ function genReport(){
     var new_date_to = date_to.format('MMMM')
     var new_date_year = date_year.format('YYYY')
     var i = 1;
-    console.log(from, to)
     
     if (from && to){
         $.ajax({
@@ -1053,7 +1008,6 @@ function genReport(){
                 
 
                 const studData = response.data
-                console.log(studData.length)
                 if (studData.length == 0){
                     alert('No record found.')
                 }
@@ -1068,12 +1022,10 @@ function genReport(){
                         if (item.title_room_id_id){
                             type = 'classroom'
                             model_id = item.title_room_id_id
-                            // console.log(type)
                         }
                         else if (item.title_org_id_id){
                             type = 'organization'
                             model_id = item.title_org_id_id
-                            // console.log(type)
                         }
                         $.ajax({
                             url: '{% url "gen_report_get_info_classroom" %}',
@@ -1086,7 +1038,6 @@ function genReport(){
                             dataType: 'json',
                             success: function (data) {
                                 if (data.success) {
-                                    console.log(data.success)
                                     
                                     if (i == 1){
                                         console.log('print')
@@ -1102,12 +1053,10 @@ function genReport(){
 
                                         wme.document.write("<table style='border-collapse: collapse; width: 100%; font-family: Arial; font-size: 14.5px;' id='data-table' class='table table-bordered' ><thead ><tr><th  width='29%' style='border: 1px solid black; text-align: center; padding: 5px; font-size:15px; background-color: lightgray;'>NAME OF ORGANIZATION</th><th  width='35%' style='border: 1px solid black; text-align: center; padding: 5px; font-size:15px; background-color: lightgray;'>ACTIVITY</th> <th width='18%' style='border: 1px solid black; text-align: center; padding: 5px; font-size: 14.5px; background-color: lightgray;'>DATE PROPOSED</th><th width='18%' style='border: 1px solid black; text-align: center; font-size:14.5px; background-color: lightgray; padding: 5px;'>DATE CONDUCTED</th></tr></thead><tbody>");
                                     }
-                                    // console.log(data.success)
 
                                     wme.document.write("<tr class='odd gradeA tr_'><td width='29%' style='border: 1px solid black; font-family: Arial; font-size:12px; padding-left: 2px;'>"+data.success+"</td><td width='35%' style='border: 1px solid black; font-family: Arial; font-size:12px; padding-left: 2px;'>"+item.title_name+"</td><td style='border: 1px solid black;  font-family: Arial; font-size:12px; padding-left: 2px;' width='18%'>"+new_date_submitted+"</td><td style='border: 1px solid black;font-family: Arial; font-size:12px; padding-left: 2px;' width='18%'>"+new_date_accredited+"</td></tr>")
 
                                     if (i == studData.length){
-                                        console.log('last print')
                                         wme.document.write("</tbody></table>")
                                         wme.document.write('</page>')
                                     
@@ -1138,7 +1087,6 @@ function genReport(){
     }
 }
 function viewCert(org_id){
-    console.log(org_id)
     if (org_id) {
 
         tr_id = org_id;
@@ -1153,7 +1101,6 @@ function viewCert(org_id){
             dataType: 'json',
             success: function(data){
                 if (data.org_val) {
-                    console.log(data.org_val.org_id)
                     var wme = window.open("","", "width = 816px, height = 1344px");
                     
                     wme.document.write(
@@ -1165,7 +1112,6 @@ function viewCert(org_id){
 
                     const date_created = moment(data.org_val.org_date_accredited)
                     const new_date_created = date_created.format('LL')
-                    console.log("Today's date is: " + date_created.format('LL'))  
                     
     
                     wme.document.write('<div style="padding-left: 96px; padding-right: 96px; padding-top: 11.5px;"><label style="font-weight: bold; font-family: Times New Roman; font-size: 11.5px; ">'+new_date_created+'</label></div>')
@@ -1223,7 +1169,6 @@ function uploadDocu(org_id, title_id){
         $('#pk_id').val(org_id);
         $('#title_id').val(title_id);
         $('#identity').val(identity);
-        console.log(org_id, identity, title_id)
     }
 } 
 function uploadDocu2(room_id, title_id){
@@ -1233,7 +1178,6 @@ function uploadDocu2(room_id, title_id){
         $('#pk_id').val(room_id);
         $('#title_id').val(title_id);
         $('#identity').val(identity);
-        console.log("room_id = " + room_id, " type = " + identity, " title_id = " + title_id)
     }
 } 
 CKEDITOR.replace('essay_text',{
@@ -1249,8 +1193,6 @@ function viewNote(org_id){
         tr_id = org_id;
         
         organization_id = org_id
-        // $('#org_id1').val(org_id);
-        console.log(auth_id)
         $.ajax({
             url: '{% url "organization_view_messages" %}',
             type: "POST",
@@ -1266,17 +1208,12 @@ function viewNote(org_id){
                 const studData = response.data
                 studData.map(item=>{
                     const msg_date_new = moment(item.msg_date).format("YYYY-MM-DD, ddd, hh:mm A");
-                    // console.log(msg_date_new, 'orig')
                     if(item.msg_send_to == response.org_data){
                       
                         if(temp_org_date){
-                            console.log('bad')
-                            // console.log('temp_date ' + temp_org_date )
-                            // console.log('last date ' + msg_date_new )
                             if(temp_org_date == msg_date_new){
                                 $("#modal_message #chatbox").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" class="bg-info pull-right comments" style="margin-top: -15px; max-width: 300px; text-align: left; float: right; padding: 8px;border-radius: 10px; color: white; word-wrap: break-word;"  name="comment_stud">'+item.msg_message+'</p></div></li>'); 
 
-                                // $("#modal_message #chatbox_date").append('<li>'+date_today+'</li>')
                                 var objDiv = document.getElementById("chatparent");
                                 objDiv.scrollTop = objDiv.scrollHeight;
                             }   
@@ -1285,7 +1222,6 @@ function viewNote(org_id){
                                 
                                 $("#modal_message #chatbox_date").append('<li>'+item.msg_date+'</li>')
                                 temp_org_date = msg_date_new
-                                // console.log('else lang' + temp_org_date)
 
                                 var objDiv = document.getElementById("chatparent");
                                 objDiv.scrollTop = objDiv.scrollHeight;
@@ -1295,7 +1231,6 @@ function viewNote(org_id){
                             $('#chatbox').append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted sample_date"  id="date_" style="font-size: 10px">'+msg_date_new+'</small><strong class="primary-font pull-right" style="font-size: 10px" >'+response.osas_data+'</strong></div><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" class="bg-info pull-right osas_msg" style="max-width: 300px; text-align: left; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;" id="comments"  name="comment_stud">'+item.msg_message+'</p></div></li>')
                             
                             temp_org_date = msg_date_new
-                            // console.log('else lang' + temp_org_date)
                             $("#modal_message #chatbox_date").append('<li>'+item.msg_date+'</li>')
                             var objDiv = document.getElementById("chatparent");
                                 objDiv.scrollTop = objDiv.scrollHeight;
@@ -1303,7 +1238,6 @@ function viewNote(org_id){
                     }
                     else if (item.msg_send_from == response.org_id){
                         osas_message = item.msg_id
-                        console.log('goods')
                         $.ajax({
                             url: '{% url "organization_osas_msg_seen" %}',
                             type: "POST",
@@ -1313,7 +1247,6 @@ function viewNote(org_id){
                             },
                             dataType: 'json',
                             success: function (data) {
-                                console.log(data.osas_msg_status)
                                 }
                         });
                         if(temp_osas_date){
@@ -1328,7 +1261,6 @@ function viewNote(org_id){
                                 
                                 $("#modal_message #chatbox_date").append('<li>'+item.msg_date+'</li>')
                                 temp_osas_date = msg_date_new
-                                // console.log('else lang' + temp_org_date)
 
                                 var objDiv = document.getElementById("chatparent");
                                 objDiv.scrollTop = objDiv.scrollHeight;
@@ -1339,17 +1271,10 @@ function viewNote(org_id){
                             
                             
                             temp_osas_date = msg_date_new
-                            // console.log('else lang' + temp_org_date)
                             $("#modal_message #chatbox_date").append('<li>'+item.msg_date+'</li>')
                             var objDiv = document.getElementById("chatparent");
                                 objDiv.scrollTop = objDiv.scrollHeight;
                         }
-                        
-                        // temp_osas_date = msg_date_new
-                        // // console.log(temp_osas_date)
-                        // $("#modal_message #chatbox_date").append('<li>'+msg_date_new+'</li>')
-                        // var objDiv = document.getElementById("chatparent");
-                        //         objDiv.scrollTop = objDiv.scrollHeight;
 
                     }
                 })
@@ -1365,7 +1290,6 @@ function viewNote2(room_id){
         document.getElementById('btn-input2').value = "";
         tr_id = room_id;
         class_id = room_id
-        console.log(auth_id)
         $.ajax({
             url: '{% url "class_view_messages" %}',
             type: "POST",
@@ -1381,14 +1305,11 @@ function viewNote2(room_id){
                 const studData = response.data
                 studData.map(item=>{
                     const msg_date_new = moment(item.msg_date).format("YYYY-MM-DD, ddd, hh:mm A");
-                    // console.log(msg_date_new, 'orig')
                     if(item.msg_send_to == response.room_course + ' ' + response.room_year){
                         if(temp_org_date){
-                            console.log('bad')
                             if(temp_org_date == msg_date_new){
                                 $("#modal_message2 #chatbox2").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" class="bg-info pull-right comments" style="margin-top: -15px; max-width: 300px; text-align: left; float: right; padding: 8px;border-radius: 10px; color: white; word-wrap: break-word;"  name="comment_stud">'+item.msg_message+'</p></div></li>'); 
 
-                                // $("#modal_message #chatbox_date").append('<li>'+date_today+'</li>')
                                 var objDiv = document.getElementById("chatparent2");
                                 objDiv.scrollTop = objDiv.scrollHeight;
                             }   
@@ -1397,7 +1318,6 @@ function viewNote2(room_id){
                                 
                                 $("#modal_message2 #chatbox_date2").append('<li>'+item.msg_date+'</li>')
                                 temp_org_date = msg_date_new
-                                // console.log('else lang' + temp_org_date)
 
                                 var objDiv = document.getElementById("chatparent2");
                                 objDiv.scrollTop = objDiv.scrollHeight;
@@ -1407,7 +1327,6 @@ function viewNote2(room_id){
                             $('#chatbox2').append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted sample_date"  id="date_" style="font-size: 10px">'+msg_date_new+'</small><strong class="primary-font pull-right" style="font-size: 10px" >'+response.osas_data+'</strong></div><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" class="bg-info pull-right osas_msg" style="max-width: 300px; text-align: left; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;" id="comments"  name="comment_stud">'+item.msg_message+'</p></div></li>')
                             
                             temp_org_date = msg_date_new
-                            // console.log('else lang' + temp_org_date)
                             $("#modal_message2 #chatbox_date2").append('<li>'+item.msg_date+'</li>')
                             var objDiv = document.getElementById("chatparent2");
                                 objDiv.scrollTop = objDiv.scrollHeight;
@@ -1415,7 +1334,6 @@ function viewNote2(room_id){
                     }
                     else if (item.msg_send_from == response.room_course + ' ' + response.room_year){
                         osas_message = item.msg_id
-                        console.log('goods')
                         $.ajax({
                             url: '{% url "organization_osas_msg_seen" %}',
                             type: "POST",
@@ -1425,7 +1343,6 @@ function viewNote2(room_id){
                             },
                             dataType: 'json',
                             success: function (data) {
-                                console.log(data.osas_msg_status)
                                 }
                         });
                         if(temp_osas_date){
@@ -1440,7 +1357,6 @@ function viewNote2(room_id){
                                 
                                 $("#modal_message2 #chatbox_date2").append('<li>'+item.msg_date+'</li>')
                                 temp_osas_date = msg_date_new
-                                // console.log('else lang' + temp_org_date)
 
                                 var objDiv = document.getElementById("chatparent2");
                                 objDiv.scrollTop = objDiv.scrollHeight;
@@ -1450,7 +1366,6 @@ function viewNote2(room_id){
                             $("#chatbox2").append('<li class="left"  style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-right text-muted" style="margin-left: 5px;"></i><small class="pull-right text-muted" id="date_stud" style="font-size: 10px"  >'+msg_date_new+'</small><strong class="pull-left primary-font" id="stud_name" name="stud_name" style="font-size: 10px">'+response.room_course + ' ' + response.room_year + '</strong></div><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" style=" max-width: 300px; background-color: white; float: left; padding: 8px; border-radius: 10px; color: black; word-wrap: break-word;" id="comment_stud" value="'+item.msg_message+'" name="comments">'+item.msg_message+'</p></div></li>')
                             
                             temp_osas_date = msg_date_new
-                            // console.log('else lang' + temp_org_date)
                             $("#modal_message2 #chatbox_date2").append('<li>'+item.msg_date+'</li>')
                             var objDiv = document.getElementById("chatparent2");
                                 objDiv.scrollTop = objDiv.scrollHeight;
@@ -1466,16 +1381,13 @@ function addNote(org_id){
     if (org_id) {
         tr_id = org_id;
         $('#org_id').val(org_id);
-        console.log(org_id)
     }
 }
 
 
 $("#modal_addnote").on('click','#btn_submit',function(e){
     sample = CKEDITOR.instances.essay_text.getData();
-    // sample = data.excuse_val.proof.replace(/\"/g, "")
     var org_id = $('#org_id').val();
-    console.log(org_id)
     if (sample) {
         $.ajax({
             url: '{% url "organization_addnnote" %}',
@@ -1488,7 +1400,6 @@ $("#modal_addnote").on('click','#btn_submit',function(e){
             dataType: 'json',
             success: function (data) {
                 if (data.success) {
-                    console.log(data.success)
                     setTimeout(function(){
                         swal("Success! User has been deactivated.", {
                         icon: "success",
@@ -1499,7 +1410,6 @@ $("#modal_addnote").on('click','#btn_submit',function(e){
                     
                 }
                 if (data.error) {
-                    console.log(data.error)
                     $("#error").append('<div class="container col-lg-12" id="error_msg"><p class="alert alert-danger text-center" >Warning! invalid.' + '</p></div>')
                     setTimeout(function(){
                         if (document.getElementById("error_msg")){

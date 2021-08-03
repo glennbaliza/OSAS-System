@@ -78,8 +78,6 @@ function clearMsg(){
 }
 function clear_msg(){
 	org_id = $('#auth_id').text();
-	// $('#chatbox').empty()
-	console.log(org_id, osas_id)
 	swal({
 		title: "Are you sure?",
 		text: "You want to clear all messages?", 
@@ -110,7 +108,6 @@ function clear_msg(){
 							},
 							dataType: 'json',
 							success: function (data) {
-								console.log(data.success)
 							}
 						});
 					})
@@ -139,13 +136,10 @@ $('#btn-input').keyup(function (e) {
 		// initiating ne format neede for appending li tag used for displaying datetime in chatbox
 		const msg_date3 = moment(msg_date).format("YYYY-MM-DD, ddd, hh:mm A");
 		const date_today2 = moment(now).format("YYYY-MM-DD, ddd, hh:mm A");
-		console.log(osas_id)
 	
 		if(msg){
 			if (x == "right"){
-				console.log('right')
 				if (msg_date3 == date_today2){
-					console.log("lol")
 
 					$.ajax({
 						url: '{% url "accreditation_org_msg" %}',
@@ -162,14 +156,12 @@ $('#btn-input').keyup(function (e) {
 							$("#modal_message #chatbox").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><p data-toggle="tooltip" data-placement="right" title="Delivered" class="bg-info pull-right comments" style="margin-top: -15px; max-width: 300px; text-align: left; float: right; padding: 8px;border-radius: 10px; color: white; word-wrap: break-word; "  name="comment_stud">'+msg+'</p></div></li>'); 
 
 							$("#modal_message #chatbox_date").append('<li>'+date_today+'</li>')
-							// console.log(date_today)
 							var objDiv = document.getElementById("chatparent");
 							objDiv.scrollTop = objDiv.scrollHeight;
 						}
 					});
 				}
 				else{
-					console.log("epal")
 					
 					$.ajax({
 						url: '{% url "accreditation_org_msg" %}',
@@ -187,7 +179,6 @@ $('#btn-input').keyup(function (e) {
 							$("#modal_message #chatbox").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted"  id="date_" style="font-size: 10px">'+date_today2+'</small><strong class="primary-font pull-right" style="font-size: 10px">'+'{{request.session.session_org_abbr}}'+'</strong></div><p data-toggle="tooltip" data-placement="right" title="Delivered"  class="bg-info pull-right comments" style="max-width: 300px; text-align: left; float: right; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;"  name="comment_stud">'+msg+'</p></div></li>'); 
 
 							$("#modal_message #chatbox_date").append('<li>'+date_today+'</li>')
-							// console.log(date_today)
 							var objDiv = document.getElementById("chatparent");
 							objDiv.scrollTop = objDiv.scrollHeight;
 						}
@@ -195,7 +186,6 @@ $('#btn-input').keyup(function (e) {
 				}
 			}
 			else{
-				console.log(osas_id, 'epal talaga')
 				$.ajax({
 					url: '{% url "accreditation_org_msg" %}',
 					type: "POST",
@@ -242,18 +232,15 @@ function viewMessage(){
 			dataType: 'json',
 			success: function(response){
 				s = $('.org_abbr').text(response.osas_role);
-				console.log(s)
 				var temp_osas_date;
 				var temp_org_date;
 				osas_id = response.osas_role_id
-				// console.log(response.data.msg_status)
 				const studData = response.data
 				studData.map(item=>{
 					const msg_date_new = moment(item.msg_date).format("YYYY-MM-DD, ddd, hh:mm A");
 
 					if(item.msg_send_from == response.osas_role_id){
 						osas_message = item.msg_id
-						console.log(osas_message)
 						$.ajax({
 							url: '{% url "organization_osas_msg_seen" %}',
 							type: "POST",
@@ -268,9 +255,7 @@ function viewMessage(){
 						});
 						
 						if(temp_org_date){
-							console.log('yes')
 							if(temp_org_date == msg_date_new){
-								// console.log('same')
 								$("#modal_message #chatbox").append('<li class="left" style="list-style-type: none;"><div class="chat-body clearfix"><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" style=" max-width: 300px; background-color: white; float: left; padding: 8px; border-radius: 10px; color: black; word-wrap: break-word; margin-top: -15px;"  name="comment_stud">'+item.msg_message+'</p></div></li>'); 
 
 								// $("#modal_message #chatbox_date").append('<li>'+item.msg_date+'</li>')
@@ -282,7 +267,6 @@ function viewMessage(){
 								
 								$("#modal_message #chatbox_date").append('<li>'+item.msg_date+'</li>')
 								temp_org_date = msg_date_new
-								// console.log('else lang' + temp_org_date)
 
 								var objDiv = document.getElementById("chatparent");
 								objDiv.scrollTop = objDiv.scrollHeight;
@@ -293,7 +277,6 @@ function viewMessage(){
 							
 							
 							temp_org_date = msg_date_new
-							// console.log('else lang' + temp_org_date)
 							$("#modal_message #chatbox_date").append('<li>'+item.msg_date+'</li>')
 							var objDiv = document.getElementById("chatparent");
 								objDiv.scrollTop = objDiv.scrollHeight;
@@ -301,10 +284,7 @@ function viewMessage(){
 					}
 					else if(item.msg_send_from == response.org_id){
 						if(temp_osas_date){
-							// console.log('temp_date ' + temp_osas_date )
-							// console.log('last date ' + msg_date_new )
 							if(temp_osas_date == msg_date_new){
-								console.log('same')
 								$("#modal_message #chatbox").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" class="bg-info pull-right comments" style="margin-top: -15px; max-width: 300px; text-align: left; float: right; padding: 8px;border-radius: 10px; color: white; word-wrap: break-word;"  name="comment_stud">'+item.msg_message+'</p></div></li>'); 
 
 								// $("#modal_message #chatbox_date").append('<li>'+item.msg_date+'</li>')
@@ -316,9 +296,7 @@ function viewMessage(){
 								
 								$("#modal_message #chatbox_date").append('<li>'+item.msg_date+'</li>')
 								temp_osas_date = msg_date_new
-								console.log(temp_osas_date)
-								// console.log('else lang' + temp_org_date)
-
+								
 								var objDiv = document.getElementById("chatparent");
 								objDiv.scrollTop = objDiv.scrollHeight;
 							}
@@ -327,7 +305,6 @@ function viewMessage(){
 							$('#chatbox').append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted sample_date"  id="date_" style="font-size: 10px">'+msg_date_new+'</small><strong class="primary-font pull-right" style="font-size: 10px" >'+response.org_data+'</strong></div><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" class="bg-info pull-right osas_msg comments" style="max-width: 300px; text-align: left; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;" name="comment_stud">'+item.msg_message+'</p></div></li>')
 						
 							temp_osas_date = msg_date_new
-							console.log(temp_osas_date)
 							$("#modal_message #chatbox_date").append('<li>'+msg_date_new+'</li>')
 							var objDiv = document.getElementById("chatparent");
 									objDiv.scrollTop = objDiv.scrollHeight;

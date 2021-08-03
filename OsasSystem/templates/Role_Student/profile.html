@@ -259,8 +259,6 @@
       const dob = moment(today) // setting the new formatted date
       document.getElementById('datepickers').value = dob.format('YYYY-MM-DD') // passing the value to the input field with a new format
 
-      console.log("Today's date is: " + 
-      dob.format('YYYY-MM-DD')) // checking if true
       
 	    function datePickerChange() {
 			$('#datepickers').datepicker({ dateFormat: 'yy-mm-dd' });

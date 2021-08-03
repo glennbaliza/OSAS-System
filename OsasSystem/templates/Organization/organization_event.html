@@ -418,7 +418,7 @@
 {% endblock %}
 
 {% block page-level %}
-    <!-- <script src="{% static 'OsasSystem/assets/plugins/bootstrap-eonasdan-datetimepicker/build/js/bootstrap-datetimepicker.min.js' %}"></script> -->
+   
 	<script src="{%static 'OsasSystem/assets/plugins/bootstrap-sweetalert/sweetalert.min.js' %}"></script>
 	<script src="{%static 'OsasSystem/assets/js/demo/ui-modal-notification.demo.min.js' %}"></script>
     <script src="{%static 'OsasSystem/assets/index.js' %}"></script>
@@ -448,29 +448,7 @@
                     ordering: false,
         });
        
-        // const today = moment()
-        // var new_date = today.format('YYYY-MM-DD')
-        // document.getElementById('datepicker').value = new_date;
-        // $("#datepicker").focus(function() {
-        //     $(".ui-datepicker-month").hide();
-        //     $(".ui-datepicker-calendar").hide();
-        // });
-
-        // $('#datepicker2').datepicker({
-        //     changeYear: true,
-        //     showButtonPanel: true,
-        //     dateFormat: 'yy',
-        //     onClose: function(dateText, inst) {
-        //     var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
-        //     $(this).datepicker('setDate', new Date(year, 1));
-        //     }
-        // });
-
-        // $("#datepicker2").focus(function() {
-        //     $(".ui-datepicker-month").hide();
-        //     $(".ui-datepicker-calendar").hide();
-        // });
-
+      
     });
 </script>
 <script>
@@ -530,7 +508,6 @@ $('#modal_upload').on('click','#close_upload', function () {
 });
 
 function removeEvent(org_id, title_id, title_name){
-    console.log(org_id, title_id, title_name)
     if (org_id, title_id, title_name) {
         swal({
             title: "Are you sure?",
@@ -585,7 +562,6 @@ $('#data-table2 tbody').on( 'click', 'tr', function () {
 });
 
 $('#modal_edit').on('click','#remove-btn', function () {
-    console.log(con_id_)
     if (con_id_) {
         swal({
             title: "Are you sure?",
@@ -623,7 +599,6 @@ $('#modal_edit').on('click','#remove-btn', function () {
                         console.log(error)
                         }
                         if (data.success) {
-                            console.log(data.success)
                             $("#docu-table #" + con_id_).fadeOut("slow", function(){
                                 $("#data-table2 #" + con_id_).remove();
                             })
@@ -649,7 +624,6 @@ $('#modal_edit').on('click','#btn_submit', function () {
     org_id = $('#org_id').val();
     title_id = $('#title_id').val();
     var title_name = $('#title_name').val().trim();
-    console.log(title_name)
     if (title_name2 != title_name){
         swal({
             title: "Are you sure?",
@@ -715,7 +689,6 @@ function editDocu(org_id, title_id, title_name){
     $('#title_name').val(title_name)
     $('#title_id').val(title_id)
     $('#org_id').val(org_id)
-    console.log(org_id, title_id, title_name)
     $.ajax({
         url: '{% url "organization_event_populate" %}',
         type: "POST",
@@ -728,7 +701,6 @@ function editDocu(org_id, title_id, title_name){
         dataType: 'json',
         success: function (response) {
             i = 0;
-            console.log(response.data)
             const studData = response.data
             studData.map(item=>{
                 i ++
@@ -747,7 +719,6 @@ $('#modal_addtitle').on('click','#btn_submit', function () {
     org_id = $('#auth_id').text();
     var con_title = $('#con_title').val().trim();
     var date_conducted = $('input[name="datepicker"]').val();
-    console.log(org_id, con_title, date_conducted)
     if (con_title, date_conducted){
         $.ajax({
             url: '{% url "org_concept_paper_title" %}',
@@ -794,8 +765,6 @@ $('#btn-input').keyup(function (e) {
         if(msg){
             if (x == "right"){
                 if (msg_date3 == date_today2){
-                    console.log("lol")
-
                     $.ajax({
                         url: '{% url "accreditation_org_msg" %}',
                         type: "POST",
@@ -812,14 +781,12 @@ $('#btn-input').keyup(function (e) {
                             $("#modal_message #chatbox").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><p data-toggle="tooltip" data-placement="right" title="Delivered"  class="bg-info pull-right comments" style="margin-top: -15px; max-width: 300px; text-align: left; float: right; padding: 8px;border-radius: 10px; color: white; word-wrap: break-word; "  name="comment_stud">'+msg+'</p></div></li>'); 
 
                             $("#modal_message #chatbox_date").append('<li>'+date_today+'</li>')
-                            // console.log(date_today)
                             var objDiv = document.getElementById("chatparent");
                             objDiv.scrollTop = objDiv.scrollHeight;
                         }
                     });
                 }
                 else{
-                    console.log("epal")
                     
                     $.ajax({
                         url: '{% url "accreditation_org_msg" %}',
@@ -838,7 +805,6 @@ $('#btn-input').keyup(function (e) {
                             $("#modal_message #chatbox").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted"  id="date_" style="font-size: 10px">'+date_today2+'</small><strong class="primary-font pull-right" style="font-size: 10px">'+'{{request.session.session_org_abbr}}'+'</strong></div><p data-toggle="tooltip" data-placement="right" title="Delivered"  class="bg-info pull-right comments" style="max-width: 300px; text-align: left; float: right; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;"  name="comment_stud">'+msg+'</p></div></li>'); 
 
                             $("#modal_message #chatbox_date").append('<li>'+date_today+'</li>')
-                            // console.log(date_today)
                             var objDiv = document.getElementById("chatparent");
                             objDiv.scrollTop = objDiv.scrollHeight;
                         }
@@ -881,7 +847,6 @@ function genReport(){
     var to = $('input[name="datepicker2"]').val();
     from_2 = from + "-01"
     to_2 = to + "-01"
-    console.log(from_2, to_2)
     if (from && to){
         $.ajax({
             url: '{% url "organization_generate_report" %}',
@@ -938,12 +903,10 @@ var osas_id;
 var osas_role_;
 function viewNote(){
     org_id = $('#auth_id').text();
-    console.log(org_id)
     if (org_id) {
         document.getElementById('btn-input').value = "";
         tr_id = org_id;
         organization_id = org_id
-        console.log(org_id, "org")
         $.ajax({
             url: '{% url "organization_view_messages" %}',
             type: "POST",
@@ -958,18 +921,14 @@ function viewNote(){
                 var temp_org_date;
                 osas_id = response.osas_role_id
                 osas_role_ = response.osas_role
-                console.log(osas_id)
                 const studData = response.data
                 studData.map(item=>{
                     const msg_date_new = moment(item.msg_date).format("YYYY-MM-DD, ddd, hh:mm A");
-                    // console.log(msg_date_new, 'orig')
                     if(item.msg_send_from == response.org_id){
                         if(temp_org_date){
-                            console.log(response.org_id, 'bad')
                             if(temp_org_date == msg_date_new){
                                 $("#modal_message #chatbox").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" class="bg-info pull-right comments" style="margin-top: -15px; max-width: 300px; text-align: left; float: right; padding: 8px;border-radius: 10px; color: white; word-wrap: break-word;"  name="comment_stud">'+item.msg_message+'</p></div></li>'); 
 
-                                // $("#modal_message #chatbox_date").append('<li>'+date_today+'</li>')
                                 var objDiv = document.getElementById("chatparent");
                                 objDiv.scrollTop = objDiv.scrollHeight;
                             }   
@@ -978,7 +937,6 @@ function viewNote(){
                                 
                                 $("#modal_message #chatbox_date").append('<li>'+item.msg_date+'</li>')
                                 temp_org_date = msg_date_new
-                                // console.log('else lang' + temp_org_date)
 
                                 var objDiv = document.getElementById("chatparent");
                                 objDiv.scrollTop = objDiv.scrollHeight;
@@ -988,7 +946,6 @@ function viewNote(){
                             $('#chatbox').append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted sample_date"  id="date_" style="font-size: 10px">'+msg_date_new+'</small><strong class="primary-font pull-right" style="font-size: 10px" >'+response.org_id+'</strong></div><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" class="bg-info pull-right osas_msg" style="max-width: 300px; text-align: left; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;" id="comments"  name="comment_stud">'+item.msg_message+'</p></div></li>')
                             
                             temp_org_date = msg_date_new
-                            // console.log('else lang' + temp_org_date)
                             $("#modal_message #chatbox_date").append('<li>'+item.msg_date+'</li>')
                             var objDiv = document.getElementById("chatparent");
                                 objDiv.scrollTop = objDiv.scrollHeight;
@@ -996,7 +953,6 @@ function viewNote(){
                     }
                     else if (item.msg_send_to == response.org_id && item.msg_send_from == response.osas_role_id){
                         osas_message = item.msg_id
-                        console.log('goods')
                         $.ajax({
                             url: '{% url "organization_osas_msg_seen" %}',
                             type: "POST",
@@ -1006,7 +962,6 @@ function viewNote(){
                             },
                             dataType: 'json',
                             success: function (data) {
-                                console.log(data.osas_msg_status)
                                 }
                         });
                         if(temp_osas_date){
@@ -1021,7 +976,6 @@ function viewNote(){
                                 
                                 $("#modal_message #chatbox_date").append('<li>'+item.msg_date+'</li>')
                                 temp_osas_date = msg_date_new
-                                // console.log('else lang' + temp_org_date)
 
                                 var objDiv = document.getElementById("chatparent");
                                 objDiv.scrollTop = objDiv.scrollHeight;
@@ -1032,18 +986,11 @@ function viewNote(){
                             
                             
                             temp_osas_date = msg_date_new
-                            // console.log('else lang' + temp_org_date)
                             $("#modal_message #chatbox_date").append('<li>'+item.msg_date+'</li>')
                             var objDiv = document.getElementById("chatparent");
                                 objDiv.scrollTop = objDiv.scrollHeight;
                         }
                         
-                        // temp_osas_date = msg_date_new
-                        // // console.log(temp_osas_date)
-                        // $("#modal_message #chatbox_date").append('<li>'+msg_date_new+'</li>')
-                        // var objDiv = document.getElementById("chatparent");
-                        //         objDiv.scrollTop = objDiv.scrollHeight;
-
                     }
                 })
             }
@@ -1055,7 +1002,6 @@ function addNote(org_id){
     if (org_id) {
         tr_id = org_id;
         $('#org_id').val(org_id);
-        console.log(org_id)
     }
 }
 

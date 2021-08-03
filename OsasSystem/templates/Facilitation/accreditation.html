@@ -414,7 +414,6 @@ function viewRequirements(id, org_term, org_Status, org_issue){
         success: function(response){
             org_info = response.orgname
             var type = response.org_type
-            console.log(renew_org)
          
             if (response.org_accre_status == '0'){
                 x = 'NEW'
@@ -448,8 +447,6 @@ function viewRequirements(id, org_term, org_Status, org_issue){
 
             const studData = response.data
             studData.map(item=>{
-
-                // console.log(item.acc_title, item.acc_file, org_info)
                 if(item.acc_status == 'SENT'){
                     if (x == 'RENEW'){
 
@@ -466,10 +463,8 @@ function viewRequirements(id, org_term, org_Status, org_issue){
                         
                         i = renew_org.indexOf(item.acc_title)
                         renew_org.splice(i, 1);
-                        console.log(item.acc_title)
                     }
                     else if (x == 'NEW'){
-                        console.log('hey')
                         $("#modal_view_req #newdata").append('<tr class="odd gradeA tr_  " id="details"><td width="1%" hidden class="f-s-600 text-inverse" >'+item.acc_id+'</td><td width="1%"  class="f-s-600 text-inverse align-middle" >'+item.acc_title+'</td><td style="text-align:center;" width="85%"  class="text-nowrap align-middle " ><a href="/media/'+item.acc_file+'" target="blank" style="color: rgb(95, 94, 94);">'+item.acc_file+'</a></td><td class="text-nowrap align-middle"  >'+item.acc_datesubmitted+'</td><td width="1%"  class="f-s-600 text-inverse align-middle" ><i class="fas fa-check mr-2" style="color: green;"></i></td><td width="1%"  class="f-s-600 text-inverse align-middle" ><button id="edit-btn" class="btn btn-danger" onClick="returnDocument('+item.acc_id+')" ><i data-toggle="tooltip" data-placement="left" title="Return" class="fas fa-undo-alt"></i></button></td></tr>');
                        
                         if(type == 'College-Based'){
@@ -487,10 +482,8 @@ function viewRequirements(id, org_term, org_Status, org_issue){
 
                 }
             })
-            console.log(renew_org)
             if (x == 'RENEW'){
                 if(renew_org != null){
-                    console.log(renew_org)
                     if (type == 'College-Based'){
                         i = renew_org.indexOf('Clearance/Certificate (University-Wide)')
                         renew_org.splice(i, 1);
@@ -501,7 +494,6 @@ function viewRequirements(id, org_term, org_Status, org_issue){
                     }
                     var arrayLength1 = renew_org.length;
                     for (var i = 0; i < arrayLength1; i++) {
-                        console.log(renew_org[i]);
                         $("#modal_view_req #newdata").append('<tr class="odd gradeA tr_  " id="details"><td width="1%" hidden class="f-s-600 text-inverse" ></td><td width="1%"  class="f-s-600 text-inverse" >'+renew_org[i]+'</td><td style="text-align:center;" width="85%"  class="text-nowrap align-middle " ></td><td  class="f-s-600 text-inverse text-nowrap" ></td><td width="1%"  class="f-s-600 text-inverse" ><i class="fas fa-times mr-2" style="color: red;"></i></td><td width="1%"  class="f-s-600 text-inverse" ></td></tr>');
         
                     }
@@ -509,7 +501,6 @@ function viewRequirements(id, org_term, org_Status, org_issue){
                 }
             }
             else if(x == 'NEW'){
-                console.log(new_org)
                 if(new_org != null){
                     if (type == 'College-Based'){
                         i = new_org.indexOf('Clearance/Certificate (University-Wide)')
@@ -521,18 +512,9 @@ function viewRequirements(id, org_term, org_Status, org_issue){
                     }
                     var arrayLength = new_org.length;
                     for (var i = 0; i < arrayLength; i++) {
-                        console.log(new_org[i]);
                         $("#modal_view_req #newdata").append('<tr class="odd gradeA tr_  " id="details"><td width="1%" hidden class="f-s-600 text-inverse" ></td><td width="1%"  class="f-s-600 text-inverse" >'+new_org[i]+'</td><td style="text-align:center;" width="85%"  class="text-nowrap align-middle " ></td><td  class="f-s-600 text-inverse text-nowrap" ></td><td width="1%"  class="f-s-600 text-inverse" ><i class="fas fa-times mr-2" style="color: red;"></i></td><td width="1%"  class="f-s-600 text-inverse" ></td></tr>');
                     }
-                    // if (type == 'College-Based'){
-                    //     $("#modal_view_req #newdata").append('<tr class="odd gradeA tr_  " id="details"><td width="1%" hidden class="f-s-600 text-inverse" ></td><td width="1%"  class="f-s-600 text-inverse" >Clearance/Certificate (College-Based)</td><td style="text-align:center;" width="85%"  class="text-nowrap align-middle " ></td><td  class="f-s-600 text-inverse text-nowrap" ></td><td width="1%"  class="f-s-600 text-inverse" ><i class="fas fa-times mr-2" style="color: red;"></i></td><td width="1%"  class="f-s-600 text-inverse" ></td></tr>');
-                        
-                    // }
-                    // else if(type == 'University-Wide'){
-                    //     $("#modal_view_req #newdata").append('<tr class="odd gradeA tr_  " id="details"><td width="1%" hidden class="f-s-600 text-inverse" ></td><td width="1%"  class="f-s-600 text-inverse" >Clearance/Certificate (University-Wide)</td><td style="text-align:center;" width="85%"  class="text-nowrap align-middle " ></td><td  class="f-s-600 text-inverse text-nowrap" ></td><td width="1%"  class="f-s-600 text-inverse" ><i class="fas fa-times mr-2" style="color: red;"></i></td><td width="1%"  class="f-s-600 text-inverse" ></td></tr>');
-                    
-                    // }
-                    console.log(new_org)
+            
                 }
             }
             $("#modal_view_req #header_").append('</tbody></table>'); 
@@ -544,7 +526,6 @@ function viewRequirements(id, org_term, org_Status, org_issue){
 }
 
 function returnDocument(id){
-    console.log(id)
     swal({
             title: "Are you sure?",
             text: "You want to return this document?", 
@@ -564,7 +545,6 @@ function returnDocument(id){
                     dataType: 'json',
                     success: function (data) {
                         if (data.success) {
-                            console.log(data.success)
                             swal("Success! Organization has been successfully returned.", {
                                 icon: "success",
                             });
@@ -606,7 +586,6 @@ $('#btn-input').keyup(function (e) {
         if(msg){
             if (x == "right"){
                 if (msg_date3 == date_today2){
-                    console.log("lol")
 
                     $.ajax({
                         url: '{% url "accreditation_osas_msg" %}',
@@ -623,14 +602,12 @@ $('#btn-input').keyup(function (e) {
                             $("#modal_message #chatbox").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><p data-toggle="tooltip" data-placement="right" title="Delivered"  class="bg-info pull-right comments" style="margin-top: -15px; max-width: 300px; text-align: left; float: right; padding: 8px;border-radius: 10px; color: white; word-wrap: break-word; "  name="comment_stud">'+msg+'</p></div></li>'); 
 
                             $("#modal_message #chatbox_date").append('<li>'+date_today+'</li>')
-                            // console.log(date_today)
                             var objDiv = document.getElementById("chatparent");
                             objDiv.scrollTop = objDiv.scrollHeight;
                         }
                     });
                 }
                 else{
-                    console.log("epal")
                     
                     $.ajax({
                         url: '{% url "accreditation_osas_msg" %}',
@@ -648,7 +625,6 @@ $('#btn-input').keyup(function (e) {
                             $("#modal_message #chatbox").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted"  id="date_" style="font-size: 10px">'+date_today2+'</small><strong class="primary-font pull-right" style="font-size: 10px">'+'{{request.session.session_user_role}}'+'</strong></div><p data-toggle="tooltip" data-placement="right" title="Delivered"  class="bg-info pull-right comments" style="max-width: 300px; text-align: left; float: right; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;"  name="comment_stud">'+msg+'</p></div></li>'); 
 
                             $("#modal_message #chatbox_date").append('<li>'+date_today+'</li>')
-                            // console.log(date_today)
                             var objDiv = document.getElementById("chatparent");
                             objDiv.scrollTop = objDiv.scrollHeight;
                         }
@@ -689,7 +665,6 @@ $('#btn-input').keyup(function (e) {
 function dismissOrg(org_id){
     if (org_id) {
         tr_id = org_id;
-        console.log(org_id)
         swal({
             title: "Are you sure?",
             text: "You want to dismiss this organization?", 
@@ -713,14 +688,7 @@ function dismissOrg(org_id){
                                 icon: "success",
                             });
                             window.location.reload()
-                        // $("#data-table #" + auth_id).remove();
-                        // const data_table = document.querySelector('#data-table tbody')
-                        // if (data_table.rows.length == 0){
-                        //     window.location.reload()
-                        //     }
-                        // swal("Success! User has been accredited.", {
-                        //     icon: "success",
-                        // });
+                   
                         }
                     }
                     
@@ -738,7 +706,7 @@ function orgData(){
             const orgData = response.data
             orgData.map(item=>{
                 if (item.org_status == "ACCREDITED"){
-                    console.log(item.org_expiration)
+                   
                     org_id = item.org_id
                     org_date = item.org_expiration
                     $.ajax({
@@ -752,7 +720,6 @@ function orgData(){
                         dataType: 'json',
                         success: function (data) {
                             if (data.success) {
-                                console.log(data.success)
                             $("#data-table #" + org_id).remove();
 
                             }
@@ -773,7 +740,6 @@ function approveDocu(org_id){
     if (org_id) {
         tr_id = org_id;
         org_term = $('#org_term').val()
-        console.log(org_id,org_term)
         
         swal({
             title: "Are you sure?",
@@ -795,7 +761,6 @@ function approveDocu(org_id){
                     dataType: 'json',
                     success: function (data) {
                         if (data.success) {
-                            console.log(data.success)
                             swal("Success! Organization has been successfully accredited.", {
                                 icon: "success",
                             });
@@ -822,7 +787,6 @@ function genReport(){
     var new_date_to = date_to.format('MMMM')
     var new_date_year = date_year.format('YYYY')
     var i = 1;
-    console.log(from_2, to_2)
     if (from && to){
         $.ajax({
             url: '{% url "organization_generate_report" %}',
@@ -874,7 +838,6 @@ function genReport(){
     }
 }
 function viewCert(org_id){
-    console.log(org_id)
     if (org_id) {
 
         tr_id = org_id;
@@ -889,7 +852,6 @@ function viewCert(org_id){
             dataType: 'json',
             success: function(data){
                 if (data.org_val) {
-                    console.log(data.org_val.org_id)
                     var wme = window.open("","", "width = 816px, height = 1344px");
                     
                     wme.document.write(
@@ -901,7 +863,6 @@ function viewCert(org_id){
 
                     const date_created = moment(data.org_val.org_date_accredited)
                     const new_date_created = date_created.format('LL')
-                    console.log("Today's date is: " + date_created.format('LL'))  
                     
     
                     wme.document.write('<div style="padding-left: 96px; padding-right: 96px; padding-top: 11.5px;"><label style="font-weight: bold; font-family: Times New Roman; font-size: 11.5px; ">'+new_date_created+'</label></div>')
@@ -938,7 +899,6 @@ function viewCert(org_id){
                 }
             },
             error: function(error){
-                console.log(error)
             }
         })
     }
@@ -969,8 +929,6 @@ function viewNote(org_id){
         tr_id = org_id;
         
         organization_id = org_id
-        // $('#org_id1').val(org_id);
-        console.log(auth_id)
         $.ajax({
             url: '{% url "organization_view_messages" %}',
             type: "POST",
@@ -986,17 +944,12 @@ function viewNote(org_id){
                 const studData = response.data
                 studData.map(item=>{
                     const msg_date_new = moment(item.msg_date).format("YYYY-MM-DD, ddd, hh:mm A");
-                    // console.log(msg_date_new, 'orig')
                     if(item.msg_send_from == response.osas_role_id){
                       
                         if(temp_org_date){
-                            console.log('bad')
-                            // console.log('temp_date ' + temp_org_date )
-                            // console.log('last date ' + msg_date_new )
                             if(temp_org_date == msg_date_new){
                                 $("#modal_message #chatbox").append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" class="bg-info pull-right comments" style="margin-top: -15px; max-width: 300px; text-align: left; float: right; padding: 8px;border-radius: 10px; color: white; word-wrap: break-word;"  name="comment_stud">'+item.msg_message+'</p></div></li>'); 
 
-                                // $("#modal_message #chatbox_date").append('<li>'+date_today+'</li>')
                                 var objDiv = document.getElementById("chatparent");
                                 objDiv.scrollTop = objDiv.scrollHeight;
                             }   
@@ -1005,7 +958,6 @@ function viewNote(org_id){
                                 
                                 $("#modal_message #chatbox_date").append('<li>'+item.msg_date+'</li>')
                                 temp_org_date = msg_date_new
-                                // console.log('else lang' + temp_org_date)
 
                                 var objDiv = document.getElementById("chatparent");
                                 objDiv.scrollTop = objDiv.scrollHeight;
@@ -1015,7 +967,6 @@ function viewNote(org_id){
                             $('#chatbox').append('<li class="right" style="list-style-type: none;"><div class="chat-body clearfix"><div class="header"><i class="far fa-clock pull-left text-muted" style="margin-right: 5px;"></i><small class="pull-left text-muted sample_date"  id="date_" style="font-size: 10px">'+msg_date_new+'</small><strong class="primary-font pull-right" style="font-size: 10px" >'+response.osas_data+'</strong></div><p data-toggle="tooltip" data-placement="right" title="'+item.msg_status+'" class="bg-info pull-right osas_msg" style="max-width: 300px; text-align: left; padding: 8px; border-radius: 10px; color: white; word-wrap: break-word;" id="comments"  name="comment_stud">'+item.msg_message+'</p></div></li>')
                             
                             temp_org_date = msg_date_new
-                            // console.log('else lang' + temp_org_date)
                             $("#modal_message #chatbox_date").append('<li>'+item.msg_date+'</li>')
                             var objDiv = document.getElementById("chatparent");
                                 objDiv.scrollTop = objDiv.scrollHeight;
@@ -1023,7 +974,6 @@ function viewNote(org_id){
                     }
                     else if (item.msg_send_from == response.org_id){
                         osas_message = item.msg_id
-                        console.log('goods')
                         $.ajax({
                             url: '{% url "organization_osas_msg_seen" %}',
                             type: "POST",
@@ -1033,7 +983,6 @@ function viewNote(org_id){
                             },
                             dataType: 'json',
                             success: function (data) {
-                                console.log(data.osas_msg_status)
                                 }
                         });
                         if(temp_osas_date){
@@ -1048,7 +997,6 @@ function viewNote(org_id){
                                 
                                 $("#modal_message #chatbox_date").append('<li>'+item.msg_date+'</li>')
                                 temp_osas_date = msg_date_new
-                                // console.log('else lang' + temp_org_date)
 
                                 var objDiv = document.getElementById("chatparent");
                                 objDiv.scrollTop = objDiv.scrollHeight;
@@ -1059,18 +1007,11 @@ function viewNote(org_id){
                             
                             
                             temp_osas_date = msg_date_new
-                            // console.log('else lang' + temp_org_date)
                             $("#modal_message #chatbox_date").append('<li>'+item.msg_date+'</li>')
                             var objDiv = document.getElementById("chatparent");
                                 objDiv.scrollTop = objDiv.scrollHeight;
                         }
                         
-                        // temp_osas_date = msg_date_new
-                        // // console.log(temp_osas_date)
-                        // $("#modal_message #chatbox_date").append('<li>'+msg_date_new+'</li>')
-                        // var objDiv = document.getElementById("chatparent");
-                        //         objDiv.scrollTop = objDiv.scrollHeight;
-
                     }
                 })
             }
@@ -1083,16 +1024,13 @@ function addNote(org_id){
     if (org_id) {
         tr_id = org_id;
         $('#org_id').val(org_id);
-        console.log(org_id)
     }
 }
 
 
 $("#modal_addnote").on('click','#btn_approve',function(e){
     sample = CKEDITOR.instances.essay_text.getData();
-    // sample = data.excuse_val.proof.replace(/\"/g, "")
     var org_id = $('#org_id').val();
-    console.log(org_id)
     if (sample) {
         $.ajax({
             url: '{% url "organization_addnnote" %}',
@@ -1105,7 +1043,6 @@ $("#modal_addnote").on('click','#btn_approve',function(e){
             dataType: 'json',
             success: function (data) {
                 if (data.success) {
-                    console.log(data.success)
                     setTimeout(function(){
                         swal("Success! User has been deactivated.", {
                         icon: "success",
@@ -1116,7 +1053,6 @@ $("#modal_addnote").on('click','#btn_approve',function(e){
                     
                 }
                 if (data.error) {
-                    console.log(data.error)
                     $("#error").append('<div class="container col-lg-12" id="error_msg"><p class="alert alert-danger text-center" >Warning! invalid.' + '</p></div>')
                     setTimeout(function(){
                         if (document.getElementById("error_msg")){
