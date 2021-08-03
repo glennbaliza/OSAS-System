@@ -93,34 +93,34 @@ class osas_r_personal_info(models.Model):
     #     return '{} {} {}'.format(self.stud_lname, self.stud_fname,self.stud_mname)
 
 
-class osas_t_id(models.Model):
-    lost_id = models.AutoField(primary_key=True)
-    request_id = models.CharField(unique=True, max_length=10)
-    lost_id_status = models.CharField(max_length=13, default='ON PROCESS')
-    lost_id_sanction_excuse = models.CharField(max_length=13, null=True, blank=True)
-    lost_stud_id = models.ForeignKey(osas_r_personal_info, on_delete=models.CASCADE)
-    date_created = models.DateField(max_length=50, default = now)
-    date_updated = models.DateField(max_length=50)
-    lost_id_notif_stud = models.CharField(max_length=13, null = True)
-    lost_id_notif_head = models.CharField(max_length=13, null = True)
-    lost_id_type = models.CharField(max_length=13, null = True)
-    lost_num_request = models.IntegerField(null = True)
-    def __str__(self):
-        return str(self.lost_id)
+# class osas_t_id(models.Model):
+#     lost_id = models.AutoField(primary_key=True)
+#     request_id = models.CharField(unique=True, max_length=10)
+#     lost_id_status = models.CharField(max_length=13, default='ON PROCESS')
+#     lost_id_sanction_excuse = models.CharField(max_length=13, null=True, blank=True)
+#     lost_stud_id = models.ForeignKey(osas_r_personal_info, on_delete=models.CASCADE)
+#     date_created = models.DateField(max_length=50, default = now)
+#     date_updated = models.DateField(max_length=50)
+#     lost_id_notif_stud = models.CharField(max_length=13, null = True)
+#     lost_id_notif_head = models.CharField(max_length=13, null = True)
+#     lost_id_type = models.CharField(max_length=13, null = True)
+#     lost_num_request = models.IntegerField(null = True)
+#     def __str__(self):
+#         return str(self.lost_id)
 
-class osas_t_id_file(models.Model):
-    id_file_id = models.AutoField(primary_key=True)
-    id_file = models.FileField(upload_to='')
-    id_file_ext = models.CharField(max_length = 20)
-    id_datecreated = models.DateField(default=now)
-    id_lost_id = models.ForeignKey(osas_t_id, on_delete=models.CASCADE)
+# class osas_t_id_file(models.Model):
+#     id_file_id = models.AutoField(primary_key=True)
+#     id_file = models.FileField(upload_to='')
+#     id_file_ext = models.CharField(max_length = 20)
+#     id_datecreated = models.DateField(default=now)
+#     id_lost_id = models.ForeignKey(osas_t_id, on_delete=models.CASCADE)
 
-    def __str__(self):
-        return str(self.lost_id)
+#     def __str__(self):
+#         return str(self.lost_id)
         
-    def delete(self, *args, **kwargs):
-        self.id_file.delete()
-        super().delete(*args, **kwargs)
+#     def delete(self, *args, **kwargs):
+#         self.id_file.delete()
+#         super().delete(*args, **kwargs)
 
 class osas_r_userrole(models.Model):
 
@@ -152,99 +152,99 @@ class osas_r_auth_user(models.Model):
         return str(self.auth_id)
 
 
-class osas_r_disciplinary_sanction(models.Model): # ex. 1st offense, sample_desc, 16hrs, 5days
-    ds_id = models.AutoField(primary_key = True)
-    ds_violation_count = models.CharField(max_length = 200)
-    ds_violation_desc = models.CharField(max_length = 200)
-    ds_hrs = models.IntegerField()
-    ds_days = models.IntegerField()
-    ds_code_id = models.ForeignKey('osas_r_code_title', on_delete=models.CASCADE)
-    ds_status = models.CharField(max_length = 50)
-    ds_datecreated = models.DateField(default = now, null = True)
-    def __str__(self):
-        return str(self.ds_id)
+# class osas_r_disciplinary_sanction(models.Model): # ex. 1st offense, sample_desc, 16hrs, 5days
+#     ds_id = models.AutoField(primary_key = True)
+#     ds_violation_count = models.CharField(max_length = 200)
+#     ds_violation_desc = models.CharField(max_length = 200)
+#     ds_hrs = models.IntegerField()
+#     ds_days = models.IntegerField()
+#     ds_code_id = models.ForeignKey('osas_r_code_title', on_delete=models.CASCADE)
+#     ds_status = models.CharField(max_length = 50)
+#     ds_datecreated = models.DateField(default = now, null = True)
+#     def __str__(self):
+#         return str(self.ds_id)
 
-class osas_r_designation_office(models.Model):
-    designation_id = models.AutoField(primary_key = True)
-    designation_office = models.CharField(max_length = 50)
-    designation_datecreated = models.DateTimeField(default = now)
-    def __str__(self):
-        return self.designation_id
+# class osas_r_designation_office(models.Model):
+#     designation_id = models.AutoField(primary_key = True)
+#     designation_office = models.CharField(max_length = 50)
+#     designation_datecreated = models.DateTimeField(default = now)
+#     def __str__(self):
+#         return self.designation_id
 
-class osas_r_code_title(models.Model):
-    ct_id = models.AutoField(primary_key = True)
-    ct_name = models.CharField(max_length = 50)
-    ct_status = models.CharField(max_length = 10, default = "Active")
-    ct_datecreated = models.DateTimeField(default = now)
-    def __str__(self):
-        return self.ct_id
+# class osas_r_code_title(models.Model):
+#     ct_id = models.AutoField(primary_key = True)
+#     ct_name = models.CharField(max_length = 50)
+#     ct_status = models.CharField(max_length = 10, default = "Active")
+#     ct_datecreated = models.DateTimeField(default = now)
+#     def __str__(self):
+#         return self.ct_id
 
-class osas_t_sanction(models.Model):
-    sanction_id = models.AutoField(primary_key = True)
-    sanction_control_number = models.CharField(max_length = 10)
-    sanction_t_id = models.ForeignKey(osas_t_id, on_delete = models.CASCADE, null = True)
-    sanction_code_id = models.ForeignKey('osas_r_disciplinary_sanction', on_delete = models.CASCADE)
-    sanction_designation_id = models.ForeignKey('osas_r_designation_office', on_delete=models.CASCADE, null = True)
-    sanction_auth_id = models.ForeignKey('osas_r_auth_user', on_delete = models.CASCADE, null=True)
-    sanction_stud_id = models.ForeignKey('osas_r_personal_info', on_delete = models.CASCADE)
-    sanction_t_id = models.ForeignKey('osas_t_id', on_delete = models.CASCADE, null=True)
-    sanction_excuse_id = models.ForeignKey('osas_t_excuse', on_delete = models.CASCADE, null=True)
-    sanction_rendered_hr = models.IntegerField()
-    sanction_status = models.CharField(max_length = 50)
-    sanction_startdate = models.DateField(null = True)
-    sanction_enddate = models.DateField(null = True)
-    sanction_datecreated = models.DateField( null=True)
-    sanction_dateupdated = models.DateField(default = now)
-    def __str__(self):
-        return self.sanction_id
+# class osas_t_sanction(models.Model):
+#     sanction_id = models.AutoField(primary_key = True)
+#     sanction_control_number = models.CharField(max_length = 10)
+#     sanction_t_id = models.ForeignKey(osas_t_id, on_delete = models.CASCADE, null = True)
+#     sanction_code_id = models.ForeignKey('osas_r_disciplinary_sanction', on_delete = models.CASCADE)
+#     sanction_designation_id = models.ForeignKey('osas_r_designation_office', on_delete=models.CASCADE, null = True)
+#     sanction_auth_id = models.ForeignKey('osas_r_auth_user', on_delete = models.CASCADE, null=True)
+#     sanction_stud_id = models.ForeignKey('osas_r_personal_info', on_delete = models.CASCADE)
+#     sanction_t_id = models.ForeignKey('osas_t_id', on_delete = models.CASCADE, null=True)
+#     sanction_excuse_id = models.ForeignKey('osas_t_excuse', on_delete = models.CASCADE, null=True)
+#     sanction_rendered_hr = models.IntegerField()
+#     sanction_status = models.CharField(max_length = 50)
+#     sanction_startdate = models.DateField(null = True)
+#     sanction_enddate = models.DateField(null = True)
+#     sanction_datecreated = models.DateField( null=True)
+#     sanction_dateupdated = models.DateField(default = now)
+#     def __str__(self):
+#         return self.sanction_id
 
-class osas_t_excuse(models.Model):
-    excuse_id = models.AutoField(primary_key = True)
-    excuse_reason = models.CharField(max_length = 200)
-    excuse_proof = models.ImageField(upload_to=image_path, null=True, blank = True)
-    excuse_status = models.CharField(max_length = 10)
-    excuse_stud_id = models.ForeignKey('osas_r_personal_info', on_delete = models.CASCADE)
-    excuse_datecreated = models.DateField(default = now)
-    excuse_dateupdated = models.DateField(default = now)
+# class osas_t_excuse(models.Model):
+#     excuse_id = models.AutoField(primary_key = True)
+#     excuse_reason = models.CharField(max_length = 200)
+#     excuse_proof = models.ImageField(upload_to=image_path, null=True, blank = True)
+#     excuse_status = models.CharField(max_length = 10)
+#     excuse_stud_id = models.ForeignKey('osas_r_personal_info', on_delete = models.CASCADE)
+#     excuse_datecreated = models.DateField(default = now)
+#     excuse_dateupdated = models.DateField(default = now)
     
-    def image_tag(self):
-        return mark_safe('<img src="/media/%s" width = "50" height="50" />'%(self.excuse_proof))
+#     def image_tag(self):
+#         return mark_safe('<img src="/media/%s" width = "50" height="50" />'%(self.excuse_proof))
 
-    def __str__(self):
-        return str(self.excuse_id)
+#     def __str__(self):
+#         return str(self.excuse_id)
 
 #----------------------------------------------GRIEVANCES-------------------------------------------------------------
-class osas_t_complaint(models.Model):
-    comp_id = models.AutoField(primary_key = True)
-    comp_number = models.CharField(max_length = 10, blank=True)
-    comp_category = models.CharField(max_length = 50, blank=True)
-    comp_nature = models.CharField(max_length = 50, blank=True)
-    comp_g_assign = models.CharField(max_length = 50, blank=True)
-    comp_letter = models.CharField(max_length = 2000)
-    comp_pic = models.ImageField(upload_to=image_path, null=True, blank = True)
-    comp_status = models.CharField(max_length = 10, default = "PENDING")
-    comp_stud_id = models.ForeignKey('osas_r_personal_info', on_delete = models.CASCADE)
-    comp_datecreated = models.DateField(default = now)
-    comp_seen = models.CharField(max_length = 10, null=True)
+# class osas_t_complaint(models.Model):
+#     comp_id = models.AutoField(primary_key = True)
+#     comp_number = models.CharField(max_length = 10, blank=True)
+#     comp_category = models.CharField(max_length = 50, blank=True)
+#     comp_nature = models.CharField(max_length = 50, blank=True)
+#     comp_g_assign = models.CharField(max_length = 50, blank=True)
+#     comp_letter = models.CharField(max_length = 2000)
+#     comp_pic = models.ImageField(upload_to=image_path, null=True, blank = True)
+#     comp_status = models.CharField(max_length = 10, default = "PENDING")
+#     comp_stud_id = models.ForeignKey('osas_r_personal_info', on_delete = models.CASCADE)
+#     comp_datecreated = models.DateField(default = now)
+#     comp_seen = models.CharField(max_length = 10, null=True)
 
-    def image_tag(self):
-        return mark_safe('<img src="/media/%s" width = "50" height="50" />'%(self.comp_pic))
+#     def image_tag(self):
+#         return mark_safe('<img src="/media/%s" width = "50" height="50" />'%(self.comp_pic))
 
-    def __str__(self):
-        return str(self.comp_id)
+#     def __str__(self):
+#         return str(self.comp_id)
 
 
-class osas_notif(models.Model):
-    notif_id = models.AutoField(primary_key = True)
-    notif_stud_id = models.ForeignKey('osas_r_personal_info', on_delete = models.CASCADE, null = True)
-    notif_lost_id = models.ForeignKey('osas_t_id', on_delete = models.CASCADE, null = True)
-    notif_sanction_id = models.ForeignKey('osas_t_sanction', on_delete = models.CASCADE, null = True)
-    notif_excuse_id = models.ForeignKey('osas_t_excuse', on_delete = models.CASCADE, null = True)
-    notif_complaint_id = models.ForeignKey('osas_t_complaint', on_delete = models.CASCADE, null = True)
-    notif_stat = models.CharField(max_length=13, null = True)
-    notif_stud = models.CharField(max_length=13, null = True)
-    notif_head = models.CharField(max_length=13, null = True)
-    notif_datecreated = models.DateField(default = now)
+# class osas_notif(models.Model):
+#     notif_id = models.AutoField(primary_key = True)
+#     notif_stud_id = models.ForeignKey('osas_r_personal_info', on_delete = models.CASCADE, null = True)
+#     notif_lost_id = models.ForeignKey('osas_t_id', on_delete = models.CASCADE, null = True)
+#     notif_sanction_id = models.ForeignKey('osas_t_sanction', on_delete = models.CASCADE, null = True)
+#     notif_excuse_id = models.ForeignKey('osas_t_excuse', on_delete = models.CASCADE, null = True)
+#     notif_complaint_id = models.ForeignKey('osas_t_complaint', on_delete = models.CASCADE, null = True)
+#     notif_stat = models.CharField(max_length=13, null = True)
+#     notif_stud = models.CharField(max_length=13, null = True)
+#     notif_head = models.CharField(max_length=13, null = True)
+#     notif_datecreated = models.DateField(default = now)
 
 #---------------------------------------------ORGANIZATION----------------------------------------------
 class classroom(models.Model):
