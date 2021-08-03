@@ -26,7 +26,7 @@
         <ul class="nav">
             <li class="nav-header">Navigation</li>
             <li class="has-sub">
-                <a href="{% url 'organization_home' %}">
+                <a href="{% url 'classroom_home' %}">
                     <i class="fas fa-chart-pie"></i>
                     <span>Dashboard</span>
                 </a>
@@ -37,26 +37,6 @@
                     <span>Events</span>
                 </a>
             </li>
-            <!-- <li class="has-sub">
-                <a href="javascript:;">
-                    <b class="caret"></b>
-                    <i class="far fa-file"></i> 
-                    <span>Concept Papers</span>
-                </a>
-                <ul class="sub-menu">
-                    <li><a href="{%url 'class_concept_papers' %}">Uploaded Concept Papers</a></li>
-                    <li><a href="{%url 'student_events' %}">Student Events</a></li>
-                </ul>
-            </li> -->
-            <!-- <li class="has-sub">
-                <a href="{% url 'organization_inbox' %}">
-                    <i class="far fa-envelope"></i> 
-                    <span>Inbox </span>  
-                    {% if value_list %}
-                    <span class="bg-red badge" id="notif_unseen" style="width: 5px; height: 15px; margin: 0px;">  <p style="margin-left: -4px; margin-top: -3px; font-size: 12px; font-weight: 900;">{{value_list}}</p></span>
-                    {% endif %}
-                </a>
-            </li> -->
             <li class="has-sub">
                 <a href="{% url 'classroom_fund' %}">
                     <i class="fas fa-dollar-sign"></i> 

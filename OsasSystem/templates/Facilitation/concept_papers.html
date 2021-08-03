@@ -13,7 +13,7 @@
 {% endblock%}
 
 {% block title %}
-    Year and Section
+   Event
 {% endblock %}
 
 
@@ -58,6 +58,7 @@
                                 <select id="filter_status" name="filter_status" class="form-control">
                                     <option selected disabled="true">--Select--</option>
                                     <option  value="PENDING">Pending</option>
+                                    <option  value="VALIDATED">Validated</option>
                                     <option  value="APPROVED">Approved</option>
                                     <option  value="ACCOMPLISHED">Accomplished</option>
                                 </select>
@@ -918,7 +919,7 @@ function genReport2(){
     const date_from = moment(from)
     const date_to = moment(to)
     const date_year = moment(to)
-    var new_date_from = date_from.format('MMMM')
+    var new_date_from = date_from.format('MMMM DD, YYYY')
     var new_date_to = date_to.format('MMMM')
     var new_date_year = date_year.format('YYYY')
     var i = 1;
@@ -943,7 +944,7 @@ function genReport2(){
                     alert('No record found.')
                 }
                 else{
-                    var wme = window.open("","", "width = 816px, height = 1344px");
+                    var wme = window.open("ACCOMPLISHMENT REPORT ","", "width = 816px, height = 1344px");
                     studData.map(item=>{
                         var type;
                         const date_submitted = moment(item.title_date_accomplished)
@@ -982,14 +983,14 @@ function genReport2(){
                                             
                                         wme.document.write('<div class="row" style="margin-top: -5px;"><img src="/media/PUPLOGO.png" style="width: auto; height: 92.2204724411px; margin-left: 35.795275590551px; margin-right: 100px;"/><div style="margin-right: 85px; float: right; margin-top: -15px; padding: 5px;"><p style="font-family: Calibri; font-size: 14.5px; color: black; margin-left: -120px">Republic of the Philippines</p><p style="font-family: Californian FB; font-size: 15.5px; color: black; margin-top: -15px; margin-left: -120px;"><b>POLYTECHNIC UNIVERSITY OF THE PHILIPPINES</b></p><p style="font-family: Tahoma; color: black; margin-top: -20px; font-size: 14.5px; margin-left: -120px;"><b>QUEZON CITY BRANCH</b></p><p style="font-family: Times New Roman; color: black; margin-top: -15px; font-size: 18.5px; margin-left: -120px;"><b>OFFICE OF THE STUDENT AFFAIRS AND SERVICES</b></p></div></div><br/><div class="container-fluid" style="background: black; height: 2px; margin-top: -10px; margin-left: 47px;"></div>')
 
-                                        wme.document.write('<div class="row" style="margin-top: 20px; text-align: center;"><p style="font-family: Arial; font-size: 18px; color: black;"><b>FACILITATION OF STUDENTS’ CO-CURRICULAR & EXTRA-CURRICULAR ACTIVITIES</b></p></div>')
-                                        wme.document.write('<div class="row" style="margin-top: -15px; text-align: center;"><p style="font-family: Arial; font-size: 17px; color: black;"><b>'+new_date_from+' - '+new_date_to+' '+new_date_year+'</b></p></div><br>')
+                                        wme.document.write('<div class="row" style="margin-top: 20px; text-align: center;"><p style="font-family: Arial; font-size: 14px; color: black;"><b>FACILITATION OF STUDENTS’ CO-CURRICULAR & EXTRA-CURRICULAR ACTIVITIES ACCOMPLISHMENT REPORT</b></p></div>')
+                                        wme.document.write('<div class="row" style="margin-top: -15px; text-align: center;"><p style="font-family: Arial; font-size: 14px; color: black;"><b>'+new_date_from+' - '+new_date_to+' 01, '+new_date_year+'</b></p></div><br>')
 
                                         wme.document.write("<table style='border-collapse: collapse; width: 100%; font-family: Arial; font-size: 14.5px;' id='data-table' class='table table-bordered' ><thead ><tr><th  width='29%' style='border: 1px solid black; text-align: center; padding: 5px; font-size:15px; background-color: lightgray;'>NAME OF ORGANIZATION</th><th  width='35%' style='border: 1px solid black; text-align: center; padding: 5px; font-size:15px; background-color: lightgray;'>ACTIVITY</th> <th width='18%' style='border: 1px solid black; text-align: center; padding: 5px; font-size: 14.5px; background-color: lightgray;'>DATE CONDUCTED</th><th width='18%' style='border: 1px solid black; text-align: center; font-size:14.5px; background-color: lightgray; padding: 5px;'>DATE SUBMITTED</th></tr></thead><tbody>");
                                     }
                                     // console.log(data.success)
 
-                                    wme.document.write("<tr class='odd gradeA tr_'><td width='29%' style='border: 1px solid black; text-align: center; font-family: Arial; font-size:12px;'>"+data.success+"</td><td width='35%' style='border: 1px solid black; text-align: center; font-family: Arial; font-size:12px;'>"+item.title_name+"</td><td style='border: 1px solid black; text-align: center; font-family: Arial; font-size:12px;' width='18%'>"+new_date_accredited+"</td><td style='border: 1px solid black; text-align: center; font-family: Arial; font-size:12px;' width='18%'>"+new_date_submitted+"</td></tr>")
+                                    wme.document.write("<tr class='odd gradeA tr_'><td width='29%' style='border: 1px solid black;  font-family: Arial; font-size:12px;'>"+data.success+"</td><td width='35%' style='border: 1px solid black; font-family: Arial; font-size:12px;'>"+item.title_name+"</td><td style='border: 1px solid black;  font-family: Arial; font-size:12px;' width='18%'>"+new_date_accredited+"</td><td style='border: 1px solid black;center; font-family: Arial; font-size:12px;' width='18%'>"+new_date_submitted+"</td></tr>")
 
                                     if (i == studData.length){
                                         console.log('last print')
@@ -1032,7 +1033,7 @@ function genReport(){
     const date_from = moment(from)
     const date_to = moment(to)
     const date_year = moment(to)
-    var new_date_from = date_from.format('MMMM')
+    var new_date_from = date_from.format('MMMM DD, YYYY')
     var new_date_to = date_to.format('MMMM')
     var new_date_year = date_year.format('YYYY')
     var i = 1;
@@ -1094,16 +1095,16 @@ function genReport(){
                                         wme.document.write(
                                         '<page size="Letter" style="word-wrap:break-word; margin: 0px; ">')
                                             
-                                        wme.document.write('<div class="row" style="margin-top: -5px;"><img src="/media/PUPLOGO.png" style="width: auto; height: 92.2204724411px; margin-left: 35.795275590551px;"/><div style="margin-right: 105px; float: right; margin-top: -15px; padding: 5px;"><p style="font-family: Calibri; font-size: 14.5px; color: black; margin-left: -120px">Republic of the Philippines</p><p style="font-family: Californian FB; font-size: 15.5px; color: black; margin-top: -15px; margin-left: -120px;"><b>POLYTECHNIC UNIVERSITY OF THE PHILIPPINES</b></p><p style="font-family: Tahoma; color: black; margin-top: -20px; font-size: 14.5px; margin-left: -120px;"><b>QUEZON CITY BRANCH</b></p><p style="font-family: Times New Roman; color: black; margin-top: -15px; font-size: 18.5px; margin-left: -120px;"><b>OFFICE OF THE STUDENT AFFAIRS AND SERVICES</b></p></div></div></div><br/><div class="container-fluid" style="background: black; height: 2px; margin-top: -10px; margin-left: 47px;"></div>')
+                                        wme.document.write('<div class="row" style="margin-top: -5px;"><img src="/media/PUPLOGO.png" style="width: auto; height: 92.2204724411px; margin-left: 35.795275590551px;"/><div style="margin-right: 160px; float: right; margin-top: -8px; padding: 5px;"><p style="font-family: Calibri; font-size: 14.5px; color: black; margin-left: -120px">Republic of the Philippines</p><p style="font-family: Californian FB; font-size: 15.5px; color: black; margin-top: -15px; margin-left: -120px;"><b>POLYTECHNIC UNIVERSITY OF THE PHILIPPINES</b></p><p style="font-family: Tahoma; color: black; margin-top: -20px; font-size: 14px; margin-left: -120px;">QUEZON CITY BRANCH</p><p style="font-family: Times New Roman; color: black; margin-top: -15px; font-size: 15px; margin-left: -120px;"><b>OFFICE OF THE STUDENT AFFAIRS AND SERVICES</b></p></div></div></div><br/><div class="container-fluid" style="background: black; height: 2px; margin-top: -10px; margin-left: 47px;"></div>')
 
-                                        wme.document.write('<div class="row" style="margin-top: 20px; text-align: center;"><p style="font-family: Arial; font-size: 18px; color: black;"><b>FACILITATION OF STUDENTS’ CO-CURRICULAR & EXTRA-CURRICULAR ACTIVITIES</b></p></div>')
-                                        wme.document.write('<div class="row" style="margin-top: -15px; text-align: center;"><p style="font-family: Arial; font-size: 17px; color: black;"><b>'+new_date_from+' - '+new_date_to+' '+new_date_year+'</b></p></div><br>')
+                                        wme.document.write('<div class="row" style="margin-top: 20px; text-align: center;"><p style="font-family: Arial; font-size: 14px; color: black;"><b>FACILITATION OF STUDENTS’ CO-CURRICULAR & EXTRA-CURRICULAR ACTIVITIES</b></p></div>')
+                                        wme.document.write('<div class="row" style="margin-top: -15px; text-align: center;"><p style="font-family: Arial; font-size: 14px; color: black;"><b>'+new_date_from+' - '+new_date_to+' 01, '+new_date_year+'</b></p></div><br>')
 
                                         wme.document.write("<table style='border-collapse: collapse; width: 100%; font-family: Arial; font-size: 14.5px;' id='data-table' class='table table-bordered' ><thead ><tr><th  width='29%' style='border: 1px solid black; text-align: center; padding: 5px; font-size:15px; background-color: lightgray;'>NAME OF ORGANIZATION</th><th  width='35%' style='border: 1px solid black; text-align: center; padding: 5px; font-size:15px; background-color: lightgray;'>ACTIVITY</th> <th width='18%' style='border: 1px solid black; text-align: center; padding: 5px; font-size: 14.5px; background-color: lightgray;'>DATE PROPOSED</th><th width='18%' style='border: 1px solid black; text-align: center; font-size:14.5px; background-color: lightgray; padding: 5px;'>DATE CONDUCTED</th></tr></thead><tbody>");
                                     }
-                                    console.log(data.success)
+                                    // console.log(data.success)
 
-                                    wme.document.write("<tr class='odd gradeA tr_'><td width='29%' style='border: 1px solid black; text-align: center; font-family: Arial; font-size:12px'>"+data.success+"</td><td width='35%' style='border: 1px solid black; text-align: center; font-family: Arial; font-size:12px'>"+item.title_name+"</td><td style='border: 1px solid black; text-align: center; font-family: Arial; font-size:12px' width='18%'>"+new_date_submitted+"</td><td style='border: 1px solid black; text-align: center; font-family: Arial; font-size:12px' width='18%'>"+new_date_accredited+"</td></tr>")
+                                    wme.document.write("<tr class='odd gradeA tr_'><td width='29%' style='border: 1px solid black; font-family: Arial; font-size:12px; padding-left: 2px;'>"+data.success+"</td><td width='35%' style='border: 1px solid black; font-family: Arial; font-size:12px; padding-left: 2px;'>"+item.title_name+"</td><td style='border: 1px solid black;  font-family: Arial; font-size:12px; padding-left: 2px;' width='18%'>"+new_date_submitted+"</td><td style='border: 1px solid black;font-family: Arial; font-size:12px; padding-left: 2px;' width='18%'>"+new_date_accredited+"</td></tr>")
 
                                     if (i == studData.length){
                                         console.log('last print')
@@ -1214,7 +1215,8 @@ const input = document.getElementById('document_file')
 const csrf = document.getElementsByName('csrfmiddlewaretoken') 
 
 function uploadDocu(org_id, title_id){
-    if (org_id) {
+
+    if (org_id, title_id) {
         tr_id = org_id;
         
         identity = "org"

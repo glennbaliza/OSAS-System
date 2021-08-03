@@ -16,6 +16,43 @@
 	</ol>
 	<h1 class="page-header mb-1" style="font-weight: 700; color:#800000"><i class="far fa-chart-bar mr-2" ></i>Dashboard</h1>
 	<p class="mb-5">Page Description</p>
+	<div class="row">
+		<div class="col-lg-4 col-md-6">
+			<div class="widget widget-stats bg-gradient-green">
+				<div class="stats-icon stats-icon-lg"><i class="far fa-user-circle fa-fw"></i></div>
+				<div class="stats-content">
+					<div class="stats-title">TOTAL # OF EVENTS</div>
+					<div class="stats-number">{{total_event}}</div>
+					<div class="stats-link">
+						<a href="{% url 'student_events' %}">View Detail <i class="fa fa-arrow-alt-circle-right"></i></a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-6">
+			<div class="widget widget-stats bg-gradient-blue">
+				<div class="stats-icon stats-icon-lg"><i class="far fa-address-card fa-fw"></i></div>
+				<div class="stats-content">
+					<div class="stats-title">TOTAL # OF ACCOMPLISHMENT REPORT</div>
+					<div class="stats-number">{{total_accomplished}}</div>
+					<div class="stats-link">
+						<a href="{% url 'student_events' %}">View Detail <i class="fa fa-arrow-alt-circle-right"></i></a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-6">
+			<div class="widget widget-stats bg-gradient-red">
+				<div class="stats-icon stats-icon-lg"><i class="fas fa-users fa-fw"></i></div>
+				<div class="stats-content">
+					<div class="stats-title">TOTAL FUND BALANCE</div>
+					<div class="stats-number">{{total_balance.org_fund}}</div>
+					<div class="stats-link">
+						<a href="{%url 'classroom_fund' %}">View Detail <i class="fa fa-arrow-alt-circle-right"></i></a>
+					</div>
+				</div>
+			</div>
+		</div>
 </div>	
 
 <!-- {% endif %} -->

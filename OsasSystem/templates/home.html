@@ -19,65 +19,69 @@
 	
 
 	<div class="row">
-		<!-- begin col-3 -->
 		<div class="col-lg-3 col-md-6">
 			<div class="widget widget-stats bg-gradient-green">
 				<div class="stats-icon stats-icon-lg"><i class="far fa-user-circle fa-fw"></i></div>
 				<div class="stats-content">
-					<div class="stats-title">PUPQC STUDENTS</div>
-					<div class="stats-number">{{student_count}}</div>
+					<div class="stats-title">TOTAL # OF EVENTS</div>
+					<div class="stats-number">{{no_events}}</div>
 					<div class="stats-link">
-						<a href="{% url 'student_profile' %}">View Detail <i class="fa fa-arrow-alt-circle-right"></i></a>
+						<a href="{% url 'concept_papers' %}">View Detail <i class="fa fa-arrow-alt-circle-right"></i></a>
 					</div>
 				</div>
 			</div>
 		</div>
-		<!-- end col-3 -->
-		<!-- begin col-3 -->
 		<div class="col-lg-3 col-md-6">
 			<div class="widget widget-stats bg-gradient-blue">
 				<div class="stats-icon stats-icon-lg"><i class="far fa-address-card fa-fw"></i></div>
 				<div class="stats-content">
-					<div class="stats-title">STUDENT LOST ID</div>
-					<div class="stats-number">{{lost_id_count}}</div>
+					<div class="stats-title">TOTAL # OF ACCOMPLISHMENT REPORT</div>
+					<div class="stats-number">{{no_accomplished}}</div>
 					<div class="stats-link">
-						<a href="{% url 'lost_id' %}">View Detail <i class="fa fa-arrow-alt-circle-right"></i></a>
+						<a href="{% url 'concept_papers' %}">View Detail <i class="fa fa-arrow-alt-circle-right"></i></a>
 					</div>
 				</div>
 			</div>
 		</div>
-		<!-- end col-3 -->
-		<!-- begin col-3 -->
-		<div class="col-lg-3 col-md-6">
-			<div class="widget widget-stats bg-gradient-orange">
-				<div class="stats-icon stats-icon-lg"><i class="far fa-comments fa-fw"></i></div>
-				<div class="stats-content">
-					<div class="stats-title">STUDENT GRIEVANCES</div>
-					<div class="stats-number">{{grievances_count}}</div>
-					<div class="stats-link">
-						<a href="{% url 'lodge_complaint' %}">View Detail <i class="fa fa-arrow-alt-circle-right"></i></a>
-					</div>
-				</div>
-			</div>
-		</div>
-		<!-- end col-3 -->
-		<!-- begin col-3 -->
 		<div class="col-lg-3 col-md-6">
 			<div class="widget widget-stats bg-gradient-red">
 				<div class="stats-icon stats-icon-lg"><i class="fas fa-users fa-fw"></i></div>
 				<div class="stats-content">
-					<div class="stats-title">STUDENT SANCTION</div>
-					<div class="stats-number">{{sanction_count}}</div>
+					<div class="stats-title">TOTAL # OF ACCREDITED ORGANIZATION</div>
+					<div class="stats-number">{{no_accreditted}}</div>
 					<div class="stats-link">
-						<a href="{%url 'sanctioning_student' %}">View Detail <i class="fa fa-arrow-alt-circle-right"></i></a>
+						<a href="{%url 'organization_accreditation' %}">View Detail <i class="fa fa-arrow-alt-circle-right"></i></a>
 					</div>
 				</div>
 			</div>
 		</div>
-		<!-- end col-3 -->
+		<div class="col-lg-3">
+            <div class="panel" data-sortable-id="index-1">
+                <div class="panel-body" style="padding: 0%; height: 115px;">
+                    <form id="validate_form" method="POST" action="{% url 'home' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group" >
+                            <label style="text-align: left; margin-bottom: 7px; margin-top: 4px;" class="col-sm-12">Academic Year:</label> 
+                            <div class="col-sm-12">
+                                <select id="acad_year" name="acad_year" class="form-control">
+                                    <option selected disabled="true">--Select--</option>
+                                    <option  value="2019">2019 - 2020</option>
+                                    <option  value="2020">2020 - 2021</option>
+                                    <option  value="2021">2021 - 2022</option>
+                                    <option  value="2022">2022 - 2023</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-12" style="margin-top: -10px;">
+                            <button type="submit" class="btn btn-success col-sm-12">Filter <i class="fas fa-filter mr-2" ></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+		</div>
 	</div>
 	<div class="row">
-		<div class="col-lg-8">
+		<div class="col-lg-8" hidden>
 			<div class="panel">
 				<div hidden>
 					<input value="{{stud_bbtled}}" id="stud_bbtled"></input>
@@ -97,39 +101,47 @@
 		</div>
 		<div class="col-lg-4">
 			<div class="panel">
+				<div class="panel-heading p-25">  
+					<h2 class="panel-title" style="font-size:16px;"><i class="far fa-address-card mr-2" ></i> Fund</h2>  
+				</div>
+				<div class="panel-body p-t-0">
+					<div class="table-responsive">
+						<table id="data-table" class="table table-valign-middle table-striped table-bordered" style="font-family: Roboto; font-size: 13px; ">
+							<thead>
+								<tr>	
+									<th ><label class="label label-info">Organization Name</label></th>
+									<th><label class="label label-success">Balance</label></th>
+									<th><label class="label label-warning">Deposit</label></th>
+									<th><label class="label label-danger">Request</label></th>
+								</tr>
+							</thead>
+							<tbody id="fund_table">
+								
+							</tbody>
+						</table>
+						<div class="stats-link d-flex justify-content-end">
+							<a href="{% url 'osas_fund' %}">View Detail <i class="fa fa-arrow-alt-circle-right"></i></a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-4">
+			<div class="panel">
 				<div hidden>
 					<input value="{{lost_id_pending}}" id="lost_id_pending"></input>
 					<input value="{{lost_id_process}}" id="lost_id_process"></input>
 					<input value="{{lost_id_completed}}" id="lost_id_completed"></input>
 				</div>
 				<div class="panel-heading p-25">  
-					<h2 class="panel-title" style="font-size:16px;"><i class="fas fa-chart-pie mr-2" ></i>Lost ID</h2>  
+					<h2 class="panel-title" style="font-size:16px;"><i class="fas fa-chart-pie mr-2" ></i>Accreditation</h2>  
 				</div>
 				<div class="panel-body">
 					<div id="nv-donut-chart" class="height-sm"></div>
 				</div>
 			</div>
 		</div>
-	</div>
-	<div class="row">
-		<div class="col-lg-6 col-md-6">
-			<div class="panel">
-				<div hidden>
-					<input value="{{complaint_pending}}" id="complaint_pending"></input>
-					<input value="{{complaint_approved}}" id="complaint_approved"></input>
-					<input value="{{complaint_decline}}" id="complaint_decline"></input>
-				</div>
-				<div class="panel-heading p-25">
-					<h2 class="panel-title" style="font-size:16px;"><i class="fas fa-chart-pie mr-2" ></i>Student Grievances</h2>  
-				</div>
-				<div class="panel-body">
-					<div>
-						<canvas id="pie-chart" data-render="chart-js"></canvas>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="col-lg-6 col-md-6">
+		<div class="col-lg-4 col-md-6">
 			<div class="panel">
 				<div hidden>
 					<input value="{{sanction_pending}}" id="sanction_pending"></input>
@@ -138,7 +150,7 @@
 					<input value="{{sanction_excused}}" id="sanction_id_excused"></input>
 				</div>
 				<div class="panel-heading p-25">
-					<h2 class="panel-title" style="font-size:16px;"><i class="fas fa-chart-pie mr-2" ></i>Student Sanction</h2>  
+					<h2 class="panel-title" style="font-size:16px;"><i class="fas fa-chart-pie mr-2" ></i>Concept Paper</h2>  
 				</div>
 				<div class="panel-body">
 					<div>
@@ -147,8 +159,35 @@
 				</div>
 			</div>
 		</div>
+		<div class="col-lg-4 col-md-6" hidden>
+			<div class="panel">
+				<div hidden>
+					<input value="{{complaint_pending}}" id="complaint_pending"></input>
+					<input value="{{complaint_approved}}" id="complaint_approved"></input>
+					<input value="{{complaint_decline}}" id="complaint_decline"></input>
+				</div>
+				<div class="panel-heading p-25">
+					<h2 class="panel-title" style="font-size:16px;"><i class="fas fa-chart-pie mr-2" ></i>Concept Paper</h2>  
+				</div>
+				<div class="panel-body">
+					<div>
+						<canvas id="pie-chart" data-render="chart-js"></canvas>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="col-lg-3 col-md-6">
+			
+		</div>
 	</div>
-	<div class="row" >
+	<div class="row">
+		
+		
+	</div>
+	
+	
+	<div class="row" hidden >
 		<!-- begin col-6 -->
 		<div class="col-lg-6">
 			<!-- begin panel -->
@@ -261,14 +300,14 @@
 <!-- ================== BEGIN PAGE LEVEL JS ================== -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.2/d3.min.js"></script>
 <script src="{%static 'OsasSystem/assets/plugins/nvd3/build/nv.d3.js' %}"></script>
-<script src="{%static 'OsasSystem/assets/js/demo/chart-d3.demo.min.js' %}"></script>
+<script src="{%static 'OsasSystem/assets/js/demo/chart-d3.demos.min.js' %}"></script>
 
 <!-- <script src="{%static 'OsasSystem/assets/plugins/morris/raphael.min.js' %}"></script>
 <script src="{%static 'OsasSystem/assets/plugins/morris/morriss.js' %}"></script>
 <script src="{%static 'OsasSystem/assets/js/demo/chart-morris.demos.min.js' %}"></script> -->
 
 <script src="{%static 'OsasSystem/assets/plugins/chart-js/Chart.min.js' %}"></script>
-<script src="{%static 'OsasSystem/assets/js/demo/chart-js.demos.min.js' %}"></script>
+<script src="{%static 'OsasSystem/assets/js/demo/chart-js.demo.min.js' %}"></script>
 <!-- ================== END PAGE LEVEL JS ================== -->
 {% endblock %}
 {% block page-js %} 
@@ -283,6 +322,32 @@
 	});
 </script>
 <script>
+	$(document).ready(function() {
+		orgData()
+	});
+	function orgData(){
+    $.ajax({
+        type:'GET',
+        url : "{% url 'organization_fund_info' %}",
+        success: function(response){
+			var tot_balance = 0
+			var tot_deposit = 0
+			var tot_request = 0
+            const orgData = response.data
+            orgData.map(item=>{
+               console.log(item)
+			   $("#data-table #fund_table").append('<tr><td>'+item[0]+'</td><td>'+item[1]+'</td><td>'+item[2]+'</td><td>'+item[3]+'</td></tr>'); 
+			   tot_balance = tot_balance + item[1]
+			   tot_deposit = tot_deposit + item[2]
+			   tot_request = tot_request + item[3]
+            })
+			$("#data-table #fund_table").append('<tr style="font-weight: 600;"><td>TOTAL</td><td>'+tot_balance+'</td><td>'+tot_deposit+'</td><td>'+tot_request+'</td></tr>'); 
+        },
+        error: function(error){
+            console.log(error)
+        }
+    })
+}
 	var complaint_pending = document.getElementById("complaint_pending").value;
 	var complaint_approved = document.getElementById("complaint_approved").value;
 	var complaint_decline = document.getElementById("complaint_decline").value;

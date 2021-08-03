@@ -21,8 +21,6 @@
                 </a>
             </li>
         </ul>
-        <!-- end sidebar user -->
-        <!-- begin sidebar nav -->
         <ul class="nav">
             <li class="nav-header">Navigation</li>
             
@@ -45,27 +43,6 @@
                     <span>Accreditation</span>
                 </a>
             </li>
-           
-            <!-- <li class="has-sub">
-                <a href="javascript:;">
-                    <b class="caret"></b>
-                    <i class="far fa-file"></i> 
-                    <span>Concept Papers</span>
-                </a>
-                <ul class="sub-menu">
-                    <li><a href="{%url 'organization_concept_papers' %}">Uploaded Concept Papers</a></li>
-                    <li><a href="{%url 'organization_events' %}">Organization Events</a></li>
-                </ul>
-            </li> -->
-            <!-- <li class="has-sub">
-                <a href="{% url 'organization_inbox' %}">
-                    <i class="far fa-envelope"></i> 
-                    <span>Inbox </span>  
-                    {% if value_list %}
-                    <span class="bg-red badge" id="notif_unseen" style="width: 5px; height: 15px; margin: 0px;">  <p style="margin-left: -4px; margin-top: -3px; font-size: 12px; font-weight: 900;">{{value_list}}</p></span>
-                    {% endif %}
-                </a>
-            </li> -->
             <li class="has-sub">
                 <a href="{% url 'organization_fund' %}">
                     <i class="fas fa-dollar-sign"></i> 
@@ -81,11 +58,7 @@
             {% endif %}
             <li><a href="javascript:;" class="sidebar-minify-btn" data-click="sidebar-minify"><i class="fa fa-angle-double-left"></i></a></li>
         </ul>
-      
-        <!-- end sidebar nav -->
     </div>
-    <!-- end sidebar scrollbar -->
 </div>
 
 <div class="sidebar-bg"></div>
-<!-- end #sidebar -->

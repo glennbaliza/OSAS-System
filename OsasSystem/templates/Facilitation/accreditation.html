@@ -375,25 +375,6 @@
         var new_date = today.format('YYYY-MM')
         document.getElementById('datepicker2').value = new_date;
         document.getElementById('datepicker').value = new_date;
-        // $("#datepicker").focus(function() {
-        //     $(".ui-datepicker-month").hide();
-        //     $(".ui-datepicker-calendar").hide();
-        // });
-
-        // $('#datepicker2').datepicker({
-        //     changeYear: true,
-        //     showButtonPanel: true,
-        //     dateFormat: 'yy',
-        //     onClose: function(dateText, inst) {
-        //     var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
-        //     $(this).datepicker('setDate', new Date(year, 1));
-        //     }
-        // });
-
-        // $("#datepicker2").focus(function() {
-        //     $(".ui-datepicker-month").hide();
-        //     $(".ui-datepicker-calendar").hide();
-        // });
 
     });
 </script>
@@ -434,37 +415,7 @@ function viewRequirements(id, org_term, org_Status, org_issue){
             org_info = response.orgname
             var type = response.org_type
             console.log(renew_org)
-            // if(response.org_accre_status != 0){
-            //     // FOR RENEW ORG
-            //     if(response.org_type == 'College-Based'){
-            //         i = renew_org.indexOf('University-Wide')
-            //         // console.log(i)
-            //         renew_org.splice(i, 1);
-            //         // console.log(renew_org)
-            //     }
-            //     else{
-            //         i = renew_org.indexOf('College-Based')
-            //         // console.log(i)
-            //         renew_org.splice(i, 1);
-            //         // console.log(renew_org)
-            //     }
-                
-            // }
-            // else{
-            //     // FOR NEW ORG
-            //     if(response.org_type == 'College-Based'){
-            //         i = new_org.indexOf('University-Wide')
-            //         // console.log(i)
-            //         new_org.splice(i, 1);
-                   
-            //     }
-            //     else{
-            //         i = new_org.indexOf('College-Based')
-            //         // console.log(i)
-            //         new_org.splice(i, 1);
-                  
-            //     }
-            // }
+         
             if (response.org_accre_status == '0'){
                 x = 'NEW'
             }
@@ -826,7 +777,7 @@ function approveDocu(org_id){
         
         swal({
             title: "Are you sure?",
-            text: "You want to renew this organization?", 
+            text: "You want to approve this organization?", 
             icon: "warning",
             buttons: true,
             dangerMode: true,
@@ -845,18 +796,10 @@ function approveDocu(org_id){
                     success: function (data) {
                         if (data.success) {
                             console.log(data.success)
-                            swal("Success! Organization has been successfully accreditted.", {
+                            swal("Success! Organization has been successfully accredited.", {
                                 icon: "success",
                             });
                             window.location.reload()
-                        // $("#data-table #" + auth_id).remove();
-                        // const data_table = document.querySelector('#data-table tbody')
-                        // if (data_table.rows.length == 0){
-                        //     window.location.reload()
-                        //     }
-                        // swal("Success! User has been accredited.", {
-                        //     icon: "success",
-                        // });
                         }
                     }
                     
@@ -875,7 +818,7 @@ function genReport(){
     const date_from = moment(from)
     const date_to = moment(to)
     const date_year = moment(to)
-    var new_date_from = date_from.format('MMMM')
+    var new_date_from = date_from.format('MMMM DD, YYYY')
     var new_date_to = date_to.format('MMMM')
     var new_date_year = date_year.format('YYYY')
     var i = 1;
@@ -896,10 +839,10 @@ function genReport(){
                 wme.document.write(
                 '<page size="Letter" style="word-wrap:break-word; margin: 0px;">')
                     
-                wme.document.write('<div class="row" style="margin-top: -5px;"><img src="/media/PUPLOGO.png" style="width: auto; height: 92.2204724411px; margin-left: 35.795275590551px;"/><div style="margin-right: 105px; float: right; margin-top: -15px; padding: 5px;"><p style="font-family: Calibri; font-size: 14.5px; color: black; margin-left: -120px">Republic of the Philippines</p><p style="font-family: Californian FB; font-size: 15.5px; color: black; margin-top: -15px; margin-left: -120px;"><b>POLYTECHNIC UNIVERSITY OF THE PHILIPPINES</b></p><p style="font-family: Tahoma; color: black; margin-top: -20px; font-size: 14.5px; margin-left: -120px;"><b>QUEZON CITY BRANCH</b></p><p style="font-family: Times New Roman; color: black; margin-top: -15px; font-size: 18.5px; margin-left: -120px;"><b>OFFICE OF THE STUDENT AFFAIRS AND SERVICES</b></p></div></div></div><br/><div class="container-fluid" style="background: black; height: 2px; margin-top: -10px; margin-left: 47px;"></div>')
+                wme.document.write('<div class="row" style="margin-top: -5px;"><img src="/media/PUPLOGO.png" style="width: auto; height: 92.2204724411px; margin-left: 35.795275590551px;"/><div style="margin-right: 85px; float: right; margin-top: -15px; padding: 5px;"><p style="font-family: Calibri; font-size: 14.5px; color: black; margin-left: -120px">Republic of the Philippines</p><p style="font-family: Californian FB; font-size: 15.5px; color: black; margin-top: -15px; margin-left: -120px;"><b>POLYTECHNIC UNIVERSITY OF THE PHILIPPINES</b></p><p style="font-family: Tahoma; color: black; margin-top: -20px; font-size: 14.5px; margin-left: -120px;"><b>QUEZON CITY BRANCH</b></p><p style="font-family: Times New Roman; color: black; margin-top: -15px; font-size: 18.5px; margin-left: -120px;"><b>OFFICE OF THE STUDENT AFFAIRS AND SERVICES</b></p></div></div></div><br/><div class="container-fluid" style="background: black; height: 2px; margin-top: -10px; margin-left: 47px;"></div>')
 
                 wme.document.write('<div class="row" style="margin-top: 20px; text-align: center;"><p style="font-family: Arial; font-size: 18px; color: black;"><b>MONITORING AND OVERALL ACCREDITED ORGNAZITION</b></p></div>')
-                wme.document.write('<div class="row" style="margin-top: -15px; text-align: center;"><p style="font-family: Arial; font-size: 17px; color: black;"><b>'+new_date_from+' - '+new_date_to+' '+new_date_year+'</b></p></div><br>')
+                wme.document.write('<div class="row" style="margin-top: -15px; text-align: center;"><p style="font-family: Arial; font-size: 17px; color: black;"><b>'+new_date_from+' - '+new_date_to+' 01, '+new_date_year+'</b></p></div><br>')
 
                 wme.document.write("<table style='border-collapse: collapse; width: 100%; font-family: Arial; font-size: 14.5px;' id='data-table' class='table table-bordered' ><thead ><tr><th  width='56%' style='border: 1px solid black; text-align: center; padding: 5px; font-size:15px; background-color: lightgray;'>ORGANIZATION NAME</th><th width='22%' style='border: 1px solid black; text-align: center; padding: 5px; font-size: 14.5px; background-color: lightgray;'>DATE SUBMITTED</th><th width='22%' style='border: 1px solid black; text-align: center; font-size:14.5px; background-color: lightgray; padding: 5px;'>DATE ACCREDITED</th></tr></thead><tbody>");
 

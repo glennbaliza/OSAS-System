@@ -126,6 +126,9 @@ urlpatterns = [
     path('notif_sanction_stud/', views.notif_sanction_stud, name="notif_sanction_stud"),
 
 #---------------------------------------------------------ORGANIZATION---------------------------------------------------------
+    path('organization_fund_info/', views.organization_fund_info, name="organization_fund_info"),
+    path('organization_changepass/', views.organization_changepass, name="organization_changepass"),
+    path('organization_changepass_verify/', views.organization_changepass_verify, name="organization_changepass_verify"),
     path('organization_osas/', views.organization_osas, name="organization_osas"),
     path('organization_student_data/', views.organization_student_data, name="organization_student_data"),
     path('organization_new_account/', views.organization_new_account, name="organization_new_account"),
@@ -168,7 +171,12 @@ urlpatterns = [
     path('classroom_fund/', views.classroom_fund, name="classroom_fund"),
     path('class_request_fund/', views.class_request_fund, name="class_request_fund"),
 
+    path('classroom_changepass/', views.classroom_changepass, name="classroom_changepass"),
+    path('classroom_changepass_verify/', views.classroom_changepass_verify, name="classroom_changepass_verify"),
+
     path('osas_fund/', views.osas_fund, name="osas_fund"),
+    path('osas_changepass/', views.osas_changepass, name="osas_changepass"),
+    path('osas_changepass_verify/', views.osas_changepass_verify, name="osas_changepass_verify"),
     path('osas_fund_authentication/', views.osas_fund_authentication, name="osas_fund_authentication"),
 
     path('class_fund_voucher_gen/', views.class_fund_voucher_gen, name="class_fund_voucher_gen"),

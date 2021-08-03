@@ -125,6 +125,90 @@
 			App.init();
 	
 		});
+		$('#modal_changepass').on('click','#btn_submit', function () {
+			var old_pass = $('#old_pass').val();
+			var new_pass =  $('#new_pass').val()
+			var confirm_pass = $('#confirm_pass').val()
+
+			console.log(old_pass, new_pass, confirm_pass)
+			if (old_pass, new_pass, confirm_pass) {
+				$.ajax({
+					url: '{% url "classroom_changepass_verify" %}',
+					type: "POST",
+					data: {
+						old_pass:old_pass,
+						csrfmiddlewaretoken: "{{ csrf_token }}",
+					},
+					dataType: 'json',
+					success: function (data) {
+						if (data.error) {
+							swal("Incorrect old password, Try again.", {
+									icon: "error",
+								});  
+						}
+						if (data.success) {
+							if(new_pass == confirm_pass){
+								swal({
+								title: "Are you sure?",
+								text: "you want to change password?", 
+								icon: "warning",
+								buttons: {
+									cancel: {
+										text: 'Cancel',
+										value: null,
+										visible: true,
+										className: 'btn btn-default',
+										closeModal: true,
+									},
+									confirm: {
+										text: 'Yes',
+										value: true,
+										visible: true,
+										className: 'btn btn-warning',
+										closeModal: true
+									}
+								}
+								})
+								.then((willDelete) => {
+									if (willDelete) {
+										$.ajax({
+											url: '{% url "classroom_changepass" %}',
+											type: "POST",
+											data: {
+												new_pass:new_pass,
+												csrfmiddlewaretoken: "{{ csrf_token }}",
+											},
+											dataType: 'json',
+											success: function (data) {
+												if (data.error) {
+													console.log(error)
+												}
+												if (data.success) {
+													swal("Paswword successfully changed.", {
+														icon: "success",
+													});
+													window.location.reload()
+												}
+											}
+										});	
+									} 
+								});
+							}
+							else{
+								swal("Password does not match, Try again.", {
+									icon: "error",
+								});    
+							}
+						}
+					}
+				});		
+			}
+			else{
+				swal("All inputs must be filled, try again.", {
+						icon: "error",
+					});      
+			}
+			});
     </script>
 
 </body>

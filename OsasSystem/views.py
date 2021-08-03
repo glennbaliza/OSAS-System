@@ -52,36 +52,127 @@ def notif_sanction_stud(request):
     data = {'success':sanction_id}
     return JsonResponse(data, safe=False)
 
+def organization_fund_info(request):
+    org_data = organization.objects.all().order_by('org_abbr')
+    org_info = list()
+    for x in org_data:
+        deposit_tot = 0
+        request_tot = 0
+        org_abbr = x.org_abbr
+        org_bal = x.org_fund
+        org_id = x.org_id
+        try:
+            f = fund.objects.filter(fund_org_id = organization.objects.get(org_id = org_id))
+            for a in f:
+                if a.fund_type == 'REQUEST':
+                    request_tot = request_tot + a.fund_amount
+                elif a.fund_type == 'DEPOSIT':
+                    deposit_tot = deposit_tot + a.fund_amount
+        except ObjectDoesNotExist:
+            print('error')
+        org_info.append([org_abbr,org_bal,deposit_tot,request_tot])
+        # org_info['org_abbr'].append([org_abbr])
+        # org_info['org_bal'].append([org_bal])
+        # org_info['deposit'].append([deposit_tot])
+        # org_info['request'].append([request_tot])
+    print(org_info)
+    return JsonResponse({'data': org_info})
+
+def osas_changepass_verify(request):
+    old_password = request.POST.get('old_pass')
+    try:
+        o = osas_r_auth_user.objects.get(auth_id = request.session['session_user_id'], auth_password = old_password)
+        data = {'success':True} 
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        data = {'error':True} 
+        return JsonResponse(data, safe=False)
+
+def osas_changepass(request):
+    new_pass = request.POST.get('new_pass')
+    try:
+        o = osas_r_auth_user.objects.get(auth_id = request.session['session_user_id'])
+        o.auth_password = new_pass
+        o.save()
+        data = {'success':True} 
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        data = {'error':True} 
+        return JsonResponse(data, safe=False)
+
 def home(request):
-    notif = osas_notif.objects.all().filter(notif_head = 'Sent').count()
-    notif_info = osas_notif.objects.all().filter(notif_head = "Sent").order_by("-notif_datecreated")
-
-    stud_bbtled =  osas_r_personal_info.objects.filter(stud_course_id = osas_r_course.objects.get( course_code = 'BBTLEDHE')).count()
-    stud_bsit =  osas_r_personal_info.objects.all().filter(stud_course_id = osas_r_course.objects.get( course_code = 'BSIT')).count()
-    stud_bsbamm =  osas_r_personal_info.objects.filter(stud_course_id = osas_r_course.objects.get( course_code = 'BSBA-MM')).count()
-    stud_bsbahrm = osas_r_personal_info.objects.filter(stud_course_id = osas_r_course.objects.get( course_code = 'BSBAHRM')).count()
-    stud_bsent =  osas_r_personal_info.objects.filter(stud_course_id = osas_r_course.objects.get( course_code = 'BSENTREP')).count()
-    stud_domt =  osas_r_personal_info.objects.filter(stud_course_id = osas_r_course.objects.get( course_code = 'DOMTMOM')).count()
-
-    student_count = osas_r_personal_info.objects.all().count()
-    lost_id_count = osas_t_id.objects.all().count()
-    sanction_count = osas_t_sanction.objects.all().count()
-    grievances_count = osas_t_complaint.objects.all().count()
-
-    lost_id_pending = osas_t_id.objects.filter(lost_id_status__iexact = 'PENDING').count()
-    lost_id_process = osas_t_id.objects.filter(lost_id_status__iexact = 'PROCESSING').count()
-    lost_id_completed = osas_t_id.objects.filter(lost_id_status__iexact = 'COMPLETED').count()
-
-    complaint_pending = osas_t_complaint.objects.filter(comp_status__iexact = 'PENDING').count()
-    complaint_approved = osas_t_complaint.objects.filter(comp_status__iexact = 'APPROVED').count()
-    complaint_decline = osas_t_complaint.objects.filter(comp_status__iexact = 'DECLINED').count()
-
-    sanction_pending = osas_t_sanction.objects.filter(sanction_status__iexact = 'PENDING').count()
-    sanction_active = osas_t_sanction.objects.filter(sanction_status__iexact = 'ACTIVE').count()
-    sanction_completed = osas_t_sanction.objects.filter(sanction_status__iexact = 'COMPLETED').count()
-    sanction_excused = osas_t_sanction.objects.filter(sanction_status__iexact = 'EXCUSED').count()
+    acad_year = request.POST.get('acad_year')
+    year = str(acad_year)   
     
-    return render(request, 'home.html', {'stud_bbtled':stud_bbtled, 'stud_bsit':stud_bsit, 'stud_bsbamm':stud_bsbamm, 'stud_bsbahrm':stud_bsbahrm, 'stud_bsent':stud_bsent, 'stud_domt':stud_domt, 'lost_id_pending':lost_id_pending, 'lost_id_process':lost_id_process, 'lost_id_completed':lost_id_completed, 'sanction_pending':sanction_pending, 'sanction_active':sanction_active, 'sanction_completed':sanction_completed, 'sanction_excused':sanction_excused, 'complaint_pending':complaint_pending, 'complaint_approved':complaint_approved, 'complaint_decline':complaint_decline, 'student_count':student_count, 'lost_id_count':lost_id_count, 'sanction_count':sanction_count, 'grievances_count':grievances_count, 'notif':notif, 'notif_info':notif_info})
+    if acad_year:
+        notif = osas_notif.objects.all().filter(notif_head = 'Sent').count()
+        notif_info = osas_notif.objects.all().filter(notif_head = "Sent").order_by("-notif_datecreated")
+
+        stud_bbtled =  osas_r_personal_info.objects.filter(stud_course_id = osas_r_course.objects.get( course_code = 'BBTLEDHE')).count()
+        stud_bsit =  osas_r_personal_info.objects.all().filter(stud_course_id = osas_r_course.objects.get( course_code = 'BSIT')).count()
+        stud_bsbamm =  osas_r_personal_info.objects.filter(stud_course_id = osas_r_course.objects.get( course_code = 'BSBA-MM')).count()
+        stud_bsbahrm = osas_r_personal_info.objects.filter(stud_course_id = osas_r_course.objects.get( course_code = 'BSBAHRM')).count()
+        stud_bsent =  osas_r_personal_info.objects.filter(stud_course_id = osas_r_course.objects.get( course_code = 'BSENTREP')).count()
+        stud_domt =  osas_r_personal_info.objects.filter(stud_course_id = osas_r_course.objects.get( course_code = 'DOMTMOM')).count()
+
+        student_count = osas_r_personal_info.objects.all().count()
+        lost_id_count = osas_t_id.objects.all().count()
+        sanction_count = osas_t_sanction.objects.all().count()
+        grievances_count = osas_t_complaint.objects.all().count()
+
+        no_events = concept_paper_title.objects.filter().filter(title_datecreated__contains = year ).count()
+        no_accomplished = concept_paper_title.objects.filter(title_status = 'ACCOMPLISHED', title_datecreated__contains = year).count()
+        no_accreditted = organization.objects.filter(org_status = 'ACCREDITED', org_date_accredited__contains = year).count()
+
+        lost_id_completed= organization.objects.filter(org_status__iexact = 'ACCREDITED', org_date_accredited__contains = year).count()
+        lost_id_process = organization.objects.filter(org_status__iexact = 'INACTIVE', org_submit_date__contains = year).count()
+        lost_id_pending = organization.objects.filter(org_status__iexact = 'DISMISSED', org_submit_date__contains = year).count()
+
+        complaint_pending = osas_t_complaint.objects.filter(comp_status__iexact = 'PENDING').count()
+        complaint_approved = osas_t_complaint.objects.filter(comp_status__iexact = 'APPROVED').count()
+        complaint_decline = osas_t_complaint.objects.filter(comp_status__iexact = 'DECLINED').count()
+
+        sanction_pending = concept_paper_title.objects.filter(title_status__iexact = 'PENDING', title_datecreated__contains = year).count()
+        sanction_active = concept_paper_title.objects.filter(title_status__iexact = 'VALIDATED', title_datecreated__contains = year).count()
+        sanction_completed = concept_paper_title.objects.filter(title_status__iexact = 'APPROVED', title_dateapproved__contains = year).count()
+        sanction_excused = concept_paper_title.objects.filter(title_status__iexact = 'ACCOMPLISHED', title_date_accomplished__contains = year).count()
+        
+        return render(request, 'home.html', {'stud_bbtled':stud_bbtled, 'stud_bsit':stud_bsit, 'stud_bsbamm':stud_bsbamm, 'stud_bsbahrm':stud_bsbahrm, 'stud_bsent':stud_bsent, 'stud_domt':stud_domt, 'lost_id_pending':lost_id_pending, 'lost_id_process':lost_id_process, 'lost_id_completed':lost_id_completed, 'sanction_pending':sanction_pending, 'sanction_active':sanction_active, 'sanction_completed':sanction_completed, 'sanction_excused':sanction_excused, 'complaint_pending':complaint_pending, 'complaint_approved':complaint_approved, 'complaint_decline':complaint_decline, 'no_events':no_events, 'no_accomplished':no_accomplished, 'no_accreditted':no_accreditted, 'grievances_count':grievances_count, 'notif':notif, 'notif_info':notif_info})
+    else:
+        notif = osas_notif.objects.all().filter(notif_head = 'Sent').count()
+        notif_info = osas_notif.objects.all().filter(notif_head = "Sent").order_by("-notif_datecreated")
+
+        stud_bbtled =  osas_r_personal_info.objects.filter(stud_course_id = osas_r_course.objects.get( course_code = 'BBTLEDHE')).count()
+        stud_bsit =  osas_r_personal_info.objects.all().filter(stud_course_id = osas_r_course.objects.get( course_code = 'BSIT')).count()
+        stud_bsbamm =  osas_r_personal_info.objects.filter(stud_course_id = osas_r_course.objects.get( course_code = 'BSBA-MM')).count()
+        stud_bsbahrm = osas_r_personal_info.objects.filter(stud_course_id = osas_r_course.objects.get( course_code = 'BSBAHRM')).count()
+        stud_bsent =  osas_r_personal_info.objects.filter(stud_course_id = osas_r_course.objects.get( course_code = 'BSENTREP')).count()
+        stud_domt =  osas_r_personal_info.objects.filter(stud_course_id = osas_r_course.objects.get( course_code = 'DOMTMOM')).count()
+
+        student_count = osas_r_personal_info.objects.all().count()
+        lost_id_count = osas_t_id.objects.all().count()
+        sanction_count = osas_t_sanction.objects.all().count()
+        grievances_count = osas_t_complaint.objects.all().count()
+
+        no_events = concept_paper_title.objects.filter().count()
+        no_accomplished = concept_paper_title.objects.filter(title_status = 'ACCOMPLISHED').count()
+        no_accreditted = organization.objects.filter(org_status = 'ACCREDITED').count()
+
+        lost_id_completed= organization.objects.filter(org_status__iexact = 'ACCREDITED').count()
+        lost_id_process = organization.objects.filter(org_status__iexact = 'INACTIVE').count()
+        lost_id_pending = organization.objects.filter(org_status__iexact = 'DISMISSED').count()
+
+        complaint_pending = osas_t_complaint.objects.filter(comp_status__iexact = 'PENDING').count()
+        complaint_approved = osas_t_complaint.objects.filter(comp_status__iexact = 'APPROVED').count()
+        complaint_decline = osas_t_complaint.objects.filter(comp_status__iexact = 'DECLINED').count()
+
+        sanction_pending = concept_paper_title.objects.filter(title_status__iexact = 'PENDING').count()
+        sanction_active = concept_paper_title.objects.filter(title_status__iexact = 'VALIDATED').count()
+        sanction_completed = concept_paper_title.objects.filter(title_status__iexact = 'APPROVED').count()
+        sanction_excused = concept_paper_title.objects.filter(title_status__iexact = 'ACCOMPLISHED').count()
+        
+        return render(request, 'home.html', {'stud_bbtled':stud_bbtled, 'stud_bsit':stud_bsit, 'stud_bsbamm':stud_bsbamm, 'stud_bsbahrm':stud_bsbahrm, 'stud_bsent':stud_bsent, 'stud_domt':stud_domt, 'lost_id_pending':lost_id_pending, 'lost_id_process':lost_id_process, 'lost_id_completed':lost_id_completed, 'sanction_pending':sanction_pending, 'sanction_active':sanction_active, 'sanction_completed':sanction_completed, 'sanction_excused':sanction_excused, 'complaint_pending':complaint_pending, 'complaint_approved':complaint_approved, 'complaint_decline':complaint_decline, 'no_events':no_events, 'no_accomplished':no_accomplished, 'no_accreditted':no_accreditted, 'grievances_count':grievances_count, 'notif':notif, 'notif_info':notif_info})
+
 
 def dashboard(request):
     notif = osas_notif.objects.all().filter(notif_stud_id = osas_r_personal_info.objects.get(stud_no = request.session['session_user_no']), notif_stud = 'Sent').count()
@@ -2561,6 +2652,7 @@ def organization_update_account(request):
     try:
         org = organization.objects.get(org_id = org_id)
         student = osas_r_personal_info.objects.get(stud_no = stud)
+        org.org_name = org_name
         org.org_email = org_email
         org.org_pass = org_pass
         org.org_abbr = org_abbr
@@ -2812,10 +2904,14 @@ def organization_upload_osas(request):
     extension = filename.split(".")[1]
     if request.method == 'POST':
         if ident == 'org':
-            o = org_concept_paper.objects.get(con_title_id = concept_paper_title.objects.get(title_id = title_id), con_file = docu, con_org_id = organization.objects.get(org_id = pk_id))
-            o.delete()
-            org_concept_paper.objects.create(con_file = docu, con_org_id = organization.objects.get(org_id = pk_id), con_file_ext = extension, con_status = "APPROVED", con_auth_id = osas_r_auth_user.objects.get(auth_id = auth_id), con_title_id = concept_paper_title.objects.get(title_id = title_id))
-            return HttpResponse('')
+            try:
+                o = org_concept_paper.objects.get(con_title_id = concept_paper_title.objects.get(title_id = title_id), con_file = docu, con_org_id = organization.objects.get(org_id = pk_id))
+                o.delete()
+                org_concept_paper.objects.create(con_file = docu, con_org_id = organization.objects.get(org_id = pk_id), con_file_ext = extension, con_status = "APPROVED", con_auth_id = osas_r_auth_user.objects.get(auth_id = auth_id), con_title_id = concept_paper_title.objects.get(title_id = title_id))
+                return HttpResponse('')
+            except ObjectDoesNotExist:
+                org_concept_paper.objects.create(con_file = docu, con_org_id = organization.objects.get(org_id = pk_id), con_file_ext = extension, con_status = "APPROVED", con_auth_id = osas_r_auth_user.objects.get(auth_id = auth_id), con_title_id = concept_paper_title.objects.get(title_id = title_id))
+                return HttpResponse('')
         elif ident == 'class':
             
             try:
@@ -2860,7 +2956,9 @@ def event_generate_report(request):
     date_from = request.POST.get('from_2')
     date_to = request.POST.get('to_2')
     try:    
-        accredited_values = list(concept_paper_title.objects.all().filter(title_dateapproved__range = [date_from, date_to]).values().order_by('title_dateapproved'))
+        accredited_values = list(concept_paper_title.objects.all().filter(title_datecreated__range = [date_from, date_to]).values().order_by('title_datecreated'))
+        accredited_values2 = concept_paper_title.objects.all().filter(title_datecreated__range = [date_from, date_to]).values().order_by('title_datecreated')
+
         return JsonResponse({
             'data': accredited_values,
         })
@@ -2902,10 +3000,61 @@ def organization_login(request):
     return render(request, 'Organization/login.html')
 
 def organization_home(request):
-    return render(request, 'Organization/home.html')
+    total_balance = organization.objects.get(org_id = request.session['session_user_id'])
+    total_event = concept_paper_title.objects.filter(title_org_id = organization.objects.get(org_id = request.session['session_user_id'])).count()
+    total_accomplished = concept_paper_title.objects.filter(title_org_id = organization.objects.get(org_id = request.session['session_user_id']), title_status = 'ACCOMPLISHED').count()
+    return render(request, 'Organization/home.html',{'total_balance':total_balance, 'total_event':total_event, 'total_accomplished':total_accomplished})
+
+def organization_changepass_verify(request):
+    old_password = request.POST.get('old_pass')
+    try:
+        o = organization.objects.get(org_id = request.session['session_user_id'], org_pass = old_password)
+        data = {'success':True} 
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        data = {'error':True} 
+        return JsonResponse(data, safe=False)
+
+def organization_changepass(request):
+    new_pass = request.POST.get('new_pass')
+    try:
+        o = organization.objects.get(org_id = request.session['session_user_id'])
+        o.org_pass = new_pass
+        o.save()
+        data = {'success':True} 
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        data = {'error':True} 
+        return JsonResponse(data, safe=False)
+
 
 def classroom_home(request):
-    return render(request, 'classroom/home.html')
+    total_balance = classroom.objects.get(room_id = request.session['session_user_id'])
+    total_event = concept_paper_title.objects.filter(title_room_id = classroom.objects.get(room_id = request.session['session_user_id'])).count()
+    total_accomplished = concept_paper_title.objects.filter(title_room_id = classroom.objects.get(room_id = request.session['session_user_id']), title_status = 'ACCOMPLISHED').count()
+    return render(request, 'classroom/home.html',{'total_balance':total_balance, 'total_event':total_event, 'total_accomplished':total_accomplished})
+
+def classroom_changepass_verify(request):
+    old_password = request.POST.get('old_pass')
+    try:
+        o = classroom.objects.get(room_id = request.session['session_user_id'], room_pass = old_password)
+        data = {'success':True} 
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        data = {'error':True} 
+        return JsonResponse(data, safe=False)
+
+def classroom_changepass(request):
+    new_pass = request.POST.get('new_pass')
+    try:
+        o = classroom.objects.get(room_id = request.session['session_user_id'])
+        o.room_pass = new_pass
+        o.save()
+        data = {'success':True} 
+        return JsonResponse(data, safe=False)
+    except ObjectDoesNotExist:
+        data = {'error':True} 
+        return JsonResponse(data, safe=False)
 
 def organiation_login_process(request):
     s_no = request.POST.get('stud_no')

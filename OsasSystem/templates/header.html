@@ -72,6 +72,7 @@
                 <div class="dropdown-menu dropdown-menu-right">
                     <a href="" class="dropdown-item">Account Setting</a>
                     <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" data-toggle="modal" href="#modal_changepass"><i class="fas fa-lock mr-2" ></i> Change Password</i></a>
                     <a href="{%url 'logout' %}" class="dropdown-item"><i class="fas fa-sign-out-alt mr-2" ></i> Log Out</i></a>
                 </div>
             </li>
@@ -79,3 +80,45 @@
         <!-- end header navigation right -->
     </div>
     <!-- end #header -->
+    <div class="modal fade" id="modal_changepass" role="dialog"  data-backdrop="static">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+                <div class="panel panel-inverse" >
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="color: gray; margin: 6px;">×</button>  
+                    <div class="panel-body">
+                        <div class="col">
+                            <h1 class="page-header mb-1">Change Password</h1>
+                            <p class="mb-5">Page Description</p>
+                            <div class="col-lg-12" id="error">
+                            </div>
+                            <div class="col-lg-12 col-md-6">
+                                <label>Old Password:  <span class="text-danger">*</span></label>
+                                <input class="form-control" id="old_pass" type="password" name="old_pass"/>
+                            </div>
+                            <div class="col-lg-12 col-md-6">
+                                <label>New Password:  <span class="text-danger">*</span></label>
+                                <input class="form-control" id="new_pass" type="password" name="new_pass"/>
+                            </div>
+                            <div class="col-lg-12 col-md-6">
+                                <label>Confirm New Password:  <span class="text-danger">*</span></label>
+                                <input class="form-control" id="confirm_pass" type="password" name="new_pass2"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-footer">
+                        <button class="btn btn_success col-md-3 pull-right m-l-10 " id="btn_submit" style="height: 33px; padding: 5px; background: linear-gradient(to right, #66ccff -1%, #3366ff 98%); border:none; color: white;">Submit<i class="far fa-paper-plane m-l-3 zoom" ></i></button>
+                        <a class="btn btn-white pull-right m-l-10" data-dismiss="modal">Back<i class="fas fa-reply m-l-3 zoom"></i></a>
+                    </div>
+                    <br>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% block page-level %} 
+	<!-- ================== BEGIN PAGE LEVEL JS ================== -->
+    <script src="{%static 'OsasSystem/assets/plugins/bootstrap-sweetalert/sweetalert.min.js' %}"></script>
+    <script src="{%static 'OsasSystem/assets/plugins/dropzone/min/dropzone.min.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/plugins/highlight/highlight.common.js' %}"></script>
+	<script src="{%static 'OsasSystem/assets/js/demo/render.highlight.js' %}"></script>
+	<!-- ================== END PAGE LEVEL JS ================== -->
+    {% endblock %}
